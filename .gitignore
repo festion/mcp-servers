@@ -1,3 +1,6 @@
-﻿output/
+﻿# Ignore everything in output EXCEPT the final report
+output/*
+!output/GitRepoReport.md
+
 *.log
 *.tmp

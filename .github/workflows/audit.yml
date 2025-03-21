@@ -3,7 +3,7 @@ name: Daily GitOps Audit
 on:
   schedule:
     - cron: '0 3 * * *'  # Daily at 3 AM UTC
-  workflow_dispatch:      # Manual run from the Actions tab
+  workflow_dispatch:      # Allow manual trigger
 
 jobs:
   audit:
@@ -32,7 +32,7 @@ jobs:
             exit 1
           }
 
-      - name: Commit updated report
+      - name: Commit and push report
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -43,5 +43,6 @@ jobs:
           # Commit only if there are changes
           git diff --cached --quiet || git commit -m "📋 Daily audit report update"
 
-          # ✅ Push using token auth
-          git push https://x-access-token:$env:TOKEN@github.com/${{ github.repository }}.git HEAD:main
+          # ✅ Push using token-authenticated remote
+          git remote set-url origin https://x-access-token:$env:TOKEN@github.com/${{ github.repository }}.git
+          git push origin HEAD:main

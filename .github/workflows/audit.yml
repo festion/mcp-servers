@@ -3,25 +3,41 @@ name: Daily GitOps Audit
 on:
   schedule:
     - cron: '0 3 * * *'  # Runs daily at 3 AM UTC
-  workflow_dispatch:
+  workflow_dispatch:      # Allow manual triggering
 
 jobs:
   audit:
+    name: Run Git Audit
     runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up PowerShell
+        shell: pwsh
+        run: |
+          Write-Host "PowerShell version:"
+          $PSVersionTable.PSVersion
+
       - name: Run Git Audit Script
         shell: pwsh
         run: |
-          ./scripts/GitAudit.ps1
+          Write-Host "Running GitAudit.ps1..."
+          try {
+            ./scripts/GitAudit.ps1
+            Write-Host "Audit script completed."
+          } catch {
+            Write-Host "Script threw an error: $_"
+            exit 1
+          }
 
       - name: Commit updated report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add output/GitRepoReport.md
-          git commit -m "📋 Daily audit report update" || echo "No changes to commit"
-          git push
+
+          # Only commit if there are changes
+          git diff --cached --quiet || git commit -m "📋 Daily audit report update"
+          git push || echo "No changes to push"

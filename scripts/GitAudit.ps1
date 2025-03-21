@@ -1,69 +1,90 @@
-$gitRoot = "C:\GIT"
-$outputFile = "GitRepoReport.md"
+# GitAudit.ps1
+$ErrorActionPreference = "Stop"
+
+# Set root paths relative to script location
+$scriptRoot = $PSScriptRoot
+$repoRoot = Resolve-Path (Join-Path $scriptRoot "..")
+$gitRoot = $repoRoot
+$outputPath = Join-Path $repoRoot "output\GitRepoReport.md"
+
+# Create output folder if missing
+if (-not (Test-Path -Path (Join-Path $repoRoot "output"))) {
+    New-Item -ItemType Directory -Path (Join-Path $repoRoot "output") | Out-Null
+}
+
+# Initialize report content
 $report = @()
 
-Write-Host "Scanning Git repositories in $gitRoot..."
-$repos = Get-ChildItem -Path $gitRoot -Directory
+# Find all directories with a .git folder (recursively)
+$repos = Get-ChildItem -Path $gitRoot -Recurse -Directory | Where-Object {
+    Test-Path (Join-Path $_.FullName ".git")
+}
 
 foreach ($repo in $repos) {
-    $repoPath = Join-Path $gitRoot $repo.Name
-    $gitFolder = Join-Path $repoPath ".git"
+    $repoPath = $repo.FullName
+    $repoName = Split-Path $repoPath -Leaf
 
-    if (Test-Path $gitFolder) {
-        Write-Host ""
-        Write-Host "Repo: $($repo.Name)"
-        Set-Location $repoPath
+    try {
+        Push-Location $repoPath
 
         $remote = git remote get-url origin 2>$null
         $branch = git rev-parse --abbrev-ref HEAD 2>$null
         $lastCommit = git log -1 --pretty=format:"%h - %s (%cr)" 2>$null
         $uncommitted = git status --porcelain
+        $isDirty = if ($uncommitted) { "Yes" } else { "No" }
 
         $missingFiles = @()
         foreach ($file in @(".gitignore", "README.md", "LICENSE")) {
-            if (-not (Test-Path "$repoPath\$file")) {
+            if (-not (Test-Path (Join-Path $repoPath $file))) {
                 $missingFiles += $file
             }
         }
 
-        if ($remote) {
-            Write-Host "  Remote: $remote"
-        } else {
-            Write-Host "  Remote: Not set"
+        # Check for stale repos (90+ days)
+        $lastCommitDate = git log -1 --format=%ci | Out-String
+        $daysOld = 0
+        if ($lastCommitDate) {
+            $commitDate = [datetime]::Parse($lastCommitDate.Trim())
+            $daysOld = (Get-Date) - $commitDate
         }
+        $isStale = if ($daysOld.Days -ge 90) { "Yes" } else { "No" }
 
-        Write-Host "  Branch: $branch"
-        Write-Host "  Last commit: $lastCommit"
-
-        if ($uncommitted) {
-            Write-Host "  Uncommitted changes: Yes"
-        }
-
-        if ($missingFiles.Count -gt 0) {
-            Write-Host "  Missing files: $($missingFiles -join ', ')"
-        }
-
-        # Build report lines
-        $remoteDisplay = if ($remote) { $remote } else { "Not set" }
-        $dirtyDisplay = if ($uncommitted) { "Yes" } else { "No" }
-        $missingDisplay = if ($missingFiles.Count -gt 0) { $missingFiles -join ", " } else { "None" }
-
-        $report += "### $($repo.Name)"
-        $report += "- Remote: $remoteDisplay"
+        # Add to report
+        $report += "### $repoName"
+        $report += "- Remote: " + ($remote -ne $null ? $remote : "Not set")
         $report += "- Branch: $branch"
         $report += "- Last Commit: $lastCommit"
-        $report += "- Uncommitted Changes: $dirtyDisplay"
-        $report += "- Missing Files: $missingDisplay"
+        $report += "- Uncommitted Changes: $isDirty"
+        $report += "- Missing Files: " + ($(if ($missingFiles) { $missingFiles -join ", " } else { "None" }))
+        $report += "- Stale (>90 days): $isStale"
         $report += ""
-
-        Set-Location $gitRoot
-    } else {
-        Write-Host ""
-        Write-Host "Skipping non-Git folder: $($repo.Name)"
+    }
+    catch {
+        $report += "### $repoName"
+        $report += "- ❌ Error reading repository: $_"
+        $report += ""
+    }
+    finally {
+        Pop-Location
     }
 }
 
-$report | Set-Content -Path $outputFile -Encoding UTF8
-Write-Host ""
-Write-Host "Report saved to: $outputFile"
-Write-Host "Audit complete."
+# Summary Section
+$total = $repos.Count
+$dirty = ($report -match "Uncommitted Changes: Yes").Count
+$stale = ($report -match "Stale \(>90 days\): Yes").Count
+$noRemote = ($report -match "Remote: Not set").Count
+
+$summary = @()
+$summary += "# GitOps Audit Summary"
+$summary += ""
+$summary += "- Total Repositories: $total"
+$summary += "- Repos with Uncommitted Changes: $dirty"
+$summary += "- Repos with No Remote Set: $noRemote"
+$summary += "- Repos with Stale Commits (90+ days): $stale"
+$summary += ""
+$summary += "---`n"
+
+# Write report to markdown
+$summary + $report | Set-Content -Path $outputPath -Encoding UTF8
+Write-Host "✅ GitOps audit complete. Report saved to: $outputPath"

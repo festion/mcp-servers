@@ -1,3 +1,6 @@
+// src/App.tsx
+// (No changes to this file)
+
 import { useEffect, useState } from "react";
 import {
   BarChart,
@@ -121,7 +124,7 @@ export default function App() {
             <h2 className="text-lg font-semibold mb-2">📊 Repo Health (Bar)</h2>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summaryData}>
-                <XAxis dataKey="name" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="value">
@@ -142,16 +145,17 @@ export default function App() {
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
-                  cy="50%"
+                  cy="45%"
                   outerRadius={70}
-                  label
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                 >
                   {summaryData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend />
+                <Legend verticalAlign="bottom" iconType="circle" iconSize={10} />
               </PieChart>
             </ResponsiveContainer>
           </div>

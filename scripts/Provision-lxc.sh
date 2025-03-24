@@ -13,10 +13,10 @@ var_os="debian"
 var_version="12"
 var_unprivileged="1"
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
-TEMPLATE=local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst
+TEMPLATE="local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 STORAGE="local-lvm"  # Ensure this is the correct storage name for your setup
 IP="dhcp"
-HOSTNAME="gitops-dashboard"  # The hostname to look for
+DEFAULT_HOSTNAME="gitops-dashboard"
 
 # Function to display header info
 header_info() {
@@ -60,48 +60,33 @@ check_template() {
   fi
 }
 
-# Function to check if a container with the specified hostname exists
-check_existing_container() {
-  echo "Checking if container with hostname $HOSTNAME exists..."
-  CTID=$(pct list | grep $HOSTNAME | awk '{print $1}')
-  
-  if [ -z "$CTID" ]; then
-    return 1  # Container does not exist
+# Function to detect and update existing container or create a new one
+build_or_update_container() {
+  echo "Checking if container with hostname $DEFAULT_HOSTNAME exists..."
+  CTID=$(pct list | grep $DEFAULT_HOSTNAME | awk '{print $1}')
+
+  if [ -n "$CTID" ]; then
+    msg_info "Container with hostname $DEFAULT_HOSTNAME exists. Updating container $CTID..."
+    update_container $CTID
   else
-    return 0  # Container exists
+    msg_info "No container found with hostname $DEFAULT_HOSTNAME. Creating new container..."
+    create_container
   fi
 }
 
-# Function to provision LXC container
-build_container() {
-  echo "Starting container creation process..."
-  msg_info "Creating LXC container"
-  read -p "Container ID (CTID) [default: next available]: " USER_CTID
-  read -p "Container Hostname [default: $HOSTNAME]: " USER_HOSTNAME
-  read -p "Disk Size (in GB) [default: 4]: " USER_DISK
-  read -p "Memory (in MB) [default: 512]: " USER_MEM
-  read -p "Cores [default: 2]: " USER_CORES
+# Function to create a new container
+create_container() {
+  # Automatically get the next available CTID
+  CTID=$(($(pvesh get /nodes/$(hostname)/lxc --output-format=json | jq '.[].vmid' | sort -n | tail -1) + 1))
 
-  CTID=${USER_CTID:-$(($(pvesh get /nodes/$(hostname)/lxc --output-format=json | jq '.[].vmid' | sort -n | tail -1) + 1))}
-  HOSTNAME=${USER_HOSTNAME:-$HOSTNAME}
-  DISK_SIZE=${USER_DISK:-4}
-  MEMORY=${USER_MEM:-512}
-  CORES=${USER_CORES:-2}
-
-  echo "Provisioning LXC container with the following configuration:"
-  echo "CTID: $CTID"
-  echo "Hostname: $HOSTNAME"
-  echo "Disk Size: $DISK_SIZE GB"
-  echo "Memory: $MEMORY MB"
-  echo "Cores: $CORES"
-  echo "Storage: $STORAGE"
+  echo "Creating container with CTID: $CTID"
 
   pct create $CTID $TEMPLATE \
-    --hostname $HOSTNAME \
-    --cores $CORES \
-    --memory $MEMORY \
+    --hostname $DEFAULT_HOSTNAME \
+    --cores $var_cpu \
+    --memory $var_ram \
     --net0 name=eth0,bridge=vmbr0,ip=$IP \
-    --rootfs $STORAGE:${DISK_SIZE} \
+    --rootfs $STORAGE:${var_disk} \
     --unprivileged $var_unprivileged \
     --features nesting=1 \
     --start 1 \
@@ -111,18 +96,34 @@ build_container() {
     msg_ok "Container $CTID created and started"
   else
     msg_error "Failed to create container $CTID"
+    exit 1
   fi
+
+  install_dependencies $CTID
 }
 
-# Function to update the container
+# Function to update an existing container
 update_container() {
-  echo "Updating container $CTID..."
-  msg_info "Updating the GitOps Dashboard container..."
+  CTID=$1
+  msg_info "Updating container $CTID..."
   
-  msg_info "Installing dependencies and setting up the GitOps Dashboard..."
+  install_dependencies $CTID
+}
+
+# Function to install dependencies and setup GitOps Dashboard
+install_dependencies() {
+  CTID=$1
+  msg_info "Installing dependencies inside container $CTID..."
+
   pct exec $CTID -- bash -c "apt update && apt install -y git curl npm nodejs"
-  
-  msg_info "Cloning GitHub repo and building dashboard..."
+  if [ $? -eq 0 ]; then
+    msg_ok "Dependencies installed in container $CTID"
+  else
+    msg_error "Failed to install dependencies in container $CTID"
+    exit 1
+  fi
+
+  msg_info "Cloning GitHub repo and building dashboard inside container $CTID..."
   pct exec $CTID -- bash -c "
     rm -rf /opt/gitops && \
     git clone --depth=1 $GIT_REPO /opt/gitops && \
@@ -131,37 +132,42 @@ update_container() {
     mkdir -p /var/www/gitops-dashboard && \
     cp -r dist/* /var/www/gitops-dashboard/
   "
-
   if [ $? -eq 0 ]; then
-    msg_ok "Dashboard built and deployed"
+    msg_ok "Dashboard built and deployed in container $CTID"
   else
-    msg_error "Failed to build and deploy the dashboard"
+    msg_error "Failed to build and deploy the dashboard in container $CTID"
+    exit 1
   fi
 
-  msg_info "Installing static file server (serve)..."
+  install_static_server $CTID
+}
+
+# Function to install static file server (serve)
+install_static_server() {
+  CTID=$1
+  msg_info "Installing static file server (serve) in container $CTID..."
+
   pct exec $CTID -- bash -c "npm install -g serve"
+  if [ $? -eq 0 ]; then
+    msg_ok "Static file server (serve) installed in container $CTID"
+  else
+    msg_error "Failed to install static file server in container $CTID"
+    exit 1
+  fi
+
   pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 8080 &"
   if [ $? -eq 0 ]; then
-    msg_ok "Static file server started"
+    msg_ok "Static file server started in container $CTID"
   else
-    msg_error "Failed to start static file server"
+    msg_error "Failed to start static file server in container $CTID"
+    exit 1
   fi
 }
 
 # Main Script Execution
 header_info
 check_template
-
-check_existing_container
-if [ $? -eq 0 ]; then
-  msg_ok "Container $CTID with hostname $HOSTNAME exists. Updating the container."
-  update_container
-else
-  msg_info "No container with hostname $HOSTNAME found. Creating a new container."
-  build_container
-  install_dependencies
-  install_static_server
-fi
+build_or_update_container
 
 msg_ok "Provisioning and setup completed successfully!"
 echo -e "${INFO}${YW} Access the GitOps Dashboard at: http://$IP:8080${CL}"

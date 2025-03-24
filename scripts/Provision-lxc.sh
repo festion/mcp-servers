@@ -14,7 +14,7 @@ var_version="12"
 var_unprivileged="1"
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
 TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst
-STORAGE=local-lvm
+STORAGE="local-lvm"
 IP="dhcp"
 
 # Function to display header info

@@ -3,7 +3,8 @@
 set -e
 
 ### CONFIG ###
-CTID=120
+CTID=$(pvesh get /nodes/$(hostname)/lxc | awk '{print $1}' | sort -n | tail -1)
+CTID=$((CTID + 1))
 HOSTNAME=gitops-dashboard
 TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst
 DISK_SIZE=4G
@@ -12,11 +13,6 @@ CORES=2
 IP="dhcp"  # or use static like 192.168.1.120/24,gw=192.168.1.1
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
 ###
-
-if pct status $CTID &>/dev/null; then
-  echo "❗ CT $CTID already exists. Please remove or choose a different CTID."
-  exit 1
-fi
 
 if ! pveam list local | grep -q "debian-12"; then
   echo "❗ Debian 12 template not found. Downloading..."

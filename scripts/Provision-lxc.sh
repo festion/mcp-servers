@@ -42,16 +42,20 @@ msg_error() {
   echo -e "${RD}❌ $1${CL}"
 }
 
-# Function to check for existing container
-check_container_storage() {
-  # Check if template is available
-  echo "Checking if template is available..."
+# Function to check if Debian template is available and download if not
+check_template() {
+  echo "Checking if Debian 12 template is available..."
   if ! pveam list local | grep -q "debian-12"; then
-    msg_info "Downloading Debian 12 template..."
+    msg_info "Debian 12 template not found. Downloading it now..."
     pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
-    msg_ok "Template downloaded"
+    if [ $? -eq 0 ]; then
+      msg_ok "Template downloaded successfully"
+    else
+      msg_error "Failed to download template. Exiting..."
+      exit 1
+    fi
   else
-    echo "Debian 12 template already available."
+    msg_ok "Debian 12 template already available"
   fi
 }
 
@@ -155,7 +159,7 @@ update_dashboard() {
 
 # Main Script Execution
 header_info
-check_container_storage
+check_template
 build_container
 install_dependencies
 install_static_server

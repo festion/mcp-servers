@@ -156,7 +156,7 @@ install_static_server() {
   fi
 
  #pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 8080 &"
-  pct exec $CTID "npx serve -s /var/www/gitops-dashboard -l 8080 &"
+  pct exec $CTID -- bash -c "npx serve -s /var/www/gitops-dashboard -l 8080 &"
   if [ $? -eq 0 ]; then
     msg_ok "Static file server started in container $CTID"
   else

@@ -34,7 +34,7 @@ CTID=$((CTID + 1))
 HOSTNAME=gitops-dashboard
 TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst
 STORAGE=local-lvm
-DISK_SIZE=4G
+DISK_SIZE=4
 MEMORY=512
 CORES=2
 IP="dhcp"  # or use static like 192.168.1.120/24,gw=192.168.1.1
@@ -52,7 +52,7 @@ pct create $CTID $TEMPLATE \
   --cores $CORES \
   --memory $MEMORY \
   --net0 name=eth0,bridge=vmbr0,ip=$IP \
-  --rootfs $STORAGE:$DISK_SIZE \
+  --rootfs $STORAGE:${DISK_SIZE}G \
   --unprivileged 1 \
   --features nesting=1 \
   --start 1 \

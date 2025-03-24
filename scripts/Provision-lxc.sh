@@ -52,7 +52,7 @@ pct create $CTID $TEMPLATE \
   --cores $CORES \
   --memory $MEMORY \
   --net0 name=eth0,bridge=vmbr0,ip=$IP \
-  --rootfs $STORAGE,volume=vm-$CTID-disk-0,size=$DISK_SIZE \
+  --rootfs $STORAGE:$DISK_SIZE \
   --unprivileged 1 \
   --features nesting=1 \
   --start 1 \

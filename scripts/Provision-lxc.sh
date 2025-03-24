@@ -45,15 +45,19 @@ msg_error() {
 # Function to check for existing container
 check_container_storage() {
   # Check if template is available
+  echo "Checking if template is available..."
   if ! pveam list local | grep -q "debian-12"; then
     msg_info "Downloading Debian 12 template..."
     pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
     msg_ok "Template downloaded"
+  else
+    echo "Debian 12 template already available."
   fi
 }
 
 # Function to provision LXC container
 build_container() {
+  echo "Starting container creation process..."
   msg_info "Creating LXC container"
   read -p "Container ID (CTID) [default: next available]: " USER_CTID
   read -p "Container Hostname [default: gitops-dashboard]: " USER_HOSTNAME
@@ -67,6 +71,14 @@ build_container() {
   MEMORY=${USER_MEM:-512}
   CORES=${USER_CORES:-2}
 
+  echo "Provisioning LXC container with the following configuration:"
+  echo "CTID: $CTID"
+  echo "Hostname: $HOSTNAME"
+  echo "Disk Size: $DISK_SIZE GB"
+  echo "Memory: $MEMORY MB"
+  echo "Cores: $CORES"
+  echo "Storage: $STORAGE"
+
   # Corrected rootfs argument to use storage and disk size
   pct create $CTID $TEMPLATE \
     --hostname $HOSTNAME \
@@ -79,14 +91,22 @@ build_container() {
     --start 1 \
     --onboot 1
 
-  msg_ok "Container $CTID created and started"
+  if [ $? -eq 0 ]; then
+    msg_ok "Container $CTID created and started"
+  else
+    msg_error "Failed to create container $CTID"
+  fi
 }
 
 # Function to install dependencies and setup GitOps Dashboard
 install_dependencies() {
   msg_info "Installing NodeJS, npm, git, curl inside container..."
   pct exec $CTID -- bash -c "apt update && apt install -y git curl npm nodejs"
-  msg_ok "Dependencies installed"
+  if [ $? -eq 0 ]; then
+    msg_ok "Dependencies installed"
+  else
+    msg_error "Failed to install dependencies"
+  fi
 
   msg_info "Cloning GitHub repo and building dashboard..."
   pct exec $CTID -- bash -c "
@@ -97,7 +117,11 @@ install_dependencies() {
     mkdir -p /var/www/gitops-dashboard && \
     cp -r dist/* /var/www/gitops-dashboard/
   "
-  msg_ok "Dashboard built and deployed"
+  if [ $? -eq 0 ]; then
+    msg_ok "Dashboard built and deployed"
+  else
+    msg_error "Failed to build and deploy the dashboard"
+  fi
 }
 
 # Function to install static file server (serve)
@@ -105,7 +129,11 @@ install_static_server() {
   msg_info "Installing static file server (serve)..."
   pct exec $CTID -- bash -c "npm install -g serve"
   pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 8080 &"
-  msg_ok "Static file server started"
+  if [ $? -eq 0 ]; then
+    msg_ok "Static file server started"
+  else
+    msg_error "Failed to start static file server"
+  fi
 }
 
 # Function to perform updates if needed
@@ -118,7 +146,11 @@ update_dashboard() {
 
   msg_info "Checking for updates in GitHub repository..."
   cd /opt/gitops && git pull
-  msg_ok "GitOps Dashboard is up to date"
+  if [ $? -eq 0 ]; then
+    msg_ok "GitOps Dashboard is up to date"
+  else
+    msg_error "Failed to update GitOps Dashboard"
+  fi
 }
 
 # Main Script Execution

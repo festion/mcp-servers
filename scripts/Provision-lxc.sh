@@ -79,13 +79,13 @@ build_container() {
   echo "Cores: $CORES"
   echo "Storage: $STORAGE"
 
-  # Corrected rootfs argument to use storage and disk size
+  # Corrected rootfs argument to use storage and disk size correctly
   pct create $CTID $TEMPLATE \
     --hostname $HOSTNAME \
     --cores $CORES \
     --memory $MEMORY \
     --net0 name=eth0,bridge=vmbr0,ip=$IP \
-    --rootfs $STORAGE:${DISK_SIZE}G \
+    --rootfs $STORAGE:${DISK_SIZE} \
     --unprivileged $var_unprivileged \
     --features nesting=1 \
     --start 1 \

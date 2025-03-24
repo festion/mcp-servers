@@ -3,7 +3,7 @@
 set -e
 
 ### CONFIG ###
-CTID=$(pvesh get /nodes/$(hostname)/lxc | awk '{print $1}' | sort -n | tail -1)
+CTID=$(pvesh get /nodes/$(hostname)/lxc --output-format=json | jq '.[].vmid' | sort -n | tail -1)
 CTID=$((CTID + 1))
 HOSTNAME=gitops-dashboard
 TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst

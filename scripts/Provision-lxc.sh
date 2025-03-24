@@ -60,3 +60,4 @@ IPADDR=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 echo "✅ Done! Your GitOps dashboard is now live."
 echo "📂 Served from: http://$IPADDR/"
 echo "🧰 Running in container $CTID. You can reverse proxy this in NPM."
+

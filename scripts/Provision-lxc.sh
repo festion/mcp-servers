@@ -138,8 +138,17 @@ install_dependencies() {
     msg_error "Failed to build and deploy the dashboard in container $CTID"
     exit 1
   fi
-
+  get_container_ip
   install_static_server $CTID
+}
+get_container_ip() {
+  # Fetch the container's IP address
+  CONTAINER_IP=$(pct exec $CTID -- ip a | grep -oP 'inet \K[\d.]+')
+  if [[ -z "$CONTAINER_IP" ]]; then
+    msg_error "Failed to fetch container IP address"
+    exit 1
+  fi
+  msg_ok "Container IP: $CONTAINER_IP"
 }
 
 # Function to install static file server (serve)

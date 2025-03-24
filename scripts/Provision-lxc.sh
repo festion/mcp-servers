@@ -14,7 +14,7 @@ var_version="12"
 var_unprivileged="1"
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
 TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst
-STORAGE="local-lvm"
+STORAGE="local-lvm"  # Ensure this is the correct storage name for your setup
 IP="dhcp"
 
 # Function to display header info
@@ -22,7 +22,7 @@ header_info() {
   echo -e "${BL}"
   echo "   _   _       _     _                 _       _             _           _             "
   echo "  | | | |_ __ | |__ (_)_ __ ___   __ _| |_ ___| | ___  _ __ (_) ___  ___| |_ ___  _ __ "
-  echo "  | | | | '_ \| '_ \| | '_ \` _ \ / _\` | __/ _ \ |/ _ \| '_ \| |/ _ \\/ __| __/ _ \| '__|"
+  echo "  | | | | '_ \| '_ \| | '_ \` _ \ / _\` | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
   echo "  | |_| | |_) | | | | | | | | | | (_| | ||  __/ | (_) | | | | |  __/ (__| || (_) | |   "
   echo "   \___/| .__/|_| |_|_|_| |_| |_|\__,_|\__\___|_|\___/|_| |_|_|\___|\___|\__\___/|_|   "
   echo "        |_|                                                                            "
@@ -67,6 +67,7 @@ build_container() {
   MEMORY=${USER_MEM:-512}
   CORES=${USER_CORES:-2}
 
+  # Corrected rootfs argument to use storage and disk size
   pct create $CTID $TEMPLATE \
     --hostname $HOSTNAME \
     --cores $CORES \

@@ -1,0 +1,96 @@
+[
+  {
+    "lastCommitAgeDays": 176,
+    "isStale": true,
+    "missingFiles": [
+      "LICENSE"
+    ],
+    "lastCommit": "9d08738 - compatible with hass 2024.9",
+    "name": "component-ab-gateway",
+    "remote": "https://github.com/AprilBrother/component-ab-gateway.git",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\component-ab-gateway"
+  },
+  {
+    "lastCommitAgeDays": 0,
+    "isStale": false,
+    "missingFiles": [
+      ".gitignore",
+      "README.md",
+      "LICENSE"
+    ],
+    "lastCommit": "363ba01 - local sync",
+    "name": "Docker_Compose",
+    "remote": "https://github.com/festion/Docker_Compose.git",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\Docker_Compose"
+  },
+  {
+    "lastCommitAgeDays": 0,
+    "isStale": false,
+    "missingFiles": [
+      ".gitignore",
+      "LICENSE"
+    ],
+    "lastCommit": "e04f868 - Initial commit",
+    "name": "ESPHome",
+    "remote": "https://github.com/festion/ESPHome.git",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\ESPHome"
+  },
+  {
+    "lastCommitAgeDays": 77,
+    "isStale": false,
+    "missingFiles": [],
+    "lastCommit": "707c88a - Adding pick and place for BreakoutBoard",
+    "name": "halo",
+    "remote": "https://github.com/yashmulgaonkar/halo",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\halo"
+  },
+  {
+    "lastCommitAgeDays": 0,
+    "isStale": false,
+    "missingFiles": [
+      "README.md",
+      "LICENSE"
+    ],
+    "lastCommit": "6c7ce64 - Template update for offline devices",
+    "name": "home-assistant-config",
+    "remote": "https://github.com/festion/home-assistant-config",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\home-assistant-config"
+  },
+  {
+    "lastCommitAgeDays": 0,
+    "isStale": false,
+    "missingFiles": [
+      ".gitignore",
+      "LICENSE"
+    ],
+    "lastCommit": "c5e5250 - netbox pass",
+    "name": "homelab",
+    "remote": "https://github.com/festion/Homelab.git",
+    "uncommittedChanges": false,
+    "branch": "main",
+    "path": "C:\\GIT\\homelab"
+  },
+  {
+    "lastCommitAgeDays": 0,
+    "isStale": false,
+    "missingFiles": [
+      "LICENSE"
+    ],
+    "lastCommit": "7d32be2 - ≡ƒÆ╛ Save local changes before rebase",
+    "name": "homelab-gitops-auditor",
+    "remote": "https://github.com/festion/homelab-gitops-auditor.git",
+    "uncommittedChanges": true,
+    "branch": "main",
+    "path": "C:\\GIT\\homelab-gitops-auditor"
+  }
+]

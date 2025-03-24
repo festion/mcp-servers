@@ -3,6 +3,11 @@
 set -e
 
 ### CONFIG ###
+if ! command -v jq >/dev/null; then
+  echo "🧰 jq not found. Installing..."
+  apt update && apt install -y jq
+fi
+
 CTID=$(pvesh get /nodes/$(hostname)/lxc --output-format=json | jq '.[].vmid' | sort -n | tail -1)
 CTID=$((CTID + 1))
 HOSTNAME=gitops-dashboard
@@ -60,4 +65,3 @@ IPADDR=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 echo "✅ Done! Your GitOps dashboard is now live."
 echo "📂 Served from: http://$IPADDR/"
 echo "🧰 Running in container $CTID. You can reverse proxy this in NPM."
-

@@ -133,7 +133,10 @@ install_dependencies() {
 install_static_server() {
   msg_info "Installing static file server (serve)..."
   pct exec $CTID -- bash -c "npm install -g serve"
-  pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 8080 &"
+  
+  # Using npx to ensure serve command works even if globally installed
+  msg_info "Starting static file server using npx..."
+  pct exec $CTID -- bash -c "npx serve -s /var/www/gitops-dashboard -l 8080 &"
   if [ $? -eq 0 ]; then
     msg_ok "Static file server started"
   else

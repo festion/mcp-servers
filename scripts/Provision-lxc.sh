@@ -13,6 +13,16 @@ IP="dhcp"  # or use static like 192.168.1.120/24,gw=192.168.1.1
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
 ###
 
+if pct status $CTID &>/dev/null; then
+  echo "❗ CT $CTID already exists. Please remove or choose a different CTID."
+  exit 1
+fi
+
+if ! pveam list local | grep -q "debian-12"; then
+  echo "❗ Debian 12 template not found. Downloading..."
+  pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
+fi
+
 echo "📦 Creating LXC container: $CTID"
 pct create $CTID $TEMPLATE \
   --hostname $HOSTNAME \
@@ -25,11 +35,15 @@ pct create $CTID $TEMPLATE \
   --start 1 \
   --onboot 1
 
-echo "⏳ Waiting for container to start..."
-sleep 5
+sleep 3
+
+if ! pct status $CTID | grep -q "running"; then
+  echo "❌ LXC container $CTID failed to start. Aborting."
+  exit 1
+fi
 
 echo "📡 Installing software inside the container..."
-pct exec $CTID -- bash -c "apt update && apt install -y git curl npm"
+pct exec $CTID -- bash -c "apt update && apt install -y git curl npm nodejs"
 
 echo "📅 Cloning GitHub repo and building dashboard..."
 pct exec $CTID -- bash -c "
@@ -41,7 +55,12 @@ pct exec $CTID -- bash -c "
   cp -r dist/* /var/www/gitops-dashboard/
 "
 
-echo "✅ Done! Your GitOps dashboard is now built."
-echo "📂 Dashboard files located in: /var/www/gitops-dashboard"
+echo "🚀 Installing static server and launching on port 80..."
+pct exec $CTID -- bash -c "npm install -g serve"
+pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 80 &"
+
 IPADDR=$(pct exec $CTID -- hostname -I | awk '{print $1}')
-echo "👉 To expose it, configure a reverse proxy to: http://$IPADDR/"
+
+echo "✅ Done! Your GitOps dashboard is now live."
+echo "📂 Served from: http://$IPADDR/"
+echo "🧰 Running in container $CTID. You can reverse proxy this in NPM."

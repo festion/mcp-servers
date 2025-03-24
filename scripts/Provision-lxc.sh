@@ -142,14 +142,17 @@ install_dependencies() {
   install_static_server $CTID
 }
 get_container_ip() {
-  # Fetch the container's IP address
-  CONTAINER_IP=$(pct exec $CTID -- ip a | grep -oP 'inet \K[\d.]+')
+  # Fetch the container's IP address and filter out the loopback address
+  CONTAINER_IP=$(pct exec $CTID -- ip a | grep -oP 'inet \K[\d.]+/24' | grep -v '127.0.0.1')
   if [[ -z "$CONTAINER_IP" ]]; then
     msg_error "Failed to fetch container IP address"
     exit 1
   fi
+  # Remove the subnet mask from the IP address
+  CONTAINER_IP=${CONTAINER_IP%/*}
   msg_ok "Container IP: $CONTAINER_IP"
 }
+
 
 # Function to install static file server (serve)
 install_static_server() {

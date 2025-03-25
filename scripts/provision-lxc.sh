@@ -2,12 +2,12 @@
 
 set -e
 
-YW="\033[33m"
-BL="\033[36m"
-RD="\033[01;31m"
-BGN="\033[4;92m"
-GN="\033[1;92m"
-CL="\033[m"
+YW=$(echo "\033[33m")
+BL=$(echo "\033[36m")
+RD=$(echo "\033[01;31m")
+BGN=$(echo "\033[4;92m")
+GN=$(echo "\033[1;92m")
+CL=$(echo "\033[m")
 BFR="\r\033[K"
 HOLD="-"
 
@@ -15,7 +15,7 @@ header_info() {
   echo -e "${BL}"
   echo -e "   _   _       _     _                 _       _             _           _             "
   echo -e "  | | | |_ __ | |__ (_)_ __ ___   __ _| |_ ___| | ___  _ __ (_) ___  ___| |_ ___  _ __ "
-  echo -e "  | | | | '_ \| '_ \| | '_ \` _ \ / _\ | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
+  echo -e "  | | | | '_ \| '_ \| | '_ ` _ \ / _\ | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
   echo -e "  | |_| | |_) | | | | | | | | | | (_| | ||  __/ | (_) | | | | |  __/ (__| || (_) | |   "
   echo -e "   \___/| .__/|_| |_|_|_| |_| |_|\__,_|\__\___|_|\___/|_| |_|_|\___|\___|\__\___/|_|   "
   echo -e "        |_|                                                                        "
@@ -40,27 +40,30 @@ CPU_CORES=2
 RAM_SIZE=2048
 PORT=${GITOPS_PORT:-8888}  # Allow configurable port via env var
 
-# Select storage that supports rootdir
-STORAGE=$(pvesm status -content rootdir | awk '/rootdir/ {print $1}' | head -n1)
-if [[ -z "$STORAGE" ]]; then
-  echo -e "${RD}❌ No valid storage found that supports container directories (rootdir).${CL}"
+# Determine valid storage (prefer lvmthin)
+VALID_STORAGE=$(pvesm status | awk '$2 == "lvmthin" {print $1}' | head -n1)
+
+if [[ -z "$VALID_STORAGE" ]]; then
+  echo -e "${RD}❌ No valid lvmthin storage found that supports container rootfs.${CL}"
+  echo -e "${YW}💡 Tip: Make sure you have 'local-lvm' or similar configured for LXC rootfs.${CL}"
   exit 1
 fi
 
-TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+TEMPLATE_STORAGE="$VALID_STORAGE"
+TEMPLATE="$TEMPLATE_STORAGE:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
 
 # Download template if not exists
 if ! pveam available | grep -q "debian-12-standard"; then
   echo -e "${YW}⬇️  Downloading Debian 12 LXC template...${CL}"
-  pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
+  pveam update && pveam download $TEMPLATE_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
 fi
 
 # Create the container
 echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
 pct create $CTID $TEMPLATE \
   -hostname $HOSTNAME \
-  -storage $STORAGE \
-  -rootfs ${STORAGE}:${DISK_SIZE} \
+  -storage $TEMPLATE_STORAGE \
+  -rootfs ${TEMPLATE_STORAGE}:${DISK_SIZE} \
   -cores $CPU_CORES \
   -memory $RAM_SIZE \
   -net0 name=eth0,bridge=vmbr0,ip=dhcp \
@@ -104,7 +107,8 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
-EOF"
+EOF
+"
 
 # Enable and start the service
 pct exec $CTID -- systemctl enable gitops-dashboard.service

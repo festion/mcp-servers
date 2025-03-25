@@ -1,100 +1,67 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
-YW=$(echo "\033[33m")
-BL=$(echo "\033[36m")
-RD=$(echo "\033[01;31m")
-BGN=$(echo "\033[4;92m")
-GN=$(echo "\033[1;92m")
-CL=$(echo "\033[m")
-BFR="\r\033[K"
-HOLD="-"
-
-echo -e "${YW}ℹ️  Setting up environment...${CL}"
-
-# Ensure dependencies
-if ! command -v jq &> /dev/null; then
-  echo -e "${YW}🧰 jq not found. Installing...${CL}"
+### CONFIG ###
+if ! command -v jq >/dev/null; then
+  echo "🧰 jq not found. Installing..."
   apt update && apt install -y jq
 fi
 
-# Container settings
-CTID=$(pvesh get /cluster/nextid)
+CTID=$(pvesh get /nodes/$(hostname)/lxc --output-format=json | jq '.[].vmid' | sort -n | tail -1)
+CTID=$((CTID + 1))
 HOSTNAME=gitops-dashboard
+TEMPLATE=local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst
 DISK_SIZE=4G
-CPU_CORES=2
-RAM_SIZE=2048
-PORT=${GITOPS_PORT:-8888}  # Allow configurable port via env var
+MEMORY=512
+CORES=2
+IP="dhcp"  # or use static like 192.168.1.120/24,gw=192.168.1.1
+GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
+###
 
-# Determine valid storage (prefer lvmthin)
-VALID_STORAGE=$(pvesm status | awk '$2 == "lvmthin" {print $1}' | head -n1)
+if ! pveam list local | grep -q "debian-12"; then
+  echo "❗ Debian 12 template not found. Downloading..."
+  pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
+fi
 
-if [[ -z "$VALID_STORAGE" ]]; then
-  echo -e "${RD}❌ No valid lvmthin storage found that supports container rootfs.${CL}"
-  echo -e "${YW}💡 Tip: Make sure you have 'local-lvm' or similar configured for LXC rootfs.${CL}"
+echo "📦 Creating LXC container: $CTID"
+pct create $CTID $TEMPLATE \
+  --hostname $HOSTNAME \
+  --cores $CORES \
+  --memory $MEMORY \
+  --net0 name=eth0,bridge=vmbr0,ip=$IP \
+  --rootfs local-lvm:vm-${CTID}-disk-0,size=${DISK_SIZE} \
+  --unprivileged 1 \
+  --features nesting=1 \
+  --start 1 \
+  --onboot 1
+
+sleep 3
+
+if ! pct status $CTID | grep -q "running"; then
+  echo "❌ LXC container $CTID failed to start. Aborting."
   exit 1
 fi
 
-TEMPLATE_PATH="/var/lib/vz/template/cache/debian-12-standard_12.2-1_amd64.tar.zst"
+echo "📡 Installing software inside the container..."
+pct exec $CTID -- bash -c "apt update && apt install -y git curl npm nodejs"
 
-# Download template if not exists
-if [ ! -f "$TEMPLATE_PATH" ]; then
-  echo -e "${YW}⬇️  Downloading Debian 12 LXC template...${CL}"
-  pveam update && pveam download $VALID_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
-fi
-
-# Create the container
-echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
-pct create $CTID ${VALID_STORAGE}:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst \
-  -hostname $HOSTNAME \
-  -storage $VALID_STORAGE \
-  -rootfs ${VALID_STORAGE}:${DISK_SIZE} \
-  -cores $CPU_CORES \
-  -memory $RAM_SIZE \
-  -net0 name=eth0,bridge=vmbr0,ip=dhcp \
-  -features nesting=1 \
-  -unprivileged 1 \
-  -ostype debian
-
-# Start the container
-pct start $CTID
-sleep 5
-
-# Provision inside container
-pct exec $CTID -- bash -c "apt update && \
-  echo '➡️  Installing dependencies...' && \
-  apt install -y curl git nodejs npm && \
-  echo '✔️  Dependencies installed' && \
-  echo '➡️  Cloning GitHub repo and building dashboard...' && \
-  git clone https://github.com/festion/homelab-gitops-auditor /opt/gitops && \
+echo "📅 Cloning GitHub repo and building dashboard..."
+pct exec $CTID -- bash -c "
+  rm -rf /opt/gitops && \
+  git clone --depth=1 $GIT_REPO /opt/gitops && \
   cd /opt/gitops/dashboard && \
   npm install && npm run build && \
-  echo '✔️  Dashboard built and deployed' && \
-  echo '➡️  Installing static file server (serve)...' && \
-  npm install -g serve && \
-  echo '✔️  Static file server installed' && \
-  echo '➡️  Creating systemd service...' && \
-  bash -c 'cat <<SERVICE > /etc/systemd/system/gitops-dashboard.service
-[Unit]
-Description=GitOps Dashboard Static Server
-After=network.target
+  mkdir -p /var/www/gitops-dashboard && \
+  cp -r dist/* /var/www/gitops-dashboard/
+"
 
-[Service]
-Type=simple
-WorkingDirectory=/opt/gitops/dashboard/dist
-ExecStart=/usr/bin/serve -s . -l ${PORT}
-Restart=always
-User=root
+echo "🚀 Installing static server and launching on port 80..."
+pct exec $CTID -- bash -c "npm install -g serve"
+pct exec $CTID -- bash -c "nohup serve -s /var/www/gitops-dashboard -l 80 &"
 
-[Install]
-WantedBy=multi-user.target
-SERVICE' && \
-  systemctl enable gitops-dashboard.service && \
-  systemctl start gitops-dashboard.service"
+IPADDR=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 
-# Get container IP
-IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
-
-echo -e "${GN}✅ GitOps Dashboard is up and running!${CL}"
-echo -e "${BGN}🔗 http://$IP:$PORT ${CL}"
+echo "✅ Done! Your GitOps dashboard is now live."
+echo "📂 Served from: http://$IPADDR/"
+echo "🧰 Running in container $CTID. You can reverse proxy this in NPM."

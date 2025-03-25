@@ -75,25 +75,26 @@ pct create $CTID $TEMPLATE \
 pct start $CTID
 sleep 5
 
-# Install and build inside the container
-pct exec $CTID -- bash -c "\
-  echo '${YW}➡️  Installing dependencies...${CL}' && \
-  apt update && \
-  apt install -y curl git nodejs npm && \
-  echo '${GN}✔️  Dependencies installed${CL}' && \
-  echo '${YW}➡️  Cloning GitHub repo and building dashboard...${CL}' && \
-  git clone https://github.com/festion/homelab-gitops-auditor /opt/gitops && \
-  cd /opt/gitops/dashboard && \
-  npm install && \
-  npm run build && \
-  echo '${GN}✔️  Dashboard built and deployed${CL}' && \
-  echo '${YW}➡️  Installing static file server (serve)...${CL}' && \
-  npm install -g serve && \
-  echo '${GN}✔️  Static file server installed${CL}'"
+# Provision inside container
+pct exec $CTID -- bash <<EOF
+  echo "${YW}➡️  Installing dependencies...${CL}"
+  apt update
+  apt install -y curl git nodejs npm
+  echo "${GN}✔️  Dependencies installed${CL}"
 
-# Create systemd service inside container
-pct exec $CTID -- bash -c "\
-cat <<EOF > /etc/systemd/system/gitops-dashboard.service
+  echo "${YW}➡️  Cloning GitHub repo and building dashboard...${CL}"
+  git clone https://github.com/festion/homelab-gitops-auditor /opt/gitops
+  cd /opt/gitops/dashboard
+  npm install
+  npm run build
+  echo "${GN}✔️  Dashboard built and deployed${CL}"
+
+  echo "${YW}➡️  Installing static file server (serve)...${CL}"
+  npm install -g serve
+  echo "${GN}✔️  Static file server installed${CL}"
+
+  echo "${YW}➡️  Creating systemd service...${CL}"
+  cat <<SERVICE > /etc/systemd/system/gitops-dashboard.service
 [Unit]
 Description=GitOps Dashboard Static Server
 After=network.target
@@ -107,13 +108,13 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
+SERVICE
+
+  systemctl enable gitops-dashboard.service
+  systemctl start gitops-dashboard.service
 EOF
-"
 
-# Enable and start the service
-pct exec $CTID -- systemctl enable gitops-dashboard.service
-pct exec $CTID -- systemctl start gitops-dashboard.service
-
+# Get container IP
 IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 
 echo -e "${GN}✅ GitOps Dashboard is up and running!${CL}"

@@ -11,6 +11,19 @@ CL=$(echo "\033[m")
 BFR="\r\033[K"
 HOLD="-"
 
+header_info() {
+  echo -e "${BL}"
+  echo -e "   _   _       _     _                 _       _             _           _             "
+  echo -e "  | | | |_ __ | |__ (_)_ __ ___   __ _| |_ ___| | ___  _ __ (_) ___  ___| |_ ___  _ __ "
+  echo -e "  | | | | '_ \| '_ \| | '_ ` _ \ / _\ | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
+  echo -e "  | |_| | |_) | | | | | | | | | | (_| | ||  __/ | (_) | | | | |  __/ (__| || (_) | |   "
+  echo -e "   \___/| .__/|_| |_|_|_| |_| |_|\__,_|\__\___|_|\___/|_| |_|_|\___|\___|\__\___/|_|   "
+  echo -e "        |_|                                                                        "
+  echo -e "${CL}"
+}
+
+header_info
+
 echo -e "${YW}ℹ️  Setting up environment...${CL}"
 
 # Ensure dependencies
@@ -36,21 +49,20 @@ if [[ -z "$VALID_STORAGE" ]]; then
   exit 1
 fi
 
-TEMPLATE_STORAGE="$VALID_STORAGE"
-TEMPLATE="$TEMPLATE_STORAGE:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+TEMPLATE_PATH="/var/lib/vz/template/cache/debian-12-standard_12.2-1_amd64.tar.zst"
 
 # Download template if not exists
-if ! pveam available | grep -q "debian-12-standard"; then
+if [ ! -f "$TEMPLATE_PATH" ]; then
   echo -e "${YW}⬇️  Downloading Debian 12 LXC template...${CL}"
-  pveam update && pveam download $TEMPLATE_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
+  pveam update && pveam download $VALID_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
 fi
 
 # Create the container
 echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
-pct create $CTID $TEMPLATE \
+pct create $CTID $TEMPLATE_PATH \
   -hostname $HOSTNAME \
-  -storage $TEMPLATE_STORAGE \
-  -rootfs ${TEMPLATE_STORAGE}:${DISK_SIZE} \
+  -storage $VALID_STORAGE \
+  -rootfs ${VALID_STORAGE}:${DISK_SIZE} \
   -cores $CPU_CORES \
   -memory $RAM_SIZE \
   -net0 name=eth0,bridge=vmbr0,ip=dhcp \

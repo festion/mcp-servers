@@ -2,12 +2,12 @@
 
 set -e
 
-YW=$(echo "\033[33m")
-BL=$(echo "\033[36m")
-RD=$(echo "\033[01;31m")
-BGN=$(echo "\033[4;92m")
-GN=$(echo "\033[1;92m")
-CL=$(echo "\033[m")
+YW="\033[33m"
+BL="\033[36m"
+RD="\033[01;31m"
+BGN="\033[4;92m"
+GN="\033[1;92m"
+CL="\033[m"
 BFR="\r\033[K"
 HOLD="-"
 
@@ -40,27 +40,27 @@ CPU_CORES=2
 RAM_SIZE=2048
 PORT=${GITOPS_PORT:-8888}  # Allow configurable port via env var
 
-# Detect suitable storage
-VALID_STORAGE=$(pvesm status -content rootdir | awk '$2 ~ /rootdir/ {print $1}' | head -n1)
-if [[ -z "$VALID_STORAGE" ]]; then
+# Select storage that supports rootdir
+STORAGE=$(pvesm status -content rootdir | awk '/rootdir/ {print $1}' | head -n1)
+if [[ -z "$STORAGE" ]]; then
   echo -e "${RD}❌ No valid storage found that supports container directories (rootdir).${CL}"
   exit 1
 fi
-TEMPLATE_STORAGE="$VALID_STORAGE"
-TEMPLATE="$TEMPLATE_STORAGE:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+
+TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
 
 # Download template if not exists
 if ! pveam available | grep -q "debian-12-standard"; then
   echo -e "${YW}⬇️  Downloading Debian 12 LXC template...${CL}"
-  pveam update && pveam download $TEMPLATE_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
+  pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
 fi
 
 # Create the container
 echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
 pct create $CTID $TEMPLATE \
   -hostname $HOSTNAME \
-  -storage $TEMPLATE_STORAGE \
-  -rootfs ${TEMPLATE_STORAGE}:${DISK_SIZE} \
+  -storage $STORAGE \
+  -rootfs ${STORAGE}:${DISK_SIZE} \
   -cores $CPU_CORES \
   -memory $RAM_SIZE \
   -net0 name=eth0,bridge=vmbr0,ip=dhcp \
@@ -86,8 +86,7 @@ pct exec $CTID -- bash -c "\
   echo '${GN}✔️  Dashboard built and deployed${CL}' && \
   echo '${YW}➡️  Installing static file server (serve)...${CL}' && \
   npm install -g serve && \
-  echo '${GN}✔️  Static file server installed${CL}'
-"
+  echo '${GN}✔️  Static file server installed${CL}'"
 
 # Create systemd service inside container
 pct exec $CTID -- bash -c "\
@@ -105,8 +104,7 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
-EOF
-"
+EOF"
 
 # Enable and start the service
 pct exec $CTID -- systemctl enable gitops-dashboard.service

@@ -11,19 +11,6 @@ CL=$(echo "\033[m")
 BFR="\r\033[K"
 HOLD="-"
 
-header_info() {
-  echo -e "${BL}"
-  echo -e "   _   _       _     _                 _       _             _           _             "
-  echo -e "  | | | |_ __ | |__ (_)_ __ ___   __ _| |_ ___| | ___  _ __ (_) ___  ___| |_ ___  _ __ "
-  echo -e "  | | | | '_ \| '_ \| | '_ ` _ \ / _\ | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
-  echo -e "  | |_| | |_) | | | | | | | | | | (_| | ||  __/ | (_) | | | | |  __/ (__| || (_) | |   "
-  echo -e "   \___/| .__/|_| |_|_|_| |_| |_|\__,_|\__\___|_|\___/|_| |_|_|\___|\___|\__\___/|_|   "
-  echo -e "        |_|                                                                        "
-  echo -e "${CL}"
-}
-
-header_info
-
 echo -e "${YW}ℹ️  Setting up environment...${CL}"
 
 # Ensure dependencies
@@ -59,7 +46,7 @@ fi
 
 # Create the container
 echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
-pct create $CTID $TEMPLATE_PATH \
+pct create $CTID ${VALID_STORAGE}:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst \
   -hostname $HOSTNAME \
   -storage $VALID_STORAGE \
   -rootfs ${VALID_STORAGE}:${DISK_SIZE} \

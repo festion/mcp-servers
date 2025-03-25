@@ -40,13 +40,19 @@ CPU_CORES=2
 RAM_SIZE=2048
 PORT=${GITOPS_PORT:-8888}  # Allow configurable port via env var
 
-TEMPLATE_STORAGE="local"
-TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+# Detect suitable storage
+VALID_STORAGE=$(pvesm status -content rootdir | awk '$2 ~ /rootdir/ {print $1}' | head -n1)
+if [[ -z "$VALID_STORAGE" ]]; then
+  echo -e "${RD}❌ No valid storage found that supports container directories (rootdir).${CL}"
+  exit 1
+fi
+TEMPLATE_STORAGE="$VALID_STORAGE"
+TEMPLATE="$TEMPLATE_STORAGE:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
 
 # Download template if not exists
 if ! pveam available | grep -q "debian-12-standard"; then
   echo -e "${YW}⬇️  Downloading Debian 12 LXC template...${CL}"
-  pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
+  pveam update && pveam download $TEMPLATE_STORAGE debian-12-standard_12.2-1_amd64.tar.zst
 fi
 
 # Create the container

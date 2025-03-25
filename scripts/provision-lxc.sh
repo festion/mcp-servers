@@ -54,7 +54,7 @@ echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
 pct create $CTID $TEMPLATE \
   -hostname $HOSTNAME \
   -storage $TEMPLATE_STORAGE \
-  -rootfs ${DISK_SIZE} \
+  -rootfs ${TEMPLATE_STORAGE}:${DISK_SIZE} \
   -cores $CPU_CORES \
   -memory $RAM_SIZE \
   -net0 name=eth0,bridge=vmbr0,ip=dhcp \

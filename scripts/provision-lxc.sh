@@ -15,7 +15,7 @@ header_info() {
   echo -e "${BL}"
   echo -e "   _   _       _     _                 _       _             _           _             "
   echo -e "  | | | |_ __ | |__ (_)_ __ ___   __ _| |_ ___| | ___  _ __ (_) ___  ___| |_ ___  _ __ "
-  echo -e "  | | | | '_ \| '_ \| | '_ ` _ \ / _\` | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
+  echo -e "  | | | | '_ \| '_ \| | '_ \` _ \ / _\ | __/ _ \ |/ _ \| '_ \| |/ _ \/ __| __/ _ \| '__|"
   echo -e "  | |_| | |_) | | | | | | | | | | (_| | ||  __/ | (_) | | | | |  __/ (__| || (_) | |   "
   echo -e "   \___/| .__/|_| |_|_|_| |_| |_|\__,_|\__\___|_|\___/|_| |_|_|\___|\___|\__\___/|_|   "
   echo -e "        |_|                                                                        "
@@ -54,7 +54,7 @@ echo -e "${YW}ℹ️  Creating LXC container: ${CTID}${CL}"
 pct create $CTID $TEMPLATE \
   -hostname $HOSTNAME \
   -storage $TEMPLATE_STORAGE \
-  -rootfs ${TEMPLATE_STORAGE}:${DISK_SIZE} \
+  -rootfs ${DISK_SIZE} \
   -cores $CPU_CORES \
   -memory $RAM_SIZE \
   -net0 name=eth0,bridge=vmbr0,ip=dhcp \

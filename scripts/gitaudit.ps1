@@ -1,112 +1,63 @@
-# GitAudit.ps1 - Compatible with Windows PowerShell 5.1
+# GitOps Git Repository Audit Script (PowerShell)
 
-$ErrorActionPreference = "Stop"
-
-# Set the root folder where your Git repos are stored
-$repoRoot = "C:\GIT"
-
-# Set output paths
-$outputDir = Join-Path $PSScriptRoot "..\output"
-$outputMd = Join-Path $outputDir "GitRepoReport.md"
-$outputJson = Join-Path $outputDir "GitRepoReport.json"
-
-# Create output directory if it doesn't exist
-if (-not (Test-Path $outputDir)) {
-    New-Item -ItemType Directory -Path $outputDir | Out-Null
+# Ensure output directory exists
+$OutputDir = "output"
+if (-not (Test-Path $OutputDir)) {
+    New-Item -Path $OutputDir -ItemType Directory | Out-Null
 }
 
-# Prepare containers
-$reportMd = @()
-$reportJson = @()
+# Output report path
+$OutputPath = "$OutputDir/GitRepoReport.md"
+Set-Content -Path $OutputPath -Value "# Git Repository Audit Report`n"
 
-# Find all Git repos recursively
-$repos = Get-ChildItem -Path $repoRoot -Recurse -Directory | Where-Object {
-    Test-Path (Join-Path $_.FullName ".git")
+# Discover Git repositories in current directory
+$GitDirs = Get-ChildItem -Directory | Where-Object {
+    Test-Path "$($_.FullName)\.git"
 }
 
-foreach ($repo in $repos) {
-    $repoPath = $repo.FullName
-    $repoName = Split-Path $repoPath -Leaf
-    $repoInfo = @{
-        name = $repoName
-        path = $repoPath
-    }
-
-    Push-Location $repoPath
+foreach ($dir in $GitDirs) {
+    Write-Host "🔍 Auditing: $($dir.Name)"
+    Add-Content -Path $OutputPath -Value "## $($dir.Name)"
 
     try {
+        Set-Location -Path $dir.FullName
+
+        # Remote URL
         $remote = git remote get-url origin 2>$null
-        $branch = git rev-parse --abbrev-ref HEAD 2>$null
-        $lastCommit = git log -1 --pretty=format:"%h - %s" 2>$null
-        $lastCommitDateRaw = git log -1 --format=%ci 2>$null
-        $uncommitted = git status --porcelain
-        $isDirty = [bool]$uncommitted
-
-        $commitAgeDays = 0
-        if ($lastCommitDateRaw) {
-            $commitDate = [datetime]::Parse($lastCommitDateRaw.Trim())
-            $commitAgeDays = (New-TimeSpan -Start $commitDate -End (Get-Date)).Days
+        if (-not $remote) {
+            Add-Content -Path $OutputPath -Value "- ❌ No remote 'origin' set."
+        } else {
+            Add-Content -Path $OutputPath -Value "- 🔗 Remote: $remote"
         }
 
-        $missingFiles = @()
-        foreach ($file in @(".gitignore", "README.md", "LICENSE")) {
-            if (-not (Test-Path "$repoPath\$file")) {
-                $missingFiles += $file
-            }
+        # Uncommitted changes
+        $status = git status --porcelain
+        if ($status) {
+            Add-Content -Path $OutputPath -Value "- ⚠️ Uncommitted changes detected."
+        } else {
+            Add-Content -Path $OutputPath -Value "- ✅ Working directory clean."
         }
 
-        # Add to JSON report
-        $repoInfo += @{
-            remote = $remote
-            branch = $branch
-            lastCommit = $lastCommit
-            lastCommitAgeDays = $commitAgeDays
-            uncommittedChanges = $isDirty
-            missingFiles = $missingFiles
-            isStale = ($commitAgeDays -ge 90)
+        # Ahead/behind
+        git fetch origin 2>$null
+        $summary = git status -sb
+        if ($summary -match "ahead") {
+            Add-Content -Path $OutputPath -Value "- 🔼 Local branch is ahead of remote."
+        }
+        if ($summary -match "behind") {
+            Add-Content -Path $OutputPath -Value "- 🔽 Local branch is behind remote."
+        }
+        if ($summary -notmatch "ahead|behind") {
+            Add-Content -Path $OutputPath -Value "- 📍 In sync with remote."
         }
 
-        # Add to Markdown report
-        $reportMd += "### $repoName"
-        $reportMd += "- Remote: " + $(if ($remote) { $remote } else { "Not set" })
-        $reportMd += "- Branch: $branch"
-        $reportMd += "- Last Commit: $lastCommit"
-        $reportMd += "- Uncommitted Changes: " + $(if ($isDirty) { "Yes" } else { "No" })
-        $reportMd += "- Missing Files: " + $(if ($missingFiles) { $missingFiles -join ", " } else { "None" })
-        $reportMd += "- Stale (>90 days): " + $(if ($commitAgeDays -ge 90) { "Yes" } else { "No" })
-        $reportMd += ""
+    } catch {
+        Add-Content -Path $OutputPath -Value "- ❌ Error auditing $($dir.Name): $($_.Exception.Message)"
+        Write-Host "❌ Error auditing $($dir.Name): $($_.Exception.Message)"
+    } finally {
+        Set-Location -Path $PSScriptRoot
+        Add-Content -Path $OutputPath -Value ""
     }
-    catch {
-        $repoInfo["error"] = $_.Exception.Message
-        $reportMd += "### $repoName"
-        $reportMd += "- ❌ Error: $($_.Exception.Message)"
-        $reportMd += ""
-    }
-
-    $reportJson += $repoInfo
-    Pop-Location
 }
 
-# Summary
-$total = $repos.Count
-$dirty = ($reportJson | Where-Object { $_.uncommittedChanges }).Count
-$stale = ($reportJson | Where-Object { $_.isStale }).Count
-$noRemote = ($reportJson | Where-Object { !$_.remote }).Count
-
-$summary = @()
-$summary += "# GitOps Audit Summary"
-$summary += ""
-$summary += "- Total Repositories: $total"
-$summary += "- Repos with Uncommitted Changes: $dirty"
-$summary += "- Repos with No Remote Set: $noRemote"
-$summary += "- Repos with Stale Commits (90+ days): $stale"
-$summary += ""
-$summary += "---`n"
-
-# Write reports
-$summary + $reportMd | Set-Content -Path $outputMd -Encoding UTF8
-$reportJson | ConvertTo-Json -Depth 4 | Set-Content -Path $outputJson -Encoding UTF8
-
-Write-Host "GitOps audit complete."
-Write-Host "Markdown report: $outputMd"
-Write-Host "JSON report: $outputJson"
+Write-Host "✅ GitOps audit completed. Report written to $OutputPath"

@@ -21,7 +21,7 @@ jobs:
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp-mail.outlook.com # or smtp.gmail.com smtp-legacy.office365.com smtp.office365.com
+          server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
@@ -30,11 +30,8 @@ jobs:
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
           body: |
             Hello Jeremy,
-
+      
             Your weekly GitOps audit has completed successfully.
             Please find the attached summary report.
-
-            Regards,  
-            GitOps Bot 🤖
 
           attachments: output/GitRepoReport.md

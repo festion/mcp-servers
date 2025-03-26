@@ -1,0 +1,40 @@
+name: 📬 Weekly GitOps Audit Email
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run GitOps Audit Script
+        shell: pwsh
+        run: |
+          ./scripts/GitAudit.ps1
+
+      - name: Send audit summary email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.office365.com # or smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "📊 Weekly GitOps Audit Report"
+          to: jeremy.ames@outlook.com
+          from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
+          body: |
+            Hello Jeremy,
+
+            Your weekly GitOps audit has completed successfully.
+            Please find the attached summary report.
+
+            Regards,  
+            GitOps Bot 🤖
+
+          attachments: output/GitRepoReport.md

@@ -1,84 +1,52 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+source <(curl -s https://raw.githubusercontent.com/festion/homelab-gitops-auditor/main/scripts/build.func)
 
-### CONFIG ###
-if ! command -v jq >/dev/null; then
-  echo "🧰 jq not found. Installing..."
-  apt update && apt install -y jq
-fi
-
-HOSTNAME="gitops-dashboard"
-TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
-DISK_SIZE="4G"
-MEMORY=512
-CORES=2
-IP="dhcp"
+APP="GitOps Dashboard"
+var_tags="dashboard;gitops"
+var_cpu="2"
+var_ram="512"
+var_disk="4"
+var_os="debian"
+var_version="12"
+var_unprivileged="1"
 GIT_REPO="https://github.com/festion/homelab-gitops-auditor.git"
 SERVICE_PORT=8080
+CT_HOSTNAME="gitopsdashboard"
 
-# Find existing CT by hostname
-existing_ctid=""
-for vmid in $(pct list | awk 'NR>1 {print $1}'); do
-    if [[ "$(pct config $vmid | awk '/^hostname:/ {print $2}')" == "$HOSTNAME" ]]; then
-        existing_ctid=$vmid
-        break
-    fi
-done
+header_info "$APP"
+variables
+color
+catch_errors
 
-if [ -n "$existing_ctid" ]; then
-    echo "✅ Container '$HOSTNAME' exists (CTID: $existing_ctid). Updating..."
-    CTID=$existing_ctid
+CTID=$(pct list | awk -v host="$CT_HOSTNAME" '$3 == host {print $1}')
+
+if [[ -n "$CTID" ]]; then
+  msg_ok "Container for ${APP} already exists (CTID: ${CTID}). Updating existing container."
+
+  msg_info "Stopping ${APP}"
+  pct exec $CTID -- systemctl stop gitops-dashboard
+  sleep 2
+  msg_ok "Stopped ${APP}"
 else
-    highest=$(pct list | awk 'NR>1 {print $1}' | sort -n | tail -1)
-    CTID=$(( highest+1 ))
-    echo "📦 Creating LXC $CTID"
-
-    if ! pveam list local | grep -q "debian-12"; then
-        pveam update && pveam download local debian-12-standard_12.2-1_amd64.tar.zst
-    fi
-
-    pct create $CTID $TEMPLATE \
-        --hostname $HOSTNAME \
-        --cores $CORES \
-        --memory $MEMORY \
-        --net0 name=eth0,bridge=vmbr0,ip=$IP \
-        --rootfs local-lvm:vm-${CTID}-disk-0,size=${DISK_SIZE} \
-        --unprivileged 1 \
-        --features nesting=1 \
-        --start 1 \
-        --onboot 1
-
-    sleep 3
-    pct status $CTID | grep -q running || { echo "❌ Failed to start CT $CTID"; exit 1; }
+  start
+  build_container
+  description
 fi
 
-echo "📡 Installing dependencies..."
-pct exec $CTID -- bash -lc "apt update && apt install -y git curl npm nodejs python3"
+msg_info "Installing dependencies"
+pct exec $CTID -- bash -c "apt update >/dev/null 2>&1 && apt install -y git curl npm nodejs python3 >/dev/null 2>&1"
+msg_ok "Installed dependencies"
 
-echo "📅 Building dashboard..."
-pct exec $CTID -- bash -lc "
-  rm -rf /opt/gitops
-  git clone --depth=1 $GIT_REPO /opt/gitops
-  cd /opt/gitops/dashboard
-  npm install && npm run build
-  mkdir -p /var/www/gitops-dashboard
-  cp -r dist/* /var/www/gitops-dashboard/
-"
+msg_info "Setting up ${APP}"
+pct exec $CTID -- bash -c "rm -rf /opt/gitops && git clone --depth=1 $GIT_REPO /opt/gitops && cd /opt/gitops/dashboard && npm install && npm run build && mkdir -p /var/www/gitops-dashboard && cp -r dist/* /var/www/gitops-dashboard/"
 
-echo "🚀 Launching HTTP server on port $SERVICE_PORT..."
-pct exec $CTID -- bash -lc "nohup python3 -m http.server $SERVICE_PORT --directory /var/www/gitops-dashboard &"
+SERVICE_FILE="[Unit]\nDescription=GitOps Dashboard\nAfter=network.target\n\n[Service]\nWorkingDirectory=/var/www/gitops-dashboard\nExecStart=/usr/bin/python3 -m http.server ${SERVICE_PORT}\nRestart=always\n\n[Install]\nWantedBy=multi-user.target"
 
-IPADDR=$(pct exec $CTID -- hostname -I | awk '{print $1}')
-echo "📂 Served at http://$IPADDR:$SERVICE_PORT/"
+pct exec $CTID -- bash -c "echo -e '$SERVICE_FILE' > /etc/systemd/system/gitops-dashboard.service && systemctl daemon-reload && systemctl enable --now gitops-dashboard.service"
+msg_ok "Setup Completed"
 
-sleep 3
-status_code=$(curl -s -o /dev/null -w "%{http_code}" http://$IPADDR:$SERVICE_PORT)
-if [ "$status_code" -eq 200 ]; then
-  echo "✅ Service running (HTTP $status_code)"
-else
-  echo "⚠️ Service unreachable (HTTP $status_code). Try:"
-  echo "    pct exec $CTID -- ss -tulpn | grep :$SERVICE_PORT"
-  echo "    curl -I http://$IPADDR:$SERVICE_PORT"
-fi
-
-echo "✅ Done — GitOps dashboard live in CT $CTID."
+IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
+msg_ok "Completed Successfully!\n"
+echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
+echo -e "${INFO}${YW} Access it using the following URL:${CL}"
+echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:${SERVICE_PORT}${CL}"

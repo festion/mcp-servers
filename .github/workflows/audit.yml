@@ -24,10 +24,10 @@ jobs:
         run: |
           Write-Host "Running GitAudit.ps1..."
           try {
-            ./scripts/GitAudit.ps1
+            ./scripts/GitAudit.ps1 -ErrorAction Stop
             Write-Host "✅ Audit script completed."
           } catch {
-            Write-Host "❌ Script error: $_"
+            Write-Host "❌ Script error: $($_.Exception.Message)"
             exit 1
           }
 

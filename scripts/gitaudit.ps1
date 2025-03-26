@@ -61,3 +61,8 @@ foreach ($dir in $GitDirs) {
 }
 
 Write-Host "✅ GitOps audit completed. Report written to $OutputPath"
+
+# Show the contents of the audit report in the workflow logs
+Write-Host "--- Begin Report ---"
+Get-Content -Path $OutputPath | ForEach-Object { Write-Host $_ }
+Write-Host "--- End Report ---"

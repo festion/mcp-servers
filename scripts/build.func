@@ -45,6 +45,7 @@ color() {
   DISKSIZE="${TAB}💾${TAB}${CL}"
   CPUCORE="${TAB}🧠${TAB}${CL}"
   RAMSIZE="${TAB}🛠️${TAB}${CL}"
+  #SEARCH="${TAB}🔍${TAB}${CL}"
   SEARCH="${TAB}🔍${TAB}${CL}"
   VERIFYPW="${TAB}🔐${TAB}${CL}"
   CONTAINERID="${TAB}🆔${TAB}${CL}"

@@ -39,11 +39,25 @@ msg_ok "Installed dependencies"
 
 msg_info "Setting up ${APP}"
 pct exec $CTID -- bash -c "rm -rf /opt/gitops && git clone --depth=1 $GIT_REPO /opt/gitops && cd /opt/gitops/dashboard && npm install && npm run build && mkdir -p /var/www/gitops-dashboard && cp -r dist/* /var/www/gitops-dashboard/"
+msg_ok "Dashboard built and deployed"
 
-SERVICE_FILE="[Unit]\nDescription=GitOps Dashboard\nAfter=network.target\n\n[Service]\nWorkingDirectory=/var/www/gitops-dashboard\nExecStart=/usr/bin/python3 -m http.server ${SERVICE_PORT}\nRestart=always\n\n[Install]\nWantedBy=multi-user.target"
+msg_info "Creating systemd service"
+SERVICE_FILE="[Unit]
+Description=GitOps Dashboard
+After=network.target
 
-pct exec $CTID -- bash -c "echo -e '$SERVICE_FILE' > /etc/systemd/system/gitops-dashboard.service && systemctl daemon-reload && systemctl enable --now gitops-dashboard.service"
-msg_ok "Setup Completed"
+[Service]
+WorkingDirectory=/var/www/gitops-dashboard
+ExecStart=/usr/bin/python3 -m http.server ${SERVICE_PORT}
+Restart=always
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target"
+
+pct exec $CTID -- bash -c "echo \"$SERVICE_FILE\" > /etc/systemd/system/gitops-dashboard.service && systemctl daemon-reload && systemctl enable --now gitops-dashboard.service"
+msg_ok "Systemd service created and started"
 
 IP=$(pct exec $CTID -- hostname -I | awk '{print $1}')
 msg_ok "Completed Successfully!\n"

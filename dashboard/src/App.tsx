@@ -24,13 +24,27 @@ type Repo = {
   isStale: boolean;
 };
 
-// Shared labels and colors
 const STATUS_LABELS = ["Uncommitted", "Stale", "Missing Files"];
 const STATUS_COLORS: Record<string, string> = {
-  "Uncommitted": "#ef4444",   // Red
-  "Stale": "#f59e0b",         // Amber
-  "Missing Files": "#6366f1", // Indigo
+  "Uncommitted": "#ef4444",   // red
+  "Stale": "#f59e0b",         // amber
+  "Missing Files": "#6366f1", // indigo
 };
+
+// Custom Legend Renderer
+const renderCustomLegend = () => (
+  <div className="flex justify-center gap-6 mt-2">
+    {STATUS_LABELS.map((label) => (
+      <div key={label} className="flex items-center gap-2 text-sm font-semibold">
+        <span
+          className="inline-block w-3 h-3 rounded-full"
+          style={{ backgroundColor: STATUS_COLORS[label] }}
+        />
+        <span style={{ color: STATUS_COLORS[label] }}>{label}</span>
+      </div>
+    ))}
+  </div>
+);
 
 export default function App() {
   const [data, setData] = useState<Repo[]>([]);
@@ -72,20 +86,15 @@ export default function App() {
     </span>
   );
 
-  const summaryData = [
-    {
-      name: "Uncommitted",
-      value: data.filter((r) => r.uncommittedChanges).length,
-    },
-    {
-      name: "Stale",
-      value: data.filter((r) => r.isStale).length,
-    },
-    {
-      name: "Missing Files",
-      value: data.filter((r) => r.missingFiles.length > 0).length,
-    },
-  ];
+  const summaryData = STATUS_LABELS.map((label) => {
+    const value =
+      label === "Uncommitted"
+        ? data.filter((r) => r.uncommittedChanges).length
+        : label === "Stale"
+        ? data.filter((r) => r.isStale).length
+        : data.filter((r) => r.missingFiles.length > 0).length;
+    return { name: label, value };
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -145,14 +154,14 @@ export default function App() {
 
           <div className="h-64 bg-white shadow rounded-xl p-4">
             <h2 className="text-lg font-semibold mb-2">📈 Repo Breakdown (Pie)</h2>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="85%">
               <PieChart>
                 <Pie
                   data={summaryData}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
-                  cy="50%"
+                  cy="45%"
                   outerRadius={70}
                   labelLine={false}
                   label={({ name, percent }) =>
@@ -164,17 +173,7 @@ export default function App() {
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="circle"
-                  iconSize={10}
-                  formatter={(value: string) => (
-                    <span style={{ color: STATUS_COLORS[value], fontWeight: "bold" }}>
-                      {value}
-                    </span>
-                  )}
-                />
+                <Legend content={renderCustomLegend} />
               </PieChart>
             </ResponsiveContainer>
           </div>

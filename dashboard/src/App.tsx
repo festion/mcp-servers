@@ -1,6 +1,3 @@
-// src/App.tsx
-// (No changes to this file)
-
 import { useEffect, useState } from "react";
 import {
   BarChart,
@@ -12,10 +9,9 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Legend
+  Legend,
 } from "recharts";
 
-// Repo type definition (for TypeScript)
 type Repo = {
   name: string;
   path: string;
@@ -26,6 +22,14 @@ type Repo = {
   uncommittedChanges: boolean;
   missingFiles: string[];
   isStale: boolean;
+};
+
+// Shared labels and colors
+const STATUS_LABELS = ["Uncommitted", "Stale", "Missing Files"];
+const STATUS_COLORS: Record<string, string> = {
+  "Uncommitted": "#ef4444",   // Red
+  "Stale": "#f59e0b",         // Amber
+  "Missing Files": "#6366f1", // Indigo
 };
 
 export default function App() {
@@ -68,17 +72,20 @@ export default function App() {
     </span>
   );
 
-  const dirty = data.filter((r) => r.uncommittedChanges).length;
-  const stale = data.filter((r) => r.isStale).length;
-  const missing = data.filter((r) => r.missingFiles.length > 0).length;
-
   const summaryData = [
-    { name: "Uncommitted", value: dirty },
-    { name: "Stale", value: stale },
-    { name: "Missing Files", value: missing },
+    {
+      name: "Uncommitted",
+      value: data.filter((r) => r.uncommittedChanges).length,
+    },
+    {
+      name: "Stale",
+      value: data.filter((r) => r.isStale).length,
+    },
+    {
+      name: "Missing Files",
+      value: data.filter((r) => r.missingFiles.length > 0).length,
+    },
   ];
-
-  const colors = ["#ef4444", "#f59e0b", "#6366f1"];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -128,8 +135,8 @@ export default function App() {
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="value">
-                  {summaryData.map((_, index) => (
-                    <Cell key={`bar-${index}`} fill={colors[index % colors.length]} />
+                  {summaryData.map((entry) => (
+                    <Cell key={`bar-${entry.name}`} fill={STATUS_COLORS[entry.name]} />
                   ))}
                 </Bar>
               </BarChart>
@@ -145,17 +152,29 @@ export default function App() {
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
-                  cy="45%"
+                  cy="50%"
                   outerRadius={70}
                   labelLine={false}
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  label={({ name, percent }) =>
+                    `${name} (${(percent * 100).toFixed(0)}%)`
+                  }
                 >
-                  {summaryData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  {summaryData.map((entry) => (
+                    <Cell key={`cell-${entry.name}`} fill={STATUS_COLORS[entry.name]} />
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend verticalAlign="bottom" iconType="circle" iconSize={10} />
+                <Legend
+                  verticalAlign="bottom"
+                  align="center"
+                  iconType="circle"
+                  iconSize={10}
+                  formatter={(value: string) => (
+                    <span style={{ color: STATUS_COLORS[value], fontWeight: "bold" }}>
+                      {value}
+                    </span>
+                  )}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

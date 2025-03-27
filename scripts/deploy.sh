@@ -1,29 +1,31 @@
-#!/bin/bash
-
-# GitOps Dashboard Deployment Script
-# Location: homelab-gitops-auditor/scripts/deploy.sh
-
+#!/usr/bin/env bash
 set -e
 
 # Colors for output
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Resolve script directory and project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(realpath "$SCRIPT_DIR/..")"
+DASHBOARD_DIR="$PROJECT_ROOT/dashboard"
+DEPLOY_PATH="/var/www/gitops-dashboard"
+
 echo -e "${GREEN}📦 Building the GitOps Dashboard...${NC}"
-cd "$(dirname "$0")/../dashboard"
+
+# Check if dashboard directory exists
+if [ ! -d "$DASHBOARD_DIR" ]; then
+  echo -e "${RED}❌ Error: Dashboard directory not found at $DASHBOARD_DIR${NC}"
+  exit 1
+fi
+
+cd "$DASHBOARD_DIR"
 npm install
 npm run build
 
-DEPLOY_PATH="/var/www/gitops-dashboard"
-
-echo -e "${GREEN}🧹 Cleaning old deployed files in $DEPLOY_PATH...${NC}"
-sudo rm -rf "$DEPLOY_PATH"/*
-
-echo -e "${GREEN}📂 Copying build to $DEPLOY_PATH...${NC}"
-sudo cp -r dist/* "$DEPLOY_PATH/"
-
-echo -e "${GREEN}🔁 Restarting gitops-dashboard service...${NC}"
-sudo systemctl restart gitops-dashboard.service
+echo -e "${GREEN}🚚 Deploying to $DEPLOY_PATH...${NC}"
+mkdir -p "$DEPLOY_PATH"
+cp -r dist/* "$DEPLOY_PATH"
 
 echo -e "${GREEN}✅ Deployment complete!${NC}"
-echo -e "➡️  Visit: http://<your-server-ip>:8080"

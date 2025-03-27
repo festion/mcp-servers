@@ -1,5 +1,29 @@
-﻿# Homelab GitOps Auditor
-![Audit Status](https://img.shields.io/badge/GitOps%20Audit-Homelab-blue?style=flat-square&logo=github)
+﻿# 🧭 GitOps Audit Dashboard
 
-This tool audits local Git repositories for remotes, branches, uncommitted changes, stale commits, and missing project files.
-Future features include a graphical front-end, integration with schedulers, and GitHub/GitLab support.
+This project provides a visual dashboard for auditing the health and status of your Git repositories in a GitOps-managed homelab. It checks for uncommitted changes, stale branches, and missing files, and presents the results in an interactive web interface.
+
+---
+
+## 📊 Features
+
+- **Bar & Pie Charts** for repository status breakdown
+- **Live auto-refreshing** data from local or GitHub source
+- **Searchable repository cards**
+- **Lightweight, portable static site**
+- Built with **React**, **Recharts**, and **TailwindCSS**
+- Designed for self-hosting (LXC, Proxmox, etc.)
+
+---
+
+## 📁 Project Structure
+
+```text
+homelab-gitops-auditor/
+├── dashboard/             # Frontend React app (Vite)
+│   ├── src/               # Main application code
+│   └── dist/              # Build output
+├── output/                # GitRepoReport.json output
+├── scripts/               # Utility scripts
+│   └── deploy.sh          # Build + deploy script
+├── GitRepoAudit.py        # Main repo auditing script
+└── ...

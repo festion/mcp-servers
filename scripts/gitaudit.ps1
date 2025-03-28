@@ -1,10 +1,17 @@
 # scripts/GitAudit.ps1
 
+# Determine paths
 $outputDir = Join-Path $PSScriptRoot "..\output"
 $mdPath = Join-Path $outputDir "GitRepoReport.md"
 $htmlPath = Join-Path $outputDir "GitRepoReport.html"
 $skippedPath = Join-Path $outputDir "SkippedReleases.txt"
-$repoRoot = Resolve-Path "$PSScriptRoot\.."  # <-- Dynamic repo root
+
+# Detect local or CI environment
+if ($env:GITHUB_ACTIONS -eq "true") {
+    $repoRoot = Resolve-Path "$PSScriptRoot\.."
+} else {
+    $repoRoot = "C:\GIT"
+}
 
 Write-Host "Output directory: $outputDir"
 Write-Host "Markdown path: $mdPath"
@@ -17,7 +24,7 @@ if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Write the header to markdown
+# Start Markdown report
 try {
     $today = Get-Date -Format "yyyy-MM-dd"
     "## GitOps Repository Audit Summary - $today" | Out-File $mdPath -Encoding utf8
@@ -27,7 +34,7 @@ try {
     exit 1
 }
 
-# Audit repositories
+# Loop over repositories
 try {
     Get-ChildItem $repoRoot -Directory | Where-Object { $_.Name -ne "homelab-gitops-auditor" } | ForEach-Object {
         $repoName = $_.Name
@@ -38,15 +45,11 @@ try {
             Add-Content $mdPath "- Path: $repoPath"
 
             $lastCommit = git -C $repoPath log -1 --pretty=format:"%h %an %ad %s" 2>$null
-            if (-not $lastCommit) {
-                $lastCommit = "(no commits)"
-            }
+            if (-not $lastCommit) { $lastCommit = "(no commits)" }
             Add-Content $mdPath "- Last Commit: $lastCommit"
 
             $branch = git -C $repoPath rev-parse --abbrev-ref HEAD 2>$null
-            if (-not $branch) {
-                $branch = "(unknown branch)"
-            }
+            if (-not $branch) { $branch = "(unknown branch)" }
             Add-Content $mdPath "- Branch: $branch"
 
             $status = git -C $repoPath status --porcelain
@@ -66,7 +69,7 @@ try {
     exit 1
 }
 
-# Append skipped releases
+# Append skipped releases if present
 if (Test-Path $skippedPath) {
     try {
         Add-Content $mdPath "`n## Skipped Releases"
@@ -80,6 +83,7 @@ if (Test-Path $skippedPath) {
 # Convert Markdown to HTML
 try {
     $markdown = Get-Content $mdPath -Raw
+
     $htmlContent = @"
 <!DOCTYPE html>
 <html>
@@ -88,7 +92,7 @@ try {
     <title>GitOps Audit Report</title>
     <style>
         body { font-family: Consolas, monospace; background: #f9f9f9; padding: 1rem; }
-        pre { background: #fff; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
+        pre { background: #fff; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -100,7 +104,7 @@ $markdown
 </html>
 "@
 
-    $htmlContent | Out-File $htmlPath -Encoding UTF8
+    $htmlContent | Out-File $htmlPath -Encoding utf8
     Write-Host "HTML report generated at: $htmlPath"
 } catch {
     Write-Error "Failed to generate HTML report: $_"

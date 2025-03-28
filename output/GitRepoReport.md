@@ -26,7 +26,7 @@
 
 ### Repository: home-assistant-config
 - Path: C:\GIT\home-assistant-config
-- Last Commit: aa28604 festion Thu Mar 27 10:12:07 2025 -0500 rebase
+- Last Commit: 4e32d89 festion Fri Mar 28 13:17:05 2025 -0500 getting current
 - Branch: main
 - Clean working directory
 

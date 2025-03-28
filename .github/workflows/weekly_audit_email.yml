@@ -1,4 +1,4 @@
-name: 📬 Weekly GitOps Audit Email
+name: 📬 Weekly GitOps Audit Email 
 
 on:
   schedule:

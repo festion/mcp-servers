@@ -4,11 +4,12 @@ $outputDir = Join-Path $PSScriptRoot "..\output"
 $mdPath = Join-Path $outputDir "GitRepoReport.md"
 $htmlPath = Join-Path $outputDir "GitRepoReport.html"
 $skippedPath = Join-Path $outputDir "SkippedReleases.txt"
-$repoRoot = "C:\GIT"
+$repoRoot = Resolve-Path "$PSScriptRoot\.."  # <-- Dynamic repo root
 
 Write-Host "Output directory: $outputDir"
 Write-Host "Markdown path: $mdPath"
 Write-Host "HTML path: $htmlPath"
+Write-Host "Repo root: $repoRoot"
 
 # Ensure output directory exists
 if (-not (Test-Path $outputDir)) {

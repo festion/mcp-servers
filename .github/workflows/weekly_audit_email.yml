@@ -2,7 +2,7 @@ name: 📬 Weekly GitOps Audit Email
 
 on:
   schedule:
-    - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
+    - cron: '0 6 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -20,6 +20,7 @@ jobs:
         shell: pwsh
         run: ./scripts/GitAudit.ps1
 
+<<<<<<< HEAD
       - name: Output Markdown summary to log
         shell: pwsh
         run: Get-Content output/GitRepoReport.md
@@ -27,6 +28,11 @@ jobs:
       - name: Output HTML file contents
         shell: pwsh
         run: Get-Content output/GitRepoReport.html
+=======
+      - name: Show audit summary in logs
+        shell: pwsh
+        run: Get-Content output/GitRepoReport.md
+>>>>>>> ef197e3405b1724aa53f1c30ac96bda014cac3e3
 
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
@@ -41,6 +47,7 @@ jobs:
           body: |
             Hello Jeremy,
 
+<<<<<<< HEAD
             Your weekly GitOps audit completed successfully.
 
             ✔️ Repository count: 5
@@ -55,3 +62,15 @@ jobs:
             GitOps Bot
           attachments: output/GitRepoReport.html
 
+=======
+            Your weekly GitOps audit has completed successfully.
+
+            Here's a quick summary:
+            ${{ steps.summary.outputs.short }}
+
+            📎 Full details are attached in the HTML report.
+
+            Cheers,
+            GitOps Bot
+          attachments: output/GitRepoReport.html
+>>>>>>> ef197e3405b1724aa53f1c30ac96bda014cac3e3

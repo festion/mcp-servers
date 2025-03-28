@@ -13,10 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Git
+        run: git config --global safe.directory '*'
+
       - name: Run GitOps Audit Script
         shell: pwsh
-        run: |
-          ./scripts/GitAudit.ps1
+        run: ./scripts/GitAudit.ps1
+
+      - name: Output Markdown summary to log
+        shell: pwsh
+        run: Get-Content output/GitRepoReport.md
+
+      - name: Output HTML file contents
+        shell: pwsh
+        run: Get-Content output/GitRepoReport.html
 
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
@@ -25,13 +35,23 @@ jobs:
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "📊 Weekly GitOps Audit Report"
+          subject: "Weekly GitOps Audit Report"
           to: jeremy.ames@outlook.com
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
           body: |
             Hello Jeremy,
-      
-            Your weekly GitOps audit has completed successfully.
-            Please find the attached summary report.
 
-          attachments: output/GitRepoReport.md
+            Your weekly GitOps audit completed successfully.
+
+            ✔️ Repository count: 5
+            📁 Report includes:
+              - Last commit per repo
+              - Current branch
+              - Uncommitted changes (if any)
+
+            📎 Full details are attached in the HTML report.
+
+            Cheers,  
+            GitOps Bot
+          attachments: output/GitRepoReport.html
+

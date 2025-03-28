@@ -1,68 +1,107 @@
-# GitOps Git Repository Audit Script (PowerShell)
+# scripts/GitAudit.ps1
+
+$outputDir = Join-Path $PSScriptRoot "..\output"
+$mdPath = Join-Path $outputDir "GitRepoReport.md"
+$htmlPath = Join-Path $outputDir "GitRepoReport.html"
+$skippedPath = Join-Path $outputDir "SkippedReleases.txt"
+$repoRoot = "C:\GIT"
+
+Write-Host "Output directory: $outputDir"
+Write-Host "Markdown path: $mdPath"
+Write-Host "HTML path: $htmlPath"
 
 # Ensure output directory exists
-$OutputDir = "output"
-if (-not (Test-Path $OutputDir)) {
-    New-Item -Path $OutputDir -ItemType Directory | Out-Null
+if (-not (Test-Path $outputDir)) {
+    Write-Host "Creating output directory..."
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-# Output report path
-$OutputPath = "$OutputDir/GitRepoReport.md"
-Set-Content -Path $OutputPath -Value "# Git Repository Audit Report`n"
-
-# Discover Git repositories in current directory
-$GitDirs = Get-ChildItem -Directory | Where-Object {
-    Test-Path "$($_.FullName)\.git"
+# Write the header to markdown
+try {
+    $today = Get-Date -Format "yyyy-MM-dd"
+    "## GitOps Repository Audit Summary - $today" | Out-File $mdPath -Encoding utf8
+    Write-Host "Markdown header written"
+} catch {
+    Write-Error "Failed to write markdown header: $_"
+    exit 1
 }
 
-foreach ($dir in $GitDirs) {
-    Write-Host "🔍 Auditing: $($dir.Name)"
-    Add-Content -Path $OutputPath -Value "## $($dir.Name)"
+# Audit repositories
+try {
+    Get-ChildItem $repoRoot -Directory | Where-Object { $_.Name -ne "homelab-gitops-auditor" } | ForEach-Object {
+        $repoName = $_.Name
+        $repoPath = $_.FullName
 
+        if (Test-Path "$repoPath\.git") {
+            Add-Content $mdPath "`n### Repository: $repoName"
+            Add-Content $mdPath "- Path: $repoPath"
+
+            $lastCommit = git -C $repoPath log -1 --pretty=format:"%h %an %ad %s" 2>$null
+            if (-not $lastCommit) {
+                $lastCommit = "(no commits)"
+            }
+            Add-Content $mdPath "- Last Commit: $lastCommit"
+
+            $branch = git -C $repoPath rev-parse --abbrev-ref HEAD 2>$null
+            if (-not $branch) {
+                $branch = "(unknown branch)"
+            }
+            Add-Content $mdPath "- Branch: $branch"
+
+            $status = git -C $repoPath status --porcelain
+            if ($status) {
+                Add-Content $mdPath "- Uncommitted changes:"
+                $status | ForEach-Object { Add-Content $mdPath "  - $_" }
+            } else {
+                Add-Content $mdPath "- Clean working directory"
+            }
+
+            Add-Content $mdPath "`n---"
+        }
+    }
+    Write-Host "Repository audit section completed"
+} catch {
+    Write-Error "Failed during repository audit: $_"
+    exit 1
+}
+
+# Append skipped releases
+if (Test-Path $skippedPath) {
     try {
-        Set-Location -Path $dir.FullName
-
-        # Remote URL
-        $remote = git remote get-url origin 2>$null
-        if (-not $remote) {
-            Add-Content -Path $OutputPath -Value "- ❌ No remote 'origin' set."
-        } else {
-            Add-Content -Path $OutputPath -Value "- 🔗 Remote: $remote"
-        }
-
-        # Uncommitted changes
-        $status = git status --porcelain
-        if ($status) {
-            Add-Content -Path $OutputPath -Value "- ⚠️ Uncommitted changes detected."
-        } else {
-            Add-Content -Path $OutputPath -Value "- ✅ Working directory clean."
-        }
-
-        # Ahead/behind
-        git fetch origin 2>$null
-        $summary = git status -sb
-        if ($summary -match "ahead") {
-            Add-Content -Path $OutputPath -Value "- 🔼 Local branch is ahead of remote."
-        }
-        if ($summary -match "behind") {
-            Add-Content -Path $OutputPath -Value "- 🔽 Local branch is behind remote."
-        }
-        if ($summary -notmatch "ahead|behind") {
-            Add-Content -Path $OutputPath -Value "- 📍 In sync with remote."
-        }
-
+        Add-Content $mdPath "`n## Skipped Releases"
+        Get-Content $skippedPath | ForEach-Object { Add-Content $mdPath "- $_" }
+        Write-Host "Appended skipped releases to markdown"
     } catch {
-        Add-Content -Path $OutputPath -Value "- ❌ Error auditing $($dir.Name): $($_.Exception.Message)"
-        Write-Host "❌ Error auditing $($dir.Name): $($_.Exception.Message)"
-    } finally {
-        Set-Location -Path $PSScriptRoot
-        Add-Content -Path $OutputPath -Value ""
+        Write-Warning "Failed to append skipped releases: $_"
     }
 }
 
-Write-Host "✅ GitOps audit completed. Report written to $OutputPath"
+# Convert Markdown to HTML
+try {
+    $markdown = Get-Content $mdPath -Raw
+    $htmlContent = @"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>GitOps Audit Report</title>
+    <style>
+        body { font-family: Consolas, monospace; background: #f9f9f9; padding: 1rem; }
+        pre { background: #fff; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<h2>GitOps Repository Audit Report</h2>
+<pre>
+$markdown
+</pre>
+</body>
+</html>
+"@
 
-# Show the contents of the audit report in the workflow logs
-Write-Host "--- Begin Report ---"
-Get-Content -Path $OutputPath | ForEach-Object { Write-Host $_ }
-Write-Host "--- End Report ---"
+    $htmlContent | Out-File $htmlPath -Encoding UTF8
+    Write-Host "HTML report generated at: $htmlPath"
+} catch {
+    Write-Error "Failed to generate HTML report: $_"
+    exit 1
+}

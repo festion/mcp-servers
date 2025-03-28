@@ -20,7 +20,11 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/GitAudit.ps1
-
+      - name: Debug audit output
+        shell: pwsh
+        run: |
+         Get-Content output/GitRepoReport.md
+    
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
         with:

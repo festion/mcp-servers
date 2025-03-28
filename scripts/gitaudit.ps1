@@ -82,6 +82,8 @@ if (Test-Path $skippedPath) {
 
 # Convert Markdown to HTML
 try {
+    # Ensure the markdown file is flushed and ready
+    Start-Sleep -Milliseconds 500
     $markdown = Get-Content $mdPath -Raw
 
     $htmlContent = @"
@@ -104,7 +106,7 @@ $markdown
 </html>
 "@
 
-    $htmlContent | Out-File $htmlPath -Encoding utf8
+    $htmlContent | Out-File $htmlPath -Encoding UTF8
     Write-Host "HTML report generated at: $htmlPath"
 } catch {
     Write-Error "Failed to generate HTML report: $_"

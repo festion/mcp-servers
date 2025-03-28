@@ -13,6 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Git (for repo commands)
+        run: git config --global safe.directory '*'
+
       - name: Run GitOps Audit Script
         shell: pwsh
         run: |
@@ -30,8 +33,13 @@ jobs:
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
           body: |
             Hello Jeremy,
-      
-            Your weekly GitOps audit has completed successfully.
-            Please find the attached summary report.
 
+            Your weekly GitOps audit has completed successfully.
+
+            Summary:
+            - ✅ Repository audits completed
+            - 🚫 Any skipped releases are noted
+            - 📦 Attached: GitRepoReport.md
+
+            Have a great week! 🚀
           attachments: output/GitRepoReport.md

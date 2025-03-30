@@ -15,13 +15,6 @@ jobs:
         with:
           path: homelab-gitops-auditor
 
-      - name: Debug - Show working directory and all files
-        shell: pwsh
-        working-directory: homelab-gitops-auditor
-        run: |
-          Write-Host "Current directory: $(Get-Location)"
-          Get-ChildItem -Recurse | ForEach-Object { Write-Host $_.FullName }
-
       - name: Run GitOps Audit Script
         shell: pwsh
         working-directory: homelab-gitops-auditor
@@ -34,14 +27,18 @@ jobs:
           }
           & $script
 
+      - name: Confirm report files exist
+        shell: pwsh
+        working-directory: homelab-gitops-auditor
+        run: |
+          Write-Host "`n📂 Output directory contents:"
+          Get-ChildItem output | ForEach-Object { Write-Host $_.FullName }
+
       - name: Output HTML file contents
         shell: pwsh
         working-directory: homelab-gitops-auditor
         run: |
-          $report = Get-Content output/GitRepoReport.html -Raw
-          Write-Host "`n===== GitRepoReport.html =====`n"
-          Write-Host $report
-
+          Get-Content output/GitRepoReport.html -Raw
 
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
@@ -57,9 +54,9 @@ jobs:
             Hello Jeremy,
 
             Your weekly GitOps audit has completed successfully.
-            Please find the attached summary report.
+            Please find the attached HTML summary report.
 
             Regards,  
             GitOps Bot
 
-          attachments: homelab-gitops-auditor/output/GitRepoReport.md
+          attachments: homelab-gitops-auditor/output/GitRepoReport.html

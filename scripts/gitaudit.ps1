@@ -1,114 +1,149 @@
-# scripts/GitAudit.ps1
+# gitaudit.ps1
 
-# Determine paths
-$outputDir = Join-Path $PSScriptRoot "..\output"
-$mdPath = Join-Path $outputDir "GitRepoReport.md"
-$htmlPath = Join-Path $outputDir "GitRepoReport.html"
-$skippedPath = Join-Path $outputDir "SkippedReleases.txt"
+Write-Host "🛠️ Running GitOps audit script..."
 
-# Detect local or CI environment
-if ($env:GITHUB_ACTIONS -eq "true") {
-    $repoRoot = Resolve-Path "$PSScriptRoot\.."
-} else {
-    $repoRoot = "C:\GIT"
-}
-
-Write-Host "Output directory: $outputDir"
-Write-Host "Markdown path: $mdPath"
-Write-Host "HTML path: $htmlPath"
-Write-Host "Repo root: $repoRoot"
+$ReportDir = "output"
+$MarkdownReportPath = Join-Path $ReportDir "GitRepoReport.md"
+$HtmlReportPath     = Join-Path $ReportDir "GitRepoReport.html"
+$Timestamp = Get-Date -Format "yyyy-MM-dd"
 
 # Ensure output directory exists
-if (-not (Test-Path $outputDir)) {
-    Write-Host "Creating output directory..."
-    New-Item -ItemType Directory -Path $outputDir | Out-Null
+if (-Not (Test-Path $ReportDir)) {
+    Write-Host "📁 Creating output directory: $ReportDir"
+    New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# Start Markdown report
-try {
-    $today = Get-Date -Format "yyyy-MM-dd"
-    "## GitOps Repository Audit Summary - $today" | Out-File $mdPath -Encoding utf8
-    Write-Host "Markdown header written"
-} catch {
-    Write-Error "Failed to write markdown header: $_"
-    exit 1
+# --- For CI testing: create dummy repo if 'repos' doesn't exist ---
+if (-Not (Test-Path "repos")) {
+    Write-Host "🔧 Creating dummy test repo: repos/testrepo/.git"
+    New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
 }
 
-# Loop over repositories
-try {
-    Get-ChildItem $repoRoot -Directory | Where-Object { $_.Name -ne "homelab-gitops-auditor" } | ForEach-Object {
-        $repoName = $_.Name
-        $repoPath = $_.FullName
+# Markdown header
+$Header = @"
+# GitOps Repository Audit Report
 
-        if (Test-Path "$repoPath\.git") {
-            Add-Content $mdPath "`n### Repository: $repoName"
-            Add-Content $mdPath "- Path: $repoPath"
+## GitOps Repository Audit Summary - $Timestamp
+"@
+$Header | Out-File -FilePath $MarkdownReportPath -Encoding utf8
 
-            $lastCommit = git -C $repoPath log -1 --pretty=format:"%h %an %ad %s" 2>$null
-            if (-not $lastCommit) { $lastCommit = "(no commits)" }
-            Add-Content $mdPath "- Last Commit: $lastCommit"
-
-            $branch = git -C $repoPath rev-parse --abbrev-ref HEAD 2>$null
-            if (-not $branch) { $branch = "(unknown branch)" }
-            Add-Content $mdPath "- Branch: $branch"
-
-            $status = git -C $repoPath status --porcelain
-            if ($status) {
-                Add-Content $mdPath "- Uncommitted changes:"
-                $status | ForEach-Object { Add-Content $mdPath "  - $_" }
-            } else {
-                Add-Content $mdPath "- Clean working directory"
-            }
-
-            Add-Content $mdPath "`n---"
-        }
-    }
-    Write-Host "Repository audit section completed"
-} catch {
-    Write-Error "Failed during repository audit: $_"
-    exit 1
-}
-
-# Append skipped releases if present
-if (Test-Path $skippedPath) {
-    try {
-        Add-Content $mdPath "`n## Skipped Releases"
-        Get-Content $skippedPath | ForEach-Object { Add-Content $mdPath "- $_" }
-        Write-Host "Appended skipped releases to markdown"
-    } catch {
-        Write-Warning "Failed to append skipped releases: $_"
-    }
-}
-
-# Convert Markdown to HTML
-try {
-    # Ensure the markdown file is flushed and ready
-    Start-Sleep -Milliseconds 500
-    $markdown = Get-Content $mdPath -Raw
-
-    $htmlContent = @"
+# HTML setup
+$HtmlBody = @"
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>GitOps Audit Report</title>
-    <style>
-        body { font-family: Consolas, monospace; background: #f9f9f9; padding: 1rem; }
-        pre { background: #fff; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; }
-    </style>
+  <meta charset="UTF-8">
+  <title>GitOps Audit Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; }
+    h1 { color: #333; }
+    details { margin-bottom: 15px; border: 1px solid #ccc; background: #fff; padding: 10px; border-radius: 5px; }
+    summary { font-weight: bold; font-size: 16px; cursor: pointer; }
+    .ok { color: green; }
+    .warn { color: orange; }
+    .error { color: red; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; }
+  </style>
 </head>
 <body>
-<h2>GitOps Repository Audit Report</h2>
-<pre>
-$markdown
-</pre>
-</body>
-</html>
+<h1>GitOps Repository Audit Report</h1>
+<p><strong>Generated:</strong> $Timestamp</p>
 "@
 
-    $htmlContent | Out-File $htmlPath -Encoding UTF8
-    Write-Host "HTML report generated at: $htmlPath"
-} catch {
-    Write-Error "Failed to generate HTML report: $_"
-    exit 1
+# Define root folder
+$Root = "repos"
+if (-Not (Test-Path $Root)) {
+    $msg = "⚠️ Directory '$Root' does not exist. No repositories to audit."
+    Write-Host $msg
+    $msg | Out-File -Append $MarkdownReportPath
+    $HtmlBody += "<p class='warn'>$msg</p>`n"
+} else {
+    $Repos = Get-ChildItem -Path $Root -Directory
+    if ($Repos.Count -eq 0) {
+        $msg = "⚠️ No repositories found under '$Root'."
+        Write-Host $msg
+        $msg | Out-File -Append $MarkdownReportPath
+        $HtmlBody += "<p class='warn'>$msg</p>`n"
+    }
+
+    foreach ($Repo in $Repos) {
+        $Path = $Repo.FullName
+        $Remote = ""
+        $Branch = ""
+        $HasChanges = $false
+        $Missing = $false
+        $Diff = ""
+
+        if (Test-Path (Join-Path $Path ".git")) {
+            Push-Location $Path
+
+            try {
+                $Remote = git remote get-url origin 2>$null
+                $Branch = git rev-parse --abbrev-ref HEAD 2>$null
+                $HasChanges = -not [string]::IsNullOrWhiteSpace((git status --porcelain))
+                if ($HasChanges) {
+                    $Diff = git diff --shortstat 2>$null
+                }
+            } catch {
+                $Missing = $true
+            }
+
+            Pop-Location
+
+            # Markdown Output
+            $Status = @"
+### Repository: $($Repo.Name)
+- Path: $Path
+- Remote: $Remote
+- Branch: $Branch
+- Has Uncommitted Changes: $HasChanges
+- Git Data Missing/Invalid: $Missing
+
+"@
+            $Status | Out-File -Append $MarkdownReportPath -Encoding utf8
+
+            # HTML Output
+            $StatusClass = if ($Missing) { "error" } elseif ($HasChanges) { "warn" } else { "ok" }
+            $HtmlBody += @"
+<details>
+<summary><span class='$StatusClass'>Repo: $($Repo.Name)</span></summary>
+<ul>
+  <li><strong>Path:</strong> $Path</li>
+  <li><strong>Remote:</strong> $Remote</li>
+  <li><strong>Branch:</strong> $Branch</li>
+  <li><strong>Has Uncommitted Changes:</strong> <span class='$StatusClass'>$HasChanges</span></li>
+  <li><strong>Git Data Missing:</strong> <span class='$StatusClass'>$Missing</span></li>
+</ul>
+"@
+
+            if ($HasChanges -and $Diff) {
+                $HtmlBody += "<details><summary>Inline Diff Summary</summary><pre>$Diff</pre></details>`n"
+            }
+
+            $HtmlBody += "</details>`n"
+        } else {
+            $msg = "⚠️ Skipping '$($Repo.Name)' — not a Git repository."
+            Write-Host $msg
+            $msg | Out-File -Append $MarkdownReportPath
+            $HtmlBody += "<p class='warn'>$msg</p>`n"
+        }
+    }
+}
+
+$HtmlBody += "</body></html>"
+
+# Write HTML output
+$HtmlBody | Out-File -FilePath $HtmlReportPath -Encoding utf8
+
+# Confirm output files exist
+if (Test-Path $MarkdownReportPath) {
+    Write-Host "✅ Markdown report saved to: $MarkdownReportPath"
+} else {
+    Write-Host "❌ Markdown report was NOT created."
+}
+
+if (Test-Path $HtmlReportPath) {
+    Write-Host "✅ HTML report saved to: $HtmlReportPath"
+} else {
+    Write-Host "❌ HTML report was NOT created."
 }

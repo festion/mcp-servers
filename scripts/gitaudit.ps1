@@ -13,11 +13,21 @@ if (-Not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# --- For CI testing: create dummy repo if 'repos' doesn't exist ---
-if (-Not (Test-Path "repos")) {
-    Write-Host "🔧 Creating dummy test repo: repos/testrepo/.git"
-    New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
+# Detect mode
+$mode = $env:GITHUB_EVENT_INPUTS_MODE
+if (-not $mode) { $mode = "default" }
+
+Write-Host "Run mode: $mode"
+
+# Only inject test repo in test mode
+if ($mode -eq "test") {
+    $testRepo = "repos/testrepo/.git"
+    if (-not (Test-Path $testRepo)) {
+        Write-Host "🧪 Injecting test repo: $testRepo"
+        New-Item -ItemType Directory -Path $testRepo -Force | Out-Null
+    }
 }
+
 
 # Markdown header
 $Header = @"

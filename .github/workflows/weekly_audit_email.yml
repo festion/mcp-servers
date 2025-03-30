@@ -10,16 +10,15 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository to known path
+      - name: Checkout repository to root
         uses: actions/checkout@v4
         with:
-          path: homelab-gitops-auditor
+          path: .
 
       - name: Run GitOps Audit Script
         shell: pwsh
-        working-directory: homelab-gitops-auditor
         run: |
-          $script = Join-Path $PWD "scripts/gitaudit.ps1"
+          $script = "scripts/gitaudit.ps1"
           Write-Host "`nAttempting to run: $script"
           if (-Not (Test-Path $script)) {
             Write-Error "Script not found at $script"
@@ -29,14 +28,12 @@ jobs:
 
       - name: Confirm report files exist
         shell: pwsh
-        working-directory: homelab-gitops-auditor
         run: |
           Write-Host "`n📂 Output directory contents:"
           Get-ChildItem output | ForEach-Object { Write-Host $_.FullName }
 
       - name: Output HTML file contents
         shell: pwsh
-        working-directory: homelab-gitops-auditor
         run: |
           Get-Content output/GitRepoReport.html -Raw
 
@@ -59,4 +56,4 @@ jobs:
             Regards,  
             GitOps Bot
 
-          attachments: homelab-gitops-auditor/output/GitRepoReport.html
+          attachments: output/GitRepoReport.html

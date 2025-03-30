@@ -1,5 +1,7 @@
 # gitaudit.ps1
 
+Write-Host "🛠️ Running GitOps audit script..."
+
 $ReportDir = "output"
 $MarkdownReportPath = Join-Path $ReportDir "GitRepoReport.md"
 $HtmlReportPath     = Join-Path $ReportDir "GitRepoReport.html"
@@ -7,6 +9,7 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd"
 
 # Ensure output directory exists
 if (-Not (Test-Path $ReportDir)) {
+    Write-Host "📁 Creating output directory: $ReportDir"
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
@@ -45,12 +48,14 @@ $HtmlBody = @"
 $Root = "repos"
 if (-Not (Test-Path $Root)) {
     $msg = "⚠️ Directory '$Root' does not exist. No repositories to audit."
+    Write-Host $msg
     $msg | Out-File -Append $MarkdownReportPath
     $HtmlBody += "<p class='warn'>$msg</p>`n"
 } else {
     $Repos = Get-ChildItem -Path $Root -Directory
     if ($Repos.Count -eq 0) {
         $msg = "⚠️ No repositories found under '$Root'."
+        Write-Host $msg
         $msg | Out-File -Append $MarkdownReportPath
         $HtmlBody += "<p class='warn'>$msg</p>`n"
     }
@@ -112,6 +117,7 @@ if (-Not (Test-Path $Root)) {
             $HtmlBody += "</details>`n"
         } else {
             $msg = "⚠️ Skipping '$($Repo.Name)' — not a Git repository."
+            Write-Host $msg
             $msg | Out-File -Append $MarkdownReportPath
             $HtmlBody += "<p class='warn'>$msg</p>`n"
         }

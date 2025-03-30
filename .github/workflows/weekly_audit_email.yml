@@ -78,5 +78,4 @@ jobs:
           subject: "Weekly GitOps Audit Report"
           to: jeremy.ames@outlook.com
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
-          content_type: text/html
-          body: ${{ env.HTML_BODY }}
+          html_body: ${{ env.HTML_BODY }}

@@ -76,6 +76,17 @@ jobs:
             Write-Host "::set-output name=send::true"
           }
 
+      - name: Read HTML report into output variable
+        id: htmlreport
+        shell: pwsh
+        working-directory: homelab-gitops-auditor
+        run: |
+          $html = Get-Content output/GitRepoReport.html -Raw
+          $html | Out-File -Encoding utf8 report.html
+          "html_body<<EOF" >> $env:GITHUB_OUTPUT
+          $html >> $env:GITHUB_OUTPUT
+          "EOF" >> $env:GITHUB_OUTPUT
+
       - name: Send audit summary email
         if: steps.shouldsend.outputs.send == 'true'
         uses: dawidd6/action-send-mail@v3
@@ -87,13 +98,4 @@ jobs:
           subject: "${{ steps.emailmeta.outputs.subjectPrefix }}Weekly GitOps Audit Report"
           to: jeremy.ames@outlook.com
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
-          body: |
-            Hello Jeremy,
-
-            Your weekly GitOps audit has completed successfully.
-            Please find the attached HTML summary report.
-
-            Regards,  
-            GitOps Bot
-
-          attachments: homelab-gitops-auditor/output/GitRepoReport.html
+          html_body: ${{ steps.htmlreport.outputs.html_body }}

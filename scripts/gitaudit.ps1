@@ -10,7 +10,7 @@ if (-Not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# Header for Markdown
+# Markdown header
 $Header = @"
 # GitOps Repository Audit Report
 
@@ -18,14 +18,41 @@ $Header = @"
 "@
 $Header | Out-File -FilePath $MarkdownReportPath -Encoding utf8
 
-# Define the root folder to scan
+# HTML setup
+$HtmlBody = @"
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GitOps Audit Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; }
+    h1 { color: #333; }
+    details { margin-bottom: 15px; border: 1px solid #ccc; background: #fff; padding: 10px; border-radius: 5px; }
+    summary { font-weight: bold; font-size: 16px; cursor: pointer; }
+    .ok { color: green; }
+    .warn { color: orange; }
+    .error { color: red; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+<h1>GitOps Repository Audit Report</h1>
+<p><strong>Generated:</strong> $Timestamp</p>
+"@
+
+# Define root folder
 $Root = "repos"
 if (-Not (Test-Path $Root)) {
-    "⚠️ Directory '$Root' does not exist. No repositories to audit." | Out-File -Append $MarkdownReportPath
+    $msg = "⚠️ Directory '$Root' does not exist. No repositories to audit."
+    $msg | Out-File -Append $MarkdownReportPath
+    $HtmlBody += "<p class='warn'>$msg</p>`n"
 } else {
     $Repos = Get-ChildItem -Path $Root -Directory
     if ($Repos.Count -eq 0) {
-        "⚠️ No repositories found under '$Root'." | Out-File -Append $MarkdownReportPath
+        $msg = "⚠️ No repositories found under '$Root'."
+        $msg | Out-File -Append $MarkdownReportPath
+        $HtmlBody += "<p class='warn'>$msg</p>`n"
     }
 
     foreach ($Repo in $Repos) {
@@ -34,6 +61,7 @@ if (-Not (Test-Path $Root)) {
         $Branch = ""
         $HasChanges = $false
         $Missing = $false
+        $Diff = ""
 
         if (Test-Path (Join-Path $Path ".git")) {
             Push-Location $Path
@@ -42,12 +70,16 @@ if (-Not (Test-Path $Root)) {
                 $Remote = git remote get-url origin 2>$null
                 $Branch = git rev-parse --abbrev-ref HEAD 2>$null
                 $HasChanges = -not [string]::IsNullOrWhiteSpace((git status --porcelain))
+                if ($HasChanges) {
+                    $Diff = git diff --shortstat 2>$null
+                }
             } catch {
                 $Missing = $true
             }
 
             Pop-Location
 
+            # Markdown Output
             $Status = @"
 ### Repository: $($Repo.Name)
 - Path: $Path
@@ -55,38 +87,41 @@ if (-Not (Test-Path $Root)) {
 - Branch: $Branch
 - Has Uncommitted Changes: $HasChanges
 - Git Data Missing/Invalid: $Missing
+
+"@
+            $Status | Out-File -Append $MarkdownReportPath -Encoding utf8
+
+            # HTML Output
+            $StatusClass = if ($Missing) { "error" } elseif ($HasChanges) { "warn" } else { "ok" }
+            $HtmlBody += @"
+<details>
+<summary><span class='$StatusClass'>Repo: $($Repo.Name)</span></summary>
+<ul>
+  <li><strong>Path:</strong> $Path</li>
+  <li><strong>Remote:</strong> $Remote</li>
+  <li><strong>Branch:</strong> $Branch</li>
+  <li><strong>Has Uncommitted Changes:</strong> <span class='$StatusClass'>$HasChanges</span></li>
+  <li><strong>Git Data Missing:</strong> <span class='$StatusClass'>$Missing</span></li>
+</ul>
 "@
 
-            $Status | Out-File -Append $MarkdownReportPath -Encoding utf8
+            if ($HasChanges -and $Diff) {
+                $HtmlBody += "<details><summary>Inline Diff Summary</summary><pre>$Diff</pre></details>`n"
+            }
+
+            $HtmlBody += "</details>`n"
         } else {
-            "⚠️ Skipping '$($Repo.Name)' — not a Git repository." | Out-File -Append $MarkdownReportPath
+            $msg = "⚠️ Skipping '$($Repo.Name)' — not a Git repository."
+            $msg | Out-File -Append $MarkdownReportPath
+            $HtmlBody += "<p class='warn'>$msg</p>`n"
         }
     }
 }
 
-# Generate HTML report from the Markdown
-$MarkdownContent = Get-Content $MarkdownReportPath -Raw
-$HtmlContent = @"
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>GitOps Audit Report</title>
-    <style>
-        body { font-family: monospace; background-color: #f9f9f9; padding: 20px; }
-        pre { background: #fff; border: 1px solid #ccc; padding: 15px; }
-    </style>
-</head>
-<body>
-<h1>GitOps Repository Audit Report</h1>
-<pre>
-$MarkdownContent
-</pre>
-</body>
-</html>
-"@
+$HtmlBody += "</body></html>"
 
-$HtmlContent | Out-File -FilePath $HtmlReportPath -Encoding utf8
+# Write HTML output
+$HtmlBody | Out-File -FilePath $HtmlReportPath -Encoding utf8
 
 Write-Host "✅ Markdown report saved to: $MarkdownReportPath"
 Write-Host "✅ HTML report saved to: $HtmlReportPath"

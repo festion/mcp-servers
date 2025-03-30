@@ -36,10 +36,12 @@ jobs:
 
       - name: Output HTML file contents
         shell: pwsh
+        working-directory: homelab-gitops-auditor
         run: |
-          $report = Get-Content homelab-gitops-auditor/output/GitRepoReport.html -Raw
+          $report = Get-Content output/GitRepoReport.html -Raw
           Write-Host "`n===== GitRepoReport.html =====`n"
           Write-Host $report
+
 
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3

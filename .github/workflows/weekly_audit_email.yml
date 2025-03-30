@@ -1,5 +1,5 @@
 name: Weekly GitOps Audit Email
-
+ 
 on:
   schedule:
     - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC

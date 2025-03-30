@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode (default or test)'
+        required: false
+        default: 'default'
 
 jobs:
   audit:
@@ -26,11 +31,19 @@ jobs:
         working-directory: homelab-gitops-auditor
         run: |
           $script = "scripts/gitaudit.ps1"
+          $mode = "${{ github.event.inputs.mode }}"
+          Write-Host "`nRun mode: $mode"
           Write-Host "`nAttempting to run: $script"
           if (-Not (Test-Path $script)) {
             Write-Error "Script not found at $script"
             exit 1
           }
+
+          if ($mode -eq "test") {
+            Write-Host "🧪 Injecting test repo: repos/testrepo/.git"
+            New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
+          }
+
           & $script
 
       - name: Confirm report files exist

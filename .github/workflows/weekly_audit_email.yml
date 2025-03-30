@@ -38,10 +38,7 @@ jobs:
             Write-Error "Script not found at $script"
             exit 1
           }
-          if ($mode -eq "test") {
-            Write-Host "🧪 Injecting test repo: repos/testrepo/.git"
-            New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
-          }
+
           & $script
 
       - name: Confirm report files exist
@@ -57,14 +54,37 @@ jobs:
         run: |
           Get-Content output/GitRepoReport.html -Raw
 
+      - name: Set email subject prefix
+        id: emailmeta
+        shell: pwsh
+        working-directory: homelab-gitops-auditor
+        run: |
+          $mode = "${{ github.event.inputs.mode }}"
+          if (-not $mode) { $mode = "default" }
+
+          $prefix = if ($mode -eq "test") { "[TEST] " } else { "" }
+          "subjectPrefix=$prefix" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Check if report is empty
+        id: shouldsend
+        shell: pwsh
+        working-directory: homelab-gitops-auditor
+        run: |
+          if (Test-Path "output/skipEmail.flag") {
+            Write-Host "::set-output name=send::false"
+          } else {
+            Write-Host "::set-output name=send::true"
+          }
+
       - name: Send audit summary email
+        if: steps.shouldsend.outputs.send == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "Weekly GitOps Audit Report"
+          subject: "${{ steps.emailmeta.outputs.subjectPrefix }}Weekly GitOps Audit Report"
           to: jeremy.ames@outlook.com
           from: GitOps Bot <${{ secrets.EMAIL_USERNAME }}>
           body: |

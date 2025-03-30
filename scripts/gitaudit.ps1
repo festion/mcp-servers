@@ -5,7 +5,14 @@ Write-Host "🛠️ Running GitOps audit script..."
 $ReportDir = "output"
 $MarkdownReportPath = Join-Path $ReportDir "GitRepoReport.md"
 $HtmlReportPath     = Join-Path $ReportDir "GitRepoReport.html"
+$OutputFlagPath     = "output/skipEmail.flag"
 $Timestamp = Get-Date -Format "yyyy-MM-dd"
+
+# Detect GitHub Actions mode
+$mode = $env:GITHUB_EVENT_INPUTS_MODE
+if (-not $mode) { $mode = "default" }
+
+Write-Host "Run mode: $mode"
 
 # Ensure output directory exists
 if (-Not (Test-Path $ReportDir)) {
@@ -13,18 +20,12 @@ if (-Not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# Detect mode
-$mode = $env:GITHUB_EVENT_INPUTS_MODE
-if (-not $mode) { $mode = "default" }
-
-Write-Host "Run mode: $mode"
-
-# Only inject test repo in test mode
+# In test mode, inject a real repo
 if ($mode -eq "test") {
-    $testRepo = "repos/testrepo/.git"
-    if (-not (Test-Path $testRepo)) {
-        Write-Host "🧪 Injecting test repo: $testRepo"
-        New-Item -ItemType Directory -Path $testRepo -Force | Out-Null
+    $InjectPath = "repos/esphome"
+    if (-Not (Test-Path $InjectPath)) {
+        Write-Host "🧪 Cloning example repo into $InjectPath"
+        git clone --depth 1 https://github.com/esphome/esphome.git $InjectPath | Out-Null
     }
 }
 
@@ -75,6 +76,15 @@ if (-Not (Test-Path $Root)) {
         $msg | Out-File -Append $MarkdownReportPath
         $HtmlBody += "<p class='warn'>$msg</p>`n"
     }
+if ($Repos.Count -eq 0) {
+    $msg = "⚠️ No repositories found under '$Root'."
+    Write-Host $msg
+    $msg | Out-File -Append $MarkdownReportPath
+    $HtmlBody += "<p class='warn'>$msg</p>`n"
+
+    # Set output flag for GitHub Actions
+    "true" | Out-File $OutputFlagPath -Encoding ascii
+}
 
     foreach ($Repo in $Repos) {
         $Path = $Repo.FullName

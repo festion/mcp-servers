@@ -20,7 +20,7 @@ jobs:
         with:
           path: homelab-gitops-auditor
 
-      - name: Root-level debug: Show full file tree
+      - name: Root-level debug - Show full file tree
         shell: pwsh
         run: |
           Write-Host "🔍 Full file tree from runner root:"
@@ -38,12 +38,10 @@ jobs:
             Write-Error "Script not found at $script"
             exit 1
           }
-
           if ($mode -eq "test") {
             Write-Host "🧪 Injecting test repo: repos/testrepo/.git"
             New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
           }
-
           & $script
 
       - name: Confirm report files exist

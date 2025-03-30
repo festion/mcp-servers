@@ -20,48 +20,34 @@ if (-Not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# In test mode, inject a real repo
-if ($mode -eq "test") {
-    $InjectPath = "repos/esphome"
-    if (-Not (Test-Path $InjectPath)) {
-        Write-Host "🧪 Cloning example repo into $InjectPath"
-        git clone --depth 1 https://github.com/esphome/esphome.git $InjectPath | Out-Null
+# Inject real repos for automated audits
+if ($mode -eq "default") {
+    $targets = @(
+        "https://github.com/festion/homelab-gitops-auditor.git",
+        "https://github.com/esphome/esphome.git"
+    )
+
+    foreach ($repoUrl in $targets) {
+        $name = ($repoUrl -split '/')[-1] -replace '\.git$', ''
+        $path = "repos/$name"
+        if (-not (Test-Path $path)) {
+            Write-Host "📥 Cloning $repoUrl into $path"
+            git clone --depth 1 $repoUrl $path | Out-Null
+        } else {
+            Write-Host "✔️ Repo already present: $path"
+        }
     }
 }
 
+# Inject fallback test repo (only if test mode)
+if ($mode -eq "test") {
+    $testRepo = "repos/testrepo/.git"
+    if (-not (Test-Path $testRepo)) {
+        Write-Host "🧪 Injecting test repo: $testRepo"
+        New-Item -ItemType Directory -Path $testRepo -Force | Out-Null
+    }
+}
 
-# Markdown header
-$Header = @"
-# GitOps Repository Audit Report
-
-## GitOps Repository Audit Summary - $Timestamp
-"@
-$Header | Out-File -FilePath $MarkdownReportPath -Encoding utf8
-
-# HTML setup
-$HtmlBody = @"
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>GitOps Audit Report</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; }
-    h1 { color: #333; }
-    details { margin-bottom: 15px; border: 1px solid #ccc; background: #fff; padding: 10px; border-radius: 5px; }
-    summary { font-weight: bold; font-size: 16px; cursor: pointer; }
-    .ok { color: green; }
-    .warn { color: orange; }
-    .error { color: red; }
-    pre { background: #eee; padding: 10px; overflow-x: auto; }
-  </style>
-</head>
-<body>
-<h1>GitOps Repository Audit Report</h1>
-<p><strong>Generated:</strong> $Timestamp</p>
-"@
-
-# Define root folder
 $Root = "repos"
 if (-Not (Test-Path $Root)) {
     $msg = "⚠️ Directory '$Root' does not exist. No repositories to audit."

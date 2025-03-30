@@ -2,7 +2,7 @@ name: Weekly GitOps Audit Email
 
 on:
   schedule:
-    - cron: '0 6 * * 0'
+    - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
   workflow_dispatch:
 
 jobs:
@@ -10,10 +10,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository to subdir
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           path: homelab-gitops-auditor
+
+      - name: Root-level debug: Show full file tree
+        shell: pwsh
+        run: |
+          Write-Host "🔍 Full file tree from runner root:"
+          Get-ChildItem -Recurse | ForEach-Object { Write-Host $_.FullName }
 
       - name: Run GitOps Audit Script
         shell: pwsh

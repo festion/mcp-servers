@@ -6,13 +6,12 @@ $HtmlReportPath     = Join-Path $ReportDir "GitRepoReport.html"
 $OutputFlagPath     = "output/skipEmail.flag"
 $Timestamp = Get-Date -Format "yyyy-MM-dd"
 
-# Detect GitHub Actions mode
 $mode = $env:GITHUB_EVENT_INPUTS_MODE
 if (-not $mode) { $mode = "default" }
 
 Write-Host "Run mode: $mode"
 
-# Ensure fresh repos folder
+# Clean stale repos
 if (Test-Path "repos") {
     Write-Host "🧹 Removing stale repos/"
     Remove-Item -Recurse -Force "repos"
@@ -20,39 +19,54 @@ if (Test-Path "repos") {
 
 # Ensure output directory exists
 if (-Not (Test-Path $ReportDir)) {
-    Write-Host "📁 Creating output directory: $ReportDir"
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
-# Clone targets
-if ($mode -eq "default") {
-    $targets = @(
-        "https://github.com/festion/homelab-gitops-auditor.git",
-        "https://github.com/esphome/esphome.git"
-    )
+# GitHub API token
+$token = $env:GH_REPO_PAT
+$headers = @{ Authorization = "token $token" }
 
-    foreach ($repoUrl in $targets) {
-        $name = ($repoUrl -split '/')[-1] -replace '\.git$', ''
+# Tags and audit list
+$repoTags = @{}
+$reposToAudit = @()
+
+if ($mode -eq "default" -and $token) {
+    Write-Host "🌐 Fetching repositories from GitHub API..."
+
+    $page = 1
+    do {
+        $uri = "https://api.github.com/user/repos?per_page=100&page=$page"
+        try {
+            $response = Invoke-RestMethod -Uri $uri -Headers $headers
+        } catch {
+            Write-Error "❌ Failed to fetch repos from GitHub API: $_"
+            exit 1
+        }
+
+        foreach ($repo in $response) {
+            if (-not $repo.fork -and -not $repo.archived) {
+                $reposToAudit += $repo.clone_url
+                $repoTags[$repo.name] = if ($repo.private) { "private" } else { "public" }
+            }
+        }
+
+        $page++
+    } while ($response.Count -eq 100)
+
+    foreach ($url in $reposToAudit) {
+        $name = ($url -split '/')[-1] -replace '\.git$', ''
         $path = "repos/$name"
-        Write-Host "📥 Cloning $repoUrl into $path"
-        git clone --depth 1 $repoUrl $path | Out-Null
+        Write-Host "📥 Cloning $url into $path"
+        git clone --depth 1 $url $path | Out-Null
     }
 }
-
-# Test repo injection
-if ($mode -eq "test") {
+elseif ($mode -eq "test") {
     $testRepo = "repos/testrepo/.git"
     if (-not (Test-Path $testRepo)) {
         Write-Host "🧪 Injecting test repo: $testRepo"
         New-Item -ItemType Directory -Path $testRepo -Force | Out-Null
+        $repoTags["testrepo"] = "test"
     }
-}
-
-# Tags
-$tags = @{
-    "homelab-gitops-auditor" = "infra"
-    "esphome" = "firmware"
-    "testrepo" = "test"
 }
 
 # Summary counters
@@ -115,7 +129,6 @@ $HtmlBody = @"
 <p><strong>Generated:</strong> $Timestamp</p>
 "@
 
-# Root folder
 $Root = "repos"
 if (-Not (Test-Path $Root)) {
     $msg = "⚠️ Directory '$Root' does not exist. No repositories to audit."
@@ -137,7 +150,7 @@ if (-Not (Test-Path $Root)) {
         $total++
         $Path = $Repo.FullName
         $Name = $Repo.Name
-        $Tag = $tags[$Name]
+        $Tag = $repoTags[$Name]
         $Remote = ""
         $Branch = ""
         $HasChanges = $false
@@ -146,7 +159,6 @@ if (-Not (Test-Path $Root)) {
 
         if (Test-Path (Join-Path $Path ".git")) {
             Push-Location $Path
-
             try {
                 $Remote = git remote get-url origin 2>$null
                 $Branch = git rev-parse --abbrev-ref HEAD 2>$null
@@ -159,10 +171,9 @@ if (-Not (Test-Path $Root)) {
                 $IsMissing = $true
                 $missing++
             }
-
             Pop-Location
 
-            # Markdown output
+            # Markdown Output
             $Status = @"
 ### Repository: $Name
 - Path: $Path
@@ -173,7 +184,7 @@ if (-Not (Test-Path $Root)) {
 "@
             $Status | Out-File -Append $MarkdownReportPath -Encoding utf8
 
-            # HTML output
+            # HTML Output
             $StatusClass = if ($IsMissing) { "error" } elseif ($HasChanges) { "warn" } else { "ok" }
             $TagText = if ($Tag) { "[$Tag] " } else { "" }
             $HtmlBody += @"
@@ -187,11 +198,9 @@ if (-Not (Test-Path $Root)) {
   <li><strong>Git Data Missing:</strong> <span class='$StatusClass'>$IsMissing</span></li>
 </ul>
 "@
-
             if ($HasChanges -and $Diff) {
                 $HtmlBody += "<details><summary>Inline Diff Summary</summary><pre>$Diff</pre></details>`n"
             }
-
             $HtmlBody += "</details>`n"
         } else {
             $msg = "⚠️ Skipping '$Name' — not a Git repository."
@@ -202,7 +211,6 @@ if (-Not (Test-Path $Root)) {
     }
 }
 
-# Summary section
 $HtmlBody = $HtmlBody.Insert(
     $HtmlBody.IndexOf("</p>") + 4,
 @"
@@ -216,15 +224,14 @@ $HtmlBody = $HtmlBody.Insert(
 
 $HtmlBody += "</body></html>"
 
-# Write HTML
 $HtmlBody | Out-File -FilePath $HtmlReportPath -Encoding utf8
 
-# Report status
 if (Test-Path $MarkdownReportPath) {
     Write-Host "✅ Markdown report saved to: $MarkdownReportPath"
 } else {
     Write-Host "❌ Markdown report was NOT created."
 }
+
 if (Test-Path $HtmlReportPath) {
     Write-Host "✅ HTML report saved to: $HtmlReportPath"
 } else {

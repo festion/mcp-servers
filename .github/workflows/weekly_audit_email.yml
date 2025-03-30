@@ -2,7 +2,7 @@ name: Weekly GitOps Audit Email
 
 on:
   schedule:
-    - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
+    - cron: '0 6 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -10,13 +10,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository to root
+      - name: Checkout repository to subdir
         uses: actions/checkout@v4
         with:
-          path: .
+          path: homelab-gitops-auditor
 
       - name: Run GitOps Audit Script
         shell: pwsh
+        working-directory: homelab-gitops-auditor
         run: |
           $script = "scripts/gitaudit.ps1"
           Write-Host "`nAttempting to run: $script"
@@ -28,12 +29,14 @@ jobs:
 
       - name: Confirm report files exist
         shell: pwsh
+        working-directory: homelab-gitops-auditor
         run: |
           Write-Host "`n📂 Output directory contents:"
           Get-ChildItem output | ForEach-Object { Write-Host $_.FullName }
 
       - name: Output HTML file contents
         shell: pwsh
+        working-directory: homelab-gitops-auditor
         run: |
           Get-Content output/GitRepoReport.html -Raw
 
@@ -56,4 +59,4 @@ jobs:
             Regards,  
             GitOps Bot
 
-          attachments: output/GitRepoReport.html
+          attachments: homelab-gitops-auditor/output/GitRepoReport.html

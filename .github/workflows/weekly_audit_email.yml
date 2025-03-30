@@ -28,11 +28,13 @@ jobs:
 
       - name: Validate GitHub PAT is set
         shell: pwsh
+        env:
+         GH_REPO_PAT: ${{ secrets.GH_REPO_PAT }}
         run: |
-          if (-not $env:GH_REPO_PAT) {
-            Write-Error "❌ GH_REPO_PAT is not set. Cannot fetch repos via GitHub API."
-            exit 1
-          }
+           if (-not $env:GH_REPO_PAT) {
+           Write-Error "❌ GH_REPO_PAT is not set. Cannot fetch repos via GitHub API."
+           exit 1
+           }
 
       - name: Run GitOps Audit Script
         shell: pwsh

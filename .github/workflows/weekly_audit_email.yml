@@ -8,7 +8,7 @@ on:
       mode:
         description: 'Run mode (default or test)'
         required: false
-        default: 'default'
+        default: 'default' 
 
 jobs:
   audit:

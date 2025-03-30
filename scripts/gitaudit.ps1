@@ -13,6 +13,12 @@ if (-Not (Test-Path $ReportDir)) {
     New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
 }
 
+# --- For CI testing: create dummy repo if 'repos' doesn't exist ---
+if (-Not (Test-Path "repos")) {
+    Write-Host "🔧 Creating dummy test repo: repos/testrepo/.git"
+    New-Item -ItemType Directory -Path "repos/testrepo/.git" -Force | Out-Null
+}
+
 # Markdown header
 $Header = @"
 # GitOps Repository Audit Report
@@ -129,5 +135,15 @@ $HtmlBody += "</body></html>"
 # Write HTML output
 $HtmlBody | Out-File -FilePath $HtmlReportPath -Encoding utf8
 
-Write-Host "✅ Markdown report saved to: $MarkdownReportPath"
-Write-Host "✅ HTML report saved to: $HtmlReportPath"
+# Confirm output files exist
+if (Test-Path $MarkdownReportPath) {
+    Write-Host "✅ Markdown report saved to: $MarkdownReportPath"
+} else {
+    Write-Host "❌ Markdown report was NOT created."
+}
+
+if (Test-Path $HtmlReportPath) {
+    Write-Host "✅ HTML report saved to: $HtmlReportPath"
+} else {
+    Write-Host "❌ HTML report was NOT created."
+}

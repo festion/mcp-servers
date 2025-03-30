@@ -20,7 +20,7 @@ jobs:
         with:
           path: homelab-gitops-auditor
 
-      - name: Root level debug: Show full file tree
+      - name: Root level debug Show full file tree
         shell: pwsh
         run: |
           Write-Host "🔍 Full file tree from runner root:"

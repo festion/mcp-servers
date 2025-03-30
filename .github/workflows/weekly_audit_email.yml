@@ -1,4 +1,4 @@
-name: 📬 Weekly GitOps Audit Email 
+name: Weekly GitOps Audit Email
 
 on:
   schedule:
@@ -10,28 +10,41 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository to known path
         uses: actions/checkout@v4
+        with:
+          path: homelab-gitops-auditor
 
-      - name: Set up Git
-        run: git config --global safe.directory '*'
+      - name: Debug - Show working directory and all files
+        shell: pwsh
+        working-directory: homelab-gitops-auditor
+        run: |
+          Write-Host "Current directory: $(Get-Location)"
+          Get-ChildItem -Recurse | ForEach-Object { Write-Host $_.FullName }
 
       - name: Run GitOps Audit Script
         shell: pwsh
-        run: ./scripts/GitAudit.ps1
-
-      - name: Output Markdown summary to log
-        shell: pwsh
-        run: Get-Content output/GitRepoReport.md
+        working-directory: homelab-gitops-auditor
+        run: |
+          $script = Join-Path $PWD "scripts/gitaudit.ps1"
+          Write-Host "`nAttempting to run: $script"
+          if (-Not (Test-Path $script)) {
+            Write-Error "Script not found at $script"
+            exit 1
+          }
+          & $script
 
       - name: Output HTML file contents
         shell: pwsh
-        run: Get-Content output/GitRepoReport.html
+        run: |
+          $report = Get-Content homelab-gitops-auditor/output/GitRepoReport.html -Raw
+          Write-Host "`n===== GitRepoReport.html =====`n"
+          Write-Host $report
 
       - name: Send audit summary email
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.gmail.com
+          server_address: smtp.office365.com
           server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
@@ -41,15 +54,10 @@ jobs:
           body: |
             Hello Jeremy,
 
-            Your weekly GitOps audit completed successfully.
+            Your weekly GitOps audit has completed successfully.
+            Please find the attached summary report.
 
-            ✔️ Repository report includes:
-              - Last commit per repo
-              - Current branch
-              - Uncommitted changes (if any)
-
-            📎 Full details are attached in the HTML report.
-
-            Cheers,  
+            Regards,  
             GitOps Bot
-          attachments: output/GitRepoReport.html
+
+          attachments: homelab-gitops-auditor/output/GitRepoReport.md

@@ -3,7 +3,7 @@ name: Weekly GitOps Audit Email
 on:
   schedule:
     - cron: '0 6 * * 0'  # Every Sunday at 6AM UTC
-  workflow_dispatch:
+  workflow_dispatch:  # ✅ must NOT be indented under anything
     inputs:
       mode:
         description: 'Run mode (default or test)'
@@ -20,7 +20,7 @@ jobs:
         with:
           path: homelab-gitops-auditor
 
-      - name: Root-level debug: Show full file tree
+      - name: Root level debug: Show full file tree
         shell: pwsh
         run: |
           Write-Host "🔍 Full file tree from runner root:"

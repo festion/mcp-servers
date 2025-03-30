@@ -65,4 +65,4 @@ jobs:
             Regards,  
             GitOps Bot
 
-          attachments: homelab-gitops-auditor/output/GitRepoReport.html
+          attachments: output/GitRepoReport.html

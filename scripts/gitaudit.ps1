@@ -1,6 +1,6 @@
 # gitaudit.ps1
 
-$ReportDir = "scripts/output"
+$ReportDir = "output"
 $MarkdownReportPath = Join-Path $ReportDir "GitRepoReport.md"
 $HtmlReportPath     = Join-Path $ReportDir "GitRepoReport.html"
 $Timestamp = Get-Date -Format "yyyy-MM-dd"

@@ -76,5 +76,4 @@ jobs:
             Regards,  
             GitOps Bot
 
-          attachments: output/GitRepoReport.html
-        working-directory: homelab-gitops-auditor
+          attachments: homelab-gitops-auditor/output/GitRepoReport.html

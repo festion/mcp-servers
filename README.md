@@ -15,6 +15,38 @@ This project provides a visual dashboard for auditing the health and status of y
 
 ---
 
+## 🧠 AdGuard DNS Rewrite Sync
+
+This repository includes tooling to automate AdGuard Home rewrite records based on Nginx Proxy Manager entries.
+
+### How It Works
+
+- **NPM database** (`database.sqlite`) is copied from container 105 each night
+- Internal domains matching `*.internal.lakehouse.wtf` are extracted
+- DNS rewrites are applied to AdGuard via API using a dry-run → commit pipeline
+
+### Cron Schedule
+
+| Task                         | Time       |
+|-----------------------------|------------|
+| Fetch NPM DB snapshot       | 3:00 AM    |
+| Generate dry-run rewrite log| immediately |
+| Commit rewrites to AdGuard  | if dry-run found |
+
+### Files
+
+- `/opt/gitops/scripts/fetch_npm_config.sh`
+- `/opt/gitops/scripts/generate_adguard_rewrites_from_sqlite.py`
+- `/opt/gitops/scripts/gitops_dns_sync.sh`
+- Logs saved in `/opt/gitops/logs/`
+
+### Manual Testing
+
+```bash
+bash /opt/gitops/scripts/gitops_dns_sync.sh
+
+---
+
 ## 📁 Project Structure
 
 ```text

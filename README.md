@@ -1,4 +1,4 @@
-﻿# 🧭 GitOps Audit Dashboard
+# 🧭 GitOps Audit Dashboard
 
 This project provides a visual dashboard for auditing the health and status of your Git repositories in a GitOps-managed homelab. It checks for uncommitted changes, stale branches, and missing files, and presents the results in an interactive web interface.
 
@@ -44,6 +44,56 @@ This repository includes tooling to automate AdGuard Home rewrite records based 
 
 ```bash
 bash /opt/gitops/scripts/gitops_dns_sync.sh
+```
+
+Or run components separately:
+
+```bash
+bash /opt/gitops/scripts/fetch_npm_config.sh
+python3 /opt/gitops/scripts/generate_adguard_rewrites_from_sqlite.py
+python3 /opt/gitops/scripts/generate_adguard_rewrites_from_sqlite.py --commit
+```
+
+### Files & Logs
+
+- Snapshots: `/opt/gitops/npm_proxy_snapshot/YYYYMMDD_HHMMSS/database.sqlite`
+- Dry-run plan: `/opt/gitops/.last_adguard_dry_run.json`
+- Logs: `/opt/gitops/logs/*.log`
+
+### Requirements
+
+- AdGuard Home API enabled with basic auth
+- NPM container on LXC 105
+- GitOps container on LXC 123 (with SSH access to Proxmox)
+- Domain scheme:
+  - External: `*.lakehouse.wtf`
+  - Internal: `*.internal.lakehouse.wtf`
+
+### Safety
+
+- Sync is **idempotent**: no changes are made unless dry-run confirms delta
+- Only touches domains ending in `.internal.lakehouse.wtf`
+- Must run `--dry-run` before `--commit` is allowed
+
+### Testing Cron Jobs
+
+Use `env -i` to simulate cron environment:
+
+```bash
+env -i bash -c '/opt/gitops/scripts/gitops_dns_sync.sh'
+```
+
+Or temporarily schedule a one-off:
+
+```cron
+* * * * * root /opt/gitops/scripts/gitops_dns_sync.sh
+```
+
+Monitor logs:
+
+```bash
+tail -f /opt/gitops/logs/gitops_dns_sync.log
+```
 
 ---
 
@@ -59,3 +109,4 @@ homelab-gitops-auditor/
 │   └── deploy.sh          # Build + deploy script
 ├── GitRepoAudit.py        # Main repo auditing script
 └── ...
+```

@@ -1,0 +1,30 @@
+# ORIGINAL WORKING STATE DOCUMENTATION
+# Date: June 3, 2025 - Preserve what was working
+
+## SYSTEM STATE BEFORE SERENA PROJECT
+- Health: 90%+ (confirmed working)
+- Templates: 100% functional, no security errors
+- Automations: All working properly
+- No recurring template errors in logs
+
+## CURRENT BROKEN STATE
+- Health: Stuck at 85% max
+- Templates: Security errors with list.append()
+- Multiple redesign attempts failed
+- User losing progress in redesign/fix cycles
+
+## WHAT NOT TO DO
+- Do NOT redesign existing functionality
+- Do NOT create new template versions
+- Do NOT add new features
+- Do NOT change working template logic
+
+## WHAT TO DO
+- ONLY fix SecurityError lines
+- ONLY replace list.append() with safe alternatives
+- PRESERVE all existing template names and functionality
+- MINIMAL surgical changes only
+- Test each change before deployment
+
+## KEY PRINCIPLE
+If it was working before, preserve that exact functionality - only fix the security syntax errors.

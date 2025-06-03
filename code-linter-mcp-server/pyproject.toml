@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-linter-mcp-server"
+version = "0.1.0"
+description = "A Model Context Protocol server for comprehensive code linting and validation"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "MCP Servers Project"}
+]
+keywords = ["mcp", "linting", "code-quality", "validation", "claude"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "pydantic>=2.0.0",
+    "click>=8.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "isort>=5.12.0",
+]
+
+linters = [
+    # Python linters
+    "flake8>=6.0.0",
+    "black>=23.0.0", 
+    "mypy>=1.5.0",
+    "pylint>=2.17.0",
+    
+    # YAML/JSON linters (Python packages)
+    "yamllint>=1.32.0",
+    "jsonschema>=4.0.0",
+]
+
+[project.scripts]
+"code-linter-mcp-server" = "code_linter_mcp.cli:cli_main"
+
+[project.urls]
+Homepage = "https://github.com/your-username/mcp-servers"
+Documentation = "https://github.com/your-username/mcp-servers/tree/main/code-linter-mcp-server"
+Repository = "https://github.com/your-username/mcp-servers.git"
+Issues = "https://github.com/your-username/mcp-servers/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--cov=src/code_linter_mcp --cov-report=html --cov-report=term-missing"

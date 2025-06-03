@@ -1,0 +1,112 @@
+{
+  "languages": {
+    "python": {
+      "extensions": [".py", ".pyw"],
+      "linters": {
+        "flake8": {
+          "enabled": true,
+          "args": ["--max-line-length=88", "--extend-ignore=E203,W503"],
+          "timeout": 30
+        },
+        "black": {
+          "enabled": true,
+          "args": ["--check", "--diff"],
+          "timeout": 30
+        },
+        "mypy": {
+          "enabled": true,
+          "args": ["--ignore-missing-imports"],
+          "timeout": 60
+        },
+        "pylint": {
+          "enabled": false,
+          "args": ["--max-line-length=88"],
+          "timeout": 120
+        }
+      },
+      "default_linters": ["flake8", "black"]
+    },
+    "go": {
+      "extensions": [".go"],
+      "linters": {
+        "gofmt": {
+          "enabled": true,
+          "timeout": 30
+        },
+        "govet": {
+          "enabled": true,
+          "timeout": 30
+        },
+        "golint": {
+          "enabled": false,
+          "timeout": 30
+        },
+        "staticcheck": {
+          "enabled": false,
+          "timeout": 60
+        }
+      },
+      "default_linters": ["gofmt", "govet"]
+    },
+    "javascript": {
+      "extensions": [".js", ".jsx"],
+      "linters": {
+        "eslint": {
+          "enabled": true,
+          "args": ["--format=json"],
+          "timeout": 30
+        },
+        "prettier": {
+          "enabled": false,
+          "args": ["--check"],
+          "timeout": 30
+        }
+      },
+      "default_linters": ["eslint"]
+    },
+    "typescript": {
+      "extensions": [".ts", ".tsx"],
+      "linters": {
+        "eslint": {
+          "enabled": true,
+          "args": ["--parser=@typescript-eslint/parser", "--format=json"],
+          "timeout": 30
+        },
+        "tsc": {
+          "enabled": true,
+          "args": ["--noEmit"],
+          "timeout": 60
+        }
+      },
+      "default_linters": ["eslint", "tsc"]
+    }
+  }
+}
+  },
+  "security": {
+    "allowed_file_extensions": [
+      ".py", ".go", ".js", ".ts", ".jsx", ".tsx", ".json", 
+      ".yaml", ".yml", ".toml", ".xml", ".html", ".css", 
+      ".scss", ".sass", ".sql", ".sh", ".ps1", ".bat", 
+      ".dockerfile", ".md", ".rst", ".ini", ".cfg", ".conf"
+    ],
+    "blocked_patterns": [
+      ".*\\.exe$", ".*\\.dll$", ".*\\.so$", ".*\\.dylib$"
+    ],
+    "max_file_size": "10MB",
+    "allow_network": false,
+    "sandbox_mode": true
+  },
+  "serena_integration": {
+    "block_on_error": true,
+    "block_on_warning": false,
+    "auto_fix": false,
+    "backup_before_fix": true,
+    "integration_mode": "strict"
+  },
+  "global_timeout": 60,
+  "concurrent_linters": 4,
+  "cache_results": true,
+  "cache_duration": 300,
+  "log_level": "INFO"
+}

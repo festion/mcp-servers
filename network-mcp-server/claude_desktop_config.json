@@ -1,0 +1,86 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "BSAvmYDSWnPnD9v1nxKWvvosFbQUgbF"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\Jeremy\\OneDrive\\Desktop",
+        "C:\\working",
+        "Z:\\"
+      ]
+    },
+    "youtube-transcript": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@80ai20u/mcp-youtube-transcript"
+      ]
+    },
+    "markdown-downloader": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-markdown-downloader",
+        "C:/GIT/MCP_Jarvis"
+      ]
+    },
+    "hass-mcp": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "HA_URL",
+        "-e",
+        "HA_TOKEN",
+        "voska/hass-mcp"
+      ],
+      "env": {
+        "HA_URL": "http://192.168.1.155:8123",
+        "HA_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmMTYxZTRmZDBlMzU0NGM2OGU4Mzc2YjM1ODAwZmIyMiIsImlhdCI6MTc0NzE2MDczNCwiZXhwIjoyMDYyNTIwNzM0fQ.-J4E0rlcxU8Ep9OzTD4wpE_o3Dq6xREiM9T28RCDbpw"
+      }
+    },
+    "desktop-commander": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@wonderwhy-er/desktop-commander"
+      ]
+    },
+    "network-fs": {
+      "command": "C:\\Users\\Jeremy\\AppData\\Roaming\\Python\\Python313\\Scripts\\network-mcp-server.exe",
+      "args": [
+        "run",
+        "--config",
+        "C:\\working\\network-mcp-server\\test_config.json"
+      ]
+    },
+    "serena": {
+      "command": "wsl",
+      "args": [
+        "uv",
+        "run",
+        "--directory",
+        "/mnt/c/GIT/serena",
+        "serena-mcp-server",
+        "--transport",
+        "stdio",
+        "--port",
+        "9121",
+        "/mnt/c/GIT/home-assistant-config"
+      ]
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "shares": {
+    "example_smb": {
+      "type": "smb",
+      "host": "192.168.1.155",
+      "share_name": "config",
+      "username": "homeassistant",
+      "password": "redflower805",
+      "domain": "WORhomelabKGROUP",
+      "port": 445,
+      "use_ntlm_v2": true,
+      "timeout": 30
+    }
+  },
+  "security": {
+    "allowed_extensions": [
+      ".txt",
+      ".py",
+      ".json",
+      ".md",
+      ".yaml",
+      ".yml",
+      ".xml",
+	  ".yaml",
+	  ".log",
+      ".csv"
+    ],
+    "blocked_extensions": [
+      ".exe",
+      ".bat",
+      ".cmd",
+      ".ps1",
+      ".sh"
+    ],
+    "max_file_size": "100MB",
+    "allowed_paths": [],
+    "blocked_paths": [
+      "/etc",
+      "/root",
+      "/sys",
+      "/proc"
+    ],
+    "enable_write": true,
+    "enable_delete": false
+  },
+  "logging_level": "INFO",
+  "max_connections": 10
+}

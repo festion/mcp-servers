@@ -1,0 +1,16 @@
+{
+  "shares": {
+    "my_share": {
+      "type": "smb",
+      "host": "192.168.1.155",
+      "share_name": "config",
+      "username": "homeassistant",
+      "password": "redflower805",
+      "domain": "homelab"
+    }
+  },
+  "security": {
+    "allowed_extensions": [".txt", ".py", ".json", ".md", ".yaml", ".log"],
+    "max_file_size": "100MB"
+  }
+}

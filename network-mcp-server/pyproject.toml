@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "network-mcp-server"
+version = "0.1.0"
+description = "MCP server for network filesystem access (SMB, NFS, etc.)"
+authors = [
+    {name = "Network MCP Server", email = "network-mcp@example.com"},
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "pysmb>=1.2.9",         # SMB/CIFS support
+    "pydantic>=2.0.0",
+    "typing-extensions>=4.0.0",
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+network-mcp-server = "network_mcp.cli:cli_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/network_mcp"]
+
+[tool.black]
+target-version = ["py310"]
+line-length = 100
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

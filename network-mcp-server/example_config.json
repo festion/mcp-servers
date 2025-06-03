@@ -1,0 +1,44 @@
+{
+  "shares": {
+    "home_nas": {
+      "type": "smb",
+      "host": "192.168.1.100",
+      "share_name": "shared_documents",
+      "username": "your_username",
+      "password": "your_password",
+      "domain": "WORKGROUP",
+      "port": 445,
+      "use_ntlm_v2": true,
+      "timeout": 30
+    },
+    "office_server": {
+      "type": "smb", 
+      "host": "office-server.local",
+      "share_name": "projects",
+      "username": "office_user",
+      "password": "office_password",
+      "domain": "OFFICE",
+      "port": 445,
+      "use_ntlm_v2": true,
+      "timeout": 30
+    }
+  },
+  "security": {
+    "allowed_extensions": [
+      ".txt", ".py", ".js", ".json", ".yaml", ".yml", 
+      ".md", ".xml", ".csv", ".log", ".conf", ".cfg"
+    ],
+    "blocked_extensions": [
+      ".exe", ".bat", ".cmd", ".ps1", ".sh", ".dll", ".so"
+    ],
+    "max_file_size": "100MB",
+    "allowed_paths": [],
+    "blocked_paths": [
+      "/etc", "/root", "/sys", "/proc", "/windows", "/system32"
+    ],
+    "enable_write": true,
+    "enable_delete": false
+  },
+  "logging_level": "INFO",
+  "max_connections": 10
+}

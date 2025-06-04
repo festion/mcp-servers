@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Code Linter MCP Server Wrapper Script
+# This script ensures the server runs with the correct Python environment
+
+# Set the script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Set Python path to include the source directory
+export PYTHONPATH="$SCRIPT_DIR/src:$PYTHONPATH"
+
+# Find Python executable
+PYTHON_CMD=""
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "Error: Python not found in PATH" >&2
+    exit 1
+fi
+
+# Run the MCP server
+exec "$PYTHON_CMD" -m code_linter_mcp.cli "$@"

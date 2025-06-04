@@ -120,7 +120,7 @@ if not exist "%INSTALL_DIR%" (
 REM Copy source files to installation directory
 echo.
 echo 📋 Copying source files...
-robocopy "%SOURCE_DIR%" "%INSTALL_DIR%" /E /PURGE /XD __pycache__ .git node_modules .pytest_cache /XF *.pyc *.pyo
+robocopy "%SOURCE_DIR%" "%INSTALL_DIR%" /E /XD __pycache__ .git node_modules .pytest_cache /XF *.pyc *.pyo
 
 if %errorlevel% gtr 7 (
     echo ❌ ERROR: Failed to copy source files

@@ -1,263 +1,295 @@
-# Network MCP Server Installation & Usage Guide
+# Network MCP Server - Installation Guide
+
+This guide covers the installation of the Network MCP Server from source to deployment.
 
 ## Quick Start
 
-### 1. Installation
+### Windows
+```batch
+# Navigate to source directory
+cd C:\git\mcp-servers\network-mcp-server
 
-```bash
-cd C:\working\network-mcp-server
-pip install -e .
+# Run installer with default settings
+install.bat
+
+# Or with custom install directory
+install.bat --install-dir "D:\my-tools\network-mcp"
 ```
 
-### 2. Create Configuration
-
+### Unix/Linux/macOS
 ```bash
-network-mcp-server create-config my_config.json
+# Navigate to source directory
+cd /path/to/mcp-servers/network-mcp-server
+
+# Make installer executable
+chmod +x install.sh
+
+# Run installer with default settings
+./install.sh
+
+# Or with custom install directory
+./install.sh --install-dir "$HOME/my-tools/network-mcp"
 ```
 
-Edit `my_config.json` with your SMB share details:
+## Installation Options
+
+### Windows (install.bat)
+- `--source DIR` - Source directory (default: C:\git\mcp-servers\network-mcp-server)
+- `--install-dir DIR` - Installation directory (default: C:\working\network-mcp-server)
+- `--help` - Show help message
+
+### Unix/Linux/macOS (install.sh)
+- `--source DIR` - Source directory (default: current directory)
+- `--install-dir DIR` - Installation directory (default: ~/mcp-servers/network-mcp-server)
+- `--help` - Show help message
+
+### Python Installer Script
+```bash
+# Advanced installation with Python script
+python installer.py
+
+# Or with command line options
+python installer.py --source /path/to/source --install-dir /path/to/install
+```
+
+## What Gets Installed
+
+### Core Package
+- Network MCP Server package
+- Core dependencies (mcp, pysmb, pydantic)
+- Development dependencies (pytest, black, ruff, mypy)
+
+### Configuration
+- Sample configuration file (`config.json`)
+- Pre-configured for SMB/CIFS access
+
+## Prerequisites
+
+### Required
+- Python 3.10 or later
+- pip (Python package manager)
+
+### Network Access
+- Access to SMB/CIFS shares you want to connect to
+- Network connectivity to target servers
+- Appropriate credentials for SMB shares
+
+## Installation Process
+
+1. **Validation** - Checks Python version and source directory
+2. **Directory Setup** - Creates installation directory
+3. **File Copying** - Copies source files to installation directory
+4. **Package Installation** - Installs the MCP server package
+5. **Dependencies** - Installs required dependencies (pysmb, etc.)
+6. **Configuration** - Creates sample configuration file
+7. **Testing** - Runs basic tests if available
+8. **Integration Setup** - Provides Claude Desktop configuration
+
+## Post-Installation Configuration
+
+### SMB Share Setup
+Edit the generated `config.json` file with your SMB details:
 
 ```json
 {
   "shares": {
-    "my_nas": {
-      "type": "smb",
+    "my_share": {
       "host": "192.168.1.100",
-      "share_name": "documents",
+      "share_name": "shared_folder",
       "username": "your_username",
       "password": "your_password",
-      "domain": "WORKGROUP"
+      "domain": "your_domain",
+      "port": 445,
+      "timeout": 30
     }
   },
   "security": {
-    "allowed_extensions": [".txt", ".py", ".json", ".md"],
-    "enable_write": true,
-    "enable_delete": false
+    "allowed_file_extensions": [".txt", ".md", ".json", ".py"],
+    "max_file_size": "10MB",
+    "allow_write": true,
+    "allow_delete": false
   }
 }
 ```
 
-### 3. Validate Configuration
+### Configuration Fields
+- **host** - SMB server hostname or IP address
+- **share_name** - Name of the SMB share
+- **username** - SMB username
+- **password** - SMB password (consider using environment variables)
+- **domain** - SMB domain (optional, use "" if not needed)
+- **port** - SMB port (default: 445)
+- **timeout** - Connection timeout in seconds
 
+### Security Settings
+- **allowed_file_extensions** - List of allowed file extensions
+- **max_file_size** - Maximum file size (e.g., "10MB", "1GB")
+- **allow_write** - Allow writing files to shares
+- **allow_delete** - Allow deleting files from shares
+
+## Testing Installation
+
+### Validate Configuration
 ```bash
-network-mcp-server validate-config my_config.json
+network-mcp-server validate-config /path/to/config.json
 ```
 
-### 4. Test the Server
-
+### Test Connection
 ```bash
-python test_setup.py
+# Test the server (will attempt to connect to configured shares)
+network-mcp-server run --config /path/to/config.json
 ```
 
-### 5. Run the Server
-
+### Test Specific Operations
 ```bash
-network-mcp-server run --config my_config.json
+# List shares
+network-mcp-server list-shares --config /path/to/config.json
+
+# Test connectivity
+network-mcp-server test-connection --config /path/to/config.json
 ```
 
 ## Claude Desktop Integration
 
-Add this to your Claude Desktop configuration file:
+Add the provided configuration to your Claude Desktop config file:
 
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%USERPROFILE%\AppData\Roaming\Claude\claude_desktop_config.json`
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Linux**: `~/.config/claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "network-fs": {
-      "command": "network-mcp-server",
-      "args": ["run", "--config", "C:\\path\\to\\your\\config.json"]
+      "command": "/path/to/network-mcp-server",
+      "args": ["run", "--config", "/path/to/config.json"]
     }
   }
 }
 ```
 
-## Available Tools in Claude
+## Usage Examples
 
-Once connected, you can use these tools in Claude:
+Once installed and configured, you can use these commands through Claude Desktop:
 
-### 1. List Directory Contents
-```
-List the contents of my NAS documents folder
-```
-
-### 2. Read Files
-```
-Read the file "projects/readme.txt" from my_nas share
-```
-
-### 3. Write Files
-```
-Write a new file called "notes.md" to my_nas share with this content: [your content]
-```
-
-### 4. Get File Information
-```
-Get information about the file "data.csv" on my_nas
-```
-
-### 5. Create Directories
-```
-Create a new directory called "backup" on my_nas share
-```
-
-### 6. View Share Information
-```
-Show me information about my configured network shares
-```
-
-## Security Features
-
-- **File Extension Filtering**: Only allow specific file types
-- **Path Restrictions**: Block access to sensitive directories
-- **Size Limits**: Prevent reading/writing large files
-- **Operation Controls**: Enable/disable write and delete operations
-- **Audit Logging**: All operations are logged
+- "List the contents of my network share"
+- "Read the file 'documents/readme.txt' from my_share"
+- "Create a new file called 'notes.txt' with content on my_share"
+- "Show information about the 'projects' directory"
+- "Upload this file to my network share"
 
 ## Troubleshooting
 
-### Connection Issues
+### Common Issues
 
-1. **Check network connectivity:**
-   ```bash
-   ping 192.168.1.100
-   telnet 192.168.1.100 445
-   ```
+1. **Connection Refused**
+   - Check host/IP address and port
+   - Verify firewall settings
+   - Ensure SMB service is running
 
-2. **Verify SMB share access:**
-   - Test with Windows Explorer or `net use` command
-   - Ensure the share is accessible with your credentials
+2. **Authentication Failed**
+   - Verify username/password
+   - Check domain settings
+   - Try without domain if not needed
 
-3. **Check firewall settings:**
-   - Ensure port 445 is open
-   - Disable Windows Firewall temporarily to test
+3. **Permission Denied**
+   - Check SMB share permissions
+   - Verify user has appropriate access
+   - Check security settings in config
 
-### Authentication Issues
+4. **Command Not Found**
+   - Ensure pip scripts directory is in PATH
+   - Try using `python -m network_mcp.cli` instead
 
-1. **Domain vs Workgroup:**
-   - For domain: use `DOMAIN\username` or set domain in config
-   - For workgroup: use just `username`
+### Network Diagnostics
 
-2. **Password special characters:**
-   - Escape special characters in JSON config
-   - Consider using environment variables for sensitive data
+```bash
+# Test SMB connectivity manually
+smbclient -L //hostname -U username
 
-### Permission Issues
+# Check port accessibility
+telnet hostname 445
 
-1. **SMB share permissions:**
-   - Ensure the user has read/write access to the share
-   - Check NTFS permissions on the target directories
+# Test with different credentials
+net use \\hostname\sharename /user:domain\username
+```
 
-2. **MCP server permissions:**
-   - Check the `security` section in your config
-   - Verify file extensions are allowed
+### Log Analysis
+Enable verbose logging in configuration:
+```json
+{
+  "logging": {
+    "level": "DEBUG",
+    "file": "/path/to/network-mcp.log"
+  }
+}
+```
+
+## Security Considerations
+
+### Credential Security
+- Use environment variables for passwords when possible
+- Restrict file permissions on configuration files
+- Consider using keyring/credential managers
+
+### Network Security
+- Use VPN when accessing remote shares
+- Configure appropriate firewall rules
+- Monitor access logs
+
+### File Access Control
+- Limit allowed file extensions
+- Set appropriate file size limits
+- Disable write/delete if not needed
+- Use read-only shares when possible
 
 ## Advanced Configuration
 
-### Environment Variables
-
-For security, use environment variables for credentials:
-
-```json
-{
-  "shares": {
-    "secure_share": {
-      "type": "smb",
-      "host": "192.168.1.100",
-      "share_name": "documents",
-      "username": "${SMB_USERNAME}",
-      "password": "${SMB_PASSWORD}",
-      "domain": "${SMB_DOMAIN}"
-    }
-  }
-}
-```
-
-Set environment variables:
-```bash
-set SMB_USERNAME=your_username
-set SMB_PASSWORD=your_password
-set SMB_DOMAIN=WORKGROUP
-```
-
 ### Multiple Shares
-
-Configure multiple network shares:
-
 ```json
 {
   "shares": {
-    "home_nas": {
-      "type": "smb",
-      "host": "192.168.1.100",
-      "share_name": "home",
-      "username": "homeuser",
-      "password": "homepass"
+    "documents": {
+      "host": "server1.company.com",
+      "share_name": "documents",
+      "username": "user1"
     },
-    "office_server": {
-      "type": "smb",
-      "host": "office.company.com",
-      "share_name": "projects", 
-      "username": "officeuser",
-      "password": "officepass",
-      "domain": "COMPANY"
+    "backups": {
+      "host": "server2.company.com",
+      "share_name": "backups",
+      "username": "user2"
     }
   }
 }
 ```
 
-### Enhanced Security
-
+### Environment Variables
 ```json
 {
-  "security": {
-    "allowed_extensions": [".txt", ".py", ".js", ".json", ".md", ".csv"],
-    "blocked_extensions": [".exe", ".bat", ".cmd", ".ps1", ".dll"],
-    "max_file_size": "50MB",
-    "allowed_paths": ["/documents", "/projects", "/shared"],
-    "blocked_paths": ["/admin", "/system", "/config"],
-    "enable_write": true,
-    "enable_delete": false
+  "shares": {
+    "my_share": {
+      "host": "${SMB_HOST}",
+      "username": "${SMB_USER}",
+      "password": "${SMB_PASS}"
+    }
   }
 }
 ```
 
-## Development
-
-### Running Tests
-
-```bash
-# Install development dependencies
-pip install pytest pytest-asyncio
-
-# Run tests
-python -m pytest tests/ -v
-
-# Run setup tests
-python test_setup.py
+### Custom Timeouts and Retries
+```json
+{
+  "connection": {
+    "timeout": 60,
+    "retry_attempts": 3,
+    "retry_delay": 5
+  }
+}
 ```
 
-### Adding New Protocols
+## Getting Help
 
-The server is designed to be extensible. To add support for new protocols (NFS, FTP, etc.):
-
-1. Create a new protocol implementation in `src/network_mcp/`
-2. Add configuration model to `config.py`
-3. Update the server to handle the new protocol type
-4. Add tests for the new functionality
-
-## Support
-
-For issues and questions:
-
-1. Check the logs for error messages
-2. Verify your network connectivity and SMB access
-3. Test with the provided test scripts
-4. Review the security configuration
-
-Common error patterns:
-- `Authentication failed`: Check username/password/domain
-- `Connection timeout`: Check network connectivity and firewall
-- `Permission denied`: Check file/directory permissions
-- `File not found`: Verify path and case sensitivity
+- Run installer with `--help` for installation options
+- Check the main README.md for detailed server documentation
+- Review configuration examples in the examples directory
+- Enable debug logging for troubleshooting connection issues

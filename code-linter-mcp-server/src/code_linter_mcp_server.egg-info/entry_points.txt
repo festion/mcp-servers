@@ -1,2 +1,0 @@
-[console_scripts]
-code-linter-mcp-server = code_linter_mcp.cli:cli_main

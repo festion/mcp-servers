@@ -1,0 +1,12 @@
+# Core dependencies for Network MCP Server
+mcp>=1.0.0
+pysmb>=1.2.9
+pydantic>=2.0.0
+typing-extensions>=4.0.0
+
+# Development dependencies (install with pip install -e .[dev])
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# black>=23.0.0
+# ruff>=0.1.0
+# mypy>=1.0.0

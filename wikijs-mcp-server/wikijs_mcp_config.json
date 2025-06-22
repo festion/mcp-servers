@@ -1,0 +1,75 @@
+{
+  "wikijs": {
+    "url": "https://wiki.internal.lakehouse.wtf",
+    "api_key": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOjEsImdycCI6MywiaWF0IjoxNzUwNjI4NjI0LCJleHAiOjE4NDUzMDE0MjQsImF1ZCI6InVybjp3aWtpLmpzIiwiaXNzIjoidXJuOndpa2kuanMifQ.NOppfgTync8jCb6C32neKdLBi85ZrlepxwB1GaeCnteHQYhktMfwO5fi1qMR6c7QnX6aEpPDyOlcsQvytw1u89nfIxXVy-eO8XpjkOWinDGHm6um2hp3aXeS8xVWXW4THXDciDebB7hy4ns8VYk_PH2bJltx4LIRwoVxCgtvXtNMSG_40t-RqTzwDGpQXlHk-hCVEeIgdU84PmgSSIXhetwjSnSI76ni_nBmV6n61z4m7OBBsP2ZeDU_V2W-8Jbwlz1XT5xosVfIqfLPXeS7mzlNoM02fDi43UqPxAR5pjsIfo3S1KsJ8tMPqBDPcF-_98-tieqwSkh2i1t8N6n3lw",
+    "default_locale": "en",
+    "default_editor": "markdown",
+    "default_tags": ["documentation", "auto-generated", "mcp-server"],
+    "timeout": 30,
+    "retry_attempts": 3
+  },
+  "document_discovery": {
+    "search_paths": [
+      "/home/user/documents",
+      "/home/user/projects",
+      "/mnt/c/GIT"
+    ],
+    "include_patterns": ["*.md", "*.markdown", "README.md", "CHANGELOG.md"],
+    "exclude_patterns": [
+      "node_modules/**",
+      ".git/**",
+      "**/.git/**",
+      "**/node_modules/**",
+      "*.private.md",
+      "**/.env",
+      "**/secrets/**",
+      "**/.vscode/**",
+      "**/dist/**",
+      "**/build/**"
+    ],
+    "max_file_size": "10MB",
+    "max_files_per_scan": 1000,
+    "follow_symlinks": false,
+    "extract_frontmatter": true,
+    "extract_links": true
+  },
+  "security": {
+    "allowed_paths": [
+      "/home/user/documents",
+      "/home/user/projects", 
+      "/mnt/c/GIT",
+      "/mnt/c/Users",
+      "/tmp/wikijs-uploads"
+    ],
+    "forbidden_patterns": [
+      "*.private.*",
+      "secret*",
+      "password*",
+      "*.key",
+      "*.pem",
+      "credentials*",
+      "*.env",
+      "config.json",
+      "*.config.js"
+    ],
+    "max_files_per_operation": 100,
+    "require_path_validation": true,
+    "allow_hidden_files": false,
+    "content_filters": [
+      "(?i)(password|secret|api[_-]?key|token)\\s*[:=]\\s*[^\\s]+",
+      "-----BEGIN [A-Z ]+-----",
+      "(?i)(bearer|basic)\\s+[a-zA-Z0-9+/=]+",
+      "(?i)mongodb://[^\\s]+",
+      "(?i)postgres://[^\\s]+"
+    ]
+  },
+  "page_config": {
+    "default_title_transform": "title_case",
+    "preserve_directory_structure": true,
+    "update_existing_pages": false,
+    "conflict_resolution": "skip",
+    "auto_generate_tags": true,
+    "include_metadata": true
+  },
+  "logging_level": "INFO"
+}

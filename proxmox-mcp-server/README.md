@@ -1,0 +1,315 @@
+# Proxmox MCP Server
+
+Comprehensive Proxmox VE management through Model Context Protocol, providing system monitoring, resource management, and automated maintenance capabilities.
+
+## Features
+
+- **System Monitoring**: Real-time resource usage, health assessments, and performance monitoring
+- **Virtual Machine Management**: List, monitor, and analyze VMs and LXC containers
+- **Storage Management**: Storage utilization analysis and optimization recommendations
+- **Snapshot Management**: Automated snapshot lifecycle management and cleanup
+- **Backup Management**: Backup file analysis and retention policy enforcement
+- **Automated Maintenance**: Configurable automated maintenance tasks
+- **Security Controls**: Comprehensive validation and access controls for all operations
+- **Multi-Server Support**: Manage multiple Proxmox clusters from a single configuration
+
+## Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Access to Proxmox VE API (user account with appropriate permissions)
+- Claude Desktop with MCP support
+
+### Install from Source
+
+```bash
+cd mcp-servers/proxmox-mcp-server
+./install.sh  # Creates virtual environment and installs all dependencies
+```
+
+### Manual Installation
+
+```bash
+cd mcp-servers/proxmox-mcp-server
+pip install -e .
+```
+
+### Verify Installation
+
+```bash
+# If using virtual environment installation
+./venv/bin/proxmox-mcp-server --version
+./venv/bin/proxmox-mcp-server info
+
+# If using manual pip installation
+proxmox-mcp-server --version
+proxmox-mcp-server info
+```
+
+## Configuration
+
+### 1. Create Configuration File
+
+Generate a sample configuration:
+
+```bash
+# If using virtual environment installation
+./venv/bin/proxmox-mcp-server create-config --output my_config.json
+
+# If using manual pip installation
+proxmox-mcp-server create-config --output my_config.json
+```
+
+### 2. Set Environment Variables
+
+Create a `.env` file or set environment variables for sensitive data:
+
+```bash
+export PROXMOX_PASSWORD="your_proxmox_password"
+export PROXMOX_BACKUP_PASSWORD="your_backup_server_password"
+```
+
+### 3. Edit Configuration
+
+Edit the generated configuration file with your Proxmox server details:
+
+```json
+{
+  "servers": {
+    "main": {
+      "host": "192.168.1.100",
+      "port": 8006,
+      "username": "root",
+      "password_env_var": "PROXMOX_PASSWORD",
+      "realm": "pam",
+      "verify_ssl": false,
+      "timeout": 30
+    }
+  },
+  "default_server": "main",
+  "security": {
+    "allow_vm_operations": true,
+    "allow_storage_operations": true,
+    "require_confirmation_for_destructive_ops": true
+  }
+}
+```
+
+### 4. Validate Configuration
+
+```bash
+proxmox-mcp-server validate-config my_config.json --test-connection
+```
+
+## Claude Desktop Integration
+
+Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "proxmox": {
+      "command": "proxmox-mcp-server",
+      "args": ["run", "/path/to/your/config.json"],
+      "env": {
+        "PROXMOX_PASSWORD": "your_password"
+      }
+    }
+  }
+}
+```
+
+## Available Tools
+
+### System Information
+- **`get_system_info`** - Get basic Proxmox system information including version, nodes, and cluster status
+- **`get_node_status`** - Get detailed status information for a specific node
+- **`run_health_assessment`** - Perform comprehensive health assessment with recommendations
+
+### Resource Management
+- **`list_virtual_machines`** - List all virtual machines with status and resource information
+- **`list_containers`** - List all LXC containers with status and resource information
+- **`monitor_resource_usage`** - Get real-time resource monitoring data with threshold warnings
+
+### Storage Management
+- **`get_storage_status`** - Get comprehensive storage utilization and health analysis
+- **`optimize_storage`** - Analyze storage usage and provide optimization recommendations
+
+### Maintenance Operations
+- **`manage_snapshots`** - Manage VM and container snapshots (list, analyze, cleanup)
+- **`manage_backups`** - Manage backup files and implement retention policies
+- **`execute_maintenance`** - Execute automated maintenance tasks
+- **`get_audit_report`** - Generate comprehensive environment audit report
+
+## Usage Examples
+
+### Basic System Assessment
+
+```python
+# Ask Claude: "Run a health assessment of my Proxmox environment"
+# This will execute the run_health_assessment tool
+```
+
+### Storage Analysis
+
+```python
+# Ask Claude: "What's the current storage utilization across all nodes?"
+# This will execute the get_storage_status tool
+```
+
+### Snapshot Management
+
+```python
+# Ask Claude: "Show me all snapshots older than 90 days"
+# This will execute: manage_snapshots with operation: "analyze", max_age_days: 90
+```
+
+### Automated Cleanup
+
+```python
+# Ask Claude: "Clean up old snapshots and backups"
+# This will execute maintenance tasks with appropriate confirmations
+```
+
+## Security Features
+
+### Access Control
+- **Operation Categories**: Granular control over VM, storage, snapshot, backup, and system operations
+- **Destructive Operation Protection**: Requires explicit confirmation for destructive operations
+- **Resource Limits**: Configurable thresholds for memory, storage, and operational limits
+
+### Validation
+- **Parameter Validation**: Comprehensive validation of all operation parameters
+- **Resource Threshold Checking**: Prevents operations when resource usage is too high
+- **Cleanup Limits**: Safety limits on bulk operations to prevent accidental damage
+
+### Audit Trail
+- **Operation Logging**: Complete audit trail of all operations with timestamps
+- **Security Events**: Logging of security validation failures and access attempts
+
+## Configuration Reference
+
+### Server Configuration
+
+```json
+{
+  "host": "proxmox.example.com",     // Proxmox server hostname/IP
+  "port": 8006,                     // API port (default: 8006)
+  "username": "root",               // Username for authentication
+  "password_env_var": "PROXMOX_PASSWORD",  // Environment variable containing password
+  "realm": "pam",                   // Authentication realm
+  "verify_ssl": false,              // SSL certificate verification
+  "timeout": 30                     // Request timeout in seconds
+}
+```
+
+### Security Configuration
+
+```json
+{
+  "allow_vm_operations": true,                    // Allow VM management operations
+  "allow_storage_operations": true,              // Allow storage operations
+  "allow_snapshot_operations": true,             // Allow snapshot management
+  "allow_backup_operations": true,               // Allow backup management
+  "max_snapshot_age_days": 90,                   // Maximum age for snapshot cleanup
+  "max_backup_age_days": 30,                     // Maximum age for backup cleanup
+  "memory_usage_threshold": 90.0,                // Memory usage warning threshold
+  "storage_usage_threshold": 85.0,               // Storage usage warning threshold
+  "require_confirmation_for_destructive_ops": true  // Require confirmation for deletions
+}
+```
+
+### Monitoring Configuration
+
+```json
+{
+  "enable_monitoring": true,        // Enable monitoring features
+  "cpu_threshold": 80.0,           // CPU usage warning threshold
+  "memory_threshold": 85.0,        // Memory usage warning threshold
+  "storage_threshold": 90.0        // Storage usage warning threshold
+}
+```
+
+## Troubleshooting
+
+### Connection Issues
+
+1. **Authentication Failures**: Verify username, password, and realm configuration
+2. **SSL Errors**: Set `verify_ssl: false` for self-signed certificates
+3. **Timeout Issues**: Increase `timeout` value for slow networks
+
+### Permission Issues
+
+Ensure your Proxmox user has appropriate permissions:
+
+```bash
+# Example: Create API user with required permissions
+pveum user add api-user@pve
+pveum passwd api-user@pve
+pveum aclmod / -user api-user@pve -role Administrator
+```
+
+### Debugging
+
+Enable debug logging:
+
+```json
+{
+  "log_level": "DEBUG"
+}
+```
+
+### Common Error Messages
+
+- **"Authentication failed"**: Check credentials and realm
+- **"Security validation failed"**: Check security configuration and operation parameters
+- **"Configuration error"**: Validate JSON syntax and required fields
+
+## Development
+
+### Running Tests
+
+```bash
+pip install -e ".[test]"
+pytest
+```
+
+### Code Quality
+
+```bash
+pip install -e ".[dev]"
+black src/
+isort src/
+mypy src/
+```
+
+## Migration from Standalone Scripts
+
+This MCP server replaces the original standalone Proxmox agent scripts. The following mapping shows how functionality has been migrated:
+
+| Original Script | MCP Tool | Description |
+|----------------|----------|-------------|
+| `proxmox_assessment.py` | `run_health_assessment` | System health assessment |
+| `storage_cleanup_analysis.py` | `manage_snapshots`, `optimize_storage` | Storage and snapshot analysis |
+| `execute_cleanup.py` | `execute_maintenance` | Automated cleanup execution |
+| `comprehensive_environment_audit.py` | `get_audit_report` | Environment auditing |
+
+### Deprecated Scripts
+
+The following scripts are now deprecated and should be replaced with MCP tool usage:
+
+- ⚠️ `proxmox_assessment.py` → Use `run_health_assessment` tool
+- ⚠️ `storage_cleanup_analysis.py` → Use `manage_snapshots` and `optimize_storage` tools
+- ⚠️ `execute_cleanup.py` → Use `execute_maintenance` tool
+- ⚠️ All other standalone scripts → See tool mapping above
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Support
+
+- 📖 [Documentation](https://github.com/your-org/mcp-servers/tree/main/proxmox-mcp-server)
+- 🐛 [Issue Tracker](https://github.com/your-org/mcp-servers/issues)
+- 💬 [Discussions](https://github.com/your-org/mcp-servers/discussions)

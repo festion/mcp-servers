@@ -1,0 +1,2 @@
+[console_scripts]
+proxmox-mcp-server = proxmox_mcp.cli:cli_main

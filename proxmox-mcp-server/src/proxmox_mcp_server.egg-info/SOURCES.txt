@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/proxmox_mcp/__init__.py
+src/proxmox_mcp/cli.py
+src/proxmox_mcp/config.py
+src/proxmox_mcp/exceptions.py
+src/proxmox_mcp/proxmox_client.py
+src/proxmox_mcp/security.py
+src/proxmox_mcp/server.py
+src/proxmox_mcp_server.egg-info/PKG-INFO
+src/proxmox_mcp_server.egg-info/SOURCES.txt
+src/proxmox_mcp_server.egg-info/dependency_links.txt
+src/proxmox_mcp_server.egg-info/entry_points.txt
+src/proxmox_mcp_server.egg-info/requires.txt
+src/proxmox_mcp_server.egg-info/top_level.txt
+tests/test_config.py
+tests/test_security.py

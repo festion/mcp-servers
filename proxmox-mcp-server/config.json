@@ -1,0 +1,28 @@
+{
+  "servers": {
+    "proxmox-primary": {
+      "host": "192.168.1.137",
+      "username": "root",
+      "password_env_var": "PROXMOX_PASSWORD",
+      "port": 8006,
+      "verify_ssl": false,
+      "timeout": 30
+    }
+  },
+  "default_server": "proxmox-primary",
+  "security": {
+    "max_vms_per_operation": 10,
+    "max_storage_gb": 500,
+    "allowed_operations": [
+      "snapshot",
+      "backup", 
+      "monitor",
+      "manage_vms",
+      "cleanup"
+    ],
+    "enable_destructive_operations": true
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "wikijs": {
     "url": "https://wiki.internal.lakehouse.wtf",
-    "api_key": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOjEsImdycCI6MywiaWF0IjoxNzUwNjI4NjI0LCJleHAiOjE4NDUzMDE0MjQsImF1ZCI6InVybjp3aWtpLmpzIiwiaXNzIjoidXJuOndpa2kuanMifQ.NOppfgTync8jCb6C32neKdLBi85ZrlepxwB1GaeCnteHQYhktMfwO5fi1qMR6c7QnX6aEpPDyOlcsQvytw1u89nfIxXVy-eO8XpjkOWinDGHm6um2hp3aXeS8xVWXW4THXDciDebB7hy4ns8VYk_PH2bJltx4LIRwoVxCgtvXtNMSG_40t-RqTzwDGpQXlHk-hCVEeIgdU84PmgSSIXhetwjSnSI76ni_nBmV6n61z4m7OBBsP2ZeDU_V2W-8Jbwlz1XT5xosVfIqfLPXeS7mzlNoM02fDi43UqPxAR5pjsIfo3S1KsJ8tMPqBDPcF-_98-tieqwSkh2i1t8N6n3lw",
+    "api_key": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOjIsImdycCI6MSwiaWF0IjoxNzUwNjg5NzQ0LCJleHAiOjE3NTMyODE3NDQsImF1ZCI6InVybjp3aWtpLmpzIiwiaXNzIjoidXJuOndpa2kuanMifQ.rcGzUI_zmRmFhin90HM2BuB6n4CcCUYY2kHBL7aYg2C114U1GkAD_UHIEmo-6lH-qFESgh34MBTs_6-WUCxDQIg-Y2rPeKZqY8nnFrwrrFwXu6s3cyomHw4QclHWa1_OKs0BCausZWYWkgLagELx3WNw42Zs8YqH0yfjYqNQFy-Vh1jAphtoloFtKRZ0DIWSYE-oxwDywu3Qkh5XFIf0hZKOAu3XKD8da0G3WFpw4JB9v7ubHYNHJBdzp8RpLov-f6Xh5AYGuel1N4PCIbVRegpCKUVbHwZgYHrkTWwae-8D_9tphg1zAbGoQQ2bU-IPsFfcyFg8RDYViJiH2qaL0g",
     "default_locale": "en",
     "default_editor": "markdown",
     "default_tags": ["documentation", "auto-generated", "mcp-server"],
@@ -42,15 +42,15 @@
       "/tmp/wikijs-uploads"
     ],
     "forbidden_patterns": [
-      "*.private.*",
-      "secret*",
-      "password*",
-      "*.key",
-      "*.pem",
-      "credentials*",
-      "*.env",
-      "config.json",
-      "*.config.js"
+      ".*\\.private\\..*",
+      "secret.*",
+      "password.*",
+      ".*\\.key",
+      ".*\\.pem",
+      "credentials.*",
+      ".*\\.env",
+      "config\\.json",
+      ".*\\.config\\.js"
     ],
     "max_files_per_operation": 100,
     "require_path_validation": true,

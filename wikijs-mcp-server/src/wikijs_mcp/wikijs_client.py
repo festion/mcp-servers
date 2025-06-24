@@ -75,45 +75,41 @@ class WikiJSClient:
             raise WikiJSAPIError(f"Connection test failed: {str(e)}")
     
     async def get_page(self, path: str, locale: str = None) -> Optional[Dict[str, Any]]:
-        """Get a page by its path."""
+        """Get a page by its path using corrected schema."""
         locale = locale or self.config.default_locale
         
+        # First get all pages and find the one with matching path
         query = '''
-        query GetPage($path: String!, $locale: String!) {
+        {
             pages {
-                single(path: $path, locale: $locale) {
+                list {
                     id
                     path
                     title
                     description
                     content
-                    contentType
                     isPublished
-                    locale
-                    tags {
-                        id
-                        tag
-                    }
                     createdAt
                     updatedAt
-                    author {
-                        id
-                        name
-                        email
-                    }
-                    editor
                 }
             }
         }
         '''
         
-        variables = {'path': path, 'locale': locale}
-        
         try:
-            result = await self._execute_query(query, variables)
-            return result['data']['pages']['single']
+            result = await self._execute_query(query)
+            all_pages = result['data']['pages']['list']
+            
+            # Find page with matching path
+            for page in all_pages:
+                if page['path'] == path:
+                    return page
+                    
+            # Page not found
+            return None
+            
         except WikiJSAPIError:
-            # Page might not exist
+            # API error or page doesn't exist
             return None
     
     async def create_page(
@@ -125,7 +121,8 @@ class WikiJSClient:
         tags: List[str] = None,
         locale: str = None,
         editor: str = None,
-        is_published: bool = True
+        is_published: bool = True,
+        is_private: bool = False
     ) -> Dict[str, Any]:
         """Create a new page in WikiJS."""
         locale = locale or self.config.default_locale
@@ -141,6 +138,7 @@ class WikiJSClient:
             $description: String!,
             $editor: String!,
             $isPublished: Boolean!,
+            $isPrivate: Boolean!,
             $locale: String!,
             $path: String!,
             $tags: [String]!,
@@ -152,6 +150,7 @@ class WikiJSClient:
                     description: $description,
                     editor: $editor,
                     isPublished: $isPublished,
+                    isPrivate: $isPrivate,
                     locale: $locale,
                     path: $path,
                     tags: $tags,
@@ -178,6 +177,7 @@ class WikiJSClient:
             'description': description,
             'editor': editor,
             'isPublished': is_published,
+            'isPrivate': is_private,
             'locale': locale,
             'path': path,
             'tags': all_tags,
@@ -340,40 +340,43 @@ class WikiJSClient:
         limit: int = 100,
         offset: int = 0
     ) -> Dict[str, Any]:
-        """List pages with pagination."""
-        locale = locale or self.config.default_locale
+        """List pages with simplified query that works with WikiJS schema."""
         
+        # Use simple query without problematic pagination and schema fields
         query = '''
-        query ListPages($locale: String!, $limit: Int!, $offset: Int!) {
+        {
             pages {
-                list(locale: $locale, limit: $limit, offset: $offset) {
+                list {
                     id
                     path
                     title
                     description
                     isPublished
-                    locale
-                    tags {
-                        id
-                        tag
-                    }
                     createdAt
                     updatedAt
-                    author {
-                        id
-                        name
-                    }
                 }
             }
         }
         '''
         
-        variables = {'locale': locale, 'limit': limit, 'offset': offset}
+        result = await self._execute_query(query)
+        all_pages = result['data']['pages']['list']
         
-        result = await self._execute_query(query, variables)
+        # Apply client-side pagination and filtering
+        if locale and locale != 'en':
+            # Filter by locale if specified (basic implementation)
+            filtered_pages = [p for p in all_pages if 'locale' not in p or p.get('locale') == locale]
+        else:
+            filtered_pages = all_pages
+        
+        # Apply pagination
+        start_idx = offset
+        end_idx = offset + limit
+        paginated_pages = filtered_pages[start_idx:end_idx]
+        
         return {
-            'pages': result['data']['pages']['list'],
-            'total': len(result['data']['pages']['list']),
+            'pages': paginated_pages,
+            'total': len(paginated_pages),
             'offset': offset,
             'limit': limit
         }
@@ -425,9 +428,21 @@ class WikiJSClient:
         if variables:
             payload['variables'] = variables
         
+        # Debug logging
+        logger.debug(f"GraphQL Request:")
+        logger.debug(f"Query: {query[:200]}...")
+        logger.debug(f"Variables: {variables}")
+        
         try:
             async with self.session.post(self.api_url, json=payload) as response:
-                result = await response.json()
+                response_text = await response.text()
+                logger.debug(f"Response status: {response.status}")
+                logger.debug(f"Response: {response_text[:500]}...")
+                
+                try:
+                    result = await response.json()
+                except:
+                    result = {"error": "Failed to parse JSON", "response": response_text}
                 
                 # Check for HTTP errors
                 if response.status == 401:
@@ -436,7 +451,7 @@ class WikiJSClient:
                     raise AuthenticationError("Access forbidden - check permissions")
                 elif response.status >= 400:
                     raise WikiJSAPIError(
-                        f"HTTP {response.status}: {response.reason}",
+                        f"HTTP {response.status}: {response.reason} - {response_text[:200]}",
                         status_code=response.status
                     )
                 

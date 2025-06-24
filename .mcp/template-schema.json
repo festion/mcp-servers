@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Repository Template Schema",
+  "description": "Schema for defining repository templates in the homelab-gitops-auditor ecosystem",
+  "type": "object",
+  "required": ["id", "name", "version", "description", "type", "files", "directories"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique identifier for the template"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the template"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the template"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the template purpose and usage"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["devops", "node-application", "python-service", "documentation", "infrastructure"],
+      "description": "Category of the template"
+    },
+    "requirements": {
+      "type": "object",
+      "properties": {
+        "mcp_servers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["filesystem", "serena", "wikijs-mcp", "github", "network-fs", "proxmox-mcp", "hass-mcp"]
+          },
+          "description": "Required MCP servers"
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "destination"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source file path in template"
+          },
+          "destination": {
+            "type": "string",
+            "description": "Destination path in target repository"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether file is required for compliance"
+          }
+        }
+      },
+      "description": "Template files to be applied"
+    },
+    "directories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory path to create"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether directory is required for compliance"
+          }
+        }
+      },
+      "description": "Directories to be created"
+    }
+  }
+}

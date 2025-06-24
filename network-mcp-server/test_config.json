@@ -6,7 +6,7 @@
       "share_name": "config",
       "username": "homeassistant",
       "password": "redflower805",
-      "domain": "WORhomelabKGROUP",
+      "domain": "homelab",
       "port": 445,
       "use_ntlm_v2": true,
       "timeout": 30
@@ -23,12 +23,11 @@
       ".xml",
 	  ".yaml",
 	  ".log",
+	  ".txt",
       ".csv"
     ],
     "blocked_extensions": [
-      ".exe",
       ".bat",
-      ".cmd",
       ".ps1",
       ".sh"
     ],

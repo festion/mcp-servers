@@ -15,9 +15,8 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\Jeremy\\OneDrive\\Desktop",
-        "C:\\working",
-        "Z:\\"
+        "/mnt/c/Users/Jeremy/OneDrive/Desktop",
+        "/mnt/c/working"
       ]
     },
     "youtube-transcript": {
@@ -25,14 +24,6 @@
       "args": [
         "-y",
         "@80ai20u/mcp-youtube-transcript"
-      ]
-    },
-    "markdown-downloader": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-markdown-downloader",
-        "C:/GIT/MCP_Jarvis"
       ]
     },
     "hass-mcp": {

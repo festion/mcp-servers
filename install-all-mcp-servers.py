@@ -56,7 +56,17 @@ class MCPServer:
 class MCPInstaller:
     """Universal MCP Server installer and manager"""
     
-    def __init__(self, base_path: str = "/mnt/c/GIT/mcp-servers"):
+    def __init__(self, base_path: str = None):
+        if base_path is None:
+            # Auto-detect base path
+            current_dir = Path.cwd()
+            if current_dir.name == "mcp-servers":
+                base_path = str(current_dir)
+            elif (current_dir / "mcp-servers").exists():
+                base_path = str(current_dir / "mcp-servers")
+            else:
+                base_path = "/mnt/c/GIT/mcp-servers"  # fallback
+        
         self.base_path = Path(base_path)
         self.mcp_config_path = self.base_path / ".mcp.json"
         
@@ -144,19 +154,30 @@ class MCPInstaller:
         logger.info(f"🚀 Installing {server_name}...")
         
         try:
-            # Create directory if it doesn't exist
-            os.makedirs(server.directory, exist_ok=True)
-            
-            # Create virtual environment
-            logger.info(f"Creating virtual environment: {server.venv_path}")
-            result = subprocess.run(
-                ["python3", "-m", "venv", server.venv_path],
-                cwd=server.directory,
-                capture_output=True, text=True
-            )
-            if result.returncode != 0:
-                logger.error(f"Failed to create venv: {result.stderr}")
+            # Check if directory exists and has content
+            if not os.path.exists(server.directory):
+                logger.error(f"Server directory not found: {server.directory}")
                 return False
+            
+            # Check if run script exists
+            run_script_path = os.path.join(server.directory, server.run_script)
+            if not os.path.exists(run_script_path):
+                logger.error(f"Run script not found: {run_script_path}")
+                return False
+            
+            # Create virtual environment if it doesn't exist
+            if not os.path.exists(server.venv_path):
+                logger.info(f"Creating virtual environment: {server.venv_path}")
+                result = subprocess.run(
+                    ["python3", "-m", "venv", server.venv_path],
+                    cwd=server.directory,
+                    capture_output=True, text=True
+                )
+                if result.returncode != 0:
+                    logger.error(f"Failed to create venv: {result.stderr}")
+                    return False
+            else:
+                logger.info(f"Virtual environment already exists: {server.venv_path}")
             
             # Install dependencies
             requirements_path = os.path.join(server.directory, server.requirements_file)

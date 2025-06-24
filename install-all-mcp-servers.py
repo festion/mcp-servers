@@ -58,17 +58,32 @@ class MCPInstaller:
     
     def __init__(self, base_path: str = None):
         if base_path is None:
-            # Auto-detect base path
+            # Auto-detect base path based on current working directory and script location
             current_dir = Path.cwd()
-            if current_dir.name == "mcp-servers":
+            script_dir = Path(__file__).parent.absolute()
+            
+            # Check if we're already in mcp-servers directory
+            if current_dir.name == "mcp-servers" and (current_dir / "install-all-mcp-servers.py").exists():
                 base_path = str(current_dir)
+            # Check if script is in mcp-servers directory  
+            elif script_dir.name == "mcp-servers" and (script_dir / "install-all-mcp-servers.py").exists():
+                base_path = str(script_dir)
+            # Check if there's a mcp-servers subdirectory
             elif (current_dir / "mcp-servers").exists():
                 base_path = str(current_dir / "mcp-servers")
             else:
-                base_path = "/mnt/c/GIT/mcp-servers"  # fallback
+                # Last resort: use current directory if it contains the expected structure
+                if (current_dir / "wikijs-mcp-server").exists() or (current_dir / "proxmox-mcp-server").exists():
+                    base_path = str(current_dir)
+                else:
+                    base_path = "/mnt/c/GIT/mcp-servers"  # fallback
         
         self.base_path = Path(base_path)
         self.mcp_config_path = self.base_path / ".mcp.json"
+        
+        logger.info(f"Initialized MCP Installer with base path: {self.base_path}")
+        logger.info(f"Current working directory: {Path.cwd()}")
+        logger.info(f"Script directory: {Path(__file__).parent.absolute()}")
         
         # Define server configurations
         self.servers = {

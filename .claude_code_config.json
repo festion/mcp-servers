@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "wikijs-mcp": {
+      "command": "/home/jeremy/.mcp/bin/wikijs-mcp-claude-code",
+      "args": [],
+      "env": {
+        "PYTHONPATH": "/home/jeremy/.mcp/servers/wikijs-mcp/src"
+      }
+    },
+    "proxmox-mcp": {
+      "command": "/home/jeremy/.mcp-servers/bin/mcp-proxmox-mcp",
+      "args": [
+        "run",
+        "/home/jeremy/.mcp-servers/config/proxmox-mcp-config.json"
+      ],
+      "env": {}
+    }
+  }
+}

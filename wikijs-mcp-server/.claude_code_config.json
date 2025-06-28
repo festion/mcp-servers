@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "wikijs-mcp": {
+      "command": "/home/jeremy/.mcp/bin/wikijs-mcp-claude-code",
+      "args": [],
+      "env": {
+        "PYTHONPATH": "/home/jeremy/.mcp/servers/wikijs-mcp/src"
+      }
+    },
+    "proxmox-mcp": {
+      "command": "/home/jeremy/.mcp-servers/bin/mcp-proxmox-mcp",
+      "args": [
+        "run",
+        "/home/jeremy/.mcp-servers/config/proxmox-mcp-config.json"
+      ],
+      "env": {}
+    },
+    "code-linter-mcp": {
+      "command": "/home/jeremy/.mcp-servers/bin/mcp-code-linter-mcp",
+      "args": [
+        "run",
+        "--config",
+        "/home/jeremy/.mcp-servers/config/code-linter-mcp-config.json"
+      ],
+      "env": {}
+    },
+    "network-mcp": {
+      "command": "/home/jeremy/.mcp-servers/bin/mcp-network-mcp",
+      "args": [
+        "run",
+        "--config",
+        "/home/jeremy/.mcp-servers/config/network-mcp-config.json"
+      ],
+      "env": {}
+    }
+  }
+}

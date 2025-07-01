@@ -7,14 +7,13 @@ import sys
 import os
 from pathlib import Path
 
-# Add src directory to Python path
-current_dir = Path(__file__).parent
-src_dir = current_dir / "src"
-sys.path.insert(0, str(src_dir))
+# Test uses installed package instead of src directory
 
 def test_server_startup():
     """Test that server can initialize without errors."""
     try:
+        # Test installed package import
+        import proxmox_mcp
         from proxmox_mcp.config import ProxmoxMCPConfig
         from proxmox_mcp.server import ProxmoxMCPServer
         

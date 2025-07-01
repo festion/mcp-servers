@@ -673,9 +673,10 @@ class WikiJSMCPServer:
                 response_lines.append(f"   ID: {page['id']}")
                 if page.get('description'):
                     response_lines.append(f"   Description: {page['description']}")
-                if page.get('tags'):
-                    tag_names = [tag['tag'] for tag in page['tags']]
-                    response_lines.append(f"   Tags: {', '.join(tag_names)}")
+                # Tags removed from search results due to WikiJS schema compatibility
+                # if page.get('tags'):
+                #     tag_names = [tag['tag'] for tag in page['tags']]
+                #     response_lines.append(f"   Tags: {', '.join(tag_names)}")
                 response_lines.append(f"   Updated: {page['updatedAt']}")
                 response_lines.append("")
             
@@ -823,7 +824,7 @@ class WikiJSMCPServer:
             response_lines.append(f"    ... and {remaining} more")
         
         response_lines.append(f"  Include Patterns: {', '.join(self.config.document_discovery.include_patterns)}")
-        response_lines.append(f"  Max File Size: {self._format_file_size(self.config.document_discovery.max_file_size)}")
+        response_lines.append(f"  Max File Size: {self.config.document_discovery.max_file_size}")
         response_lines.append(f"  Max Files Per Scan: {self.config.document_discovery.max_files_per_scan}")
         response_lines.append("")
         

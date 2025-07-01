@@ -311,10 +311,6 @@ class WikiJSClient:
                         path
                         description
                         locale
-                        tags {
-                            id
-                            tag
-                        }
                         createdAt
                         updatedAt
                     }

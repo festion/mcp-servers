@@ -2,6 +2,16 @@
 
 An MCP (Model Context Protocol) server for managing documentation with WikiJS. This server provides tools for finding Markdown documents and automatically adding them to a WikiJS instance, enabling seamless documentation management and migration.
 
+## Recent Updates
+
+### Version 1.0.1 - Critical Fixes (2025-07-01)
+- **🔧 FIXED:** GraphQL schema compatibility with WikiJS 2.5.307
+- **🔧 FIXED:** Type comparison errors in configuration display
+- **🔧 FIXED:** Search functionality now works reliably
+- **📚 NEW:** Added comprehensive troubleshooting guide
+
+**⚠️ Breaking Change Note:** If you're using WikiJS 2.5.307, please update to v1.0.1 to resolve search functionality issues.
+
 ## Features
 
 ### 🔍 Document Discovery
@@ -61,13 +71,13 @@ wikijs-mcp test-connection
     "default_editor": "markdown"
   },
   "document_discovery": {
-    "search_paths": ["/path/to/docs", "/path/to/projects"],
+    "search_paths": ["/home/dev/workspace/docs", "/home/dev/workspace/projects"],
     "include_patterns": ["*.md", "README.md"],
     "exclude_patterns": ["node_modules/**", ".git/**"],
     "max_file_size": "10MB"
   },
   "security": {
-    "allowed_paths": ["/home/user/docs", "/projects"],
+    "allowed_paths": ["/home/dev/workspace/docs", "/home/dev/workspace/projects"],
     "forbidden_patterns": ["*.private.md", "secrets/**"],
     "max_files_per_operation": 100
   }

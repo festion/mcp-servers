@@ -67,5 +67,5 @@ cd /home/dev/workspace/mcp-servers/directory-polling-server
 # Start the directory polling MCP server
 mcp_info "Starting directory polling MCP server"
 
-# Execute the Python MCP server (use simple version without dependencies)
-exec python3 mcp-directory-polling-server-simple.py
+# Execute the Python MCP server (use fixed version with proper MCP protocol)
+exec python3 mcp-directory-polling-server-fixed.py

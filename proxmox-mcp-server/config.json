@@ -4,6 +4,7 @@
       "host": "192.168.1.137",
       "username": "root",
       "realm": "pam",
+      "token_env_var": "PROXMOX_TOKEN",
       "password_env_var": "PROXMOX_PASSWORD",
       "port": 8006,
       "verify_ssl": false,

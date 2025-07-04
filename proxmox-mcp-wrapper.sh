@@ -11,15 +11,10 @@ PID_FILE="${MCP_PID_FILE:-/tmp/mcp-sessions/pids/$SESSION_ID/proxmox.pid}"
 # Environment setup
 export PROXMOX_HOST="${PROXMOX_HOST:-192.168.1.137}"
 export PROXMOX_USER="${PROXMOX_USER:-root@pam}"
-export PROXMOX_TOKEN="${PROXMOX_TOKEN:-PVEAPIToken=root@pam!homelab=your-real-token-here}"
+export PROXMOX_TOKEN="${PROXMOX_TOKEN:-PVEAPIToken=root@pam!claude=b2cb00a2-f76d-442c-a3a3-d48c0896ea8a}"
 export PROXMOX_PASSWORD="${PROXMOX_PASSWORD:-placeholder}"
 
-# Validate configuration
-if [ "$PROXMOX_TOKEN" = "your_proxmox_token_here" ]; then
-    echo "ERROR: Proxmox MCP server requires configuration. Please set PROXMOX_TOKEN environment variable."
-    echo "Example: export PROXMOX_TOKEN="PVEAPIToken=user@pam!tokenid=token-secret""
-    exit 1
-fi
+# Configuration validation removed - using real token
 
 # Logging setup
 source /home/dev/workspace/mcp-logger.sh 2>/dev/null || {

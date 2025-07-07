@@ -1,5 +1,5 @@
 #!/bin/bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_PERSONAL_ACCESS_TOKEN:-ghp_test_token_for_diagnostic_purposes_only}"
+export GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_PERSONAL_ACCESS_TOKEN:-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}"
 
 # Check if token is configured (allow test token for diagnostics)
 if [ "$GITHUB_PERSONAL_ACCESS_TOKEN" = "your_github_token_here" ]; then
@@ -12,4 +12,7 @@ fi
 source /home/dev/workspace/mcp-logger.sh 2>/dev/null || true
 mcp_info "GITHUB" "Starting GitHub MCP server with token: ${GITHUB_PERSONAL_ACCESS_TOKEN:0:15}..." 2>/dev/null || echo "Starting GitHub MCP server"
 
-docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN" ghcr.io/github/github-mcp-server
+exec docker run -i --rm \
+  -e GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN" \
+  local-github-mcp \
+  stdio --toolsets context,projects,repos,issues,pull_requests

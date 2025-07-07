@@ -1,0 +1,438 @@
+esphome:
+  name: wroommicrousb
+  friendly_name: wroommicrousb
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+packages:
+  Bermuda.esp32: github://agittins/bermuda-proxies/packages/bermuda-proxy-esp32-s3-minimal.yaml
+
+logger:
+  level: DEBUG  # Increased logging for troubleshooting
+
+api:
+  encryption:
+    key: "YejCGMWQaLxpOJPPndHlEK7/FzdNTQOyFKEgCSWOzBE="
+  services:
+    - service: set_last_fertigation_time
+      variables:
+        timestamp: int
+      then:
+        - lambda: |-
+            id(last_fertigation_timestamp) = timestamp;
+            id(depth_sum) = 0;
+            id(depth_count) = 0;
+    - service: reset_depth_buffer
+      then:
+        - lambda: |-
+            id(valid_reading_count) = 0;
+            ESP_LOGI("sensor", "Reset depth buffer");
+
+ota:
+  - platform: esphome
+    password: "49a9cc8c49fbe905afcf6485b96b339e"
+
+bluetooth_proxy:  
+
+esp32_ble_tracker:
+    scan_parameters:
+      active: True  #True is the default setting anyway
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "Wroommicrousb Fallback Hotspot"
+    password: "V161O4ypEIAg"
+
+captive_portal:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: America/Chicago
+    servers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - 2.pool.ntp.org
+    on_time_sync:
+      then:
+        - logger.log: "Time synchronized with NTP server"
+
+one_wire:
+  - platform: gpio
+    pin:
+      number: GPIO13
+      mode:
+        input: true
+        pullup: true
+      drive_strength: 20mA
+
+globals:
+  - id: last_fertigation_timestamp
+    type: int
+    restore_value: true
+    initial_value: '0'
+  - id: depth_sum
+    type: float
+    restore_value: true
+    initial_value: '0'
+  - id: depth_count
+    type: uint32_t
+    restore_value: true
+    initial_value: '0'
+  - id: valid_reading_count
+    type: uint8_t
+    restore_value: false
+    initial_value: '0'
+  # Fixed array initialization - using individual elements instead of an array initialization
+  - id: recent_reading_0
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_1
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_2
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_3
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_4
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_5
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_6
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_7
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_8
+    type: float
+    restore_value: false
+    initial_value: '0'
+  - id: recent_reading_9
+    type: float
+    restore_value: false
+    initial_value: '0'
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+    entity_category: diagnostic
+
+  - platform: ultrasonic
+    trigger_pin: GPIO17
+    echo_pin: GPIO16
+    timeout: 1m  # Reduced from 2m for faster recovery from bad readings
+    pulse_time: 20us
+    name: "Raw Distance (m)"
+    id: raw_distance_m
+    unit_of_measurement: "m"
+    accuracy_decimals: 3
+    update_interval: 30s  # More frequent readings for better averaging
+    filters:
+      - filter_out: nan
+      - median:
+          window_size: 7  # Increased from 5 for better noise filtering
+          send_every: 1
+          send_first_at: 1
+      - lambda: |-
+          // Apply EMA filter to smooth readings
+          static float prev_value = 0;
+          static bool first_value = true;
+          const float alpha = 0.2;  // Smoothing factor
+          
+          if (first_value) {
+            prev_value = x;
+            first_value = false;
+            return x;
+          }
+          
+          float filtered = (alpha * x) + ((1 - alpha) * prev_value);
+          prev_value = filtered;
+          
+          // Apply range filter
+          if (filtered < 0.10 || filtered > 0.40) {
+            return NAN;  // Outside valid range
+          }
+          
+          return filtered;
+    on_value:
+      then:
+        - lambda: |-
+            if (std::isnan(x) || x <= 0) {
+              ESP_LOGW("depth_debug", "Invalid reading filtered: %.3f m", x);
+              return;
+            }
+            
+            float cm = x * 100.0;
+            if (cm < 10.0 || cm > 40.0) {
+              ESP_LOGW("depth_debug", "Out-of-range reading filtered: %.2f cm", cm);
+              return;
+            }
+            
+            // Compare with previous readings for sudden jumps
+            static float prev_cm = -1;
+            if (prev_cm > 0 && fabs(cm - prev_cm) > 3.0) {
+              ESP_LOGW("depth_debug", "Sudden jump filtered: %.2f cm -> %.2f cm", prev_cm, cm);
+              return;
+            }
+            
+            // Maintain a circular buffer of recent readings using individual globals
+            // Shift values down
+            id(recent_reading_9) = id(recent_reading_8);
+            id(recent_reading_8) = id(recent_reading_7);
+            id(recent_reading_7) = id(recent_reading_6);
+            id(recent_reading_6) = id(recent_reading_5);
+            id(recent_reading_5) = id(recent_reading_4);
+            id(recent_reading_4) = id(recent_reading_3);
+            id(recent_reading_3) = id(recent_reading_2);
+            id(recent_reading_2) = id(recent_reading_1);
+            id(recent_reading_1) = id(recent_reading_0);
+            id(recent_reading_0) = cm;
+            
+            // Fix for std::min type error - use implicit conversion to uint8_t
+            if (id(valid_reading_count) < 10) {
+              id(valid_reading_count)++;
+            }
+            
+            prev_cm = cm;
+            ESP_LOGD("depth_debug", "Accepted ultrasonic reading: %.2f cm", cm);
+            id(depth_sum) += cm;
+            id(depth_count)++;
+
+  - platform: template
+    name: "Temperature Compensated Distance"
+    id: compensated_distance
+    unit_of_measurement: "m"
+    accuracy_decimals: 3
+    update_interval: 60s
+    lambda: |-
+      if (!std::isnan(id(raw_distance_m).state) && !std::isnan(id(reservoir_water_temp).state)) {
+        // Speed of sound formula: c = 331.3 + 0.606 * T  (m/s, where T is in °C)
+        float reference_temp = 20.0;  // Calibration temperature
+        float current_temp = id(reservoir_water_temp).state;
+        
+        // Calculate correction factor
+        float reference_speed = 331.3 + 0.606 * reference_temp;
+        float actual_speed = 331.3 + 0.606 * current_temp;
+        float correction_factor = reference_speed / actual_speed;
+        
+        return id(raw_distance_m).state * correction_factor;
+      }
+      return id(raw_distance_m).state;
+
+  - platform: template
+    name: "Raw Distance"
+    id: raw_distance_cm
+    unit_of_measurement: "cm"
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      if (!std::isnan(id(raw_distance_m).state)) {
+        return id(raw_distance_m).state * 100.0;
+      }
+      return 0.0;  // Return 0 instead of NAN to avoid non-numeric error
+
+  # Simplified inverted water level sensor
+  - platform: template
+    name: "Water Level"
+    id: water_level
+    unit_of_measurement: "cm"
+    device_class: "distance"
+    state_class: "measurement"
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      if (!std::isnan(id(raw_distance_cm).state)) {
+        float bucket_height_cm = 36.20;
+        float distance = id(raw_distance_cm).state;
+        if (distance < 0.0) distance = 0.0;
+        if (distance > bucket_height_cm) distance = bucket_height_cm;
+        return bucket_height_cm - distance;
+      }
+      return 0.0;  // Return 0 instead of NAN to avoid non-numeric error
+
+  - platform: template
+    name: "Smoothed Depth"
+    id: smoothed_depth
+    unit_of_measurement: "cm"
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      if (id(valid_reading_count) < 5) {
+        // Not enough readings yet
+        return id(raw_distance_cm).state;  // Return raw distance instead of NAN
+      }
+      
+      // Calculate mean from individual readings
+      float sum = 0;
+      if (id(valid_reading_count) >= 1) sum += id(recent_reading_0);
+      if (id(valid_reading_count) >= 2) sum += id(recent_reading_1);
+      if (id(valid_reading_count) >= 3) sum += id(recent_reading_2);
+      if (id(valid_reading_count) >= 4) sum += id(recent_reading_3);
+      if (id(valid_reading_count) >= 5) sum += id(recent_reading_4);
+      if (id(valid_reading_count) >= 6) sum += id(recent_reading_5);
+      if (id(valid_reading_count) >= 7) sum += id(recent_reading_6);
+      if (id(valid_reading_count) >= 8) sum += id(recent_reading_7);
+      if (id(valid_reading_count) >= 9) sum += id(recent_reading_8);
+      if (id(valid_reading_count) >= 10) sum += id(recent_reading_9);
+      
+      return sum / id(valid_reading_count);
+
+  - platform: template
+    name: "Reservoir Current Volume"
+    id: reservoir_current_volume
+    unit_of_measurement: "L"
+    device_class: "volume"
+    state_class: "total"
+    accuracy_decimals: 2
+    update_interval: 60s
+    lambda: |-
+      const float bucket_height_cm = 36.20;
+      const float bucket_diameter_cm = 30.48;
+      float water_level_cm = 0.0;
+      
+      if (!std::isnan(id(water_level).state)) {
+        water_level_cm = id(water_level).state;
+        if (water_level_cm < 0) water_level_cm = 0;
+        if (water_level_cm > bucket_height_cm) water_level_cm = bucket_height_cm;
+        
+        float bucket_radius = bucket_diameter_cm / 2.0;
+        float volume_cm3 = M_PI * bucket_radius * bucket_radius * water_level_cm;
+        return volume_cm3 / 1000.0;
+      }
+      return 0.0;  // Return 0 instead of NAN to avoid non-numeric error
+      
+  - platform: template
+    name: "Average Depth Since Last Fertigation"
+    id: average_depth_since_last_fertigation
+    unit_of_measurement: "cm"
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      if (id(depth_count) > 0) {
+        return id(depth_sum) / id(depth_count);
+      }
+      return 0.0;  // Return 0 instead of NAN
+
+  - platform: template
+    name: "Average Volume Since Last Fertigation"
+    id: average_volume_since_last_fertigation
+    unit_of_measurement: "L"
+    device_class: "volume"
+    state_class: "total"
+    accuracy_decimals: 2
+    update_interval: 60s
+    lambda: |-
+      if (id(depth_count) > 0) {
+        const float bucket_height_cm = 36.20;
+        const float bucket_diameter_cm = 30.48;
+        float avg_depth_cm = id(depth_sum) / id(depth_count);
+        // Convert the average distance to actual water level height
+        float avg_water_level_cm = bucket_height_cm - avg_depth_cm;
+        if (avg_water_level_cm < 0) avg_water_level_cm = 0;
+        if (avg_water_level_cm > bucket_height_cm) avg_water_level_cm = bucket_height_cm;
+        float bucket_radius = bucket_diameter_cm / 2.0;
+        float avg_volume_cm3 = M_PI * bucket_radius * bucket_radius * avg_water_level_cm;
+        return avg_volume_cm3 / 1000.0;
+      }
+      return 0.0;  // Return 0 instead of NAN
+
+  - platform: dallas_temp
+    id: reservoir_water_temp
+    address: 0x3f00000033f59f28
+    name: "Reservoir Water Temp"
+    device_class: temperature
+    state_class: measurement
+    resolution: 9
+    update_interval: 120s
+    filters:
+      - filter_out: nan
+      - median:
+          window_size: 5
+          send_every: 1
+          send_first_at: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+
+text_sensor:
+  - platform: template
+    name: "Last Fertigation Time"
+    id: last_fertigation_text
+    icon: mdi:timer-sync
+    update_interval: 60s
+    lambda: |-
+      if (id(last_fertigation_timestamp) == 0) {
+        return {"Never"};
+      }
+      time_t timestamp = id(last_fertigation_timestamp);
+      struct tm* timeinfo = localtime(&timestamp);
+      char buffer[26];
+      strftime(buffer, sizeof(buffer), "%b %d, %Y %I:%M %p", timeinfo);
+      return {buffer};
+
+  - platform: template
+    name: "Sensor Reliability"
+    id: sensor_reliability
+    icon: mdi:check-circle
+    update_interval: 60s
+    lambda: |-
+      if (id(valid_reading_count) < 3) {
+        return {"Initializing"};
+      }
+      
+      // Calculate standard deviation using individual globals
+      float sum = 0;
+      if (id(valid_reading_count) >= 1) sum += id(recent_reading_0);
+      if (id(valid_reading_count) >= 2) sum += id(recent_reading_1);
+      if (id(valid_reading_count) >= 3) sum += id(recent_reading_2);
+      if (id(valid_reading_count) >= 4) sum += id(recent_reading_3);
+      if (id(valid_reading_count) >= 5) sum += id(recent_reading_4);
+      if (id(valid_reading_count) >= 6) sum += id(recent_reading_5);
+      if (id(valid_reading_count) >= 7) sum += id(recent_reading_6);
+      if (id(valid_reading_count) >= 8) sum += id(recent_reading_7);
+      if (id(valid_reading_count) >= 9) sum += id(recent_reading_8);
+      if (id(valid_reading_count) >= 10) sum += id(recent_reading_9);
+      
+      float mean = sum / id(valid_reading_count);
+      
+      float variance_sum = 0;
+      if (id(valid_reading_count) >= 1) variance_sum += pow(id(recent_reading_0) - mean, 2);
+      if (id(valid_reading_count) >= 2) variance_sum += pow(id(recent_reading_1) - mean, 2);
+      if (id(valid_reading_count) >= 3) variance_sum += pow(id(recent_reading_2) - mean, 2);
+      if (id(valid_reading_count) >= 4) variance_sum += pow(id(recent_reading_3) - mean, 2);
+      if (id(valid_reading_count) >= 5) variance_sum += pow(id(recent_reading_4) - mean, 2);
+      if (id(valid_reading_count) >= 6) variance_sum += pow(id(recent_reading_5) - mean, 2);
+      if (id(valid_reading_count) >= 7) variance_sum += pow(id(recent_reading_6) - mean, 2);
+      if (id(valid_reading_count) >= 8) variance_sum += pow(id(recent_reading_7) - mean, 2);
+      if (id(valid_reading_count) >= 9) variance_sum += pow(id(recent_reading_8) - mean, 2);
+      if (id(valid_reading_count) >= 10) variance_sum += pow(id(recent_reading_9) - mean, 2);
+      
+      float std_dev = sqrt(variance_sum / id(valid_reading_count));
+      
+      if (std_dev < 0.5) {
+        return {"Excellent"};
+      } else if (std_dev < 1.0) {
+        return {"Good"};
+      } else if (std_dev < 2.0) {
+        return {"Fair"};
+      } else {
+        return {"Poor"};
+      }

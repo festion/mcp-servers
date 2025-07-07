@@ -1,0 +1,232 @@
+# =============================================================================
+# ESPHome BLE Proxy Diagnostic and Fix Configuration
+# Addresses offline devices: bleproxy_with_lux and kitchen-ble-proxy-ef6584
+# =============================================================================
+
+# =============================================================================
+# ENHANCED BLE PROXY CONFIGURATION UPDATES
+# =============================================================================
+
+# Updated bleproxy-with-lux.yaml configuration
+# Place this content in esphome/bleproxy-with-lux.yaml
+---
+esphome:
+  name: bleproxy_with_lux
+  friendly_name: "BLE Proxy with Lux Sensor"
+  project:
+    name: "ble_proxy"
+    version: "1.0"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enhanced logging for diagnostics
+logger:
+  level: INFO  # Changed from ERROR to INFO for better diagnostics
+  logs:
+    ble_tracker: INFO
+    bluetooth_proxy: INFO
+    api: INFO
+    wifi: INFO
+    i2c: WARN  # Keep I2C warnings minimal
+
+# Enhanced API configuration with better error handling
+api:
+  encryption:
+    key: "TR1oyfLMF35UEbOa42OKezXrPUBrdOnIXr10DDMVq0s="
+  reboot_timeout: 15min  # Increased timeout
+  services:
+    - service: restart_ble_tracker
+      then:
+        - esp32_ble_tracker.stop_scan:
+        - delay: 5s
+        - esp32_ble_tracker.start_scan:
+
+ota:
+  - platform: esphome
+    password: "c7bd0eeffcf46d939be3c4cf2d0e3ae3"
+
+# Enhanced WiFi configuration with better retry logic
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true  # Speed up connection
+  power_save_mode: none  # Disable power saving for stability
+  
+  # Enhanced fallback configuration
+  ap:
+    ssid: "BLEProxy-Lux-Fallback"
+    password: "dwelaHXszU0q"
+
+captive_portal:
+
+# Enhanced BLE tracker with optimized parameters
+esp32_ble_tracker:
+  scan_parameters:
+    active: false
+    interval: 1100ms  # Optimized for reliability
+    window: 1100ms    # Match interval for better scanning
+    duration: 5min    # Scan duration
+  continuous: true    # Keep scanning continuously
+
+# Enhanced Bluetooth proxy
+bluetooth_proxy:
+  active: true
+
+# Enhanced I2C configuration
+i2c:
+  sda: GPIO10
+  scl: GPIO9
+  scan: true
+  frequency: 50kHz  # Lower frequency for reliability
+
+# Enhanced sensor configuration with better error handling
+sensor:
+  - platform: bh1750
+    name: "Light Level"
+    address: 0x23
+    update_interval: 60s  # Reduced from 120s for more responsive monitoring
+    unit_of_measurement: "lx"
+    icon: "mdi:brightness-6"
+    filters:
+      - lambda: |-
+          if (x < 0) return 0;
+          return x;
+
+  # WiFi signal strength monitoring
+  - platform: wifi_signal
+    name: "WiFi Signal Strength"
+    update_interval: 60s
+    icon: "mdi:wifi"
+
+  # Uptime sensor for monitoring
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 60s
+    icon: "mdi:clock"
+
+# Status LED for visual diagnostics
+status_led:
+  pin: GPIO48  # Built-in LED for ESP32-S3
+
+# Binary sensors for better monitoring
+binary_sensor:
+  - platform: status
+    name: "Status"
+    icon: "mdi:check-circle"
+
+# Text sensors for diagnostics
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      icon: "mdi:ip"
+    ssid:
+      name: "Connected SSID"
+      icon: "mdi:wifi"
+    mac_address:
+      name: "MAC Address"
+      icon: "mdi:identifier"
+
+# =============================================================================
+# HOME ASSISTANT AUTOMATION FOR BLE PROXY MONITORING
+# =============================================================================
+
+# Place this automation in your Home Assistant configuration
+automations:
+  - alias: "ESPHome BLE Proxy - Connection Monitor"
+    description: "Monitor BLE proxy devices and attempt recovery"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.bleproxy_with_lux_status
+          - binary_sensor.kitchen_ble_proxy_ef6584_status
+        to: "off"
+        for:
+          minutes: 5
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "🔧 BLE Proxy Offline"
+          message: >
+            {{ trigger.to_state.attributes.friendly_name }} has been offline for 5 minutes.
+            
+            Attempting automatic recovery...
+          notification_id: "ble_proxy_{{ trigger.entity_id.split('.')[1] }}"
+      
+      # Attempt to restart the device
+      - service: esphome.{{ trigger.entity_id.split('.')[1] }}_restart
+        continue_on_error: true
+      
+      # Wait and check if recovery was successful
+      - delay: "00:02:00"
+      - condition: state
+        entity_id: "{{ trigger.entity_id }}"
+        state: "off"
+      
+      # If still offline, create persistent alert
+      - service: persistent_notification.create
+        data:
+          title: "🚨 BLE Proxy Recovery Failed"
+          message: >
+            {{ trigger.to_state.attributes.friendly_name }} recovery failed.
+            
+            Manual intervention required:
+            1. Check device power supply
+            2. Verify WiFi connectivity  
+            3. Check ESPHome logs
+            4. Consider physical reset
+            
+            IP: {{ state_attr(trigger.entity_id.replace('status', 'ip_address'), 'state') }}
+          notification_id: "ble_proxy_failed_{{ trigger.entity_id.split('.')[1] }}"
+
+  - alias: "ESPHome BLE Proxy - Recovery Success"
+    description: "Clear notifications when BLE proxy comes back online"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.bleproxy_with_lux_status
+          - binary_sensor.kitchen_ble_proxy_ef6584_status
+        to: "on"
+        for:
+          minutes: 2
+    action:
+      - service: persistent_notification.dismiss
+        data:
+          notification_id: "ble_proxy_{{ trigger.entity_id.split('.')[1] }}"
+      - service: persistent_notification.dismiss
+        data:
+          notification_id: "ble_proxy_failed_{{ trigger.entity_id.split('.')[1] }}"
+      - service: system_log.write
+        data:
+          message: "BLE Proxy {{ trigger.to_state.attributes.friendly_name }} recovered successfully"
+          level: info
+          logger: esphome.recovery
+
+# =============================================================================
+# DEPLOYMENT INSTRUCTIONS
+# =============================================================================
+#
+# 1. Update ESPHome configurations:
+#    - Copy the enhanced YAML to esphome/bleproxy-with-lux.yaml
+#    - Create similar configuration for kitchen-ble-proxy-ef6584.yaml
+#    - Compile and upload to devices via ESPHome dashboard
+#
+# 2. Add automations to Home Assistant:
+#    - Add the automations section to your automations.yaml
+#    - Or include this file in your configuration
+#
+# 3. Monitor recovery:
+#    - Check ESPHome dashboard for compilation success
+#    - Monitor Home Assistant notifications for recovery status
+#    - Verify BLE proxy functionality in Bluetooth integration
+#
+# 4. Physical troubleshooting if needed:
+#    - Check power supply connections
+#    - Verify WiFi signal strength at device location
+#    - Consider USB cable quality for powered devices
+#    - Check for interference from other 2.4GHz devices
+#
+# =============================================================================

@@ -1,0 +1,89 @@
+﻿
+# ===============================================================================
+# DUPLICATE ENTITY MANAGEMENT AUTOMATIONS - ADDED 2025-06-01 11:57:11
+# ===============================================================================
+
+- alias: "Maintenance - Duplicate Entity Alert"
+  description: "Alert when duplicate entities exceed threshold"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.duplicate_entities_scanner
+      above: 2
+      for:
+        minutes: 5
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "🔄 Duplicate Entities Need Attention"
+        message: >
+          Found {{ states('sensor.duplicate_entities_scanner') }} duplicate entity groups.
+          
+          Details: {{ state_attr('sensor.duplicate_entities_scanner', 'duplicate_list') }}
+          
+          Maintenance Score: {{ state_attr('sensor.system_maintenance_status_enhanced', 'maintenance_score') }}%
+          
+          Urgency: {{ state_attr('sensor.duplicate_entities_scanner', 'cleanup_urgency') }}
+          
+          Manual cleanup recommended: Go to Developer Tools > States and disable numbered duplicates.
+        notification_id: duplicate_alert
+
+- alias: "Maintenance - Critical System Status Alert"
+  description: "Alert for critical maintenance issues"
+  trigger:
+    - platform: state
+      entity_id: sensor.system_maintenance_status_enhanced
+      to: "critical"
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "🚨 Critical System Maintenance Required"
+        message: >
+          System Status: {{ states('sensor.system_maintenance_status_enhanced') }}
+          Maintenance Score: {{ state_attr('sensor.system_maintenance_status_enhanced', 'maintenance_score') }}%
+          
+          Issues: {{ state_attr('sensor.system_maintenance_status_enhanced', 'issues_summary') }}
+          
+          Next maintenance window: {{ state_attr('sensor.system_maintenance_status_enhanced', 'next_maintenance') }}
+        data:
+          priority: high
+
+- alias: "Maintenance - Enhanced Health Monitoring"
+  description: "Enhanced system health monitoring with duplicate detection"
+  trigger:
+    - platform: time_pattern
+      minutes: "/15"  # Every 15 minutes
+  action:
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.duplicate_entities_scanner
+          - sensor.system_maintenance_status_enhanced
+          - binary_sensor.duplicate_cleanup_required
+          - sensor.integration_health_status
+          - sensor.unavailable_entities
+
+# ===============================================================================
+# APPLIANCE NOTIFICATION TEST - ADDED 2025-06-03 19:20:00
+# ===============================================================================
+
+- alias: "Test Appliance Notification System"
+  description: "Test the appliance notification system"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      to: "on"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Appliance notification system test successful. The dishwasher cycle announcement system is now working."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Test notification - {{ now().strftime('%H:%M:%S') }}"
+    - delay: "00:00:02"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dishwasher_cycle_announced

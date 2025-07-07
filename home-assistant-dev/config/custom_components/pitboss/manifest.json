@@ -1,0 +1,83 @@
+{
+  "domain": "pitboss",
+  "name": "PitBoss",
+  "bluetooth": [
+    {
+      "connectable": false,
+      "local_name": "LBL-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "LFS-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBA-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBB-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBC-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBD-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBE-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBG-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBL-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBL2-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBM-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBP-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBT-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBV-*"
+    },
+    {
+      "connectable": false,
+      "local_name": "PBX1-*"
+    }
+  ],
+  "codeowners": [
+    "@dknowles2"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
+  "documentation": "https://github.com/dknowles2/ha-pitboss",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/dknowles2/ha-pitboss/issues",
+  "loggers": [
+    "pytboss"
+  ],
+  "requirements": [
+    "pytboss==2025.6.0"
+  ],
+  "version": "2025.6.0"
+}

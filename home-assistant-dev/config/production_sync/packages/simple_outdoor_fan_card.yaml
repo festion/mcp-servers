@@ -1,0 +1,29 @@
+# ===================================================================
+# SIMPLE OUTDOOR CEILING FAN CARD - Manual Alternative
+# ===================================================================
+# If the dashboard view doesn't display, you can add this card manually
+# to any existing dashboard
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      # 🌪️ Outdoor Ceiling Fan Learning Center
+      Click buttons below to learn IR codes from your remote.
+      **RM4 Pro Status:** {{ states('remote.rm4_pro') | title }}
+
+  - type: entities
+    title: "Learning Scripts"
+    entities:
+      - script.learn_all_outdoor_fan_codes
+      - script.learn_outdoor_fan_power_on
+      - script.learn_outdoor_fan_power_off
+      - script.learn_outdoor_fan_speed_low
+      - script.learn_outdoor_fan_speed_medium
+      - script.learn_outdoor_fan_speed_high
+      - script.test_outdoor_fan_codes
+
+  - type: entities
+    title: "RM4 Pro Status"
+    entities:
+      - remote.rm4_pro

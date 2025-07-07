@@ -1,0 +1,21 @@
+2025-04-13 15:49:17,666 - BLE Discovery - INFO - [ble_discovery.py:79] - Logging initialized with level info to /config/ble_discovery/logs/ble_discovery_20250413_154917.log
+2025-04-13 15:49:17,667 - BLE Discovery - INFO - [ble_discovery.py:1500] - Enhanced BLE Discovery Add-on started. Base scanning interval: 60 seconds.
+2025-04-13 15:49:17,667 - BLE Discovery - INFO - [ble_discovery.py:1501] - Using gateway topic: BTLE
+2025-04-13 15:49:17,673 - BLE Discovery - INFO - [ble_discovery.py:1417] - Diagnostics saved to /config/ble_discovery/diagnostics/diagnostics_20250413_154917.json
+2025-04-13 15:49:17,674 - BLE Discovery - INFO - [ble_discovery.py:1505] - System diagnostics: Python 3.10.14, Bluetooth adapters: 30
+2025-04-13 15:49:17,684 - BLE Discovery - INFO - [ble_discovery.py:458] - button.bluetooth_scan already exists
+2025-04-13 15:49:17,714 - BLE Discovery - ERROR - [ble_discovery.py:125] - Error creating notification: 502 - 502: Bad Gateway
+2025-04-13 15:49:17,726 - BLE Discovery - ERROR - [ble_discovery.py:180] - Error getting states: 502 - 502: Bad Gateway
+2025-04-13 15:49:17,732 - BLE Discovery - ERROR - [ble_discovery.py:1128] - Error updating input_text: 502 - 502: Bad Gateway
+2025-04-13 15:49:17,733 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 15:50:17,804 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 15:50:17,820 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 15:51:17,884 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 15:51:17,894 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 15:52:17,966 - BLE Discovery - INFO - [ble_discovery.py:219] - No AprilBrother Gateway format found, checking standard Bluetooth entities
+2025-04-13 15:52:17,993 - BLE Discovery - INFO - [ble_discovery.py:266] - Checking MQTT sensors for device data...
+2025-04-13 15:52:18,035 - BLE Discovery - WARNING - [ble_discovery.py:296] - No device data found through any method, creating sensor with empty data
+2025-04-13 15:52:18,060 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 15:53:18,143 - BLE Discovery - ERROR - [ble_discovery.py:180] - Error getting states: 400 - {"result":"error","message":"System is not ready with state: shutdown"}
+2025-04-13 15:53:18,156 - BLE Discovery - ERROR - [ble_discovery.py:1128] - Error updating input_text: 400 - {"result":"error","message":"System is not ready with state: shutdown"}
+2025-04-13 15:53:18,157 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0

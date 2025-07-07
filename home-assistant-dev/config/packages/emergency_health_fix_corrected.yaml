@@ -1,0 +1,174 @@
+# CORRECTED: EMERGENCY TEMPLATE LOOP RESOLUTION  
+# Date: June 4, 2025 - Health Calculation Fix
+# Problem: "unknown" entities incorrectly treated as unhealthy
+# Solution: Only count "unavailable" entities as problematic, exclude "unknown"
+
+template:
+  - sensor:
+      # CORRECTED: Integration Health Status - ONLY UNAVAILABLE COUNTS
+      - name: "Integration Health Status"
+        unique_id: integration_health_status_emergency_fix
+        state: >
+          {% set unavailable_count = states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | count %}
+          
+          {% if unavailable_count == 0 %}
+            Excellent
+          {% elif unavailable_count <= 10 %}
+            Very Good
+          {% elif unavailable_count <= 30 %}
+            Good
+          {% elif unavailable_count <= 60 %}
+            Fair
+          {% elif unavailable_count <= 100 %}
+            Poor
+          {% else %}
+            Critical
+          {% endif %}
+        icon: >
+          {% set status = this.state %}
+          {% if status in ['Excellent', 'Very Good'] %}
+            mdi:check-circle
+          {% elif status in ['Good', 'Fair'] %}
+            mdi:alert-circle-outline
+          {% else %}
+            mdi:alert-octagon
+          {% endif %}
+        availability: true
+        attributes:
+          unavailable_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | count }}"
+          unknown_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unknown') | list | count }}"
+          total_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | list | count }}"
+          note: "Only unavailable entities count as unhealthy. Unknown states are normal for many entity types."
+
+      # CORRECTED: Integration Health Percentage - ONLY UNAVAILABLE COUNTS
+      - name: "Integration Health Percentage"
+        unique_id: integration_health_percentage_fixed
+        state: >
+          {% set all_entities = states | rejectattr('entity_id', 'search', 'health|integration_health') | list %}
+          {% set total = all_entities | count %}
+          {% set unavailable_only = all_entities | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable_only) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+        attributes:
+          unavailable_count: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | count }}"
+          unknown_count: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unknown') | list | count }}"
+          total_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | list | count }}"
+          calculation_note: "Health = (Total - Unavailable) / Total. Unknown states are NOT counted as unhealthy."
+
+      # CORRECTED: Alexa Integration Health - ONLY UNAVAILABLE COUNTS
+      - name: "Alexa Integration Health"
+        unique_id: alexa_integration_health_emergency_fix
+        state: >
+          {% set alexa_entities = states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health|integration_health') | list %}
+          {% set total = alexa_entities | length %}
+          {% set unavailable = alexa_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+        attributes:
+          total_alexa_entities: >
+            {{ states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health|integration_health') | list | length }}
+          unavailable_alexa_entities: >
+            {{ states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | length }}
+
+      # CORRECTED: Mobile App Integration Health - ONLY UNAVAILABLE COUNTS
+      - name: "Mobile App Integration Health"
+        unique_id: mobile_app_integration_health_emergency_fix
+        state: >
+          {% set mobile_entities = states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health|integration_health') | list %}
+          {% set total = mobile_entities | length %}
+          {% set unavailable = mobile_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement  
+        availability: true
+        attributes:
+          total_mobile_entities: >
+            {{ states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health|integration_health') | list | length }}
+          unavailable_mobile_entities: >
+            {{ states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | length }}
+
+      # CORRECTED: Switch Integration Health - ONLY UNAVAILABLE COUNTS
+      - name: "Switch Integration Health"
+        unique_id: switch_integration_health_emergency_fix
+        state: >
+          {% set switch_entities = states.switch | rejectattr('entity_id', 'search', 'health|integration_health') | list %}
+          {% set total = switch_entities | length %}
+          {% set unavailable = switch_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+        attributes:
+          total_switches: "{{ states.switch | rejectattr('entity_id', 'search', 'health|integration_health') | list | length }}"
+          unavailable_switches: "{{ states.switch | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | length }}"
+
+      # CORRECTED: Simple unavailable entities counter - ONLY UNAVAILABLE COUNTS
+      - name: "Unavailable Entities"
+        unique_id: unavailable_entities_emergency_fix
+        state: >
+          {{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | count }}
+        unit_of_measurement: "entities"
+        state_class: measurement
+        availability: true
+        attributes:
+          total_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | list | count }}"
+          unknown_entities: "{{ states | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unknown') | list | count }}"
+          percentage: >
+            {% set all_entities = states | rejectattr('entity_id', 'search', 'health|integration_health') | list %}
+            {% set total = all_entities | count %}
+            {% set unavailable = all_entities | selectattr('state', 'eq', 'unavailable') | list | count %}
+            {% if total > 0 %}
+              {{ (unavailable / total * 100) | round(2) }}
+            {% else %}
+              0
+            {% endif %}
+
+      # CORRECTED: Failed automations counter - ONLY UNAVAILABLE COUNTS
+      - name: "Failed Automations Count"
+        unique_id: failed_automations_count_emergency_fix
+        state: >
+          {{ states.automation | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'unavailable') | list | count }}
+        unit_of_measurement: "automations"
+        state_class: measurement
+        availability: true
+        attributes:
+          total_automations: "{{ states.automation | rejectattr('entity_id', 'search', 'health|integration_health') | list | count }}"
+          working_automations: "{{ states.automation | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'on') | list | count }}"
+          disabled_automations: "{{ states.automation | rejectattr('entity_id', 'search', 'health|integration_health') | selectattr('state', 'eq', 'off') | list | count }}"
+
+  - binary_sensor:
+      # CORRECTED: System health binary sensor - UPDATED THRESHOLDS
+      - name: "System Health OK"
+        unique_id: system_health_ok_emergency_fix
+        state: >
+          {% set health_pct = states('sensor.integration_health_percentage') | default(0) | float(0) %}
+          {% set unavailable = states('sensor.unavailable_entities_7') | default(0) | int(0) %}
+          {% set failed_autos = states('sensor.failed_automations') | default(0) | int(0) %}
+          {{ health_pct >= 90 and unavailable <= 100 and failed_autos == 0 }}
+        device_class: connectivity
+        availability: true
+        attributes:
+          health_percentage: "{{ states('sensor.integration_health_percentage') | default(0) | float(0) }}"
+          unavailable_entities: "{{ states('sensor.unavailable_entities_7') | default(0) | int(0) }}"
+          failed_automations: "{{ states('sensor.failed_automations') | default(0) | int(0) }}"
+          threshold_note: "Health considered OK when: Health >= 90%, Failed automations = 0, Unavailable <= 100"

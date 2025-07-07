@@ -1,0 +1,357 @@
+# =============================================================================
+# 🎛️ ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER AUTOMATIONS
+# =============================================================================
+# 
+# Centralized master control system for temperature and brightness across
+# all 14 adaptive lighting zones with manual override and automatic sync
+#
+# Features:
+# - Master temperature control (2000K-6500K)
+# - Master brightness control with zone scaling
+# - Override mode management with auto-restore
+# - Zone synchronization with proportional scaling
+# - Preset controls and quick actions
+#
+# Added: June 25, 2025
+# Version: Phase 4 Master Control Implementation
+# =============================================================================
+
+# MASTER TEMPERATURE CONTROL HANDLER
+- id: adaptive_lighting_master_temperature_control
+  alias: "🌡️ Adaptive Lighting - Master Temperature Control"
+  description: |
+    Handles master temperature control slider changes and applies
+    proportionally to all participating zones with instant synchronization.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_color_temp
+      id: master_temp_change
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Ensure this is a manual change, not a programmatic update
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    target_temp: "{{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}"
+    
+    # Get participating lights (not overridden)
+    participating_lights: >
+      {% set lights = [] %}
+      {% set mappings = [
+        ['light.livingroom_lights', 'input_boolean.adaptive_lighting_override_livingroom_lights'],
+        ['light.kitchen_lights', 'input_boolean.adaptive_lighting_override_kitchen_lights'],
+        ['light.kitchen_led_strips', 'input_boolean.adaptive_lighting_override_kitchen_led_strips'],
+        ['light.bar_strip', 'input_boolean.adaptive_lighting_override_bar_strip'],
+        ['light.top_left', 'input_boolean.adaptive_lighting_override_top_left'],
+        ['light.top_right', 'input_boolean.adaptive_lighting_override_top_right'],
+        ['light.master_light', 'input_boolean.adaptive_lighting_override_master_light'],
+        ['light.master_lamp', 'input_boolean.adaptive_lighting_override_master_lamp'],
+        ['light.guest_light', 'input_boolean.adaptive_lighting_override_guest_light'],
+        ['light.linda_light', 'input_boolean.adaptive_lighting_override_linda_light'],
+        ['light.gavin_light', 'input_boolean.adaptive_lighting_override_gavin_light'],
+        ['light.dining_light', 'input_boolean.adaptive_lighting_override_dining_light'],
+        ['light.hall_light', 'input_boolean.adaptive_lighting_override_hall_light'],
+        ['light.nook_light', 'input_boolean.adaptive_lighting_override_nook_light'],
+        ['light.hobby_light', 'input_boolean.adaptive_lighting_override_hobby_light'],
+        ['light.pantry_light', 'input_boolean.adaptive_lighting_override_pantry_light'],
+        ['light.porch_light', 'input_boolean.adaptive_lighting_override_porch_light']
+      ] %}
+      {% for light, override in mappings %}
+        {% if states(light) == 'on' and states(override) == 'off' %}
+          {% set supports_color_temp = 'color_temp' in (state_attr(light, 'supported_color_modes') or []) %}
+          {% if supports_color_temp %}
+            {% set lights = lights + [light] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {{ lights }}
+  
+  action:
+    # Switch to manual override mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Record override start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.adaptive_lighting_override_start
+      data:
+        datetime: "{{ now() }}"
+    
+    # Apply temperature to all participating color-capable lights
+    - condition: template
+      value_template: "{{ participating_lights | length > 0 }}"
+    
+    - service: light.turn_on
+      target:
+        entity_id: "{{ participating_lights }}"
+      data:
+        color_temp_kelvin: "{{ target_temp }}"
+        transition: 2
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          Manual Override Active - Temperature {{ target_temp }}K applied to {{ participating_lights | length }} zones
+    
+    # Update last sync timestamp
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_last_sync
+      data:
+        value: "{{ now().strftime('%H:%M:%S') }}"
+    
+    # Log the action
+    - service: system_log.write
+      data:
+        message: >
+          Master Temperature Control: {{ target_temp }}K applied to {{ participating_lights | length }} participating zones.
+          Mode switched to Manual Override.
+        level: info
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+  
+  mode: single
+
+# MASTER BRIGHTNESS CONTROL HANDLER
+- id: adaptive_lighting_master_brightness_control
+  alias: "💡 Adaptive Lighting - Master Brightness Control"
+  description: |
+    Handles master brightness control with zone-specific scaling factors.
+    Applies proportional brightness to all participating zones.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_brightness
+      id: master_brightness_change
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Ensure this is a manual change
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    base_brightness: "{{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}"
+    
+    # All participating lights with their scaling factors
+    participating_lights_with_scaling: >
+      {% set lights_data = [] %}
+      {% set mappings = [
+        ['light.livingroom_lights', 'input_boolean.adaptive_lighting_override_livingroom_lights', 'input_number.adaptive_lighting_zone_living_room_scale'],
+        ['light.kitchen_lights', 'input_boolean.adaptive_lighting_override_kitchen_lights', 'input_number.adaptive_lighting_zone_kitchen_main_scale'],
+        ['light.kitchen_led_strips', 'input_boolean.adaptive_lighting_override_kitchen_led_strips', 'input_number.adaptive_lighting_zone_kitchen_accent_scale'],
+        ['light.bar_strip', 'input_boolean.adaptive_lighting_override_bar_strip', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_left', 'input_boolean.adaptive_lighting_override_top_left', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_right', 'input_boolean.adaptive_lighting_override_top_right', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.master_light', 'input_boolean.adaptive_lighting_override_master_light', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.master_lamp', 'input_boolean.adaptive_lighting_override_master_lamp', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.guest_light', 'input_boolean.adaptive_lighting_override_guest_light', 'input_number.adaptive_lighting_zone_guest_bedroom_scale'],
+        ['light.linda_light', 'input_boolean.adaptive_lighting_override_linda_light', 'input_number.adaptive_lighting_zone_linda_room_scale'],
+        ['light.gavin_light', 'input_boolean.adaptive_lighting_override_gavin_light', 'input_number.adaptive_lighting_zone_gavin_room_scale'],
+        ['light.dining_light', 'input_boolean.adaptive_lighting_override_dining_light', 'input_number.adaptive_lighting_zone_dining_room_scale'],
+        ['light.hall_light', 'input_boolean.adaptive_lighting_override_hall_light', 'input_number.adaptive_lighting_zone_hallway_scale'],
+        ['light.nook_light', 'input_boolean.adaptive_lighting_override_nook_light', 'input_number.adaptive_lighting_zone_nook_scale'],
+        ['light.hobby_light', 'input_boolean.adaptive_lighting_override_hobby_light', 'input_number.adaptive_lighting_zone_hobby_room_scale'],
+        ['light.pantry_light', 'input_boolean.adaptive_lighting_override_pantry_light', 'input_number.adaptive_lighting_zone_pantry_scale'],
+        ['light.porch_light', 'input_boolean.adaptive_lighting_override_porch_light', 'input_number.adaptive_lighting_zone_exterior_scale']
+      ] %}
+      {% for light, override, scale in mappings %}
+        {% if states(light) == 'on' and states(override) == 'off' %}
+          {% set scale_factor = states(scale) | float(1.0) %}
+          {% set scaled_brightness = (base_brightness * scale_factor) | round(0) %}
+          {% set clamped_brightness = [10, scaled_brightness, 255] | sort %}
+          {% set final_brightness = clamped_brightness[1] %}
+          {% set light_data = {
+            'entity': light,
+            'scale': scale_factor,
+            'brightness': final_brightness
+          } %}
+          {% set lights_data = lights_data + [light_data] %}
+        {% endif %}
+      {% endfor %}
+      {{ lights_data }}
+  
+  action:
+    # Switch to manual override mode if not already
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Record override start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.adaptive_lighting_override_start
+      data:
+        datetime: "{{ now() }}"
+    
+    # Apply scaled brightness to each participating light
+    - condition: template
+      value_template: "{{ participating_lights_with_scaling | length > 0 }}"
+    
+    - repeat:
+        count: "{{ participating_lights_with_scaling | length }}"
+        sequence:
+          - variables:
+              light_data: "{{ participating_lights_with_scaling[repeat.index - 1] }}"
+          
+          - service: light.turn_on
+            target:
+              entity_id: "{{ light_data.entity }}"
+            data:
+              brightness: "{{ light_data.brightness }}"
+              transition: 2
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          Manual Override Active - Brightness {{ base_brightness }}% (scaled) applied to {{ participating_lights_with_scaling | length }} zones
+    
+    # Update last sync timestamp
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_last_sync
+      data:
+        value: "{{ now().strftime('%H:%M:%S') }}"
+    
+    # Log the action
+    - service: system_log.write
+      data:
+        message: >
+          Master Brightness Control: {{ base_brightness }}% base brightness with zone scaling 
+          applied to {{ participating_lights_with_scaling | length }} participating zones.
+        level: info
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+  
+  mode: single
+
+# AUTO-RESTORE TIMER MANAGER
+- id: adaptive_lighting_auto_restore_timer
+  alias: "⏰ Adaptive Lighting - Auto-Restore Timer"
+  description: |
+    Manages the auto-restore timer functionality to return to adaptive
+    mode after specified timeout periods.
+  
+  trigger:
+    # When override mode starts
+    - platform: state
+      entity_id: input_select.adaptive_lighting_override_mode
+      to: "Temporary (Auto-restore)"
+      id: auto_restore_started
+    
+    # Timer countdown check every minute
+    - platform: time_pattern
+      minutes: "*"
+      id: timer_check
+  
+  condition:
+    - condition: state
+      entity_id: input_select.adaptive_lighting_override_mode
+      state: "Temporary (Auto-restore)"
+  
+  variables:
+    override_start: "{{ states('input_datetime.adaptive_lighting_override_start') }}"
+    restore_setting: "{{ states('input_select.adaptive_lighting_auto_restore') }}"
+    custom_minutes: "{{ states('input_number.adaptive_lighting_auto_restore_minutes') | int(60) }}"
+    
+    # Calculate timeout minutes
+    timeout_minutes: >
+      {% if restore_setting == '15 minutes' %}
+        15
+      {% elif restore_setting == '1 hour' %}
+        60
+      {% elif restore_setting == '3 hours' %}
+        180
+      {% elif restore_setting == 'Custom' %}
+        {{ custom_minutes }}
+      {% else %}
+        999999
+      {% endif %}
+    
+    # Check if timeout has elapsed
+    should_restore: >
+      {% if override_start != 'unknown' and timeout_minutes < 999999 %}
+        {% set start_time = as_timestamp(override_start) %}
+        {% set current_time = as_timestamp(now()) %}
+        {% set elapsed_minutes = (current_time - start_time) / 60 %}
+        {{ elapsed_minutes >= timeout_minutes }}
+      {% else %}
+        false
+      {% endif %}
+  
+  action:
+    - choose:
+        # Auto-restore timeout reached
+        - conditions:
+            - condition: template
+              value_template: "{{ should_restore and trigger.id == 'timer_check' }}"
+          sequence:
+            # Return to adaptive mode
+            - service: input_select.select_option
+              target:
+                entity_id: input_select.adaptive_lighting_override_mode
+              data:
+                option: "Adaptive"
+            
+            # Trigger master coordinator to re-sync
+            - delay:
+                seconds: 2
+            
+            - service: automation.trigger
+              target:
+                entity_id: automation.adaptive_lighting_master_coordinator
+            
+            # Update system status
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.adaptive_lighting_system_status
+              data:
+                value: >
+                  Auto-restored to Adaptive Mode after {{ timeout_minutes }} minutes
+            
+            # Notification
+            - service: persistent_notification.create
+              data:
+                title: "⏰ Adaptive Lighting Auto-Restore"
+                message: >
+                  Automatically returned to adaptive lighting mode after {{ timeout_minutes }} minutes.
+                notification_id: adaptive_lighting_auto_restore_complete
+  
+  mode: single

@@ -1,0 +1,112 @@
+# TEMPORARILY DISABLED SYSTEM HEALTH PACKAGE
+# Date: June 2, 2025 - Package template entities not loading properly
+# Issue: Template entities in packages don't load, causing automation errors
+# Solution: Disable package automation, use working entities in main automations
+
+template:
+  - sensor:
+      # Simple health percentage sensor
+      - name: "System Health Core"
+        unique_id: system_health_core
+        state: >
+          {% set total = states | list | count %}
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+
+      # Simple unavailable count sensor
+      - name: "Unavailable Entities Core"
+        unique_id: unavailable_entities_core
+        state: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+        unit_of_measurement: "entities"
+        state_class: measurement
+        availability: true
+
+      # Simple failed automations sensor
+      - name: "Failed Automations Core"
+        unique_id: failed_automations_core
+        state: "{{ states.automation | selectattr('state', 'eq', 'unavailable') | list | count }}"
+        unit_of_measurement: "automations"
+        state_class: measurement
+        availability: true
+
+      # Simple system status text
+      - name: "System Status Core"
+        unique_id: system_status_core
+        state: >
+          {% set health = states('sensor.system_health_core') | float(100) %}
+          {% if health >= 95 %}
+            Excellent
+          {% elif health >= 90 %}
+            Good
+          {% elif health >= 80 %}
+            Fair
+          {% else %}
+            Poor
+          {% endif %}
+        availability: true
+
+      # Keep existing appliance status for compatibility
+      - name: "Appliance System Status"
+        unique_id: appliance_system_status
+        state: >
+          {% set alexa_available = states('media_player.everywhere') not in ['unavailable', 'unknown'] %}
+          {% set mobile_available = states('device_tracker.pixel_9_pro_xl') == 'home' %}
+          
+          {% if alexa_available and mobile_available %}
+            System Ready
+          {% elif alexa_available %}
+            Alexa Available
+          {% elif mobile_available %}
+            Mobile Only
+          {% else %}
+            System Down
+          {% endif %}
+        availability: true
+
+  - binary_sensor:
+      # Simple system health OK sensor
+      - name: "System Health OK Core"
+        unique_id: system_health_ok_core
+        state: >
+          {% set health = states('sensor.system_health_core') | float(100) %}
+          {{ health >= 85 }}
+        device_class: connectivity
+        availability: true
+
+# DISABLED: Package automation causing errors - using main automation instead
+# automation:
+#   - id: system_health_monitor_update
+#     alias: "System Health Monitor - Update"
+#     description: "Update system health sensors every 5 minutes"
+#     trigger:
+#       - platform: time_pattern
+#         minutes: "/5"
+#     action:
+#       - service: homeassistant.update_entity
+#         target:
+#           entity_id:
+#             - sensor.system_health_core
+#             - sensor.unavailable_entities_core
+#             - sensor.failed_automations_core
+#             - sensor.system_status_core
+#             - binary_sensor.system_health_ok_core
+
+# Required input helpers
+input_boolean:
+  system_recovery_in_progress:
+    name: "System Recovery In Progress"
+    icon: mdi:reload
+    initial: false
+
+input_text:
+  system_health_log:
+    name: "System Health Log"
+    max: 1000
+    initial: "System health monitoring initialized"

@@ -1,0 +1,107 @@
+substitutions:
+  wifi_ssid: !secret wifi_ssid # If you aren't using secrets, you're bad and you should feel bad. 💖
+  wifi_password: !secret wifi_password # If you aren't using secrets, you're bad and you should feel bad. 💖
+  name: ble-proxy-proto # Change [Room] to whatever you like.
+  friendly_name: BLE Proxy proto # Change [Room] to whatever you like.
+  comment: ESPHome proxy tuned for Bermuda
+  name_add_mac_suffix: "True"  # Adds the last 4 characters of the MAC address to the name.
+  baud_rate: "0"  # If you need serial debugging, override this to 115200 or similar.
+  ble_interval: 320ms
+  ble_window: 300ms
+  proxy_active_scan: "True"  # Set to false to avoid requesting scan info for device names etc
+  ota_pw: !secret ota_password 
+  api_key: !secret api_encryption_key
+  beacon_uuid: "59E0D1DA-AF5D-47C3-AB2D-2F166DEAD901"
+  beacon_major: "42069" # Nice
+  beacon_minor: "1758"
+
+packages:
+  Bermuda.include_minimal: github://agittins/bermuda-proxies/packages/bermuda-proxy-esp32-c3-minimal.yaml
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
+  name_add_mac_suffix: ${name_add_mac_suffix}
+
+# ---------------------------------------------------------------------------------------- #
+# ESP-32-c6 Specific stuffs as per:
+# https://github.com/esphome/issues/issues/5938#issuecomment-2377374855
+esp32:
+  board: esp32-c6-devkitc-1
+  flash_size: 4mb
+  variant: esp32c6
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_FLASHSIZE_4MB: y
+    version: 5.3.1
+    platform_version: 6.9.0
+
+#This is to make sure adc compiles or else it will throw an error
+external_components:
+  - source:
+      # https://github.com/lboue/esphome/blob/adc_oneshot/esphome/components/adc
+      type: git
+      url: https://github.com/lboue/esphome
+      ref: adc_oneshot
+    components: [ adc ]
+    refresh: 0s
+# ---------------------------------------------------------------------------------------- #
+
+
+logger:
+  baud_rate: 0  # 0 Enables logging, but disables serial-port logging to free CPU and memory
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ${api_key}
+  # This ensures BLE scanning only happens after the wifi is up and 
+  # the device is connected to HomeAssistant. This is particularly
+  # important for ESP32-C3 devices, but is good for all.
+  on_client_connected:
+     - esp32_ble_tracker.start_scan:
+        continuous: true
+  # Disable BLE tracking when there are no active api connections
+  on_client_disconnected:
+    if:
+      condition:
+        not:
+          api.connected:
+      then:
+        - esp32_ble_tracker.stop_scan:
+
+# I like MQTT, so I added it here.
+mqtt:
+  broker: 192.168.1.85 # Omitted because reasons
+  username: mqtt_user
+  password: !secret mqtt_password
+  discovery: False
+  discover_ip: True
+
+ota:
+  - platform: esphome
+    password: ${ota_pw}
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  fast_connect: True
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: 192.168.1.120
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: 192.168.1.1
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: 255.255.255.0
+captive_portal:
+
+bluetooth_proxy:
+  active: True
+
+esp32_ble_beacon:
+  type: iBeacon
+  uuid: ${beacon_uuid}
+  major: ${beacon_major}
+  minor: ${beacon_minor}

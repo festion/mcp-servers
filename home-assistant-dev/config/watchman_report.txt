@@ -1,0 +1,57 @@
+-== Watchman Report ==- 
+
+-== Congratulations, all 20 actions from your config are available!
+
+-== Missing 29 entity(ies) from 100 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Entity ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| group.strips                   | missing | groups.yaml:4,34,41                                          |
+| group.livingroom_lights        | missing | groups.yaml:11,43                                            |
+| light.amico_smart_recessed_lig | missing | groups.yaml:14                                               |
+| ht_1                           |         |                                                              |
+| group.kitchen_lights           | missing | groups.yaml:20,35,42                                         |
+| group.kitchen_color            | missing | groups.yaml:31                                               |
+| group.all_color                | missing | groups.yaml:38                                               |
+| person.gavin ('Gavin')         | unknown | templates.yaml:27                                            |
+| sensor.reserviorsensor_reservo | missing | sensors.yaml:8,14                                            |
+| ir_depth                       |         |                                                              |
+| sensor.wroommicrousb_raw_dista | missing | dashboard_card.yaml:8                                        |
+| nce_cm                         |         |                                                              |
+| switch.turn_                   | missing | scripts/hydroponics.yaml:81                                  |
+| sensor.wroommicrousb_reservoir | unknown | scripts/hydroponics.yaml:151                                 |
+| _water_temp ('wroommicrousb    |         |                                                              |
+| Reservoir Water Temp')         |         |                                                              |
+| sensor.home_assistant_uptime   | missing | automations/system_maintenance.yaml:59                       |
+| input_number.curatron_drying_t | missing | automations/system_maintenance.yaml:128                      |
+| hreshold                       |         |                                                              |
+| input_boolean.curatron_drying_ | missing | automations/system_maintenance.yaml:129                      |
+| active                         |         |                                                              |
+| input_datetime.last_fertigatio | missing | automations/system_maintenance.yaml:130                      |
+| n_time                         |         |                                                              |
+| binary_sensor.pantry_motion    | missing | automations/lights.yaml:98,105,130,150                       |
+| binary_sensor.garage_motion    | missing | automations/lights.yaml:99,106                               |
+| media_player.kitchen_echo      | missing | automations/appliances.yaml:51,111,141                       |
+| binary_sensor.dryer_running    | missing | automations/appliances.yaml:127                              |
+| device_tracker.rav4            | missing | watchman/conf.yaml:8                                         |
+| input_datetime.last_fertigatio | missing | watchman/conf.yaml:18                                        |
+| n_timestampstamp               |         |                                                              |
+| light.lamp_2                   | missing | watchman/conf.yaml:30                                        |
+| cover.left_curtain             | missing | watchman/conf.yaml:32                                        |
+| cover.right_curtain            | missing | watchman/conf.yaml:33                                        |
+| switch.water_quality_monitor_w | unknown | watchman/conf.yaml:36                                        |
+| arning_buzzer ('Water quality  |         |                                                              |
+| monitor Warning buzzer')       |         |                                                              |
+| sensor.reserviorsensor_reservi | missing | watchman/conf.yaml:39                                        |
+| or_depth                       |         |                                                              |
+| script.scan_bluetooth_devices  | unavail | ui_lovelace_minimalist/dashboard/adaptive-dash/views/ble-    |
+| ('Scan for Bluetooth Devices') |         | dashboard.yaml:51                                            |
+| script.ble_gateway_reconnect   | unavail | ui_lovelace_minimalist/dashboard/adaptive-dash/views/ble-    |
+| ('Reconnect BLE Gateway')      |         | dashboard.yaml:58                                            |
+| script.ble_gateway_health_chec | unavail | ui_lovelace_minimalist/dashboard/adaptive-dash/views/ble-    |
+| k ('BLE Gateway Health Check') |         | dashboard.yaml:65                                            |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Report created on 20 May 2025 12:20:36
+-== Parsed 55 files in 3.67s., ignored 1206 files 
+-== Generated in: 0.01s. Validated in: 0.00s.

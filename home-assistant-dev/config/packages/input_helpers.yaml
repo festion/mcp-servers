@@ -1,0 +1,546 @@
+# ============================================================================
+# ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER
+# ============================================================================
+# Master controls for centralized temperature and brightness management
+# across all 14 adaptive lighting zones with override mode management
+
+# Master System Controls
+input_boolean:
+  adaptive_lighting_master_enable:
+    name: "Adaptive Lighting Master Enable"
+    initial: true
+    icon: mdi:brightness-auto
+
+input_number:
+  # Master Temperature Control (2000K-6500K)
+  adaptive_lighting_master_color_temp:
+    name: "Master Color Temperature"
+    min: 2000
+    max: 6500
+    step: 100
+    initial: 4000
+    unit_of_measurement: "K"
+    icon: mdi:thermometer
+    
+  # Master Brightness Control (0-100%)
+  adaptive_lighting_master_brightness:
+    name: "Master Brightness"
+    min: 0
+    max: 100
+    step: 5
+    initial: 80
+    unit_of_measurement: "%"
+    icon: mdi:brightness-6
+    
+  # Zone Scaling Factors (per zone 0.5x to 2.0x)
+  adaptive_lighting_zone_living_room_scale:
+    name: "Living Room Brightness Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_kitchen_main_scale:
+    name: "Kitchen Main Lights Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_kitchen_accent_scale:
+    name: "Kitchen LED Strips Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 0.8
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_master_bedroom_scale:
+    name: "Master Bedroom Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 0.9
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_guest_bedroom_scale:
+    name: "Guest Bedroom Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_linda_room_scale:
+    name: "Linda's Room Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_gavin_room_scale:
+    name: "Gavin's Room Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_dining_room_scale:
+    name: "Dining Room Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.1
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_hallway_scale:
+    name: "Hallway Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 0.7
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_nook_scale:
+    name: "Nook Area Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 0.8
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_hobby_room_scale:
+    name: "Hobby Room Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.2
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_pantry_scale:
+    name: "Pantry Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_exterior_scale:
+    name: "Exterior Porch Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 1.0
+    icon: mdi:multiplication
+  
+  adaptive_lighting_zone_accent_scale:
+    name: "Accent Lighting Scale"
+    min: 0.5
+    max: 2.0
+    step: 0.1
+    initial: 0.9
+    icon: mdi:multiplication
+    
+  # Auto-restore timer countdown
+  adaptive_lighting_auto_restore_minutes:
+    name: "Auto-restore Timer (Minutes)"
+    min: 0
+    max: 180
+    step: 15
+    initial: 60
+    unit_of_measurement: "min"
+    icon: mdi:timer
+
+input_select:
+  # Master Override Mode
+  adaptive_lighting_override_mode:
+    name: "Override Mode"
+    options:
+      - "Adaptive"
+      - "Manual Override"
+      - "Temporary (Auto-restore)"
+      - "Persistent"
+    initial: "Adaptive"
+    icon: mdi:tune-variant
+    
+  # Auto-restore Timer Presets
+  adaptive_lighting_auto_restore:
+    name: "Auto-restore Timer"
+    options:
+      - "Disabled"
+      - "15 minutes"
+      - "1 hour"
+      - "3 hours"
+      - "Next Reset"
+      - "Custom"
+    initial: "1 hour"
+    icon: mdi:timer-outline
+
+input_text:
+  # System Status Display
+  adaptive_lighting_system_status:
+    name: "System Status"
+    initial: "Adaptive Mode Active - All zones synchronized"
+    max: 255
+    icon: mdi:information-outline
+    
+  # Last sync timestamp
+  adaptive_lighting_last_sync:
+    name: "Last Sync Timestamp"
+    initial: "Never"
+    max: 100
+    icon: mdi:clock-outline
+
+input_datetime:
+  # Override mode timestamp
+  adaptive_lighting_override_start:
+    name: "Override Mode Start Time"
+    has_date: true
+    has_time: true
+  # Performance and tracking counters
+  adaptive_lighting_sync_count:
+    name: "Daily Sync Count"
+    min: 0
+    max: 1000
+    step: 1
+    initial: 0
+    icon: mdi:counter
+    
+  adaptive_lighting_override_count:
+    name: "Daily Override Count"
+    min: 0
+    max: 500
+    step: 1
+    initial: 0
+    icon: mdi:hand-back-left
+    
+  adaptive_lighting_auto_sync_count:
+    name: "Auto-Sync Count"
+    min: 0
+    max: 500
+    step: 1
+    initial: 0
+    icon: mdi:sync
+
+# Additional boolean controls
+input_boolean:
+  adaptive_lighting_circadian_enable:
+    name: "Circadian Rhythm Mode"
+    initial: false
+    icon: mdi:moon-waning-crescent
+    
+  adaptive_lighting_visual_feedback_enable:
+    name: "Visual Feedback Enable"
+    initial: true
+    icon: mdi:lightbulb-flash
+    
+  adaptive_lighting_flash_confirmation_enable:
+    name: "Flash Confirmation Enable"
+    initial: true
+    icon: mdi:flash
+    
+  adaptive_lighting_double_click_enable:
+    name: "Double-Click Control Enable"
+    initial: true
+    icon: mdi:gesture-double-tap
+    icon: mdi:clock-start
+    
+  # Last system sync timestamp
+  adaptive_lighting_last_full_sync:
+    name: "Last Full System Sync"
+    has_date: true
+    has_time: true
+    icon: mdi:sync-circle
+
+# ============================================================================
+input_text:
+  # Double-click entity tracking
+  last_double_click_entity:
+    name: "Last Double-Click Entity"
+    initial: "none"
+    max: 100
+    icon: mdi:gesture-double-tap
+
+input_datetime:
+  # Double-click timestamp tracking
+  last_double_click_time:
+    name: "Last Double-Click Time"
+    has_date: true
+    has_time: true
+    icon: mdi:clock-outline
+# END ADAPTIVE LIGHTING PHASE 4 CONTROLS
+# ============================================================================
+# BLE Device Management
+input_text:
+  ble_device_name:
+    name: BLE Device Name
+    icon: mdi:tag-text
+
+  ble_device_mac:
+    name: BLE Device MAC Address
+    icon: mdi:bluetooth
+    pattern: "^([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2})$"
+
+  # Appliance last announcement tracking
+  appliance_last_announcement:
+    name: "Last Appliance Announcement"
+    max: 255
+    icon: mdi:message-text
+
+input_select:
+  ble_device_type:
+    name: BLE Device Type
+    options:
+      - presence
+      - temperature
+      - other
+    initial: presence
+    icon: mdi:devices
+
+  ble_device_icon:
+    name: BLE Device Icon
+    options:
+      - Car (mdi:car)
+      - Phone (mdi:cellphone)
+      - Watch (mdi:watch)
+      - Tag (mdi:tag)
+      - Sensor (mdi:access-point)
+      - Thermometer (mdi:thermometer)
+      - Bluetooth (mdi:bluetooth)
+    initial: Bluetooth (mdi:bluetooth)
+    icon: mdi:format-list-bulleted
+
+  # Hydroponics System Helpers
+  hydroponics_waste_pump_schedule:
+    name: Waste Pump Schedule
+    options:
+      - "Off"
+      - "6AM-9PM"
+      - "Always On"
+      - "Custom"
+    initial: "6AM-9PM"
+    icon: mdi:water-pump
+
+  hydroponics_alert_level:
+    name: Hydroponics Alert Level
+    options:
+      - "Critical Only" 
+      - "Standard"
+      - "Verbose"
+    initial: "Standard"
+    icon: mdi:alert-circle-outline
+
+  # Appliance state tracking
+  dishwasher_state:
+    name: "Dishwasher State"
+    options:
+      - "idle"
+      - "starting"
+      - "running"
+      - "finishing"
+      - "complete"
+    initial: "idle"
+    icon: mdi:dishwasher
+  
+  washing_machine_state:
+    name: "Washing Machine State"
+    options:
+      - "idle"
+      - "starting"
+      - "running"
+      - "finishing"
+      - "complete"
+    initial: "idle"
+    icon: mdi:washing-machine
+  
+  dryer_state:
+    name: "Dryer State"
+    options:
+      - "idle"
+      - "starting"
+      - "running"
+      - "finishing"
+      - "complete"
+    initial: "idle"
+    icon: mdi:tumble-dryer
+input_number:
+  ble_rssi_threshold:
+    name: RSSI Threshold
+    min: -100
+    max: -40
+    step: 1
+    initial: -80
+    unit_of_measurement: dBm
+    icon: mdi:signal-variant
+    
+  # Hydroponics System Helpers
+  hydroponics_fertigation_interval_hours:
+    name: Fertigation Interval
+    initial: 3
+    min: 0
+    max: 12
+    step: 1
+    mode: slider
+    unit_of_measurement: hours
+    icon: mdi:timer-outline
+
+  hydroponics_feed_pump_duration:
+    name: Feed Pump Duration
+    initial: 15
+    min: 5
+    max: 60
+    step: 1
+    mode: slider
+    unit_of_measurement: seconds
+    icon: mdi:pump
+
+  # Power consumption thresholds (configurable)
+  dishwasher_start_threshold:
+    name: "Dishwasher Start Threshold (Watts)"
+    min: 20
+    max: 200
+    step: 5
+    initial: 50
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt
+  
+  dishwasher_running_threshold:
+    name: "Dishwasher Running Threshold (Watts)"
+    min: 10
+    max: 100
+    step: 5
+    initial: 30
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt
+  
+  dishwasher_stop_threshold:
+    name: "Dishwasher Stop Threshold (Watts)"
+    min: 1
+    max: 50
+    step: 1
+    initial: 10
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt-outline
+  
+  washing_machine_start_threshold:
+    name: "Washing Machine Start Threshold (Watts)"
+    min: 50
+    max: 300
+    step: 10
+    initial: 100
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt
+  
+  washing_machine_running_threshold:
+    name: "Washing Machine Running Threshold (Watts)"
+    min: 20
+    max: 150
+    step: 5
+    initial: 50
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt
+  
+  washing_machine_stop_threshold:
+    name: "Washing Machine Stop Threshold (Watts)"
+    min: 1
+    max: 50
+    step: 1
+    initial: 15
+    unit_of_measurement: "W"
+    icon: mdi:lightning-bolt-outline
+input_datetime:
+  last_fertigation_time:
+    name: Last Fertigation Time
+    has_date: true
+    has_time: true
+    icon: mdi:calendar-clock
+
+  # Enhanced cycle start time tracking
+  dishwasher_cycle_start:
+    name: "Dishwasher Cycle Start Time"
+    has_date: true
+    has_time: true
+    icon: mdi:clock-start
+  
+  washing_machine_cycle_start:
+    name: "Washing Machine Cycle Start Time"
+    has_date: true
+    has_time: true
+    icon: mdi:clock-start
+  
+  dryer_cycle_start:
+    name: "Dryer Cycle Start Time"
+    has_date: true
+    has_time: true
+    icon: mdi:clock-start
+  
+  # Maintenance tracking
+  dishwasher_last_filter_clean:
+    name: "Dishwasher Last Filter Clean"
+    has_date: true
+    has_time: true
+    icon: mdi:filter-variant
+  
+  washing_machine_last_hose_check:
+    name: "Washing Machine Last Hose Check"
+    has_date: true
+    has_time: true
+    icon: mdi:pipe
+
+# Curatron System Helpers
+input_boolean:
+  # Appliance cycle tracking booleans
+  dishwasher_cycle_announced:
+    name: "Dishwasher Cycle Announced"
+    icon: mdi:dishwasher
+  
+  washing_machine_cycle_announced:
+    name: "Washing Machine Cycle Announced"
+    icon: mdi:washing-machine
+  
+  dryer_cycle_announced:
+    name: "Dryer Cycle Announced"
+    icon: mdi:tumble-dryer
+  
+  # Quiet hours control
+  appliance_quiet_hours_enabled:
+    name: "Appliance Quiet Hours Enabled"
+    icon: mdi:sleep
+
+  curatron_drying_active:
+    name: Curatron Drying Active
+    icon: mdi:air-filter
+input_number:
+  curatron_drying_threshold:
+    name: Curatron Drying Threshold
+    initial: 60
+    min: 20
+    max: 90
+    step: 1
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:water-percent
+    
+  curatron_humidity_high_threshold:
+    name: Curatron High Humidity Threshold
+    initial: 65
+    min: 20
+    max: 90
+    step: 1
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:water-percent-alert
+    
+  curatron_humidity_low_threshold:
+    name: Curatron Low Humidity Threshold
+    initial: 55
+    min: 20
+    max: 90
+    step: 1
+    mode: slider
+    unit_of_measurement: "%"
+    icon: mdi:water-percent-alert

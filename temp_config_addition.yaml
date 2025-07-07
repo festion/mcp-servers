@@ -1,0 +1,23 @@
+  # =============================================================================
+  # 🔧 ADAPTIVE LIGHTING SYSTEM STATUS TRACKING
+  # =============================================================================
+  # 
+  # System status and synchronization tracking entities for adaptive lighting
+  # automation failure resolution. These entities are required by automations
+  # to track system health and synchronization status.
+  #
+  # Added: July 3, 2025
+  # Purpose: Fix 13 failed automations requiring these input_text entities
+  # =============================================================================
+
+  adaptive_lighting_system_status:
+    name: "System Status"
+    max: 255
+    initial: "Adaptive Mode Active - All zones synchronized"
+    icon: mdi:information-outline
+
+  adaptive_lighting_last_sync:
+    name: "Last Sync Timestamp"
+    max: 100
+    initial: "Never"
+    icon: mdi:clock-outline

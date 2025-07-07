@@ -1,0 +1,7 @@
+audiences: ''
+deduplication_ttl: 300
+severity_levels:
+- low
+- medium
+- high
+- emergency

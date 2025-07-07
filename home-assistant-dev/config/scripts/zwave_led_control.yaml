@@ -1,0 +1,116 @@
+# Z-Wave LED Control Scripts
+# Convenience scripts for common LED control scenarios
+
+zwave_led_restore_all:
+  alias: "Z-Wave LEDs - Restore All"
+  description: "Immediately restores all Z-Wave switch LEDs to normal operation"
+  sequence:
+    # Restore all light switch LEDs
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id:
+          - light.hobby_light
+          - light.gavin_light
+          - light.pantry_light
+          - light.master_light
+          - light.nook_light
+          - light.guest_light
+          - light.porch_light
+          - light.hall_light
+          - light.dining_light
+          - light.linda_light
+      data:
+        parameter: 7
+        value: 1  # LED on when load is off (normal operation)
+    
+    # Restore all fan switch LEDs
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id:
+          - fan.hobby_fan
+          - fan.master_fan
+          - fan.linda_fan
+          - fan.guest_fan
+          - fan.gavin_fan
+      data:
+        parameter: 3
+        value: 1  # LED on when load is off (normal operation)
+  icon: mdi:led-variant-on
+
+zwave_led_bedroom_preset:
+  alias: "Z-Wave LEDs - Bedroom Preset"
+  description: "Applies a preset that darkens bedroom LEDs while keeping common area LEDs on"
+  sequence:
+    # Turn on bedroom LED darkening
+    - service: input_boolean.turn_on
+      target:
+        entity_id:
+          - input_boolean.zwave_led_darken_master_light
+          - input_boolean.zwave_led_darken_master_fan
+          - input_boolean.zwave_led_darken_gavin_light
+          - input_boolean.zwave_led_darken_gavin_fan
+          - input_boolean.zwave_led_darken_linda_light
+          - input_boolean.zwave_led_darken_linda_fan
+          - input_boolean.zwave_led_darken_guest_light
+          - input_boolean.zwave_led_darken_guest_fan
+    
+    # Turn off common area LED darkening
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.zwave_led_darken_hall_light
+          - input_boolean.zwave_led_darken_porch_light
+          - input_boolean.zwave_led_darken_dining_light
+          - input_boolean.zwave_led_darken_pantry_light
+          - input_boolean.zwave_led_darken_nook_light
+          - input_boolean.zwave_led_darken_hobby_light
+          - input_boolean.zwave_led_darken_hobby_fan
+  icon: mdi:bed
+
+zwave_led_turn_off_all:
+  alias: "Z-Wave LEDs - Turn Off All"
+  description: "Immediately turns off all Z-Wave switch LEDs"
+  sequence:
+    # Turn off all light switch LEDs
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id:
+          - light.hobby_light
+          - light.gavin_light
+          - light.pantry_light
+          - light.master_light
+          - light.nook_light
+          - light.guest_light
+          - light.porch_light
+          - light.hall_light
+          - light.dining_light
+          - light.linda_light
+      data:
+        parameter: 7
+        value: 0  # LED off when load is off
+    
+    # Turn off all fan switch LEDs
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id:
+          - fan.hobby_fan
+          - fan.master_fan
+          - fan.linda_fan
+          - fan.guest_fan
+          - fan.gavin_fan
+      data:
+        parameter: 3
+        value: 0  # LED off when load is off
+  icon: mdi:led-off
+
+zwave_led_apply_night_settings:
+  alias: "Z-Wave LEDs - Apply Night Settings"
+  description: "Manually applies current night settings immediately"
+  sequence:
+    # This script calls the same logic as the night mode automation
+    - service: automation.trigger
+      target:
+        entity_id: automation.z_wave_leds_night_mode_on
+      data:
+        skip_condition: true
+  icon: mdi:weather-night

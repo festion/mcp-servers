@@ -1,0 +1,230 @@
+last_fertigation_timestamp:
+  name: Last Fertigation Time
+  has_date: true
+  has_time: true
+  icon: mdi:calendar-clock
+
+ro_valve_opened_timestamp:
+  name: RO Valve Opened Time
+  has_date: true
+  has_time: true
+  icon: mdi:valve
+  
+appliance_quiet_start:
+  name: "Quiet Hours Start Time"
+  has_date: false
+  has_time: true
+  initial: "22:30:00"
+
+appliance_quiet_end:
+  name: "Quiet Hours End Time"
+  has_date: false
+  has_time: true
+  initial: "07:30:00"
+
+dishwasher_last_filter_clean:
+  name: "Dishwasher Filter Last Cleaned"
+  has_date: true
+  has_time: true
+  initial: "2025-05-01 10:00:00"
+
+washing_machine_last_hose_check:
+  name: "Washing Machine Hoses Last Checked"
+  has_date: true
+  has_time: true
+  initial: "2025-05-01 10:00:00"
+
+dryer_last_lint_clean:
+  name: "Dryer Lint Trap Last Cleaned"
+  has_date: true
+  has_time: true
+  initial: "2025-05-01 10:00:00"
+
+curatron_drying_start_time:
+  name: "Curatron Drying Start Time"
+  has_date: true
+  has_time: true
+  icon: mdi:timer-sand
+
+# =============================================================================
+# SMART APPLIANCE CYCLE TRACKING - FIXED DURATION CALCULATION
+# =============================================================================
+
+washing_machine_cycle_start:
+  name: "Washing Machine Cycle Start Time"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:washing-machine
+
+dishwasher_cycle_start:
+  name: "Dishwasher Cycle Start Time"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:dishwasher
+
+# =============================================================================
+# ADAPTIVE LIGHTING OVERRIDE TIMESTAMPS - PHASE 2
+# =============================================================================
+
+# Primary Color-Capable Lights
+adaptive_lighting_last_override_livingroom_lights:
+  name: "Living Room Lights Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_kitchen_lights:
+  name: "Kitchen Lights Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_kitchen_led_strips:
+  name: "Kitchen LED Strips Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# Accent Lights
+adaptive_lighting_last_override_bar_strip:
+  name: "Bar Strip Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_top_left:
+  name: "Top Left Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_top_right:
+  name: "Top Right Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# Bedroom Lights
+adaptive_lighting_last_override_master_light:
+  name: "Master Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_master_lamp:
+  name: "Master Lamp Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_guest_light:
+  name: "Guest Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_linda_light:
+  name: "Linda Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_gavin_light:
+  name: "Gavin Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# Common Area Lights
+adaptive_lighting_last_override_dining_light:
+  name: "Dining Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_hall_light:
+  name: "Hall Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_nook_light:
+  name: "Nook Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# Utility Lights
+adaptive_lighting_last_override_hobby_light:
+  name: "Hobby Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+adaptive_lighting_last_override_pantry_light:
+  name: "Pantry Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# Exterior Lights
+adaptive_lighting_last_override_porch_light:
+  name: "Porch Light Last Override"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-outline
+
+# =============================================================================
+# 🖱️ DOUBLE-CLICK CONTROL TRACKING - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Double-click tracking entities for universal adaptive lighting control
+# as specified in the original implementation document.
+#
+# Added: June 16, 2025
+# Version: Phase 3 Double-Click Implementation
+# =============================================================================
+
+last_double_click_time:
+  name: "🖱️ Last Double-Click Time"
+  has_date: true
+  has_time: true
+  initial: "1970-01-01 00:00:00"
+  icon: mdi:clock-fast
+
+# =============================================================================
+# ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER INPUT DATETIMES
+# =============================================================================
+
+# Override mode timestamp
+adaptive_lighting_override_start:
+  name: "Override Mode Start Time"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-start
+
+# Last system sync timestamp
+adaptive_lighting_last_full_sync:
+  name: "Last Full System Sync"
+  has_date: true
+  has_time: true
+  icon: mdi:sync-circle

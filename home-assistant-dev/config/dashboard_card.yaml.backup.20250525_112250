@@ -1,0 +1,25 @@
+type: vertical-stack
+cards:
+  - type: custom:apexcharts-card
+    header:
+      title: Reservoir Depth
+    graph_span: 24h
+    series:
+      - entity: sensor.wroommicrousb_raw_distance_cm
+        name: Raw Distance
+        color: gray
+      - entity: sensor.wroommicrousb_average_depth_since_last_fertigation
+        name: Avg Depth Since Fertigation
+        color: green
+
+  - type: custom:apexcharts-card
+    header:
+      title: Reservoir Volume
+    graph_span: 24h
+    series:
+      - entity: sensor.wroommicrousb_reservoir_current_volume
+        name: Current Volume
+        color: blue
+      - entity: sensor.wroommicrousb_average_volume_since_last_fertigation
+        name: Avg Volume Since Fertigation
+        color: orange

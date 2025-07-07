@@ -1,0 +1,471 @@
+# =============================================================================
+# CORE HOME ASSISTANT SCRIPTS - CLEANED VERSION
+# Removed obsolete outdoor fan RF learning scripts
+# =============================================================================
+
+# =============================================================================
+# FERTIGATION RECORDING
+# =============================================================================
+record_fertigation:
+  alias: Record Fertigation
+  description: Record fertigation event with timestamp
+  sequence:
+  - service: esphome.wroommicrousb_set_last_fertigation_time
+    data:
+      timestamp: '{{ now().timestamp() | int }}'
+  - service: persistent_notification.create
+    data:
+      title: Fertigation Recorded
+      message: Fertigation has been recorded at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+      notification_id: fertigation_recorded
+
+# =============================================================================
+# SYSTEM HEALTH AND DIAGNOSTICS
+# =============================================================================
+generate_inactive_devices_report:
+  alias: Generate Inactive Devices Report
+  icon: mdi:file-document-outline
+  description: Generate comprehensive system health and device status report
+  sequence:
+  - service: persistent_notification.create
+    data:
+      title: System Health Report
+      message: |
+        ## System Health Summary
+        Generated: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+        
+        **System Statistics:**
+        * Unavailable entities: {{ states | selectattr('state', 'eq', 'unavailable') | list | count }}
+        * Unknown entities: {{ states | selectattr('state', 'eq', 'unknown') | list | count }}
+        * Low battery devices: 
+          {% set low_batt = namespace(count=0) %}
+          {% for entity in states.sensor | selectattr('attributes.device_class', 'eq', 'battery') | list %}
+            {% if entity.state|int(-1) > 0 and entity.state|int(-1) < 20 %}
+              {% set low_batt.count = low_batt.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ low_batt.count }}
+
+        ## Unavailable Devices
+        {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+        {% if unavailable|count > 0 %}
+          {% for entity_id in unavailable|sort %}
+            {% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+            * {{ entity_id }} {% if friendly_name %} ({{ friendly_name }}){% endif %}
+          {% endfor %}
+        {% else %}
+          *No unavailable devices* ✅
+        {% endif %}
+
+        ## Unknown State Devices
+        {% set unknown = states | selectattr('state', 'eq', 'unknown') | map(attribute='entity_id') | list %}
+        {% if unknown|count > 0 %}
+          {% for entity_id in unknown|sort %}
+            {% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+            * {{ entity_id }} {% if friendly_name %} ({{ friendly_name }}){% endif %}
+          {% endfor %}
+        {% else %}
+          *No unknown state devices* ✅
+        {% endif %}
+
+        ## Low Battery Devices
+        {% set low_battery = namespace(devices=[]) %}
+        {% for entity in states.sensor | selectattr('attributes.device_class', 'eq', 'battery') | list %}
+          {% if entity.state|int(-1) > 0 and entity.state|int(-1) < 20 %}
+            {% set low_battery.devices = low_battery.devices + [entity.entity_id ~ ' (' ~ entity.state ~ '%)'] %}
+          {% endif %}
+        {% endfor %}
+        {% if low_battery.devices|count > 0 %}
+          {% for device in low_battery.devices|sort %}
+            * {{ device }}
+          {% endfor %}
+        {% else %}
+          *No low battery devices* ✅
+        {% endif %}
+
+        ## Long Disconnected Devices
+        {% set long_disconnected = namespace(devices=[]) %}
+        {% for entity in states if entity.state == 'unavailable' %}
+          {% if entity.last_updated is defined and ((now() - entity.last_updated).total_seconds() / 86400) > 7 %}
+            {% set days = ((now() - entity.last_updated).total_seconds() / 86400) | round(1) %}
+            {% set long_disconnected.devices = long_disconnected.devices + [entity.entity_id ~ ' (' ~ days ~ ' days)'] %}
+          {% endif %}
+        {% endfor %}
+        {% if long_disconnected.devices|count > 0 %}
+          {% for device in long_disconnected.devices|sort %}
+            * {{ device }}
+          {% endfor %}
+        {% else %}
+          *No long disconnected devices* ✅
+        {% endif %}
+      notification_id: system_health_report
+
+# =============================================================================  
+# SYSTEM REPAIR AND DIAGNOSTICS
+# =============================================================================
+fix_entity_references:
+  alias: "Fix Missing Entity References"
+  icon: mdi:wrench
+  description: "Repair persistent entity reference errors"
+  mode: single
+  sequence:
+    - service: system_log.write
+      data:
+        level: info
+        message: "Starting entity reference cleanup for sensor.unavailable_entities_2"
+    - service: template.reload
+    - delay: 
+        seconds: 2
+    - service: automation.reload
+    - delay:
+        seconds: 2
+    - service: homeassistant.reload_core_config
+    - delay:
+        seconds: 5
+    - service: homeassistant.update_entity
+      data:
+        entity_id:
+          - sensor.integration_health_percentage
+          - sensor.system_health
+          - sensor.unavailable_entities
+          - sensor.failed_automations
+          - binary_sensor.system_health_ok
+    - service: persistent_notification.create
+      data:
+        title: "Entity Cleanup Complete"
+        message: "All health monitoring entities reloaded and updated. Monitor logs for continued errors."
+        notification_id: "entity_cleanup_results"
+
+# =============================================================================
+# APPLIANCE NOTIFICATION SYSTEM
+# =============================================================================
+test_appliance_announcements:
+  alias: "Test All Announcements"
+  icon: mdi:bullhorn
+  description: "Test the appliance notification system with all devices"
+  sequence:
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Testing appliance announcement system. All devices responding."
+        data:
+          type: announce
+    
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "Appliance Test Complete"
+        message: "Notification system test completed at {{ now().strftime('%I:%M %p') }}"
+    
+    - service: input_text.set_value
+      data:
+        entity_id: input_text.appliance_last_announcement
+        value: "System test completed at {{ now().strftime('%H:%M') }}"
+
+clear_quiet_hours_log:
+  alias: "Clear Quiet Hours Log"
+  icon: mdi:eraser
+  description: "Clear the quiet hours event log"
+  sequence:
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_quiet_events
+      data:
+        value: ""
+
+manual_energy_report:
+  alias: "Manual Energy Report"
+  icon: mdi:chart-bar
+  description: "Generate immediate energy consumption report via Alexa"
+  sequence:
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Current appliance energy usage: 
+          Dishwasher {{ states('sensor.dishwasher_electric_consumption_w') }} watts.
+          Washing machine {{ states('sensor.washing_machine_electric_consumption_w') }} watts.
+          {% if states('sensor.dryer_power') not in ['unknown', 'unavailable'] %}
+          Dryer {{ states('sensor.dryer_power') }} watts.
+          {% endif %}
+        data:
+          type: announce
+
+reload_appliance_automations:
+  alias: "Reload Appliance Automations"
+  icon: mdi:reload
+  description: "Reload all automations and notify via Alexa"
+  sequence:
+    - service: automation.reload
+    - delay:
+        seconds: 2
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Appliance automations have been reloaded successfully."
+        data:
+          type: announce
+
+# =============================================================================
+# 🎯 ADAPTIVE LIGHTING INDIVIDUAL OPT-OUT & SMART RE-SYNC SERVICES
+# =============================================================================
+#
+# Service scripts for programmatic individual light control and intelligent
+# re-sync system with rejection monitoring and exponential backoff learning.
+#
+# Added: June 17, 2025
+# Version: Individual Control + Smart Re-Sync Implementation - TEMPLATE FIX
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# INDIVIDUAL OPT-OUT SERVICE
+# -----------------------------------------------------------------------------
+adaptive_lighting_opt_out_light:
+  alias: "🚫 Opt-Out Individual Light"
+  icon: mdi:lightbulb-off-outline
+  description: "Programmatically opt-out a specific light from adaptive lighting"
+  mode: parallel
+  max: 17
+  fields:
+    entity_id:
+      description: "Light entity to opt-out"
+      required: true
+      example: "light.kitchen_lights"
+    reason:
+      description: "Optional reason for opt-out"
+      required: false
+      example: "User manual adjustment"
+  sequence:
+    # Validate light entity exists in adaptive lighting system
+    - if:
+        - condition: template
+          value_template: >
+            {% set light_name = entity_id.replace('light.', '') %}
+            {{ 'input_boolean.adaptive_lighting_override_' + light_name in states.input_boolean }}
+      then:
+        # Set override boolean and timestamp
+        - service: input_boolean.turn_on
+          data:
+            entity_id: >
+              {% set light_name = entity_id.replace('light.', '') %}
+              input_boolean.adaptive_lighting_override_{{ light_name }}
+        
+        - service: input_datetime.set_datetime
+          data:
+            entity_id: >
+              {% set light_name = entity_id.replace('light.', '') %}
+              input_datetime.adaptive_lighting_last_override_{{ light_name }}
+            datetime: "{{ now() }}"
+        
+        # Fire event for loose coupling
+        - event: adaptive_lighting_opt_out
+          event_data:
+            entity_id: "{{ entity_id }}"
+            reason: "{{ reason | default('Service call') }}"
+            timestamp: "{{ now().isoformat() }}"
+        
+        # Log action
+        - service: system_log.write
+          data:
+            level: info
+            message: "Adaptive lighting opt-out: {{ entity_id }} - {{ reason | default('Service call') }}"
+      else:
+        # Light not in adaptive lighting system
+        - service: system_log.write
+          data:
+            level: warning
+            message: "Cannot opt-out {{ entity_id }}: Not in adaptive lighting system"
+
+# -----------------------------------------------------------------------------
+# INDIVIDUAL OPT-IN SERVICE - FIXED TEMPLATE CONDITION
+# -----------------------------------------------------------------------------
+adaptive_lighting_opt_in_light:
+  alias: "✅ Opt-In Individual Light"
+  icon: mdi:lightbulb-on-outline
+  description: "Programmatically opt-in a light with immediate adaptive sync"
+  mode: parallel
+  max: 17
+  fields:
+    entity_id:
+      description: "Light entity to opt-in"
+      required: true
+      example: "light.kitchen_lights"
+    reason:
+      description: "Optional reason for opt-in"
+      required: false
+      example: "Re-sync attempt"
+  sequence:
+    # Validate light entity exists in adaptive lighting system
+    - if:
+        - condition: template
+          value_template: >
+            {% set light_name = entity_id.replace('light.', '') %}
+            {{ 'input_boolean.adaptive_lighting_override_' + light_name in states.input_boolean }}
+      then:
+        # Clear override boolean and timestamp
+        - service: input_boolean.turn_off
+          data:
+            entity_id: >
+              {% set light_name = entity_id.replace('light.', '') %}
+              input_boolean.adaptive_lighting_override_{{ light_name }}
+        
+        - service: input_datetime.set_datetime
+          data:
+            entity_id: >
+              {% set light_name = entity_id.replace('light.', '') %}
+              input_datetime.adaptive_lighting_last_override_{{ light_name }}
+            datetime: "{{ now() }}"
+        
+        # Apply adaptive settings immediately if light is on - FIXED TEMPLATE CONDITION
+        - if:
+            - condition: template
+              value_template: "{{ states(entity_id) == 'on' }}"
+          then:
+            - service: adaptive_lighting.apply
+              data:
+                entity_id: "{{ entity_id }}"
+                lights: "{{ entity_id }}"
+                adapt_brightness: true
+                adapt_color: true
+                transition: 3
+        
+        # Fire event for loose coupling
+        - event: adaptive_lighting_opt_in
+          event_data:
+            entity_id: "{{ entity_id }}"
+            reason: "{{ reason | default('Service call') }}"
+            timestamp: "{{ now().isoformat() }}"
+        
+        # Log action
+        - service: system_log.write
+          data:
+            level: info
+            message: "Adaptive lighting opt-in: {{ entity_id }} - {{ reason | default('Service call') }}"
+      else:
+        # Light not in adaptive lighting system
+        - service: system_log.write
+          data:
+            level: warning
+            message: "Cannot opt-in {{ entity_id }}: Not in adaptive lighting system"
+
+# -----------------------------------------------------------------------------
+# GENTLE RE-SYNC CORE LOGIC
+# -----------------------------------------------------------------------------
+adaptive_lighting_gentle_resync:
+  alias: "🧠 Gentle Re-Sync Attempt"
+  icon: mdi:sync-circle
+  description: "Core re-sync logic with 30-second rejection monitoring and backoff calculation"
+  mode: parallel
+  max: 17
+  fields:
+    light_entity:
+      description: "Light entity to attempt re-sync"
+      required: true
+      example: "light.kitchen_lights"
+    override_boolean:
+      description: "Override boolean entity"
+      required: true
+      example: "input_boolean.adaptive_lighting_override_kitchen_lights"
+    override_timestamp:
+      description: "Override timestamp entity"
+      required: true
+      example: "input_datetime.adaptive_lighting_last_override_kitchen_lights"
+  sequence:
+    # Store current light state for rejection detection
+    - variables:
+        initial_brightness: >
+          {% if states(light_entity) == 'on' %}
+            {{ state_attr(light_entity, 'brightness') | int(0) }}
+          {% else %}
+            0
+          {% endif %}
+        initial_color_temp: >
+          {% if states(light_entity) == 'on' and state_attr(light_entity, 'color_temp') %}
+            {{ state_attr(light_entity, 'color_temp') | int(0) }}
+          {% else %}
+            0
+          {% endif %}
+    
+    # Temporarily clear override to allow adaptive settings
+    - service: input_boolean.turn_off
+      data:
+        entity_id: "{{ override_boolean }}"
+    
+    # Apply adaptive settings gently
+    - service: adaptive_lighting.apply
+      data:
+        entity_id: "{{ light_entity }}"
+        lights: "{{ light_entity }}"
+        adapt_brightness: true
+        adapt_color: true
+        transition: 10
+    
+    # Wait 30 seconds for user rejection
+    - delay:
+        seconds: 30
+    
+    # Check if user adjusted the light (rejection detection)
+    - if:
+        - condition: template
+          value_template: >
+            {% set current_brightness = state_attr(light_entity, 'brightness') | int(0) %}
+            {% set current_color_temp = state_attr(light_entity, 'color_temp') | int(0) %}
+            {% set brightness_changed = (current_brightness - initial_brightness) | abs > 10 %}
+            {% set color_temp_changed = (current_color_temp - initial_color_temp) | abs > 50 %}
+            {{ brightness_changed or color_temp_changed }}
+      then:
+        # User rejected - restore override and extend backoff
+        - service: input_boolean.turn_on
+          data:
+            entity_id: "{{ override_boolean }}"
+        
+        - service: input_datetime.set_datetime
+          data:
+            entity_id: "{{ override_timestamp }}"
+            datetime: "{{ now() }}"
+        
+        # Increment rejection counter
+        - service: input_number.increment
+          data:
+            entity_id: input_number.adaptive_lighting_resync_rejections
+        
+        # Fire rejection event
+        - event: adaptive_lighting_resync_rejected
+          event_data:
+            entity_id: "{{ light_entity }}"
+            reason: "User adjustment detected"
+            timestamp: "{{ now().isoformat() }}"
+        
+        # Log rejection
+        - service: system_log.write
+          data:
+            level: info
+            message: "Re-sync rejected: {{ light_entity }} - User adjusted light within 30 seconds"
+      else:
+        # User accepted - keep override off and update timestamp
+        - service: input_datetime.set_datetime
+          data:
+            entity_id: "{{ override_timestamp }}"
+            datetime: "{{ now() }}"
+        
+        # Increment success counter
+        - service: input_number.increment
+          data:
+            entity_id: input_number.adaptive_lighting_resync_successes
+        
+        # Fire success event
+        - event: adaptive_lighting_resync_accepted
+          event_data:
+            entity_id: "{{ light_entity }}"
+            reason: "No user adjustment detected"
+            timestamp: "{{ now().isoformat() }}"
+        
+        # Log success
+        - service: system_log.write
+          data:
+            level: info
+            message: "Re-sync accepted: {{ light_entity }} - Light successfully re-integrated"
+    
+    # Always increment attempt counter
+    - service: input_number.increment
+      data:
+        entity_id: input_number.adaptive_lighting_resync_attempts

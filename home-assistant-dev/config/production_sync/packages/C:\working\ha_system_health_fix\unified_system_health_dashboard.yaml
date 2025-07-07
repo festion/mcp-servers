@@ -1,0 +1,174 @@
+# SYSTEM HEALTH DASHBOARD - WORKING VERSION
+# File: dashboards/system_health_dashboard.yaml
+# Purpose: Fully functional system health dashboard using correct sensor names
+
+type: vertical-stack
+cards:
+  # Main Health Status Overview
+  - type: horizontal-stack
+    cards:
+      - type: entity
+        entity: sensor.integration_health_status_emergency_fix
+        name: "System Status"
+        icon: mdi:heart-pulse
+      - type: entity  
+        entity: sensor.integration_health_percentage_fixed
+        name: "Health Score"
+        icon: mdi:speedometer
+      - type: entity
+        entity: binary_sensor.system_health_ok_emergency_fix
+        name: "System OK"
+        icon: mdi:check-circle
+
+  # Integration Health Details
+  - type: horizontal-stack
+    cards:
+      - type: entity
+        entity: sensor.alexa_integration_health_emergency_fix
+        name: "Alexa Health"
+        icon: mdi:amazon-alexa
+      - type: entity
+        entity: sensor.mobile_app_integration_health_emergency_fix  
+        name: "Mobile App Health"
+        icon: mdi:cellphone
+      - type: entity
+        entity: sensor.switch_integration_health_emergency_fix
+        name: "Switch Health"
+        icon: mdi:light-switch
+
+  # System Metrics
+  - type: horizontal-stack
+    cards:
+      - type: entity
+        entity: sensor.unavailable_entities_emergency_fix
+        name: "Unavailable Entities"
+        icon: mdi:alert-circle
+      - type: entity
+        entity: sensor.failed_automations_count_emergency_fix
+        name: "Failed Automations"
+        icon: mdi:robot-confused
+      - type: entity
+        entity: sensor.appliance_system_status
+        name: "Appliance Status"
+        icon: mdi:home-automation
+
+  # Health Status Details (Markdown Card)
+  - type: markdown
+    content: >
+      ## 📊 System Health Summary
+      
+      **Overall Status:** {{ states('sensor.integration_health_status_emergency_fix') | default('Unknown') }}
+      
+      **Health Score:** {{ states('sensor.integration_health_percentage_fixed') | default('Unknown') }}%
+      
+      **System Status:** {{ states('sensor.appliance_system_status') | default('Unknown') }}
+
+      ### Integration Details:
+      - **Alexa:** {{ states('sensor.alexa_integration_health_emergency_fix') | default('Unknown') }}% 
+        ({{ state_attr('sensor.alexa_integration_health_emergency_fix', 'status_text') | default('Unknown') }})
+      - **Mobile App:** {{ states('sensor.mobile_app_integration_health_emergency_fix') | default('Unknown') }}% 
+        ({{ state_attr('sensor.mobile_app_integration_health_emergency_fix', 'status_text') | default('Unknown') }})
+      - **Switches:** {{ states('sensor.switch_integration_health_emergency_fix') | default('Unknown') }}% 
+        ({{ state_attr('sensor.switch_integration_health_emergency_fix', 'status_text') | default('Unknown') }})
+      
+      ### System Metrics:
+      - **Total Entities:** {{ state_attr('sensor.integration_health_percentage_fixed', 'total_entities') | default('Unknown') }}
+      - **Unavailable:** {{ states('sensor.unavailable_entities_emergency_fix') | default('Unknown') }} entities
+      - **Failed Automations:** {{ states('sensor.failed_automations_count_emergency_fix') | default('Unknown') }}
+      
+      ### Key Services Status:
+      - **Alexa Media Player:** {{ states('media_player.everywhere') | default('Unknown') }}
+      - **Mobile Device:** {{ states('device_tracker.pixel_9_pro_xl') | default('Unknown') }}
+      - **Dishwasher Sensor:** {{ states('sensor.dishwasher_electric_consumption_w') | default('Unknown') }}
+      - **Washing Machine Sensor:** {{ states('sensor.washing_machine_electric_consumption_w') | default('Unknown') }}
+      
+      **Last Updated:** {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+
+  # Health Charts
+  - type: horizontal-stack
+    cards:
+      - type: gauge
+        entity: sensor.integration_health_percentage_fixed
+        name: "Overall Health"
+        min: 0
+        max: 100
+        severity:
+          green: 90
+          yellow: 75
+          red: 60
+      
+      - type: gauge
+        entity: sensor.alexa_integration_health_emergency_fix
+        name: "Alexa Health"
+        min: 0
+        max: 100
+        severity:
+          green: 90
+          yellow: 75
+          red: 60
+
+  # Action Buttons
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: "Refresh Health Data"
+        tap_action:
+          action: call-service
+          service: homeassistant.update_entity
+          service_data:
+            entity_id: 
+              - sensor.integration_health_status_emergency_fix
+              - sensor.integration_health_percentage_fixed
+              - sensor.alexa_integration_health_emergency_fix
+              - sensor.mobile_app_integration_health_emergency_fix
+              - sensor.switch_integration_health_emergency_fix
+              - sensor.unavailable_entities_emergency_fix
+              - sensor.failed_automations_count_emergency_fix
+        icon: mdi:refresh
+        show_state: false
+      
+      - type: button
+        name: "Reload Templates"
+        tap_action:
+          action: call-service
+          service: template.reload
+        icon: mdi:file-refresh
+        show_state: false
+      
+      - type: button
+        name: "Enable Health Recovery"
+        tap_action:
+          action: call-service
+          service: automation.turn_on
+          service_data:
+            entity_id: automation.health_monitor_system_health_recovery
+        icon: mdi:auto-fix
+        show_state: false
+
+  # Recent Issues (if any)
+  - type: conditional
+    conditions:
+      - entity: sensor.unavailable_entities_emergency_fix
+        state_not: "0"
+    card:
+      type: markdown
+      content: >
+        ## ⚠️ Current Issues
+        
+        **{{ states('sensor.unavailable_entities_emergency_fix') }} entities are currently unavailable**
+        
+        This represents {{ state_attr('sensor.unavailable_entities_emergency_fix', 'percentage') }}% of your total entities.
+        
+        Common causes:
+        - Device connectivity issues
+        - Integration failures  
+        - Network problems
+        - Recently removed devices still in configuration
+        
+        **Recommended Actions:**
+        1. Check Settings > Devices & Services for failed integrations
+        2. Restart integrations with issues
+        3. Remove entities for devices no longer in use
+        4. Check network connectivity to wireless devices
+
+title: "🏥 System Health Monitor"

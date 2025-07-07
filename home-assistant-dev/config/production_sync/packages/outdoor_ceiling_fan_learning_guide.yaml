@@ -1,0 +1,247 @@
+# ================================================
+# OUTDOOR CEILING FAN IR CODE LEARNING GUIDE
+# ================================================
+# Complete systematic approach to learning all remote codes
+# Updated: June 11, 2025
+
+# === LEARNING SCRIPTS FOR HOME ASSISTANT ===
+# Add these to your scripts.yaml or create a new script file
+
+script:
+  # === STEP 1: LEARN BASIC POWER COMMANDS ===
+  learn_outdoor_fan_power_on:
+    alias: "Learn Outdoor Fan Power ON"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "power_on"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the POWER ON button within 30 seconds"
+
+  learn_outdoor_fan_power_off:
+    alias: "Learn Outdoor Fan Power OFF"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "power_off"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the POWER OFF button within 30 seconds"
+
+  # === STEP 2: LEARN SPEED COMMANDS ===
+  learn_outdoor_fan_speed_low:
+    alias: "Learn Outdoor Fan Speed LOW"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_low"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the LOW SPEED button within 30 seconds"
+
+  learn_outdoor_fan_speed_medium:
+    alias: "Learn Outdoor Fan Speed MEDIUM"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_medium"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the MEDIUM SPEED button within 30 seconds"
+
+  learn_outdoor_fan_speed_high:
+    alias: "Learn Outdoor Fan Speed HIGH"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_high"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the HIGH SPEED button within 30 seconds"
+
+  # === STEP 3: LEARN LIGHT COMMANDS (if applicable) ===
+  learn_outdoor_fan_light_on:
+    alias: "Learn Outdoor Fan Light ON"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "light_on"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the LIGHT ON button within 30 seconds"
+
+  learn_outdoor_fan_light_off:
+    alias: "Learn Outdoor Fan Light OFF"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "light_off"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the LIGHT OFF button within 30 seconds"
+
+  # === STEP 4: LEARN ADDITIONAL COMMANDS ===
+  learn_outdoor_fan_reverse:
+    alias: "Learn Outdoor Fan Reverse"
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "reverse"
+          timeout: 30
+      - service: notify.persistent_notification
+        data:
+          title: "Learning Mode Active"
+          message: "Point your ceiling fan remote at the RM4 Pro and press the REVERSE button within 30 seconds"
+
+  # === TESTING SCRIPTS ===
+  test_outdoor_fan_codes:
+    alias: "Test All Outdoor Fan Codes"
+    sequence:
+      - service: notify.persistent_notification
+        data:
+          title: "Testing Outdoor Fan Codes"
+          message: "Testing all learned commands in sequence..."
+      - delay: 2
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "power_on"
+      - delay: 3
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_low"
+      - delay: 3
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_medium"
+      - delay: 3
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "speed_high"
+      - delay: 3
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4_pro
+        data:
+          device: "outdoor_ceiling_fan"
+          command: "power_off"
+
+# ================================================
+# STEP-BY-STEP LEARNING INSTRUCTIONS
+# ================================================
+
+# PREREQUISITE CHECK:
+# 1. Ensure your RM4 Pro is properly positioned to "see" the ceiling fan
+# 2. Fresh batteries in your ceiling fan remote
+# 3. Clear line of sight between remote, RM4 Pro, and ceiling fan
+
+# LEARNING SEQUENCE:
+# Execute these scripts in order through Home Assistant Developer Tools > Services:
+
+# STEP 1: BASIC POWER
+# script.learn_outdoor_fan_power_on
+# script.learn_outdoor_fan_power_off
+
+# STEP 2: FAN SPEEDS  
+# script.learn_outdoor_fan_speed_low
+# script.learn_outdoor_fan_speed_medium
+# script.learn_outdoor_fan_speed_high
+
+# STEP 3: LIGHT CONTROLS (if your fan has lights)
+# script.learn_outdoor_fan_light_on
+# script.learn_outdoor_fan_light_off
+
+# STEP 4: ADDITIONAL FEATURES (if available)
+# script.learn_outdoor_fan_reverse
+
+# STEP 5: TEST ALL CODES
+# script.test_outdoor_fan_codes
+
+# ================================================
+# TROUBLESHOOTING TIPS
+# ================================================
+
+# PROBLEM: Codes not learning
+# SOLUTION: 
+# - Move RM4 Pro closer to your remote (6-12 inches)
+# - Try learning the same command multiple times
+# - Check if remote batteries are fresh
+# - Ensure no other IR devices are interfering
+
+# PROBLEM: Inconsistent code execution
+# SOLUTION:
+# - Re-learn the problematic commands
+# - Check line of sight to ceiling fan
+# - Verify RM4 Pro position relative to fan's IR receiver
+
+# PROBLEM: Some buttons don't respond
+# SOLUTION:
+# - Some ceiling fans use toggle commands (same code for on/off)
+# - Try learning "power" instead of separate "power_on"/"power_off"
+# - Check your fan's manual for button functions
+
+# ================================================
+# POST-LEARNING: UPDATE CONFIGURATION
+# ================================================
+
+# After successfully learning all codes, you'll need to:
+# 1. Check the learned codes in: .storage/broadlink_remote_YOUR_MAC_codes
+# 2. Copy the hex codes to your outdoor_ceiling_fan.yaml package
+# 3. Replace the placeholder text with actual hex codes
+# 4. Restart Home Assistant
+# 5. Test through the UI
+
+# Example of what learned codes look like:
+# "outdoor_ceiling_fan": {
+#   "power_on": "JgBQAAABKZMTEhQSExMUEhQTEhQSFBIUExISFBIUEhQSFBIUExMSFDcUNxQ3EzcUNxU2FTUUOBQ2FDgUNxQ3FDgUNhY1FDgUAAFNkxISFBMTEhUSExIUEhUSFBITEhQSFBIUEhQSFBMTEhU2FTYUNxQ3FDcUNxQ2FTcUNhQ4FDYUOBU2FDgUNhQ4FQAFNQAAA="
+# }

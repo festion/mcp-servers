@@ -1,0 +1,144 @@
+# Z-Wave LED Manual Test Script
+# This script helps diagnose Z-Wave LED control issues by testing different parameters and devices
+
+zwave_led_hobby_test:
+  alias: "Test Hobby Light LED Control"
+  description: "Test Z-Wave LED parameter setting for hobby light"
+  sequence:
+    # Step 1: Check device availability and state
+    - service: logbook.log
+      data:
+        name: "Z-Wave LED Test"
+        message: "Testing hobby light LED control - Device state: {{ states('light.hobby_light') }}"
+    
+    # Step 2: Try to get device info via service call
+    - service: logbook.log
+      data:
+        name: "Z-Wave LED Test"
+        message: "Attempting to set LED parameter for light.hobby_light"
+    
+    # Step 3: Test Z-Wave parameter setting with error handling
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id: light.hobby_light
+      data:
+        parameter: 7
+        value: 0
+      continue_on_error: true
+    
+    # Step 4: Test alternate parameter number in case DZ1KD uses different parameter
+    - delay:
+        milliseconds: 500
+    - service: zwave_js.set_config_parameter
+      target:
+        entity_id: light.hobby_light
+      data:
+        parameter: 3  # Some switches use parameter 3 instead of 7
+        value: 0
+      continue_on_error: true
+    
+    # Step 5: Test zwave_js.set_value service as alternative
+    - delay:
+        milliseconds: 500
+    - service: zwave_js.set_value
+      target:
+        entity_id: light.hobby_light
+      data:
+        command_class: 112  # Configuration Command Class
+        property: 7
+        value: 0
+      continue_on_error: true
+    
+    # Step 6: Log completion
+    - service: logbook.log
+      data:
+        name: "Z-Wave LED Test"
+        message: "Completed LED test for hobby light"
+
+zwave_device_info_test:
+  alias: "Get Z-Wave Device Information"
+  description: "Retrieve detailed device information to verify Z-Wave capabilities"
+  sequence:
+    # Test multiple devices to understand their types
+    - repeat:
+        count: 3
+        sequence:
+          - variables:
+              test_entities:
+                - light.hobby_light
+                - fan.hobby_fan
+                - light.gavin_light
+              current_entity: "{{ test_entities[repeat.index - 1] }}"
+          
+          - service: logbook.log
+            data:
+              name: "Z-Wave Device Info"
+              message: >
+                Device: {{ current_entity }}
+                State: {{ states(current_entity) }}
+                Domain: {{ current_entity.split('.')[0] }}
+                Available: {{ states(current_entity) not in ['unavailable', 'unknown'] }}
+          
+          # Try to ping the Z-Wave device
+          - if:
+              - condition: template
+                value_template: "{{ states(current_entity) not in ['unavailable', 'unknown'] }}"
+            then:
+              - service: zwave_js.ping
+                target:
+                  entity_id: "{{ current_entity }}"
+                continue_on_error: true
+              - service: logbook.log
+                data:
+                  name: "Z-Wave Device Info"
+                  message: "Ping attempted for {{ current_entity }}"
+
+zwave_parameter_discovery:
+  alias: "Z-Wave Parameter Discovery"
+  description: "Test multiple parameters to discover which ones work"
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Z-Wave Parameter Discovery"
+        message: "Starting parameter discovery for light.hobby_light"
+    
+    # Test common LED control parameters
+    - repeat:
+        count: 5
+        sequence:
+          - variables:
+              led_parameters: [3, 7, 13, 16, 22]  # Common LED control parameters
+              current_param: "{{ led_parameters[repeat.index - 1] }}"
+          
+          - service: logbook.log
+            data:
+              name: "Z-Wave Parameter Discovery"
+              message: "Testing parameter {{ current_param }} on light.hobby_light"
+          
+          - service: zwave_js.set_config_parameter
+            target:
+              entity_id: light.hobby_light
+            data:
+              parameter: "{{ current_param }}"
+              value: 0
+            continue_on_error: true
+          
+          - delay:
+              milliseconds: 200
+
+zwave_integration_check:
+  alias: "Check Z-Wave Integration Status"
+  description: "Verify Z-Wave JS integration is working properly"
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Z-Wave Integration Check"
+        message: >
+          Checking Z-Wave JS integration status.
+          Looking for integration sensors and diagnostics.
+    
+    # Check if Z-Wave JS integration is loaded
+    - service: system_log.write
+      data:
+        level: info
+        message: "Z-Wave LED Test: Checking integration health"

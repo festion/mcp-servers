@@ -1,0 +1,421 @@
+# =============================================================================
+# UNIFIED APPLIANCE AUTOMATION SYSTEM
+# Created: June 6, 2025
+# Combined from appliances.yaml and appliances2.yaml with proper service calls
+# All notify.alexa_media calls fixed to use notify.alexa_media_everywhere
+# =============================================================================
+
+# =============================================================================
+# DISHWASHER AUTOMATIONS
+# =============================================================================
+
+- alias: "Dishwasher - Cycle Start Detection"
+  description: "Detect dishwasher cycle start with proper state tracking to prevent duplicate announcements"
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      above: 50
+      for:
+        minutes: 2
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.dishwasher_cycle_announced
+          state: 'off'
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: input_boolean.appliance_quiet_hours_enabled
+              state: 'off'
+            - condition: time
+              after: "07:30:00"
+              before: "22:30:00"
+  action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.dishwasher_cycle_announced
+
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "The dishwasher cycle has started."
+        data:
+          type: announce
+
+    # Fallback mobile notification
+    - condition: template
+      value_template: "{{ states('media_player.everywhere') == 'unavailable' }}"
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "Dishwasher Started"
+        message: "Cycle started at {{ now().strftime('%I:%M %p') }}"
+
+    - service: input_text.set_value
+      data:
+        entity_id: input_text.appliance_last_announcement
+        value: "Dishwasher cycle started"
+
+- alias: "Dishwasher - Cycle Completion Detection"
+  description: "Enhanced dishwasher cycle monitoring with completion detection (respects quiet hours)"
+  mode: restart
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      below: 5
+      for:
+        minutes: 5
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      below: 5
+  action:
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Dishwasher cycle is complete! Don't forget to open the door to let dishes air dry."
+        data:
+          type: announce
+    
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.dishwasher_cycle_announced
+    
+    - delay:
+        minutes: 30
+    
+    # Check if door sensor exists before using it
+    - condition: template
+      value_template: "{{ states('binary_sensor.dishwasher_door_window_door_is_open') not in ['unknown', 'unavailable'] }}"
+    - condition: state
+      entity_id: binary_sensor.dishwasher_door_window_door_is_open
+      state: 'off'
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Reminder: The dishwasher door is still closed. Opening it will help dishes dry faster."
+        data:
+          type: announce
+
+- alias: "Dishwasher - Cycle Completion Announcement"
+  description: "Announce when dishwasher cycle is complete (triggered by boolean state change)"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The dishwasher cycle is complete and ready to be unloaded."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dishwasher complete - {{ now().strftime('%H:%M') }}"
+
+- alias: "Dishwasher - Door Left Open Alert"
+  description: "Alerts if dishwasher door is left open too long (respects quiet hours)"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dishwasher_door_window_door_is_open
+      to: 'on'
+      for:
+        hours: 4
+  condition:
+    - condition: template
+      value_template: "{{ states('binary_sensor.dishwasher_door_window_door_is_open') not in ['unknown', 'unavailable'] }}"
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+  action:
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "The dishwasher door has been open for 4 hours. You may want to close it now."
+        data:
+          type: announce
+
+# =============================================================================
+# WASHING MACHINE AUTOMATIONS
+# =============================================================================
+
+- alias: "Washing Machine - Cycle Start Detection"
+  description: "Detects when washing machine starts and announces via Alexa (respects quiet hours)"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      above: 100
+      for:
+        minutes: 2
+  condition:
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+  action:
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Washing machine cycle has started. I'll let you know when it's finished."
+        data:
+          type: announce
+    
+    - service: logbook.log
+      data:
+        name: "Washing Machine Monitoring"
+        message: "Washing machine cycle started - power consumption: {{ states('sensor.washing_machine_electric_consumption_w') }}W"
+
+- alias: "Washing Machine - Cycle Monitoring"
+  description: "Enhanced washing machine cycle monitoring with completion detection and progressive reminders (respects quiet hours)"
+  mode: restart
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      below: 5
+      for:
+        minutes: 3
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      below: 5
+  action:
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Washing machine cycle is complete! Time to move your clothes to the dryer."
+        data:
+          type: announce
+    
+    - delay:
+        minutes: 15
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Reminder: Your laundry is still waiting in the washing machine."
+        data:
+          type: announce
+    
+    - delay:
+        minutes: 30
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Final reminder: Please don't forget about your laundry in the washing machine."
+        data:
+          type: announce
+
+- alias: "Washing Machine - Cycle Completion Announcement"
+  description: "Announce when washing machine cycle is complete (triggered by boolean state change)"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.washing_machine_cycle_announced
+      from: "on" 
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The washing machine cycle is complete. Please move clothes to the dryer."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Washer complete - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# DRYER AUTOMATIONS
+# =============================================================================
+
+- alias: "Dryer - Cycle Start Detection"
+  description: "Detects when dryer starts using SmartThings integration (respects quiet hours)"
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'run'
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      to: 'drying'
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.dryer_machine_state') not in ['unknown', 'unavailable'] }}"
+    - condition: state
+      entity_id: sensor.dryer_machine_state
+      state: 'run'
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+  action:
+    # FIXED - Using correct notification service
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Dryer cycle has started.
+          {% set completion_time = states('sensor.dryer_completion_time') %}
+          {% if completion_time not in ['unknown', 'unavailable'] and completion_time != None %}
+            Expected completion time is {{ as_timestamp(completion_time) | timestamp_custom('%I:%M %p', true) }}.
+          {% else %}
+            I'll let you know when it's finished.
+          {% endif %}
+        data:
+          type: announce
+    
+    - service: logbook.log
+      data:
+        name: "Dryer Monitoring"
+        message: "Dryer cycle started - Job state: {{ states('sensor.dryer_job_state') }}"
+
+- alias: "Dryer - Cycle Completion Announcement"
+  description: "Announce when dryer cycle is complete (triggered by boolean state change)"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dryer_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The dryer cycle is complete. Please remove clothes to prevent wrinkles."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dryer complete - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# APPLIANCE ERROR MONITORING
+# =============================================================================
+
+- alias: "Appliance - Error Monitoring"
+  description: "Monitor for appliance errors and announce"
+  trigger:
+    - platform: state
+      entity_id: 
+        - sensor.dishwasher_door_status
+        - sensor.washing_machine_status
+        - sensor.dryer_status
+      to: "error"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Attention: {{ trigger.to_state.attributes.friendly_name }} is reporting an error. Please check the appliance."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🚨 Appliance Error"
+        message: "{{ trigger.to_state.attributes.friendly_name }} error at {{ now().strftime('%H:%M') }}"
+        notification_id: "appliance_error_{{ trigger.entity_id.split('.')[1] }}"
+
+# =============================================================================
+# MAINTENANCE AND UTILITY AUTOMATIONS
+# =============================================================================
+
+- alias: "Appliance - Monthly Maintenance Reminder"
+  description: "Monthly maintenance reminders for appliances"
+  trigger:
+    - platform: time
+      at: "09:00:00"
+  condition:
+    - condition: template
+      value_template: "{{ now().day == 1 }}"  # First day of month
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Monthly appliance maintenance reminder: Please clean the dishwasher filter, check washing machine hoses, and clean the dryer lint trap."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🔧 Monthly Appliance Maintenance"
+        message: |
+          Time for monthly appliance maintenance:
+          - Clean dishwasher filter
+          - Check washing machine hoses  
+          - Clean dryer lint trap
+          - Wipe down appliance exteriors
+        notification_id: monthly_maintenance
+
+- alias: "Appliance - Off-Peak Energy Reminder"
+  description: "Remind to run appliances during off-peak hours"
+  trigger:
+    - platform: time
+      at: "21:00:00"  # 9 PM reminder for off-peak usage
+  condition:
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Reminder: Off-peak energy hours start at 10 PM. Consider running the dishwasher or washing machine after 10 PM to save on energy costs."
+        data:
+          type: announce
+
+- alias: "Appliance - Maintenance Tracking"
+  description: "Track when maintenance tasks are completed"
+  trigger:
+    - platform: state
+      entity_id:
+        - input_datetime.dishwasher_last_filter_clean
+        - input_datetime.washing_machine_last_hose_check
+      to: ~
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Thank you for completing the {{ trigger.to_state.attributes.friendly_name.replace('Last ', '').lower() }}. Maintenance has been logged."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Maintenance logged - {{ now().strftime('%H:%M') }}"

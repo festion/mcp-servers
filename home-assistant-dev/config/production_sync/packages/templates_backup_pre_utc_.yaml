@@ -1,0 +1,245 @@
+# Home Assistant Template Sensors - CONSOLIDATED (No Versioned Entities)
+# Date: June 8, 2025 - Serena Autonomous Consolidation
+# Purpose: Eliminate versioned entities and use original names
+
+- sensor:
+    # Core Health Dashboard
+    - name: "Health Dashboard Instructions"
+      unique_id: health_dashboard_instructions
+      state: "Health monitoring active"
+      icon: "mdi:monitor-dashboard"
+      attributes:
+        system_health: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        critical_issues: "{{ states('sensor.failed_automations') | default('0') }} failed automations"
+        last_refresh: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        status: >
+          {% set health = states('sensor.integration_health_percentage') | float(0) %}
+          {% if health >= 90 %}Excellent
+          {% elif health >= 75 %}Good
+          {% elif health >= 60 %}Fair
+          {% else %}Critical
+          {% endif %}
+
+    # System Status Core
+    - name: "System Status Core"
+      unique_id: system_status_core_monitor
+      state: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% if health >= 85 and failed_autos == 0 %}Optimal
+        {% elif health >= 75 and failed_autos <= 2 %}Good
+        {% elif health >= 60 and failed_autos <= 5 %}Fair
+        {% else %}Critical
+        {% endif %}
+      icon: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% if health >= 85 %}mdi:check-circle
+        {% elif health >= 75 %}mdi:check-circle-outline
+        {% elif health >= 60 %}mdi:alert-circle-outline
+        {% else %}mdi:alert-circle
+        {% endif %}
+
+    # Simple Ready Status
+    - name: "System Ready Status"
+      unique_id: system_ready_status_simple
+      state: "Ready"
+      availability: true
+
+    # Unavailable Entities Counter - CONSOLIDATED (Original Name)
+    - name: "Unavailable Entities"
+      unique_id: unavailable_entities_counter_main
+      state: >
+        {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+        {{ unavailable }}
+      unit_of_measurement: "entities"
+      icon: "mdi:alert-circle-outline"
+      attributes:
+        last_updated: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        status: >
+          {% set count = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if count == 0 %}All entities available
+          {% elif count <= 5 %}Minor issues
+          {% elif count <= 15 %}Moderate issues
+          {% else %}Critical issues
+          {% endif %}
+
+    # === CURATRON DRYING SYSTEM SENSORS - FIXED TIMEZONE ISSUES ===
+    - name: "Curatron Drying Progress"
+      unique_id: curatron_drying_progress_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set start_time = states('input_datetime.curatron_drying_start_time') %}
+          {% if start_time not in ['unavailable', 'unknown', ''] %}
+            {% set start_dt = strptime(start_time, '%Y-%m-%d %H:%M:%S') %}
+            {% set now_dt = now().replace(tzinfo=None) %}
+            {% set hours_since = ((now_dt - start_dt).total_seconds() / 3600) | round(1) %}
+            {% set days_since = (hours_since / 24) | round(1) %}
+            {% set total_days = states('input_number.curatron_drying_total_days') | float(14) %}
+            {% set progress_pct = (days_since / total_days * 100) | round(1) %}
+            {{ [progress_pct, 100] | min }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+      unit_of_measurement: "%"
+      icon: "mdi:progress-clock"
+      attributes:
+        drying_active: "{{ is_state('input_boolean.curatron_drying_active_mode', 'on') }}"
+        days_elapsed: >
+          {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+            {% set start_time = states('input_datetime.curatron_drying_start_time') %}
+            {% if start_time not in ['unavailable', 'unknown', ''] %}
+              {% set start_dt = strptime(start_time, '%Y-%m-%d %H:%M:%S') %}
+              {% set now_dt = now().replace(tzinfo=None) %}
+              {% set hours_since = ((now_dt - start_dt).total_seconds() / 3600) | round(1) %}
+              {{ (hours_since / 24) | round(1) }}
+            {% else %}
+              0
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        total_days: "{{ states('input_number.curatron_drying_total_days') | float(14) }}"
+        current_threshold: "{{ states('input_number.curatron_drying_threshold_slider') | float(0) }}%"
+        target_end: "{{ states('input_number.curatron_drying_end_humidity') | float(60) }}%"
+        remaining_humidity: >
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {{ current - target }}%
+        status: >
+          {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+            {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+            {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+            {% if current <= target %}
+              Completed - Steady State
+            {% else %}
+              Active - Drying in Progress
+            {% endif %}
+          {% else %}
+            Inactive
+          {% endif %}
+
+    - name: "Curatron Drying Status"
+      unique_id: curatron_drying_status_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current_threshold = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set end_threshold = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% set start_threshold = states('input_number.curatron_drying_start_humidity') | float(80) %}
+          {% if current_threshold <= end_threshold %}
+            Steady State
+          {% else %}
+            {% set progress = ((start_threshold - current_threshold) / (start_threshold - end_threshold) * 100) | round(0) %}
+            Drying {{ progress }}%
+          {% endif %}
+        {% else %}
+          Normal Mode
+        {% endif %}
+      icon: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% if current <= target %}
+            mdi:check-circle
+          {% else %}
+            mdi:timer-sand
+          {% endif %}
+        {% else %}
+          mdi:home-thermometer
+        {% endif %}
+      attributes:
+        current_step: >
+          {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+            {% set start_time = states('input_datetime.curatron_drying_start_time') %}
+            {% if start_time not in ['unavailable', 'unknown', ''] %}
+              {% set start_dt = strptime(start_time, '%Y-%m-%d %H:%M:%S') %}
+              {% set now_dt = now().replace(tzinfo=None) %}
+              {% set hours_since = ((now_dt - start_dt).total_seconds() / 3600) | round(1) %}
+              {% set days_since = (hours_since / 24) | round(1) %}
+              {% set step_days = states('input_number.curatron_drying_step_days') | float(2) %}
+              {% set total_days = states('input_number.curatron_drying_total_days') | float(14) %}
+              {% set current_step = (days_since / step_days) | round(0) %}
+              {% set total_steps = (total_days / step_days) | round(0) %}
+              {{ current_step }}/{{ total_steps }}
+            {% else %}
+              0/0
+            {% endif %}
+          {% else %}
+            N/A
+          {% endif %}
+        next_decrease: >
+          {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+            {% set start_time = states('input_datetime.curatron_drying_start_time') %}
+            {% if start_time not in ['unavailable', 'unknown', ''] %}
+              {% set start_dt = strptime(start_time, '%Y-%m-%d %H:%M:%S') %}
+              {% set now_dt = now().replace(tzinfo=None) %}
+              {% set hours_since = ((now_dt - start_dt).total_seconds() / 3600) | round(1) %}
+              {% set step_days = states('input_number.curatron_drying_step_days') | float(2) %}
+              {% set step_hours = step_days * 24 %}
+              {% set hours_into_step = hours_since % step_hours %}
+              {% set hours_until_next = step_hours - hours_into_step %}
+              {% if hours_until_next <= 24 %}
+                {{ hours_until_next | round(1) }} hours
+              {% else %}
+                {{ (hours_until_next / 24) | round(1) }} days
+              {% endif %}
+            {% else %}
+              Unknown
+            {% endif %}
+          {% else %}
+            N/A
+          {% endif %}
+
+- binary_sensor:
+    # Night Mode Status - CONSOLIDATED (Original Name)
+    - name: "Night Mode Active"
+      unique_id: night_mode_active_consolidated
+      state: >
+        {% set current_hour = now().hour %}
+        {{ current_hour >= 22 or current_hour < 6 }}
+      device_class: "occupancy"
+      icon: >
+        {% set current_hour = now().hour %}
+        {% set is_night = current_hour >= 22 or current_hour < 6 %}
+        {% if is_night %}
+          mdi:weather-night
+        {% else %}
+          mdi:weather-sunny
+        {% endif %}
+      attributes:
+        current_hour: "{{ now().hour }}"
+        mode_description: >
+          {% set current_hour = now().hour %}
+          {% set is_night = current_hour >= 22 or current_hour < 6 %}
+          {% if is_night %}
+          Night mode active - System in low-activity monitoring
+          {% else %}
+          Day mode active - Full system monitoring
+          {% endif %}
+          
+    # === CURATRON DRYING SYSTEM BINARY SENSORS ===
+    - name: "Curatron Drying Complete"
+      unique_id: curatron_drying_complete_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {{ current <= target }}
+        {% else %}
+          false
+        {% endif %}
+      device_class: "running"
+      icon: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% if current <= target %}
+            mdi:check-circle
+          {% else %}
+            mdi:timer-sand
+          {% endif %}
+        {% else %}
+          mdi:stop-circle
+        {% endif %}

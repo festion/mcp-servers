@@ -1,0 +1,178 @@
+# Z-Wave Switch LED Control Dashboard
+title: Z-Wave Switch LED Control
+icon: mdi:led-variant-on
+
+views:
+  - title: LED Control
+    icon: mdi:led-variant-outline
+    cards:
+      - type: vertical-stack
+        cards:
+          # Status Overview Card
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.z_wave_led_off_count
+                name: "LEDs Currently Off"
+                icon: mdi:led-off
+              - type: entity
+                entity: binary_sensor.night_mode_active
+                name: "Night Mode"
+                icon: mdi:weather-night
+                state_color: true
+              - type: entity
+                entity: sensor.z_wave_led_off_count
+                name: "LEDs Off Count"
+                icon: mdi:led-off
+
+          # Quick Actions - Top Priority
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: script.zwave_led_restore_all
+                name: "All LEDs On"
+                icon: mdi:led-variant-on
+                tap_action:
+                  action: call-service
+                  service: script.zwave_led_restore_all
+                show_state: false
+                color_type: card
+                color: green
+              
+              - type: button
+                entity: script.zwave_led_turn_off_all
+                name: "All LEDs Off"
+                icon: mdi:led-off
+                tap_action:
+                  action: call-service
+                  service: script.zwave_led_turn_off_all
+                show_state: false
+                color_type: card
+                color: red
+              
+              - type: button
+                entity: script.zwave_led_bedroom_preset
+                name: "Bedroom Preset"
+                icon: mdi:bed
+                tap_action:
+                  action: call-service
+                  service: script.zwave_led_bedroom_preset
+                show_state: false
+                color_type: card
+                color: blue
+
+          # Preset Selector
+          - type: entities
+            title: "🎛️ LED Night Mode Preset"
+            entities:
+              - entity: input_select.zwave_led_night_mode_preset
+                name: "Quick Preset Selection"
+                secondary_info: last-changed
+
+          # Instructions Card
+          - type: markdown
+            content: |
+              ## Z-Wave Switch LED Night Control
+              
+              **How it works:**
+              - At **10:00 PM**: Selected switches will have their LEDs turned off
+              - At **7:00 AM**: All LEDs are restored to normal operation
+              - Use preset selector above or toggle individual switches below
+              - Changes take effect immediately if made during night hours (10 PM - 7 AM)
+              
+              **Benefits:**
+              - Reduces light pollution in bedrooms and sleeping areas
+              - Keeps helpful navigation LEDs on in hallways and common areas
+              - Automatic daily schedule with manual override capability
+
+          # Bedroom Area Controls
+          - type: entities
+            title: "🛏️ Bedroom Area LED Controls"
+            entities:
+              - entity: input_boolean.zwave_led_darken_master_light
+                name: "Master Bedroom Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_master_fan
+                name: "Master Bedroom Fan Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_gavin_light
+                name: "Gavin's Room Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_gavin_fan
+                name: "Gavin's Room Fan Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_linda_light
+                name: "Linda's Room Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_linda_fan
+                name: "Linda's Room Fan Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_guest_light
+                name: "Guest Room Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_guest_fan
+                name: "Guest Room Fan Switch"
+                secondary_info: last-updated
+
+          # Common Area Controls
+          - type: entities
+            title: "🏠 Common Area LED Controls"
+            entities:
+              - entity: input_boolean.zwave_led_darken_hall_light
+                name: "Hall Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_porch_light
+                name: "Porch Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_dining_light
+                name: "Dining Room Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_pantry_light
+                name: "Pantry Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_nook_light
+                name: "Nook Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_hobby_light
+                name: "Hobby/Craft Room Light Switch"
+                secondary_info: last-updated
+              - entity: input_boolean.zwave_led_darken_hobby_fan
+                name: "Hobby/Craft Room Fan Switch"
+                secondary_info: last-updated
+
+          # Additional Quick Actions
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: "Apply Night Settings"
+                icon: mdi:weather-night
+                tap_action:
+                  action: call-service
+                  service: script.zwave_led_apply_night_settings
+                show_state: false
+                color_type: card
+                color: purple
+              
+              - type: button
+                name: "Test Manual Control"
+                icon: mdi:test-tube
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  service_data:
+                    entity_id: automation.z_wave_leds_manual_control
+                show_state: false
+
+          # System Status
+          - type: entities
+            title: "System Status"
+            entities:
+              - entity: automation.z_wave_leds_night_mode_on
+                name: "Night Mode Automation"
+                secondary_info: last-triggered
+              - entity: automation.z_wave_leds_day_mode_on
+                name: "Day Mode Automation"
+                secondary_info: last-triggered
+              - entity: automation.z_wave_leds_manual_control
+                name: "Manual Control Automation"
+                secondary_info: last-triggered

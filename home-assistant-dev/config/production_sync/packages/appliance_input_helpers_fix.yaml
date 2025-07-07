@@ -1,0 +1,46 @@
+# =============================================================================
+# APPLIANCE INPUT HELPERS - MISSING ENTITIES FIX
+# Created: June 3, 2025
+# Issue: Missing input_boolean entities for washing machine and dryer cycle announcements
+# =============================================================================
+
+# Input Boolean Entities for Appliance Notifications
+# These are required for the appliance notification system to trigger announcements
+
+input_boolean:
+  washing_machine_cycle_announced:
+    name: "Washing Machine Cycle Announced"
+    icon: mdi:washing-machine
+    initial: false
+    
+  dryer_cycle_announced:
+    name: "Dryer Cycle Announced" 
+    icon: mdi:tumble-dryer
+    initial: false
+
+# Additional appliance-related input helpers if not already defined elsewhere
+input_text:
+  appliance_last_announcement:
+    name: "Last Announcement Made"
+    max: 100
+    initial: "System Ready"
+    icon: mdi:message-text
+
+input_datetime:
+  dishwasher_last_filter_clean:
+    name: "Dishwasher Filter Last Cleaned"
+    has_date: true
+    has_time: true
+    icon: mdi:filter-variant
+    
+  washing_machine_last_hose_check:
+    name: "Washing Machine Hoses Last Checked"
+    has_date: true
+    has_time: true
+    icon: mdi:pipe-wrench
+    
+  dryer_last_lint_clean:
+    name: "Dryer Lint Trap Last Cleaned"
+    has_date: true
+    has_time: true
+    icon: mdi:air-filter

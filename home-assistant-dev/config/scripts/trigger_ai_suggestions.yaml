@@ -1,0 +1,21 @@
+trigger_ai_automation_suggestions:
+  alias: "Trigger AI Automation Suggestions"
+  description: "Manually trigger the AI automation suggester to generate recommendations"
+  icon: mdi:robot
+  sequence:
+    - service: ai_automation_suggester.generate_suggestions
+      data:
+        all_entities: true
+        custom_prompt: >
+          Please analyze the current Home Assistant setup and provide automation suggestions focused on:
+          1. Error handling and monitoring for device connectivity issues
+          2. System optimization and maintenance automations
+          3. Integration between hydroponics, Curatron, and other smart devices
+          4. Energy efficiency and scheduling improvements
+          5. Failure detection and recovery automations
+        entity_limit: 300
+    - service: persistent_notification.create
+      data:
+        title: "AI Suggestions Generated"
+        message: "AI automation suggestions have been generated. Check the AI Automation Suggestions sensor for recommendations."
+        notification_id: "ai_suggestions_manual_trigger"

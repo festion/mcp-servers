@@ -1,0 +1,9 @@
+# BACKUP OF ORIGINAL SYSTEM_HEALTH.YAML - June 2, 2025
+# This file contained critical template errors that caused system instability
+
+# Main issues:
+# 1. sensor.integration_health_status had unit "issues" but returned text values
+# 2. Automation triggers using string health sensors as numeric
+# 3. timestamp_custom errors in next_maintenance_due sensor
+
+# Original content backed up - see system_health_FIXED.yaml for corrected version

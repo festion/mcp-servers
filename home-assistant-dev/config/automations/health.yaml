@@ -1,0 +1,266 @@
+# Home Assistant Health Monitoring Automations
+
+- id: integration_health_critical_alert
+  alias: "Health Monitor - Critical Integration Health Drop"
+  description: "Alert when overall integration health drops below 90%"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.integration_health_percentage
+      below: 90
+      for:
+        minutes: 5
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('binary_sensor.system_health_ok') not in ['unavailable', 'unknown'] }}"
+    - condition: state
+      entity_id: binary_sensor.system_health_ok
+      state: 'on'
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "🚨 Critical System Health Alert"
+        message: >
+          Integration health dropped to {{ states('sensor.integration_health_percentage') }}%
+          System requires immediate attention.
+
+          Check integrations in Configuration > Integrations
+        notification_id: "health_critical"
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "HA Health Alert"
+        message: "Integration health: {{ states('sensor.integration_health_percentage') }}%"
+        data:
+          priority: high
+          color: red
+
+- id: failed_automations_alert
+  alias: "Health Monitor - Failed Automations Detected"
+  description: "Alert when automations start failing"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.failed_automations
+      above: 0
+      for:
+        minutes: 2
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.failed_automations') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "⚠️ Failed Automations Detected"
+        message: >
+          {{ states('sensor.failed_automations') }} automation(s) have failed.
+
+          Check automation status in Configuration > Automations
+        notification_id: "failed_automations"
+    - service: system_log.write
+      data:
+        level: warning
+        message: "Health Monitor: {{ states('sensor.failed_automations') }} failed automations detected"
+
+- id: unavailable_entities_alert
+  alias: "Health Monitor - High Unavailable Entity Count"
+  description: "Alert when too many entities become unavailable"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.unavailable_entities
+      above: 100
+      for:
+        minutes: 10
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.unavailable_entities') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "⚠️ High Unavailable Entity Count"
+        message: >
+          {{ states('sensor.unavailable_entities') }} entities are currently unavailable.
+          This may indicate integration or network issues.
+        notification_id: "unavailable_entities"
+
+- id: system_health_recovery
+  alias: "Health Monitor - System Health Recovery"
+  description: "Alert when system health improves significantly"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.integration_health_percentage
+      above: 95
+      for:
+        minutes: 5
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: >
+        {{ trigger.from_state.state|float(0) < 90 }}
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "✅ System Health Recovered"
+        message: >
+          Integration health improved to {{ states('sensor.integration_health_percentage') }}%
+          System is now operating normally.
+        notification_id: "health_recovery"
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "HA Health Recovered"
+        message: "System health: {{ states('sensor.integration_health_percentage') }}%"
+        data:
+          priority: normal
+          color: green
+
+- id: daily_health_summary
+  alias: "Health Monitor - Daily Health Summary"
+  description: "Daily summary of system health status"
+  trigger:
+    - platform: time
+      at: "08:00:00"
+  condition:
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.failed_automations') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.unavailable_entities') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.alexa_integration_health') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "HA Daily Health Report"
+        message: >
+          Overall Health: {{ states('sensor.integration_health_percentage') }}%
+          Failed Automations: {{ states('sensor.failed_automations') }}
+          Unavailable Entities: {{ states('sensor.unavailable_entities') }}
+          Alexa Health: {{ states('sensor.alexa_integration_health') }}%
+        data:
+          priority: normal
+
+- id: weekly_health_analysis
+  alias: "Health Monitor - Weekly Health Analysis"
+  description: "Weekly analysis of health trends and maintenance reminder"
+  trigger:
+    - platform: time
+      at: "09:00:00"
+  condition:
+    - condition: time
+      weekday:
+        - sun
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "📊 Weekly Health Analysis"
+        message: >
+          Current System Health: {{ states('sensor.integration_health_percentage') }}%
+
+          Weekly Maintenance Tasks:
+          • Review integration health trends
+          • Check disabled automations status
+          • Clean up entity registry if needed
+          • Review error logs for patterns
+        notification_id: "weekly_health"
+
+- id: alexa_integration_health_drop
+  alias: "Health Monitor - Alexa Integration Health Drop"
+  description: "Monitor Alexa integration health specifically"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.alexa_integration_health
+      below: 80
+      for:
+        minutes: 5
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.alexa_integration_health') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "🔊 Alexa Integration Issue"
+        message: >
+          Alexa integration health: {{ states('sensor.alexa_integration_health') }}%
+
+          Possible fixes:
+          • Check Alexa app on connected devices
+          • Restart Alexa integration
+          • Check network connectivity
+        notification_id: "alexa_health"
+
+- id: mobile_app_health_drop
+  alias: "Health Monitor - Mobile App Integration Health Drop"
+  description: "Monitor mobile app integration health"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mobile_app_integration_health
+      below: 80
+      for:
+        minutes: 10
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.mobile_app_integration_health') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "📱 Mobile App Integration Issue"
+        message: >
+          Mobile app health: {{ states('sensor.mobile_app_integration_health') }}%
+
+          Check mobile device connections and app status
+        notification_id: "mobile_app_health"
+
+- id: automation_health_check
+  alias: "Health Monitor - Automation Health Check"
+  description: "Regular check of automation execution status"
+  trigger:
+    - platform: time_pattern
+      hours: "/6" # Every 6 hours
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.failed_automations') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: system_log.write
+      data:
+        level: info
+        message: >
+          Health Check: {{ states('automation') | selectattr('state', 'eq', 'on') | list | length }} active automations,
+          {{ states('sensor.failed_automations') }} failed automations,
+          {{ states('sensor.integration_health_percentage') }}% integration health
+
+- id: system_health_status_log
+  alias: "Health Monitor - System Health Status Log"
+  description: "Log all system health status changes"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.system_health_ok
+  condition:
+    - condition: template
+      value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
+    - condition: template
+      value_template: "{{ states('sensor.integration_health_percentage') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.failed_automations') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ states('sensor.unavailable_entities') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: system_log.write
+      data:
+        level: info
+        message: >
+          System Health Status Changed: {{ trigger.from_state.state }} → {{ trigger.to_state.state }}
+          Integration Health: {{ states('sensor.integration_health_percentage') }}%
+          Failed Automations: {{ states('sensor.failed_automations') }}
+          Unavailable Entities: {{ states('sensor.unavailable_entities') }}

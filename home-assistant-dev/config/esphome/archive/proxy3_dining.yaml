@@ -1,0 +1,44 @@
+substitutions:
+  # --- Device Specific Values ---
+  devicename_base: "diningroom-ble-proxy"
+  device_friendly_name: "Dining Room BLE Proxy"
+  device_comment: "Dining Room ESPHome proxy tuned for Bermuda (Unit 3)"
+
+  # --- Network Settings ---
+  # Ensure you have a 'secrets.yaml' file in /config/esphome/
+  # with your wifi_ssid and wifi_password.
+  device_static_ip: "192.168.1.51"
+  device_gateway: "192.168.1.1"
+  device_subnet: "255.255.255.0"
+
+  # --- Common Settings for Bermuda ---
+  # These values are passed to common_bermuda_proxy.yaml
+  baud_rate: "0"  # Set to "115200" for serial debugging
+  ble_interval: 320ms
+  ble_window: 300ms
+  proxy_active_scan: "True"
+  proxy_enable_outbound: "True"
+
+# This line includes all the common logic from the other file.
+# The substitutions defined ABOVE will be used in that file.
+<<: !include common_bermuda_proxy.yaml
+
+# The wifi configuration is now defined here, using your secrets file directly.
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  manual_ip:
+    static_ip: ${device_static_ip}
+    gateway: ${device_gateway}
+    subnet: ${device_subnet}
+
+# The common file handles API and Logger, but secrets must be available.
+# We define them here so the included file can access them.
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  platform: esphome
+  password: !secret ota_password

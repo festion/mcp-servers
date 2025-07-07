@@ -1,0 +1,82 @@
+# ENHANCED UNAVAILABLE ENTITIES TEMPLATE - FOR SYSTEM HEALTH DASHBOARD
+# Date: June 11, 2025 - Enhanced System Health Dashboard with Detailed Entity Information
+# Purpose: Provide detailed unavailable entity information for comprehensive troubleshooting
+
+- sensor:
+    # Enhanced Unavailable Entities Details Sensor
+    - name: "Unavailable Entities Details"
+      unique_id: unavailable_entities_details_list
+      state: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+      unit_of_measurement: "entities"
+      icon: "mdi:alert-circle-outline"
+      attributes:
+        entities_list: >-
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ unavailable | join(', ') }}
+        by_domain: >-
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | groupby('domain') %}
+          {% set result = {} %}
+          {% for domain, entities in unavailable %}
+            {% set entity_list = entities | map(attribute='entity_id') | list %}
+            {% set result = dict(result, **{domain: entity_list}) %}
+          {% endfor %}
+          {{ result }}
+        pitboss_entities: >-
+          {% set pitboss = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pbm_') | map(attribute='entity_id') | list %}
+          {{ pitboss }}
+        phone_entities: >-
+          {% set phone = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pixel_') | map(attribute='entity_id') | list %}
+          {{ phone }}
+        bluetooth_entities: >-
+          {% set bluetooth = states | selectattr('state', 'eq', 'unavailable') | select('match', '.*_(temperature|humidity|battery|distance|estimated_distance)$') | map(attribute='entity_id') | list %}
+          {{ bluetooth }}
+        printer_entities: >-
+          {% set printer = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'prusa_') | map(attribute='entity_id') | list %}
+          {{ printer }}
+        device_tracker_entities: >-
+          {% set trackers = states.device_tracker | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ trackers }}
+        climate_entities: >-
+          {% set climate = states.climate | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ climate }}
+        button_entities: >-
+          {% set buttons = states.button | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ buttons }}
+        light_entities: >-
+          {% set lights = states.light | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ lights }}
+        switch_entities: >-
+          {% set switches = states.switch | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ switches }}
+        sensor_count: >-
+          {% set sensors = states.sensor | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ sensors }}
+        binary_sensor_count: >-
+          {% set binary_sensors = states.binary_sensor | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ binary_sensors }}
+        device_tracker_count: >-
+          {% set trackers = states.device_tracker | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ trackers }}
+        total_count: >-
+          {% set total = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ total }}
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+        troubleshooting_hints: >-
+          {% set pitboss_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pbm_') | list | count) %}
+          {% set phone_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pixel_') | list | count) %}
+          {% set bluetooth_count = (states | selectattr('state', 'eq', 'unavailable') | select('match', '.*_(temperature|humidity|battery|distance|estimated_distance)$') | list | count) %}
+          {% set printer_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'prusa_') | list | count) %}
+          {% set hints = [] %}
+          {% if pitboss_count > 0 %}
+            {% set hints = hints + [pitboss_count ~ " PitBoss Grill entities - Check device power/network"] %}
+          {% endif %}
+          {% if phone_count > 0 %}
+            {% set hints = hints + [phone_count ~ " Phone entities - Mobile app connectivity issue"] %}
+          {% endif %}
+          {% if bluetooth_count > 0 %}
+            {% set hints = hints + [bluetooth_count ~ " Bluetooth entities - BLE proxy or device range issues"] %}
+          {% endif %}
+          {% if printer_count > 0 %}
+            {% set hints = hints + [printer_count ~ " Printer entities - Check 3D printer power/network"] %}
+          {% endif %}
+          {{ hints | join('; ') if hints else 'No specific patterns detected' }}

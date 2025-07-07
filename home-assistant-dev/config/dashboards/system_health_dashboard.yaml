@@ -1,0 +1,315 @@
+# ENHANCED SYSTEM HEALTH DASHBOARD - Detailed Unavailable Entities Display
+# Date: June 11, 2025 - Comprehensive System Health Monitoring with Actionable Troubleshooting
+# Purpose: Transform system health monitoring from basic counts to detailed entity analysis
+
+title: "🏥 Enhanced System Health Monitor"
+views:
+  - title: "Health Status"
+    cards:
+      # Existing System Status Overview (Preserved)
+      - type: entities
+        title: "📊 Current System Status"
+        entities:
+          - entity: sensor.integration_health_percentage
+            name: "Overall Health"
+          - entity: sensor.system_health
+            name: "Core System" 
+          - entity: sensor.unavailable_entities
+            name: "Unavailable Entities"
+          - entity: sensor.failed_automations
+            name: "Failed Automations"
+          - entity: binary_sensor.system_health_ok
+            name: "System OK"
+
+      # System Health Summary (Enhanced)
+      - type: markdown
+        content: |
+          ## System Health Summary
+          
+          **Overall Health**: {{ states('sensor.integration_health_percentage') }}%  
+          **Core Health**: {{ states('sensor.system_health') }}%  
+          **Failed Automations**: {{ states('sensor.failed_automations') }}  
+          **Unavailable Entities**: {{ states('sensor.unavailable_entities') }}  
+          **System Status**: {{ states('binary_sensor.system_health_ok') }}
+          
+          **Last Update**: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+
+      # Enhanced Unavailable Entities Detail Section (NEW)
+      - type: conditional
+        conditions:
+          - entity: sensor.unavailable_entities
+            state_not: "0"
+        card:
+          type: vertical-stack
+          cards:
+            # Detailed Entity Information Card
+            - type: entities
+              title: "🚨 Unavailable Entities Details"
+              entities:
+                - entity: sensor.unavailable_entities_details
+                  name: "Total Unavailable"
+                - entity: sensor.unavailable_entities_details
+                  type: attribute
+                  attribute: sensor_count
+                  name: "Sensors"
+                - entity: sensor.unavailable_entities_details
+                  type: attribute
+                  attribute: binary_sensor_count
+                  name: "Binary Sensors"
+                - entity: sensor.unavailable_entities_details
+                  type: attribute
+                  attribute: device_tracker_count
+                  name: "Device Trackers"
+
+            # Complete Entity List Using Markdown (Alternative to auto-entities)
+            - type: markdown
+              title: "📋 All Unavailable Entities"
+              content: |
+                ### Complete List of Unavailable Entities:
+                
+                {% set entities_raw = state_attr('sensor.unavailable_entities_details', 'entities_list') %}
+                {% if entities_raw %}
+                  {% set entity_list = entities_raw.split(', ') %}
+                  {% for entity in entity_list %}
+                    {% if not entity.startswith('sensor.unavailable_entities') %}
+                - **{{ entity }}** ({{ entity.split('.')[0] | title }})
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                - No unavailable entities found
+                {% endif %}
+                
+                ---
+                **Total Count**: {{ state_attr('sensor.unavailable_entities_details','total_count') | default('0') }} entities
+
+            # Categorized Troubleshooting Guide
+            - type: markdown
+              title: "🔧 Detailed Troubleshooting Guide"
+              content: |
+                ### Unavailable Entity Analysis:
+                
+                **Total Count**: {{ state_attr('sensor.unavailable_entities_details','total_count') | default('0') }}  
+                **Troubleshooting Hints**: {{ state_attr('sensor.unavailable_entities_details','troubleshooting_hints') | default('No specific patterns detected') }}
+                
+                ---
+                
+                ### Known Issue Categories:
+                
+                **🏺 PitBoss Grill Entities** ({{ state_attr('sensor.unavailable_entities_details','pitboss_entities') | length if state_attr('sensor.unavailable_entities_details','pitboss_entities') else 0 }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','pitboss_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','pitboss_entities') | join(', ') }}
+                - **Issue**: Device may be offline or network connectivity lost
+                - **Action**: Check Settings → Devices & Services → PitBoss integration
+                - **Network Check**: Verify grill is powered on and connected to WiFi
+                {% else %}
+                - ✅ All PitBoss entities are available
+                {% endif %}
+                
+                **📱 Phone/Mobile Entities** ({{ state_attr('sensor.unavailable_entities_details','phone_entities') | length if state_attr('sensor.unavailable_entities_details','phone_entities') else 0 }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','phone_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','phone_entities') | join(', ') }}
+                - **Issue**: Mobile app connectivity issue
+                - **Action**: Check Home Assistant Companion app on phone
+                - **Solutions**: Restart app, check permissions, verify network connectivity
+                {% else %}
+                - ✅ All phone entities are available
+                {% endif %}
+                
+                **🔵 Bluetooth Entities** ({{ state_attr('sensor.unavailable_entities_details','bluetooth_entities') | length if state_attr('sensor.unavailable_entities_details','bluetooth_entities') else 0 }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','bluetooth_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','bluetooth_entities') | join(', ') }}
+                - **Issue**: BLE proxy or device range issues
+                - **Action**: Check ESPHome BLE proxy devices and sensor battery levels
+                - **Solutions**: Move sensors closer, replace batteries, restart BLE proxies
+                {% else %}
+                - ✅ All Bluetooth entities are available
+                {% endif %}
+                
+                **🖨️ 3D Printer Entities** ({{ state_attr('sensor.unavailable_entities_details','printer_entities') | length if state_attr('sensor.unavailable_entities_details','printer_entities') else 0 }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','printer_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','printer_entities') | join(', ') }}
+                - **Issue**: 3D printer offline or network connectivity lost
+                - **Action**: Check printer power and OctoPrint/Prusa Connect status
+                - **Solutions**: Verify printer network settings, restart printer service
+                {% else %}
+                - ✅ All printer entities are available
+                {% endif %}
+                
+                **🌐 Device Trackers** ({{ state_attr('sensor.unavailable_entities_details','device_tracker_count') | default('0') }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','device_tracker_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','device_tracker_entities') | join(', ') }}
+                - **Issue**: Device presence detection failed
+                - **Action**: Check router integration and device connectivity
+                - **Solutions**: Verify device MAC addresses, restart router integration
+                {% else %}
+                - ✅ All device trackers are available
+                {% endif %}
+                
+                **🌡️ Climate Entities** ({{ state_attr('sensor.unavailable_entities_details','climate_entities') | length if state_attr('sensor.unavailable_entities_details','climate_entities') else 0 }} entities)
+                {% if state_attr('sensor.unavailable_entities_details','climate_entities') %}
+                - **Entities**: {{ state_attr('sensor.unavailable_entities_details','climate_entities') | join(', ') }}
+                - **Issue**: Thermostat or HVAC system offline
+                - **Action**: Check thermostat power and network connectivity
+                - **Solutions**: Verify HVAC integration settings, restart thermostat
+                {% else %}
+                - ✅ All climate entities are available
+                {% endif %}
+                
+                ---
+                
+                ### Domain Breakdown:
+                - **Sensors**: {{ state_attr('sensor.unavailable_entities_details','sensor_count') | default('0') }} entities
+                - **Binary Sensors**: {{ state_attr('sensor.unavailable_entities_details','binary_sensor_count') | default('0') }} entities  
+                - **Device Trackers**: {{ state_attr('sensor.unavailable_entities_details','device_tracker_count') | default('0') }} entities
+                - **Buttons**: {{ state_attr('sensor.unavailable_entities_details','button_entities') | length if state_attr('sensor.unavailable_entities_details','button_entities') else 0 }} entities
+                - **Climate**: {{ state_attr('sensor.unavailable_entities_details','climate_entities') | length if state_attr('sensor.unavailable_entities_details','climate_entities') else 0 }} entities
+                - **Lights**: {{ state_attr('sensor.unavailable_entities_details','light_entities') | length if state_attr('sensor.unavailable_entities_details','light_entities') else 0 }} entities
+                - **Switches**: {{ state_attr('sensor.unavailable_entities_details','switch_entities') | length if state_attr('sensor.unavailable_entities_details','switch_entities') else 0 }} entities
+                
+                **Last Updated**: {{ state_attr('sensor.unavailable_entities_details','last_updated_utc') | default('Unknown') }}
+
+      # Action Center for Quick Fixes
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: "🔄 Refresh All Entities"
+            tap_action:
+              action: call-service
+              service: homeassistant.update_entity
+              service_data:
+                entity_id: 
+                  - sensor.integration_health_percentage
+                  - sensor.system_health
+                  - sensor.unavailable_entities
+                  - sensor.unavailable_entities_details
+                  - sensor.failed_automations
+                  - binary_sensor.system_health_ok
+            icon: mdi:refresh
+            
+          - type: button
+            name: "🔧 Reload Templates"
+            tap_action:
+              action: call-service
+              service: template.reload
+            icon: mdi:file-refresh-outline
+            
+          - type: button
+            name: "📊 Developer Tools"
+            tap_action:
+              action: navigate
+              navigation_path: /developer-tools/state
+            icon: mdi:tools
+
+      # System Health Gauge (Preserved)
+      - type: gauge
+        entity: sensor.integration_health_percentage
+        name: "System Health"
+        min: 0
+        max: 100
+        needle: true
+        severity:
+          green: 85
+          yellow: 60
+          red: 0
+
+      # No Issues Display (When Everything is OK)
+      - type: conditional
+        conditions:
+          - entity: sensor.unavailable_entities
+            state: "0"
+        card:
+          type: markdown
+          content: |
+            ## ✅ All Systems Operational
+            
+            **Congratulations!** All entities are currently available and the system is running optimally.
+            
+            - **Total Entities**: {{ states | list | count }} entities monitored
+            - **System Health**: {{ states('sensor.integration_health_percentage') }}%
+            - **Last Check**: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+            
+            ### Quick System Overview:
+            - **Sensors**: {{ states.sensor | list | count }} ({{ states.sensor | selectattr('state', 'eq', 'unavailable') | list | count }} unavailable)
+            - **Binary Sensors**: {{ states.binary_sensor | list | count }} ({{ states.binary_sensor | selectattr('state', 'eq', 'unavailable') | list | count }} unavailable)
+            - **Switches**: {{ states.switch | list | count }} ({{ states.switch | selectattr('state', 'eq', 'unavailable') | list | count }} unavailable)
+            - **Lights**: {{ states.light | list | count }} ({{ states.light | selectattr('state', 'eq', 'unavailable') | list | count }} unavailable)
+            - **Device Trackers**: {{ states.device_tracker | list | count }} ({{ states.device_tracker | selectattr('state', 'eq', 'unavailable') | list | count }} unavailable)
+            
+            *System health monitoring is active and will alert you of any issues.*
+
+  # Additional View for Advanced Diagnostics
+  - title: "Advanced Diagnostics"
+    cards:
+      # Entity Registry Information
+      - type: entities
+        title: "🔍 Advanced Entity Information"
+        entities:
+          - entity: sensor.unavailable_entities_details
+            name: "Enhanced Details Sensor"
+          - entity: sensor.unavailable_entities_details
+            type: attribute
+            attribute: entities_list
+            name: "Complete Entity List"
+          - entity: sensor.unavailable_entities_details
+            type: attribute
+            attribute: troubleshooting_hints
+            name: "AI Troubleshooting Hints"
+
+      # Raw Data Display
+      - type: markdown
+        title: "📋 Raw Diagnostic Data"
+        content: |
+          ### System Diagnostic Information
+          
+          **Entity Details Sensor State**: {{ states('sensor.unavailable_entities_details') }}
+          
+          **Complete Entity List**:
+          ```
+          {{ state_attr('sensor.unavailable_entities_details', 'entities_list') }}
+          ```
+          
+          **Troubleshooting Hints**:
+          ```
+          {{ state_attr('sensor.unavailable_entities_details', 'troubleshooting_hints') }}
+          ```
+          
+          **Template Sensor Last Updated**: {{ state_attr('sensor.unavailable_entities_details', 'last_updated_utc') }}
+
+      # Integration Health Cards
+      - type: entities
+        title: "🏗️ Integration Health Status"
+        entities:
+          - entity: sensor.integration_health_percentage
+            name: "Overall Integration Health"
+          - entity: sensor.system_status_core
+            name: "Core System Status"
+          - entity: sensor.system_ready_status
+            name: "System Ready"
+          - entity: binary_sensor.night_mode_active
+            name: "Night Mode"
+
+      # Quick Actions for Developers
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: "🔄 Reload Core"
+            tap_action:
+              action: call-service
+              service: homeassistant.reload_core_config
+            icon: mdi:home-assistant
+            
+          - type: button
+            name: "📝 Check Config"
+            tap_action:
+              action: call-service
+              service: homeassistant.check_config
+            icon: mdi:check-circle-outline
+            
+          - type: button
+            name: "🔧 Restart HA"
+            tap_action:
+              action: call-service
+              service: homeassistant.restart
+            icon: mdi:restart
+            hold_action:
+              action: more-info

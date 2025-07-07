@@ -1,0 +1,10 @@
+alias: "Manual AI Suggestions Trigger"
+description: "Temporary automation to trigger AI suggestions manually"
+trigger:
+  - platform: manual
+mode: single
+action:
+  - service: ai_automation_suggester.generate_suggestions
+    data:
+      all_entities: true
+      custom_prompt: "Focus on automation improvements based on current error log analysis and system optimization. Consider device connectivity issues, error handling, and monitoring automations."

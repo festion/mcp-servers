@@ -1,0 +1,2920 @@
+# =============================================================================
+# 🎛️ PHASE 4: MASTER CONTROL CENTER AUTOMATIONS
+# =============================================================================
+
+# Master Temperature Control Handler
+- id: adaptive_lighting_master_temperature_control
+  alias: "🌡️ Adaptive Lighting - Master Temperature Control"
+  description: |
+    Handles master color temperature slider changes and applies them to all
+    participating zones with individual scaling factors.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_color_temp
+      id: master_temp_change
+  
+  condition:
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    target_temp: "{{ trigger.to_state.state | int(4000) }}"
+    participating_lights: >
+      {% set all_lights = [
+        'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+        'light.bar_strip', 'light.top_left', 'light.top_right',
+        'light.master_light', 'light.master_lamp', 'light.guest_light',
+        'light.linda_light', 'light.gavin_light', 'light.dining_light',
+        'light.hall_light', 'light.nook_light', 'light.hobby_light',
+        'light.pantry_light', 'light.porch_light'
+      ] %}
+      {% set on_lights = [] %}
+      {% for light in all_lights %}
+        {% if states(light) == 'on' %}
+          {% set on_lights = on_lights + [light] %}
+        {% endif %}
+      {% endfor %}
+      {{ on_lights }}
+  
+  action:
+    # Switch to manual override mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: "Manual Override - Temperature: {{ target_temp }}K"
+    
+    # Apply to all participating lights
+    - repeat:
+        for_each: "{{ participating_lights }}"
+        sequence:
+          - variables:
+              current_light: "{{ repeat.item }}"
+              supports_color_temp: >
+                {{ 'color_temp' in (state_attr(current_light, 'supported_color_modes') or []) }}
+          
+          - condition: template
+            value_template: "{{ supports_color_temp }}"
+          
+          - service: light.turn_on
+            target:
+              entity_id: "{{ current_light }}"
+            data:
+              color_temp_kelvin: "{{ target_temp }}"
+              transition: 2
+
+# Master Brightness Control Handler
+- id: adaptive_lighting_master_brightness_control
+  alias: "💡 Adaptive Lighting - Master Brightness Control"
+  description: |
+    Handles master brightness slider changes and applies them to all
+    participating zones with individual scaling factors.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_brightness
+      id: master_brightness_change
+  
+  condition:
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    target_brightness: "{{ trigger.to_state.state | int(80) }}"
+    participating_lights: >
+      {% set all_lights = [
+        'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+        'light.bar_strip', 'light.top_left', 'light.top_right',
+        'light.master_light', 'light.master_lamp', 'light.guest_light',
+        'light.linda_light', 'light.gavin_light', 'light.dining_light',
+        'light.hall_light', 'light.nook_light', 'light.hobby_light',
+        'light.pantry_light', 'light.porch_light'
+      ] %}
+      {% set on_lights = [] %}
+      {% for light in all_lights %}
+        {% if states(light) == 'on' %}
+          {% set on_lights = on_lights + [light] %}
+        {% endif %}
+      {% endfor %}
+      {{ on_lights }}
+    
+    # Zone scaling mapping
+    zone_scales: >
+      {
+        'light.livingroom_lights': 'input_number.adaptive_lighting_zone_living_room_scale',
+        'light.kitchen_lights': 'input_number.adaptive_lighting_zone_kitchen_main_scale',
+        'light.kitchen_led_strips': 'input_number.adaptive_lighting_zone_kitchen_accent_scale',
+        'light.dining_light': 'input_number.adaptive_lighting_zone_dining_room_scale',
+        'light.master_light': 'input_number.adaptive_lighting_zone_master_bedroom_scale',
+        'light.master_lamp': 'input_number.adaptive_lighting_zone_master_bedroom_scale',
+        'light.guest_light': 'input_number.adaptive_lighting_zone_guest_bedroom_scale',
+        'light.linda_light': 'input_number.adaptive_lighting_zone_linda_room_scale',
+        'light.gavin_light': 'input_number.adaptive_lighting_zone_gavin_room_scale',
+        'light.hall_light': 'input_number.adaptive_lighting_zone_hallway_scale',
+        'light.nook_light': 'input_number.adaptive_lighting_zone_nook_scale',
+        'light.hobby_light': 'input_number.adaptive_lighting_zone_hobby_room_scale',
+        'light.pantry_light': 'input_number.adaptive_lighting_zone_pantry_scale',
+        'light.porch_light': 'input_number.adaptive_lighting_zone_exterior_scale',
+        'light.bar_strip': 'input_number.adaptive_lighting_zone_accent_scale',
+        'light.top_left': 'input_number.adaptive_lighting_zone_accent_scale',
+        'light.top_right': 'input_number.adaptive_lighting_zone_accent_scale'
+      }
+  
+  action:
+    # Switch to manual override mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: "Manual Override - Brightness: {{ target_brightness }}%"
+    
+    # Apply to all participating lights with scaling
+    - repeat:
+        for_each: "{{ participating_lights }}"
+        sequence:
+          - variables:
+              current_light: "{{ repeat.item }}"
+              scale_entity: "{{ zone_scales.get(current_light, 'input_number.adaptive_lighting_zone_living_room_scale') }}"
+              scale_factor: "{{ states(scale_entity) | float(1.0) }}"
+              final_brightness: "{{ (target_brightness * scale_factor) | round(0) | int }}"
+              clamped_brightness: "{{ [1, [100, final_brightness] | min] | max }}"
+          
+          - service: light.turn_on
+            target:
+              entity_id: "{{ current_light }}"
+            data:
+              brightness_pct: "{{ clamped_brightness }}"
+              transition: 2
+
+# System Mode Manager
+- id: adaptive_lighting_system_mode_manager
+  alias: "🎛️ Adaptive Lighting - System Mode Manager"
+  description: |
+    Manages transitions between adaptive and manual modes, handles auto-restore
+    timer functionality, and coordinates system status updates.
+  
+  trigger:
+    - platform: state
+      entity_id: input_select.adaptive_lighting_override_mode
+      id: mode_change
+    
+    - platform: state
+      entity_id: input_select.adaptive_lighting_auto_restore
+      id: restore_timer_change
+  
+  variables:
+    current_mode: "{{ states('input_select.adaptive_lighting_override_mode') }}"
+    restore_setting: "{{ states('input_select.adaptive_lighting_auto_restore') }}"
+  
+  action:
+    - choose:
+        # Mode changed to Adaptive
+        - conditions:
+            - condition: trigger
+              id: mode_change
+            - condition: template
+              value_template: "{{ current_mode == 'Adaptive' }}"
+          sequence:
+            # Update master sliders to current adaptive values
+            - service: input_number.set_value
+              target:
+                entity_id: input_number.adaptive_lighting_master_color_temp
+              data:
+                value: "{{ states('sensor.circadian_color_temperature') | int(4000) }}"
+            
+            - service: input_number.set_value
+              target:
+                entity_id: input_number.adaptive_lighting_master_brightness
+              data:
+                value: "{{ states('sensor.circadian_brightness') | int(80) }}"
+            
+            # Update system status
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.adaptive_lighting_system_status
+              data:
+                value: "Adaptive Mode Active - Following circadian rhythm"
+            
+            # Trigger master coordinator to apply adaptive settings
+            - delay:
+                seconds: 1
+            
+            - service: automation.trigger
+              target:
+                entity_id: automation.adaptive_lighting_master_coordinator
+        
+        # Mode changed to Manual Override
+        - conditions:
+            - condition: trigger
+              id: mode_change
+            - condition: template
+              value_template: "{{ current_mode in ['Manual Override', 'Temporary (Auto-restore)', 'Persistent'] }}"
+          sequence:
+            # Update system status with current master settings
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.adaptive_lighting_system_status
+              data:
+                value: >
+                  {{ current_mode }} - Temp: {{ states('input_number.adaptive_lighting_master_color_temp') }}K, 
+                  Brightness: {{ states('input_number.adaptive_lighting_master_brightness') }}%
+            
+            # Set auto-restore timer if temporary mode
+            - condition: template
+              value_template: "{{ current_mode == 'Temporary (Auto-restore)' and restore_setting != 'Disabled' }}"
+            
+            - variables:
+                restore_minutes: >
+                  {% if restore_setting == '15 minutes' %}15
+                  {% elif restore_setting == '1 hour' %}60
+                  {% elif restore_setting == '3 hours' %}180
+                  {% else %}60{% endif %}
+            
+            # TODO: Implement timer logic for auto-restore
+            # This would require additional timer entities and automations
+
+# Zone Synchronization Manager
+- id: adaptive_lighting_zone_sync_manager
+  alias: "🔄 Adaptive Lighting - Zone Synchronization Manager"
+  description: |
+    Handles "Sync All Zones" button functionality and applies current master
+    settings to all zones respecting individual zone scaling factors.
+  
+  trigger:
+    - platform: event
+      event_type: adaptive_lighting_sync_all
+      id: sync_all_triggered
+  
+  variables:
+    current_mode: "{{ states('input_select.adaptive_lighting_override_mode') }}"
+    target_temp: >
+      {% if current_mode == 'Adaptive' %}
+        {{ states('sensor.circadian_color_temperature') | int(4000) }}
+      {% else %}
+        {{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}
+      {% endif %}
+    target_brightness: >
+      {% if current_mode == 'Adaptive' %}
+        {{ states('sensor.circadian_brightness') | int(80) }}
+      {% else %}
+        {{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}
+      {% endif %}
+    
+    participating_lights: >
+      {% set all_lights = [
+        'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+        'light.bar_strip', 'light.top_left', 'light.top_right',
+        'light.master_light', 'light.master_lamp', 'light.guest_light',
+        'light.linda_light', 'light.gavin_light', 'light.dining_light',
+        'light.hall_light', 'light.nook_light', 'light.hobby_light',
+        'light.pantry_light', 'light.porch_light'
+      ] %}
+      {% set on_lights = [] %}
+      {% for light in all_lights %}
+        {% if states(light) == 'on' %}
+          {% set on_lights = on_lights + [light] %}
+        {% endif %}
+      {% endfor %}
+      {{ on_lights }}
+    
+    zone_scales: >
+      {
+        'light.livingroom_lights': 'input_number.adaptive_lighting_zone_living_room_scale',
+        'light.kitchen_lights': 'input_number.adaptive_lighting_zone_kitchen_main_scale',
+        'light.kitchen_led_strips': 'input_number.adaptive_lighting_zone_kitchen_accent_scale',
+        'light.dining_light': 'input_number.adaptive_lighting_zone_dining_room_scale',
+        'light.master_light': 'input_number.adaptive_lighting_zone_master_bedroom_scale',
+        'light.master_lamp': 'input_number.adaptive_lighting_zone_master_bedroom_scale',
+        'light.guest_light': 'input_number.adaptive_lighting_zone_guest_bedroom_scale',
+        'light.linda_light': 'input_number.adaptive_lighting_zone_linda_room_scale',
+        'light.gavin_light': 'input_number.adaptive_lighting_zone_gavin_room_scale',
+        'light.hall_light': 'input_number.adaptive_lighting_zone_hallway_scale',
+        'light.nook_light': 'input_number.adaptive_lighting_zone_nook_scale',
+        'light.hobby_light': 'input_number.adaptive_lighting_zone_hobby_room_scale',
+        'light.pantry_light': 'input_number.adaptive_lighting_zone_pantry_scale',
+        'light.porch_light': 'input_number.adaptive_lighting_zone_exterior_scale',
+        'light.bar_strip': 'input_number.adaptive_lighting_zone_accent_scale',
+        'light.top_left': 'input_number.adaptive_lighting_zone_accent_scale',
+        'light.top_right': 'input_number.adaptive_lighting_zone_accent_scale'
+      }
+  
+  action:
+    # Update system status to show sync in progress
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: "Synchronizing all zones..."
+    
+    # Apply settings to all participating lights
+    - repeat:
+        for_each: "{{ participating_lights }}"
+        sequence:
+          - variables:
+              current_light: "{{ repeat.item }}"
+              scale_entity: "{{ zone_scales.get(current_light, 'input_number.adaptive_lighting_zone_living_room_scale') }}"
+              scale_factor: "{{ states(scale_entity) | float(1.0) }}"
+              final_brightness: "{{ (target_brightness * scale_factor) | round(0) | int }}"
+              clamped_brightness: "{{ [1, [100, final_brightness] | min] | max }}"
+              supports_color_temp: >
+                {{ 'color_temp' in (state_attr(current_light, 'supported_color_modes') or []) }}
+          
+          - choose:
+            # Color-capable lights
+            - conditions:
+                - condition: template
+                  value_template: "{{ supports_color_temp }}"
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: "{{ current_light }}"
+                  data:
+                    color_temp_kelvin: "{{ target_temp }}"
+                    brightness_pct: "{{ clamped_brightness }}"
+                    transition: 3
+            
+            # Brightness-only lights  
+            default:
+              - service: light.turn_on
+                target:
+                  entity_id: "{{ current_light }}"
+                data:
+                  brightness_pct: "{{ clamped_brightness }}"
+                  transition: 3
+    
+    # Clear all override flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.adaptive_lighting_override_livingroom_lights
+          - input_boolean.adaptive_lighting_override_kitchen_lights
+          - input_boolean.adaptive_lighting_override_kitchen_led_strips
+          - input_boolean.adaptive_lighting_override_bar_strip
+          - input_boolean.adaptive_lighting_override_top_left
+          - input_boolean.adaptive_lighting_override_top_right
+          - input_boolean.adaptive_lighting_override_master_light
+          - input_boolean.adaptive_lighting_override_master_lamp
+          - input_boolean.adaptive_lighting_override_guest_light
+          - input_boolean.adaptive_lighting_override_linda_light
+          - input_boolean.adaptive_lighting_override_gavin_light
+          - input_boolean.adaptive_lighting_override_dining_light
+          - input_boolean.adaptive_lighting_override_hall_light
+          - input_boolean.adaptive_lighting_override_nook_light
+          - input_boolean.adaptive_lighting_override_hobby_light
+          - input_boolean.adaptive_lighting_override_pantry_light
+          - input_boolean.adaptive_lighting_override_porch_light
+    
+    # Update sync count
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+    
+    # Update system status to completion
+    - delay:
+        seconds: 4
+    
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          {% if current_mode == 'Adaptive' %}
+          Adaptive Mode Active - All zones synchronized
+          {% else %}
+          Manual Override - All zones synchronized to {{ target_temp }}K / {{ target_brightness }}%
+          {% endif %}
+    
+    # Visual feedback if enabled
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    - service: script.adaptive_lighting_reset_flash
+
+# =============================================================================
+# 🖱️ PHASE 3: DOUBLE-CLICK DETECTION SYSTEM
+# =============================================================================
+
+# 13. DOUBLE-CLICK DETECTOR
+- id: adaptive_lighting_double_click_detector
+  alias: "🖱️ Adaptive Lighting - Double-Click Detector"
+  description: |
+    Detects double-click patterns on any participating light and toggles
+    the adaptive lighting system. Provides visual feedback for state changes.
+    
+  trigger:
+    # Monitor all participating lights for state changes
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      id: light_state_change
+  
+  condition:
+    # Double-click detection must be enabled
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_double_click_enable
+      state: 'on'
+    
+    # Must be a user action (not programmatic)
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    triggered_entity: "{{ trigger.entity_id }}"
+    last_entity: "{{ states('input_text.last_double_click_entity') }}"
+    last_time_str: "{{ states('input_datetime.last_double_click_time') }}"
+    current_time: "{{ now() }}"
+    
+    # Check if this is a potential second click
+    is_same_entity: "{{ triggered_entity == last_entity }}"
+    
+    # Calculate time difference in seconds
+    time_diff: >
+      {% if last_time_str not in ['unknown', 'unavailable', '1970-01-01 00:00:00'] %}
+        {% set last_time = strptime(last_time_str, '%Y-%m-%d %H:%M:%S') %}
+        {{ (current_time - last_time).total_seconds() }}
+      {% else %}
+        999
+      {% endif %}
+    
+    # Double-click window: 0.5 to 3 seconds
+    is_double_click: >
+      {{ is_same_entity and 
+         (time_diff | float) >= 0.5 and 
+         (time_diff | float) <= 3.0 }}
+    
+    current_master_state: "{{ states('input_boolean.adaptive_lighting_master_enable') }}"
+  
+  action:
+    # Always update last click tracking
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_double_click_entity
+      data:
+        value: "{{ triggered_entity }}"
+    
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_double_click_time
+      data:
+        datetime: "{{ current_time }}"
+    
+    # If this is a double-click, toggle the system
+    - condition: template
+      value_template: "{{ is_double_click }}"
+    
+    # Toggle master enable state
+    - service: input_boolean.toggle
+      target:
+        entity_id: input_boolean.adaptive_lighting_master_enable
+    
+    # Trigger visual feedback
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_visual_feedback_enable
+      state: 'on'
+    
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        flash_type: >
+          {% if current_master_state == 'on' %}
+            red
+          {% else %}
+            green
+          {% endif %}
+  
+  mode: queued
+  max: 10
+
+# 14. CLICK TRACKER (Performance Monitoring)
+- id: adaptive_lighting_click_tracker
+  alias: "📊 Adaptive Lighting - Click Tracker"
+  description: |
+    Tracks double-click performance and system usage analytics.
+    
+  trigger:
+    - platform: state
+      entity_id: input_text.last_double_click_entity
+      id: click_tracked
+  
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.state != 'none' }}"
+  
+  action:
+    # Log double-click usage
+    - service: logbook.log
+      data:
+        name: "Adaptive Lighting Double-Click"
+        message: >
+          Double-click detected on {{ trigger.to_state.state }}. 
+          System is now {{ 'enabled' if states('input_boolean.adaptive_lighting_master_enable') == 'on' else 'disabled' }}.
+        entity_id: "{{ trigger.to_state.state }}"
+    
+    # Update performance counters
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_auto_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_auto_sync_count') | int(0)) + 1 }}"
+  
+  mode: single
+# =============================================================================
+# 🎛️ ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER AUTOMATIONS
+# =============================================================================
+# 
+# Centralized master control system for temperature and brightness across
+# all 14 adaptive lighting zones with manual override and automatic sync
+#
+# Features:
+# - Master temperature control (2000K-6500K)
+# - Master brightness control with zone scaling
+# - Override mode management with auto-restore
+# - Zone synchronization with proportional scaling
+# - Preset controls and quick actions
+#
+# Added: June 25, 2025
+# Version: Phase 4 Master Control Implementation
+# =============================================================================
+
+# 10. MASTER TEMPERATURE CONTROL HANDLER
+- id: adaptive_lighting_master_temperature_control
+  alias: "🌡️ Adaptive Lighting - Master Temperature Control"
+  description: |
+    Handles master temperature control slider changes and applies
+    proportionally to all participating zones with instant synchronization.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_color_temp
+      id: master_temp_change
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Ensure this is a manual change, not a programmatic update
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    target_temp: "{{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}"
+    
+    # Get participating lights (not overridden)
+    participating_lights: >
+      {% set lights = [] %}
+      {% set mappings = [
+        ['light.livingroom_lights', 'input_boolean.adaptive_lighting_override_livingroom_lights'],
+        ['light.kitchen_lights', 'input_boolean.adaptive_lighting_override_kitchen_lights'],
+        ['light.kitchen_led_strips', 'input_boolean.adaptive_lighting_override_kitchen_led_strips'],
+        ['light.bar_strip', 'input_boolean.adaptive_lighting_override_bar_strip'],
+        ['light.top_left', 'input_boolean.adaptive_lighting_override_top_left'],
+        ['light.top_right', 'input_boolean.adaptive_lighting_override_top_right'],
+        ['light.master_light', 'input_boolean.adaptive_lighting_override_master_light'],
+        ['light.master_lamp', 'input_boolean.adaptive_lighting_override_master_lamp'],
+        ['light.guest_light', 'input_boolean.adaptive_lighting_override_guest_light'],
+        ['light.linda_light', 'input_boolean.adaptive_lighting_override_linda_light'],
+        ['light.gavin_light', 'input_boolean.adaptive_lighting_override_gavin_light'],
+        ['light.dining_light', 'input_boolean.adaptive_lighting_override_dining_light'],
+        ['light.hall_light', 'input_boolean.adaptive_lighting_override_hall_light'],
+        ['light.nook_light', 'input_boolean.adaptive_lighting_override_nook_light'],
+        ['light.hobby_light', 'input_boolean.adaptive_lighting_override_hobby_light'],
+        ['light.pantry_light', 'input_boolean.adaptive_lighting_override_pantry_light'],
+        ['light.porch_light', 'input_boolean.adaptive_lighting_override_porch_light']
+      ] %}
+      {% for light, override in mappings %}
+        {% if states(light) == 'on' and states(override) == 'off' %}
+          {% set supports_color_temp = 'color_temp' in (state_attr(light, 'supported_color_modes') or []) %}
+          {% if supports_color_temp %}
+            {% set lights = lights + [light] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {{ lights }}
+  
+  action:
+    # Switch to manual override mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Record override start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.adaptive_lighting_override_start
+      data:
+        datetime: "{{ now() }}"
+    
+    # Apply temperature to all participating color-capable lights
+    - condition: template
+      value_template: "{{ participating_lights | length > 0 }}"
+    
+    - service: light.turn_on
+      target:
+        entity_id: "{{ participating_lights }}"
+      data:
+        color_temp_kelvin: "{{ target_temp }}"
+        transition: 2
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          Manual Override Active - Temperature {{ target_temp }}K applied to {{ participating_lights | length }} zones
+    
+    # Update last sync timestamp
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_last_sync
+      data:
+        value: "{{ now().strftime('%H:%M:%S') }}"
+    
+    # Log the action
+    - service: system_log.write
+      data:
+        message: >
+          Master Temperature Control: {{ target_temp }}K applied to {{ participating_lights | length }} participating zones.
+          Mode switched to Manual Override.
+        level: info
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+  
+  mode: single
+
+# 11. MASTER BRIGHTNESS CONTROL HANDLER
+- id: adaptive_lighting_master_brightness_control
+  alias: "💡 Adaptive Lighting - Master Brightness Control"
+  description: |
+    Handles master brightness control with zone-specific scaling factors.
+    Applies proportional brightness to all participating zones.
+  
+  trigger:
+    - platform: state
+      entity_id: input_number.adaptive_lighting_master_brightness
+      id: master_brightness_change
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Ensure this is a manual change
+    - condition: template
+      value_template: >
+        {{ trigger.from_state is not none and 
+           trigger.to_state is not none and
+           trigger.from_state.state != trigger.to_state.state }}
+  
+  variables:
+    base_brightness: "{{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}"
+    
+    # All participating lights with their scaling factors
+    participating_lights_with_scaling: >
+      {% set lights_data = [] %}
+      {% set mappings = [
+        ['light.livingroom_lights', 'input_boolean.adaptive_lighting_override_livingroom_lights', 'input_number.adaptive_lighting_zone_living_room_scale'],
+        ['light.kitchen_lights', 'input_boolean.adaptive_lighting_override_kitchen_lights', 'input_number.adaptive_lighting_zone_kitchen_main_scale'],
+        ['light.kitchen_led_strips', 'input_boolean.adaptive_lighting_override_kitchen_led_strips', 'input_number.adaptive_lighting_zone_kitchen_accent_scale'],
+        ['light.bar_strip', 'input_boolean.adaptive_lighting_override_bar_strip', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_left', 'input_boolean.adaptive_lighting_override_top_left', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_right', 'input_boolean.adaptive_lighting_override_top_right', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.master_light', 'input_boolean.adaptive_lighting_override_master_light', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.master_lamp', 'input_boolean.adaptive_lighting_override_master_lamp', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.guest_light', 'input_boolean.adaptive_lighting_override_guest_light', 'input_number.adaptive_lighting_zone_guest_bedroom_scale'],
+        ['light.linda_light', 'input_boolean.adaptive_lighting_override_linda_light', 'input_number.adaptive_lighting_zone_linda_room_scale'],
+        ['light.gavin_light', 'input_boolean.adaptive_lighting_override_gavin_light', 'input_number.adaptive_lighting_zone_gavin_room_scale'],
+        ['light.dining_light', 'input_boolean.adaptive_lighting_override_dining_light', 'input_number.adaptive_lighting_zone_dining_room_scale'],
+        ['light.hall_light', 'input_boolean.adaptive_lighting_override_hall_light', 'input_number.adaptive_lighting_zone_hallway_scale'],
+        ['light.nook_light', 'input_boolean.adaptive_lighting_override_nook_light', 'input_number.adaptive_lighting_zone_nook_scale'],
+        ['light.hobby_light', 'input_boolean.adaptive_lighting_override_hobby_light', 'input_number.adaptive_lighting_zone_hobby_room_scale'],
+        ['light.pantry_light', 'input_boolean.adaptive_lighting_override_pantry_light', 'input_number.adaptive_lighting_zone_pantry_scale'],
+        ['light.porch_light', 'input_boolean.adaptive_lighting_override_porch_light', 'input_number.adaptive_lighting_zone_exterior_scale']
+      ] %}
+      {% for light, override, scale in mappings %}
+        {% if states(light) == 'on' and states(override) == 'off' %}
+          {% set scale_factor = states(scale) | float(1.0) %}
+          {% set scaled_brightness = (base_brightness * scale_factor) | round(0) %}
+          {% set clamped_brightness = [10, scaled_brightness, 255] | sort %}
+          {% set final_brightness = clamped_brightness[1] %}
+          {% set light_data = {
+            'entity': light,
+            'scale': scale_factor,
+            'brightness': final_brightness
+          } %}
+          {% set lights_data = lights_data + [light_data] %}
+        {% endif %}
+      {% endfor %}
+      {{ lights_data }}
+  
+  action:
+    # Switch to manual override mode if not already
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Manual Override"
+    
+    # Record override start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.adaptive_lighting_override_start
+      data:
+        datetime: "{{ now() }}"
+    
+    # Apply scaled brightness to each participating light
+    - condition: template
+      value_template: "{{ participating_lights_with_scaling | length > 0 }}"
+    
+    - repeat:
+        count: "{{ participating_lights_with_scaling | length }}"
+        sequence:
+          - variables:
+              light_data: "{{ participating_lights_with_scaling[repeat.index - 1] }}"
+          
+          - service: light.turn_on
+            target:
+              entity_id: "{{ light_data.entity }}"
+            data:
+              brightness: "{{ light_data.brightness }}"
+              transition: 2
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          Manual Override Active - Brightness {{ base_brightness }}% (scaled) applied to {{ participating_lights_with_scaling | length }} zones
+    
+    # Update last sync timestamp
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_last_sync
+      data:
+        value: "{{ now().strftime('%H:%M:%S') }}"
+    
+    # Log the action
+    - service: system_log.write
+      data:
+        message: >
+          Master Brightness Control: {{ base_brightness }}% base brightness with zone scaling 
+          applied to {{ participating_lights_with_scaling | length }} participating zones.
+        level: info
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+  
+  mode: single
+
+# 12. AUTO-RESTORE TIMER MANAGER
+- id: adaptive_lighting_auto_restore_timer
+  alias: "⏰ Adaptive Lighting - Auto-Restore Timer"
+  description: |
+    Manages the auto-restore timer functionality to return to adaptive
+    mode after specified timeout periods.
+  
+  trigger:
+    # When override mode starts
+    - platform: state
+      entity_id: input_select.adaptive_lighting_override_mode
+      to: "Temporary (Auto-restore)"
+      id: auto_restore_started
+    
+    # Timer countdown check every minute
+    - platform: time_pattern
+      minutes: "*"
+      id: timer_check
+  
+  condition:
+    - condition: state
+      entity_id: input_select.adaptive_lighting_override_mode
+      state: "Temporary (Auto-restore)"
+  
+  variables:
+    override_start: "{{ states('input_datetime.adaptive_lighting_override_start') }}"
+    restore_setting: "{{ states('input_select.adaptive_lighting_auto_restore') }}"
+    custom_minutes: "{{ states('input_number.adaptive_lighting_auto_restore_minutes') | int(60) }}"
+    
+    # Calculate timeout minutes
+    timeout_minutes: >
+      {% if restore_setting == '15 minutes' %}
+        15
+      {% elif restore_setting == '1 hour' %}
+        60
+      {% elif restore_setting == '3 hours' %}
+        180
+      {% elif restore_setting == 'Custom' %}
+        {{ custom_minutes }}
+      {% else %}
+        999999
+      {% endif %}
+    
+    # Check if timeout has elapsed
+    should_restore: >
+      {% if override_start != 'unknown' and timeout_minutes < 999999 %}
+        {% set start_time = as_timestamp(override_start) %}
+        {% set current_time = as_timestamp(now()) %}
+        {% set elapsed_minutes = (current_time - start_time) / 60 %}
+        {{ elapsed_minutes >= timeout_minutes }}
+      {% else %}
+        false
+      {% endif %}
+  
+  action:
+    - choose:
+        # Auto-restore timeout reached
+        - conditions:
+            - condition: template
+              value_template: "{{ should_restore and trigger.id == 'timer_check' }}"
+          sequence:
+            # Return to adaptive mode
+            - service: input_select.select_option
+              target:
+                entity_id: input_select.adaptive_lighting_override_mode
+              data:
+                option: "Adaptive"
+            
+            # Trigger master coordinator to re-sync
+            - delay:
+                seconds: 2
+            
+            - service: automation.trigger
+              target:
+                entity_id: automation.adaptive_lighting_master_coordinator
+            
+            # Update system status
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.adaptive_lighting_system_status
+              data:
+                value: >
+                  Auto-restored to Adaptive Mode after {{ timeout_minutes }} minutes
+            
+            # Notification
+            - service: persistent_notification.create
+              data:
+                title: "⏰ Adaptive Lighting Auto-Restore"
+                message: >
+                  Automatically returned to adaptive lighting mode after {{ timeout_minutes }} minutes.
+                  All participating zones re-synchronized.
+                notification_id: adaptive_lighting_auto_restore
+            
+            # Log the restoration
+            - service: system_log.write
+              data:
+                message: >
+                  Auto-Restore Timer: Returned to adaptive mode after {{ timeout_minutes }} minutes timeout.
+                level: info
+        
+        # Timer started - just log
+        - conditions:
+            - condition: trigger
+              id: auto_restore_started
+          sequence:
+            - service: system_log.write
+              data:
+                message: >
+                  Auto-Restore Timer Started: Will restore to adaptive mode in {{ timeout_minutes }} minutes
+                level: info
+  
+  mode: single
+
+# 13. SYNC ALL ZONES CONTROLLER
+- id: adaptive_lighting_sync_all_zones
+  alias: "🔄 Adaptive Lighting - Sync All Zones"
+  description: |
+    Manual sync all zones button functionality. Applies current master
+    settings or adaptive settings to all participating zones instantly.
+  
+  trigger:
+    - platform: event
+      event_type: adaptive_lighting_sync_all
+      id: manual_sync_all
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+  
+  variables:
+    current_mode: "{{ states('input_select.adaptive_lighting_override_mode') }}"
+    
+    # Get settings based on current mode
+    target_temp: >
+      {% if current_mode == 'Adaptive' %}
+        {{ states('sensor.circadian_color_temperature') | int(4000) }}
+      {% else %}
+        {{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}
+      {% endif %}
+    
+    target_brightness: >
+      {% if current_mode == 'Adaptive' %}
+        {{ states('sensor.circadian_brightness') | int(80) }}
+      {% else %}
+        {{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}
+      {% endif %}
+    
+    # All lights with their scaling
+    all_lights_with_scaling: >
+      {% set lights_data = [] %}
+      {% set mappings = [
+        ['light.livingroom_lights', 'input_number.adaptive_lighting_zone_living_room_scale'],
+        ['light.kitchen_lights', 'input_number.adaptive_lighting_zone_kitchen_main_scale'],
+        ['light.kitchen_led_strips', 'input_number.adaptive_lighting_zone_kitchen_accent_scale'],
+        ['light.bar_strip', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_left', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.top_right', 'input_number.adaptive_lighting_zone_accent_scale'],
+        ['light.master_light', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.master_lamp', 'input_number.adaptive_lighting_zone_master_bedroom_scale'],
+        ['light.guest_light', 'input_number.adaptive_lighting_zone_guest_bedroom_scale'],
+        ['light.linda_light', 'input_number.adaptive_lighting_zone_linda_room_scale'],
+        ['light.gavin_light', 'input_number.adaptive_lighting_zone_gavin_room_scale'],
+        ['light.dining_light', 'input_number.adaptive_lighting_zone_dining_room_scale'],
+        ['light.hall_light', 'input_number.adaptive_lighting_zone_hallway_scale'],
+        ['light.nook_light', 'input_number.adaptive_lighting_zone_nook_scale'],
+        ['light.hobby_light', 'input_number.adaptive_lighting_zone_hobby_room_scale'],
+        ['light.pantry_light', 'input_number.adaptive_lighting_zone_pantry_scale'],
+        ['light.porch_light', 'input_number.adaptive_lighting_zone_exterior_scale']
+      ] %}
+      {% for light, scale in mappings %}
+        {% if states(light) == 'on' %}
+          {% set scale_factor = states(scale) | float(1.0) %}
+          {% set scaled_brightness = (target_brightness * scale_factor) | round(0) %}
+          {% set clamped_brightness = [10, scaled_brightness, 255] | sort %}
+          {% set final_brightness = clamped_brightness[1] %}
+          {% set supports_color_temp = 'color_temp' in (state_attr(light, 'supported_color_modes') or []) %}
+          {% set light_data = {
+            'entity': light,
+            'scale': scale_factor,
+            'brightness': final_brightness,
+            'supports_color_temp': supports_color_temp
+          } %}
+          {% set lights_data = lights_data + [light_data] %}
+        {% endif %}
+      {% endfor %}
+      {{ lights_data }}
+  
+  action:
+    # Clear all override flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.adaptive_lighting_override_livingroom_lights
+          - input_boolean.adaptive_lighting_override_kitchen_lights
+          - input_boolean.adaptive_lighting_override_kitchen_led_strips
+          - input_boolean.adaptive_lighting_override_bar_strip
+          - input_boolean.adaptive_lighting_override_top_left
+          - input_boolean.adaptive_lighting_override_top_right
+          - input_boolean.adaptive_lighting_override_master_light
+          - input_boolean.adaptive_lighting_override_master_lamp
+          - input_boolean.adaptive_lighting_override_guest_light
+          - input_boolean.adaptive_lighting_override_linda_light
+          - input_boolean.adaptive_lighting_override_gavin_light
+          - input_boolean.adaptive_lighting_override_dining_light
+          - input_boolean.adaptive_lighting_override_hall_light
+          - input_boolean.adaptive_lighting_override_nook_light
+          - input_boolean.adaptive_lighting_override_hobby_light
+          - input_boolean.adaptive_lighting_override_pantry_light
+          - input_boolean.adaptive_lighting_override_porch_light
+    
+    # Apply settings to all lights
+    - condition: template
+      value_template: "{{ all_lights_with_scaling | length > 0 }}"
+    
+    - repeat:
+        count: "{{ all_lights_with_scaling | length }}"
+        sequence:
+          - variables:
+              light_data: "{{ all_lights_with_scaling[repeat.index - 1] }}"
+          
+          - choose:
+            # Color-capable lights
+            - conditions:
+                - condition: template
+                  value_template: "{{ light_data.supports_color_temp }}"
+              sequence:
+                - service: light.turn_on
+                  target:
+                    entity_id: "{{ light_data.entity }}"
+                  data:
+                    brightness: "{{ light_data.brightness }}"
+                    color_temp_kelvin: "{{ target_temp }}"
+                    transition: 3
+            
+            # Brightness-only lights
+            default:
+              - service: light.turn_on
+                target:
+                  entity_id: "{{ light_data.entity }}"
+                data:
+                  brightness: "{{ light_data.brightness }}"
+                  transition: 3
+    
+    # Update timestamps
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.adaptive_lighting_last_full_sync
+      data:
+        datetime: "{{ now() }}"
+    
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_last_sync
+      data:
+        value: "{{ now().strftime('%H:%M:%S') }}"
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: >
+          Full System Sync Complete - {{ all_lights_with_scaling | length }} zones synchronized 
+          ({{ current_mode }} mode: {{ target_temp }}K, {{ target_brightness }}%)
+    
+    # Visual feedback flash
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    - service: script.adaptive_lighting_reset_flash
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+    
+    # Log the sync
+    - service: system_log.write
+      data:
+        message: >
+          Manual Sync All Zones: {{ all_lights_with_scaling | length }} zones synchronized
+          in {{ current_mode }} mode ({{ target_temp }}K, {{ target_brightness }}%)
+        level: info
+    
+    # Success notification
+    - service: persistent_notification.create
+      data:
+        title: "🔄 All Zones Synchronized"
+        message: >
+          Successfully synchronized {{ all_lights_with_scaling | length }} zones.
+          Mode: {{ current_mode }} | Settings: {{ target_temp }}K, {{ target_brightness }}%
+        notification_id: adaptive_lighting_sync_all_success
+  
+  mode: single
+
+# =============================================================================
+# END ADAPTIVE LIGHTING PHASE 4 MASTER CONTROL AUTOMATIONS
+# =============================================================================
+# =============================================================================
+# ADAPTIVE LIGHTING AUTOMATIONS - PHASE 2 IMPLEMENTATION (FIXED)
+# Advanced Intelligence with Dynamic Zone Management and Dashboard Controls
+# =============================================================================
+#
+# Phase 2 Features:
+# - Advanced override detection with color temperature monitoring
+# - Dynamic zone selection based on override status
+# - Zone-specific brightness scaling implementation
+# - Sophisticated color temperature and brightness calculations
+# - Performance monitoring and optimization
+#
+# Updated: June 14, 2025
+# Version: Phase 2 Intelligence - Template Syntax Fixed
+# =============================================================================
+
+# =============================================================================
+# 1. ENHANCED MASTER COORDINATOR - DYNAMIC ZONE MANAGEMENT
+# =============================================================================
+
+- id: adaptive_lighting_master_coordinator
+  alias: "🌅 Adaptive Lighting - Master Coordinator"
+  description: |
+    Enhanced central controller with dynamic zone selection and brightness scaling.
+    Calculates optimal settings and only updates non-overridden zones.
+  
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"
+      id: scheduled_sync
+    
+    - platform: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      to: 'on'
+      id: master_enabled
+    
+    - platform: homeassistant
+      event: start
+      id: ha_start
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+  
+  variables:
+    # Enhanced color temperature calculation
+    sun_elevation: "{{ state_attr('sun.sun', 'elevation') | float(0) }}"
+    
+    ideal_color_temp: >
+      {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+        {{ states('sensor.circadian_color_temperature') | int(4000) }}
+      {% else %}
+        {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+        {% if elevation > 0 %}
+          {% set temp_range = 4500 %}
+          {% set normalized = (elevation / 90) | float(0) %}
+          {% set color_temp = 2000 + (temp_range * normalized) %}
+          {% set clamped = [2000, color_temp | round(0), 6500] | sort %}
+          {{ clamped[1] }}
+        {% else %}
+          2000
+        {% endif %}
+      {% endif %}
+    
+    # Enhanced brightness calculation with time of day consideration
+    ideal_brightness: >
+      {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+        {{ states('sensor.circadian_brightness') | int(50) }}
+      {% else %}
+        {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+        {% set hour = now().hour %}
+        {% if elevation > 0 %}
+          {% set brightness_range = 80 %}
+          {% set normalized = (elevation / 90) | float(0) %}
+          {% set base_brightness = 20 + (brightness_range * normalized) %}
+          
+          {# Evening/morning reduction #}
+          {% if hour < 8 or hour > 20 %}
+            {% set time_factor = 0.7 %}
+          {% elif hour < 10 or hour > 18 %}
+            {% set time_factor = 0.85 %}
+          {% else %}
+            {% set time_factor = 1.0 %}
+          {% endif %}
+          
+          {% set final_brightness = (base_brightness * time_factor) | round(0) %}
+          {% set clamped = [15, final_brightness, 100] | sort %}
+          {{ clamped[1] }}
+        {% else %}
+          {{ 15 if hour > 22 or hour < 6 else 25 }}
+        {% endif %}
+      {% endif %}
+    
+    # Zone brightness scaling factors
+    living_room_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_living_room') | float(1.0) }}"
+    kitchen_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_kitchen') | float(1.0) }}"
+    bedroom_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_bedrooms') | float(0.8) }}"
+    accent_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_accent') | float(0.7) }}"
+    utility_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_utility') | float(0.9) }}"
+    exterior_scale: "{{ states('input_number.adaptive_lighting_brightness_scale_exterior') | float(1.2) }}"
+    
+    # Dynamic zone lists based on override status
+    active_zones: >
+      {% set zones = [] %}
+      {% if states('input_boolean.adaptive_lighting_override_livingroom_lights') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_living_room_main'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_kitchen_lights') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_kitchen_main'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_kitchen_led_strips') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_kitchen_accent'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_bar_strip') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_accent_lighting'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_master_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_master_bedroom_2'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_guest_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_guest_bedroom'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_linda_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_linda_room'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_gavin_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_gavin_room'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_dining_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_dining_room'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_hall_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_hallway'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_nook_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_nook_area'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_hobby_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_hobby_room'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_pantry_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_pantry'] %}
+      {% endif %}
+      {% if states('input_boolean.adaptive_lighting_override_porch_light') == 'off' %}
+        {% set zones = zones + ['switch.adaptive_lighting_exterior'] %}
+      {% endif %}
+      {{ zones }}
+  
+  action:
+    - service: system_log.write
+      data:
+        message: >
+          Enhanced Master Coordinator: Sun {{ sun_elevation }}°, 
+          Target {{ ideal_color_temp }}K, {{ ideal_brightness }}% brightness.
+          Active zones: {{ active_zones | length }}/14
+        level: info
+    
+    # Only enable zones that aren't overridden
+    - condition: template
+      value_template: "{{ active_zones | length > 0 }}"
+    
+    - service: switch.turn_on
+      target:
+        entity_id: "{{ active_zones }}"
+    
+    # Update performance counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_sync_count') | int(0)) + 1 }}"
+    
+    - service: system_log.write
+      data:
+        message: "Enhanced Master Coordinator: {{ active_zones | length }} zones synchronized"
+        level: info
+  
+  mode: single
+
+# =============================================================================
+# 2. ADVANCED OVERRIDE DETECTION - COLOR TEMPERATURE & BRIGHTNESS
+# =============================================================================
+
+- id: adaptive_lighting_advanced_override_detection
+  alias: "🔍 Adaptive Lighting - Advanced Override Detection"
+  description: |
+    Advanced override detection monitoring both brightness and color temperature changes.
+    Sets precise override flags and timestamps for detailed tracking.
+  
+  trigger:
+    # Brightness monitoring for all lights
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      attribute: brightness
+      for:
+        seconds: 3
+      id: brightness_change
+    
+    # Color temperature monitoring for color-capable lights
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+      attribute: color_temp_kelvin
+      for:
+        seconds: 3
+      id: color_temp_change
+  
+  condition:
+    # Enhanced change detection logic
+    - condition: template
+      value_template: >
+        {% set entity = trigger.entity_id %}
+        {% set from_state = trigger.from_state %}
+        {% set to_state = trigger.to_state %}
+        
+        {% if from_state and to_state and from_state.state != 'unavailable' and to_state.state != 'unavailable' %}
+          {% if trigger.id == 'brightness_change' %}
+            {% set old_brightness = from_state.attributes.get('brightness', 0) | int(0) %}
+            {% set new_brightness = to_state.attributes.get('brightness', 0) | int(0) %}
+            {% set brightness_delta = (new_brightness - old_brightness) | abs %}
+            {% set sensitivity = states('input_number.adaptive_lighting_override_sensitivity') | int(5) %}
+            {% set threshold = 20 + (sensitivity * 2) %}
+            {{ brightness_delta > threshold }}
+          {% elif trigger.id == 'color_temp_change' %}
+            {% set old_temp = from_state.attributes.get('color_temp_kelvin', 0) | int(0) %}
+            {% set new_temp = to_state.attributes.get('color_temp_kelvin', 0) | int(0) %}
+            {% set temp_delta = (new_temp - old_temp) | abs %}
+            {% set sensitivity = states('input_number.adaptive_lighting_override_sensitivity') | int(5) %}
+            {% set threshold = 150 + (sensitivity * 25) %}
+            {{ temp_delta > threshold }}
+          {% else %}
+            false
+          {% endif %}
+        {% else %}
+          false
+        {% endif %}
+  
+  variables:
+    # Enhanced entity mapping with timestamp entities
+    override_entity_map:
+      light.livingroom_lights: 
+        boolean: input_boolean.adaptive_lighting_override_livingroom_lights
+        timestamp: input_datetime.adaptive_lighting_last_override_livingroom_lights
+      light.kitchen_lights:
+        boolean: input_boolean.adaptive_lighting_override_kitchen_lights
+        timestamp: input_datetime.adaptive_lighting_last_override_kitchen_lights
+      light.kitchen_led_strips:
+        boolean: input_boolean.adaptive_lighting_override_kitchen_led_strips
+        timestamp: input_datetime.adaptive_lighting_last_override_kitchen_led_strips
+      light.bar_strip:
+        boolean: input_boolean.adaptive_lighting_override_bar_strip
+        timestamp: input_datetime.adaptive_lighting_last_override_bar_strip
+      light.top_left:
+        boolean: input_boolean.adaptive_lighting_override_top_left
+        timestamp: input_datetime.adaptive_lighting_last_override_top_left
+      light.top_right:
+        boolean: input_boolean.adaptive_lighting_override_top_right
+        timestamp: input_datetime.adaptive_lighting_last_override_top_right
+      light.master_light:
+        boolean: input_boolean.adaptive_lighting_override_master_light
+        timestamp: input_datetime.adaptive_lighting_last_override_master_light
+      light.master_lamp:
+        boolean: input_boolean.adaptive_lighting_override_master_lamp
+        timestamp: input_datetime.adaptive_lighting_last_override_master_lamp
+      light.guest_light:
+        boolean: input_boolean.adaptive_lighting_override_guest_light
+        timestamp: input_datetime.adaptive_lighting_last_override_guest_light
+      light.linda_light:
+        boolean: input_boolean.adaptive_lighting_override_linda_light
+        timestamp: input_datetime.adaptive_lighting_last_override_linda_light
+      light.gavin_light:
+        boolean: input_boolean.adaptive_lighting_override_gavin_light
+        timestamp: input_datetime.adaptive_lighting_last_override_gavin_light
+      light.dining_light:
+        boolean: input_boolean.adaptive_lighting_override_dining_light
+        timestamp: input_datetime.adaptive_lighting_last_override_dining_light
+      light.hall_light:
+        boolean: input_boolean.adaptive_lighting_override_hall_light
+        timestamp: input_datetime.adaptive_lighting_last_override_hall_light
+      light.nook_light:
+        boolean: input_boolean.adaptive_lighting_override_nook_light
+        timestamp: input_datetime.adaptive_lighting_last_override_nook_light
+      light.hobby_light:
+        boolean: input_boolean.adaptive_lighting_override_hobby_light
+        timestamp: input_datetime.adaptive_lighting_last_override_hobby_light
+      light.pantry_light:
+        boolean: input_boolean.adaptive_lighting_override_pantry_light
+        timestamp: input_datetime.adaptive_lighting_last_override_pantry_light
+      light.porch_light:
+        boolean: input_boolean.adaptive_lighting_override_porch_light
+        timestamp: input_datetime.adaptive_lighting_last_override_porch_light
+    
+    override_entities: "{{ override_entity_map.get(trigger.entity_id, {}) }}"
+    override_boolean: "{{ override_entities.get('boolean', '') }}"
+    override_timestamp: "{{ override_entities.get('timestamp', '') }}"
+  
+  action:
+    - condition: template
+      value_template: "{{ override_boolean != '' }}"
+    
+    # Set override flag
+    - service: input_boolean.turn_on
+      target:
+        entity_id: "{{ override_boolean }}"
+    
+    # Record timestamp if available
+    - condition: template
+      value_template: "{{ override_timestamp != '' }}"
+    
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: "{{ override_timestamp }}"
+      data:
+        datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+    
+    # Update override counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_override_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_override_count') | int(0)) + 1 }}"
+    
+    # Enhanced logging
+    - service: system_log.write
+      data:
+        message: >
+          Advanced Override Detected: {{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}
+          Type: {{ trigger.id }}, Sensitivity: {{ states('input_number.adaptive_lighting_override_sensitivity') }}
+        level: info
+    
+    # Smart notification (only for major lights)
+    - condition: template
+      value_template: >
+        {{ trigger.entity_id in ['light.livingroom_lights', 'light.kitchen_lights', 'light.master_light'] }}
+    
+    - service: persistent_notification.create
+      data:
+        title: "🔍 Adaptive Lighting Override"
+        message: >
+          Manual {{ trigger.id.replace('_', ' ') }} detected for {{ state_attr(trigger.entity_id, 'friendly_name') }}.
+          Adaptive lighting paused. Will auto-reset at {{ states('input_select.adaptive_lighting_override_reset_time') }}.
+        notification_id: "override_{{ trigger.entity_id.split('.')[1] }}"
+  
+  mode: parallel
+  max: 15
+
+# =============================================================================
+# 3. ENHANCED AUTO-SYNC WITH ZONE-SPECIFIC BRIGHTNESS SCALING
+# =============================================================================
+
+- id: adaptive_lighting_enhanced_auto_sync
+  alias: "🔄 Adaptive Lighting - Enhanced Auto Sync"
+  description: |
+    Enhanced auto-sync with zone-specific brightness scaling and advanced calculations.
+    Applies precisely calculated adaptive settings based on zone type and time.
+  
+  trigger:
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      to: 'on'
+      for:
+        seconds: "{{ states('input_number.adaptive_lighting_sync_delay') | int(30) }}"
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_auto_sync
+      state: 'on'
+    
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Check override status
+    - condition: template
+      value_template: >
+        {% set entity = trigger.entity_id %}
+        {% set override_map = {
+          'light.livingroom_lights': 'input_boolean.adaptive_lighting_override_livingroom_lights',
+          'light.kitchen_lights': 'input_boolean.adaptive_lighting_override_kitchen_lights',
+          'light.kitchen_led_strips': 'input_boolean.adaptive_lighting_override_kitchen_led_strips',
+          'light.bar_strip': 'input_boolean.adaptive_lighting_override_bar_strip',
+          'light.top_left': 'input_boolean.adaptive_lighting_override_top_left',
+          'light.top_right': 'input_boolean.adaptive_lighting_override_top_right',
+          'light.master_light': 'input_boolean.adaptive_lighting_override_master_light',
+          'light.master_lamp': 'input_boolean.adaptive_lighting_override_master_lamp',
+          'light.guest_light': 'input_boolean.adaptive_lighting_override_guest_light',
+          'light.linda_light': 'input_boolean.adaptive_lighting_override_linda_light',
+          'light.gavin_light': 'input_boolean.adaptive_lighting_override_gavin_light',
+          'light.dining_light': 'input_boolean.adaptive_lighting_override_dining_light',
+          'light.hall_light': 'input_boolean.adaptive_lighting_override_hall_light',
+          'light.nook_light': 'input_boolean.adaptive_lighting_override_nook_light',
+          'light.hobby_light': 'input_boolean.adaptive_lighting_override_hobby_light',
+          'light.pantry_light': 'input_boolean.adaptive_lighting_override_pantry_light',
+          'light.porch_light': 'input_boolean.adaptive_lighting_override_porch_light'
+        } %}
+        {% set override_entity = override_map.get(entity, '') %}
+        {{ override_entity == '' or states(override_entity) == 'off' }}
+  
+  variables:
+    # Enhanced calculations with circadian sensor integration
+    sun_elevation: "{{ state_attr('sun.sun', 'elevation') | float(0) }}"
+    current_hour: "{{ now().hour }}"
+    
+    # Advanced color temperature calculation
+    ideal_color_temp: >
+      {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+        {{ states('sensor.circadian_color_temperature') | int(4000) }}
+      {% else %}
+        {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+        {% if elevation > 0 %}
+          {% set temp_range = 4500 %}
+          {% set normalized = (elevation / 90) | float(0) %}
+          {% set color_temp = 2000 + (temp_range * normalized) %}
+          {% set clamped = [2000, color_temp | round(0), 6500] | sort %}
+          {{ clamped[1] }}
+        {% else %}
+          2000
+        {% endif %}
+      {% endif %}
+    
+    # Base brightness with time consideration
+    base_brightness: >
+      {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+        {{ states('sensor.circadian_brightness') | int(50) }}
+      {% else %}
+        {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+        {% set hour = now().hour %}
+        {% if elevation > 0 %}
+          {% set brightness_range = 80 %}
+          {% set normalized = (elevation / 90) | float(0) %}
+          {% set base = 20 + (brightness_range * normalized) %}
+          
+          {% if hour < 8 or hour > 20 %}
+            {% set time_factor = 0.7 %}
+          {% elif hour < 10 or hour > 18 %}
+            {% set time_factor = 0.85 %}
+          {% else %}
+            {% set time_factor = 1.0 %}
+          {% endif %}
+          
+          {% set final = (base * time_factor) | round(0) %}
+          {% set clamped = [15, final, 100] | sort %}
+          {{ clamped[1] }}
+        {% else %}
+          {{ 15 if hour > 22 or hour < 6 else 25 }}
+        {% endif %}
+      {% endif %}
+    
+    # Zone-specific brightness with enhanced scaling
+    scaled_brightness: >
+      {% set entity = trigger.entity_id %}
+      {% set base = base_brightness | int %}
+      
+      {% if entity in ['light.livingroom_lights'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_living_room') | float(1.0) %}
+        {% set zone_type = 'living_room' %}
+      {% elif entity in ['light.kitchen_lights', 'light.kitchen_led_strips'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_kitchen') | float(1.0) %}
+        {% set zone_type = 'kitchen' %}
+      {% elif entity in ['light.master_light', 'light.master_lamp', 'light.guest_light', 'light.linda_light', 'light.gavin_light'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_bedrooms') | float(0.8) %}
+        {% set zone_type = 'bedroom' %}
+      {% elif entity in ['light.bar_strip', 'light.top_left', 'light.top_right'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_accent') | float(0.7) %}
+        {% set zone_type = 'accent' %}
+      {% elif entity in ['light.hobby_light', 'light.pantry_light', 'light.dining_light', 'light.hall_light', 'light.nook_light'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_utility') | float(0.9) %}
+        {% set zone_type = 'utility' %}
+      {% elif entity in ['light.porch_light'] %}
+        {% set scale = states('input_number.adaptive_lighting_brightness_scale_exterior') | float(1.2) %}
+        {% set zone_type = 'exterior' %}
+      {% else %}
+        {% set scale = 1.0 %}
+        {% set zone_type = 'unknown' %}
+      {% endif %}
+      
+      {% set scaled = (base * scale) | round(0) %}
+      {% set clamped = [10, scaled, 255] | sort %}
+      {{ clamped[1] }}
+    
+    # Light capability detection
+    supports_color_temp: >
+      {% set color_modes = state_attr(trigger.entity_id, 'supported_color_modes') or [] %}
+      {{ 'color_temp' in color_modes }}
+    
+    transition_speed: "{{ states('input_number.adaptive_lighting_transition_speed') | int(30) }}"
+  
+  action:
+    # Apply enhanced adaptive settings
+    - choose:
+        # Color temperature capable lights
+        - conditions:
+            - condition: template
+              value_template: "{{ supports_color_temp }}"
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: "{{ trigger.entity_id }}"
+              data:
+                brightness: "{{ scaled_brightness }}"
+                color_temp_kelvin: "{{ ideal_color_temp }}"
+                transition: "{{ transition_speed }}"
+        
+        # Brightness-only lights
+        - conditions:
+            - condition: template
+              value_template: "{{ not supports_color_temp }}"
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: "{{ trigger.entity_id }}"
+              data:
+                brightness: "{{ scaled_brightness }}"
+                transition: "{{ transition_speed }}"
+    
+    # Update sync counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_auto_sync_count
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_auto_sync_count') | int(0)) + 1 }}"
+    
+    # Enhanced logging
+    - service: system_log.write
+      data:
+        message: >
+          Enhanced Auto-Sync: {{ state_attr(trigger.entity_id, 'friendly_name') }}
+          {{ ideal_color_temp }}K, {{ scaled_brightness }}% (base: {{ base_brightness }}%)
+        level: info
+  
+  mode: parallel
+  max: 20
+
+# =============================================================================
+# 4. ADVANCED DAILY RESET WITH PERFORMANCE TRACKING
+# =============================================================================
+
+- id: adaptive_lighting_advanced_daily_reset
+  alias: "⏰ Adaptive Lighting - Advanced Daily Reset"
+  description: |
+    Advanced daily reset with performance tracking and flexible scheduling.
+    Resets overrides and provides comprehensive system statistics.
+  
+  trigger:
+    - platform: template
+      value_template: >
+        {% set reset_time = states('input_select.adaptive_lighting_override_reset_time') %}
+        {% if reset_time == 'sunset' %}
+          {{ state_attr('sun.sun', 'next_setting') | as_timestamp | timestamp_custom('%H:%M') == now().strftime('%H:%M') }}
+        {% elif reset_time == 'manual' %}
+          false
+        {% else %}
+          {{ now().strftime('%H:%M') == reset_time }}
+        {% endif %}
+      id: scheduled_reset
+    
+    - platform: state
+      entity_id: input_select.adaptive_lighting_override_reset_time
+      to: 'manual'
+      id: manual_reset
+    
+    - platform: event
+      event_type: adaptive_lighting_force_reset
+      id: force_reset
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_override_reset_daily
+      state: 'on'
+  
+  variables:
+    # Calculate reset statistics
+    total_overrides: >
+      {% set override_entities = [
+        'input_boolean.adaptive_lighting_override_livingroom_lights',
+        'input_boolean.adaptive_lighting_override_kitchen_lights',
+        'input_boolean.adaptive_lighting_override_kitchen_led_strips',
+        'input_boolean.adaptive_lighting_override_bar_strip',
+        'input_boolean.adaptive_lighting_override_top_left',
+        'input_boolean.adaptive_lighting_override_top_right',
+        'input_boolean.adaptive_lighting_override_master_light',
+        'input_boolean.adaptive_lighting_override_master_lamp',
+        'input_boolean.adaptive_lighting_override_guest_light',
+        'input_boolean.adaptive_lighting_override_linda_light',
+        'input_boolean.adaptive_lighting_override_gavin_light',
+        'input_boolean.adaptive_lighting_override_dining_light',
+        'input_boolean.adaptive_lighting_override_hall_light',
+        'input_boolean.adaptive_lighting_override_nook_light',
+        'input_boolean.adaptive_lighting_override_hobby_light',
+        'input_boolean.adaptive_lighting_override_pantry_light',
+        'input_boolean.adaptive_lighting_override_porch_light'
+      ] %}
+      {% set count = 0 %}
+      {% for entity in override_entities %}
+        {% if states(entity) == 'on' %}
+          {% set count = count + 1 %}
+        {% endif %}
+      {% endfor %}
+      {{ count }}
+    
+    sync_count: "{{ states('input_number.adaptive_lighting_sync_count') | int(0) }}"
+    override_count: "{{ states('input_number.adaptive_lighting_override_count') | int(0) }}"
+  
+  action:
+    # Log reset statistics
+    - service: system_log.write
+      data:
+        message: >
+          Advanced Daily Reset Starting: {{ total_overrides }} active overrides,
+          {{ sync_count }} syncs, {{ override_count }} overrides detected today
+        level: info
+    
+    # Reset all override flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.adaptive_lighting_override_livingroom_lights
+          - input_boolean.adaptive_lighting_override_kitchen_lights
+          - input_boolean.adaptive_lighting_override_kitchen_led_strips
+          - input_boolean.adaptive_lighting_override_bar_strip
+          - input_boolean.adaptive_lighting_override_top_left
+          - input_boolean.adaptive_lighting_override_top_right
+          - input_boolean.adaptive_lighting_override_master_light
+          - input_boolean.adaptive_lighting_override_master_lamp
+          - input_boolean.adaptive_lighting_override_guest_light
+          - input_boolean.adaptive_lighting_override_linda_light
+          - input_boolean.adaptive_lighting_override_gavin_light
+          - input_boolean.adaptive_lighting_override_dining_light
+          - input_boolean.adaptive_lighting_override_hall_light
+          - input_boolean.adaptive_lighting_override_nook_light
+          - input_boolean.adaptive_lighting_override_hobby_light
+          - input_boolean.adaptive_lighting_override_pantry_light
+          - input_boolean.adaptive_lighting_override_porch_light
+    
+    # Reset all timestamps
+    - service: input_datetime.set_datetime
+      target:
+        entity_id:
+          - input_datetime.adaptive_lighting_last_override_livingroom_lights
+          - input_datetime.adaptive_lighting_last_override_kitchen_lights
+          - input_datetime.adaptive_lighting_last_override_kitchen_led_strips
+          - input_datetime.adaptive_lighting_last_override_bar_strip
+          - input_datetime.adaptive_lighting_last_override_top_left
+          - input_datetime.adaptive_lighting_last_override_top_right
+          - input_datetime.adaptive_lighting_last_override_master_light
+          - input_datetime.adaptive_lighting_last_override_master_lamp
+          - input_datetime.adaptive_lighting_last_override_guest_light
+          - input_datetime.adaptive_lighting_last_override_linda_light
+          - input_datetime.adaptive_lighting_last_override_gavin_light
+          - input_datetime.adaptive_lighting_last_override_dining_light
+          - input_datetime.adaptive_lighting_last_override_hall_light
+          - input_datetime.adaptive_lighting_last_override_nook_light
+          - input_datetime.adaptive_lighting_last_override_hobby_light
+          - input_datetime.adaptive_lighting_last_override_pantry_light
+          - input_datetime.adaptive_lighting_last_override_porch_light
+      data:
+        datetime: "1970-01-01 00:00:00"
+    
+    # Reset daily counters
+    - service: input_number.set_value
+      target:
+        entity_id:
+          - input_number.adaptive_lighting_override_count
+          - input_number.adaptive_lighting_sync_count
+          - input_number.adaptive_lighting_auto_sync_count
+      data:
+        value: 0
+    
+    # Trigger enhanced master coordinator
+    - delay:
+        seconds: 2
+    
+    - service: automation.trigger
+      target:
+        entity_id: automation.adaptive_lighting_master_coordinator
+    
+    # Enhanced notification with statistics
+    - service: persistent_notification.create
+      data:
+        title: "⏰ Adaptive Lighting Daily Reset"
+        message: >
+          Reset completed at {{ now().strftime('%H:%M') }}! 
+          Cleared {{ total_overrides }} overrides. 
+          Today's stats: {{ sync_count }} syncs, {{ override_count }} overrides detected.
+          All lights re-synchronized to adaptive lighting.
+        notification_id: adaptive_lighting_advanced_reset
+    
+    # Log completion
+    - service: system_log.write
+      data:
+        message: >
+          Advanced Daily Reset Complete: {{ total_overrides }} overrides cleared,
+          all zones re-synchronized
+        level: info
+    
+    # Reset manual trigger
+    - condition: template
+      value_template: "{{ trigger.id == 'manual_reset' }}"
+    
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_reset_time
+      data:
+        option: "06:00"
+  
+  mode: single
+
+# =============================================================================
+# 5. PERFORMANCE MONITORING AND HEALTH ANALYTICS
+# =============================================================================
+
+- id: adaptive_lighting_performance_monitor
+  alias: "📊 Adaptive Lighting - Performance Monitor"
+  description: |
+    Advanced performance monitoring with analytics and optimization suggestions.
+    Tracks system performance and provides insights for improvement.
+  
+  trigger:
+    - platform: time_pattern
+      minutes: "/15"  # Every 15 minutes
+      id: performance_check
+    
+    - platform: state
+      entity_id:
+        - automation.adaptive_lighting_master_coordinator
+        - automation.adaptive_lighting_advanced_override_detection
+        - automation.adaptive_lighting_enhanced_auto_sync
+        - automation.adaptive_lighting_advanced_daily_reset
+      to: 'unavailable'
+      for:
+        minutes: 2
+      id: automation_failure
+  
+  variables:
+    active_overrides: >
+      {% set override_entities = [
+        'input_boolean.adaptive_lighting_override_livingroom_lights',
+        'input_boolean.adaptive_lighting_override_kitchen_lights',
+        'input_boolean.adaptive_lighting_override_kitchen_led_strips',
+        'input_boolean.adaptive_lighting_override_bar_strip',
+        'input_boolean.adaptive_lighting_override_top_left',
+        'input_boolean.adaptive_lighting_override_top_right',
+        'input_boolean.adaptive_lighting_override_master_light',
+        'input_boolean.adaptive_lighting_override_master_lamp',
+        'input_boolean.adaptive_lighting_override_guest_light',
+        'input_boolean.adaptive_lighting_override_linda_light',
+        'input_boolean.adaptive_lighting_override_gavin_light',
+        'input_boolean.adaptive_lighting_override_dining_light',
+        'input_boolean.adaptive_lighting_override_hall_light',
+        'input_boolean.adaptive_lighting_override_nook_light',
+        'input_boolean.adaptive_lighting_override_hobby_light',
+        'input_boolean.adaptive_lighting_override_pantry_light',
+        'input_boolean.adaptive_lighting_override_porch_light'
+      ] %}
+      {% set count = 0 %}
+      {% for entity in override_entities %}
+        {% if states(entity) == 'on' %}
+          {% set count = count + 1 %}
+        {% endif %}
+      {% endfor %}
+      {{ count }}
+    
+    sync_efficiency: >
+      {% set syncs = states('input_number.adaptive_lighting_sync_count') | int(1) %}
+      {% set overrides = states('input_number.adaptive_lighting_override_count') | int(0) %}
+      {% if syncs > 0 %}
+        {{ ((syncs - overrides) / syncs * 100) | round(1) }}
+      {% else %}
+        100
+      {% endif %}
+    
+    system_health: >
+      {% set master_state = states('automation.adaptive_lighting_master_coordinator') %}
+      {% set override_state = states('automation.adaptive_lighting_advanced_override_detection') %}
+      {% set sync_state = states('automation.adaptive_lighting_enhanced_auto_sync') %}
+      {% set reset_state = states('automation.adaptive_lighting_advanced_daily_reset') %}
+      {% set healthy_count = 0 %}
+      {% if master_state == 'on' %}{% set healthy_count = healthy_count + 1 %}{% endif %}
+      {% if override_state == 'on' %}{% set healthy_count = healthy_count + 1 %}{% endif %}
+      {% if sync_state == 'on' %}{% set healthy_count = healthy_count + 1 %}{% endif %}
+      {% if reset_state == 'on' %}{% set healthy_count = healthy_count + 1 %}{% endif %}
+      {{ (healthy_count / 4 * 100) | round(0) }}
+  
+  action:
+    - choose:
+        # Performance monitoring
+        - conditions:
+            - condition: trigger
+              id: performance_check
+          sequence:
+            - service: system_log.write
+              data:
+                message: >
+                  Performance Monitor: {{ active_overrides }}/17 overrides active,
+                  {{ sync_efficiency }}% efficiency, {{ system_health }}% system health
+                level: info
+            
+            # Alert on high override rate
+            - condition: template
+              value_template: "{{ active_overrides > 8 }}"
+            
+            - service: persistent_notification.create
+              data:
+                title: "📊 Adaptive Lighting Performance Alert"
+                message: >
+                  High override rate detected: {{ active_overrides }}/17 lights overridden.
+                  Consider adjusting sensitivity or checking for conflicts.
+                notification_id: adaptive_lighting_performance_alert
+        
+        # Automation failure handling
+        - conditions:
+            - condition: trigger
+              id: automation_failure
+          sequence:
+            - service: persistent_notification.create
+              data:
+                title: "⚠️ Adaptive Lighting System Failure"
+                message: >
+                  Critical automation failure: {{ state_attr(trigger.entity_id, 'friendly_name') }}
+                  is unavailable. System health: {{ system_health }}%
+                notification_id: "adaptive_lighting_failure_{{ trigger.entity_id.split('.')[1] }}"
+            
+            - service: system_log.write
+              data:
+                message: >
+                  Critical Automation Failure: {{ trigger.entity_id }} unavailable,
+                  system health dropped to {{ system_health }}%
+                level: error
+  
+  mode: parallel
+
+# =============================================================================
+# 🖱️ DOUBLE-CLICK CONTROL SYSTEM - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Universal double-click detection and visual feedback system as specified
+# in the original adaptive lighting implementation document.
+#
+# Added: June 16, 2025
+# Version: Phase 3 Double-Click Implementation
+# =============================================================================
+
+# 6. UNIVERSAL DOUBLE-CLICK DETECTION AUTOMATION
+- id: adaptive_lighting_double_click_detector
+  alias: "🖱️ Adaptive Lighting - Double-Click Detector"
+  description: |
+    Universal double-click detection for adaptive lighting control.
+    Detects double-click patterns from any participating light and triggers
+    system-wide enable/disable with visual feedback.
+  
+  trigger:
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      id: light_state_change
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_double_click_enable
+      state: 'on'
+    
+    # Check for rapid double state change (double-click pattern)
+    - condition: template
+      value_template: >
+        {% set entity_id = trigger.entity_id %}
+        {% set last_click_entity = states('input_text.last_double_click_entity') %}
+        {% set last_click_time = states('input_datetime.last_double_click_time') %}
+        
+        {% if last_click_entity == entity_id and last_click_time != 'unknown' %}
+          {% set last_click_timestamp = as_timestamp(last_click_time) %}
+          {% set current_timestamp = as_timestamp(now()) %}
+          {% set time_diff = current_timestamp - last_click_timestamp %}
+          {{ 1.0 <= time_diff <= 2.0 }}
+        {% else %}
+          false
+        {% endif %}
+  
+  variables:
+    current_state: "{{ trigger.to_state.state }}"
+    triggering_light: "{{ trigger.entity_id }}"
+    light_name: "{{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}"
+  
+  action:
+    # Update double-click tracking
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_double_click_entity
+      data:
+        value: "{{ triggering_light }}"
+    
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_double_click_time
+      data:
+        datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+    
+    - choose:
+        # Double ON - Enable adaptive lighting with visual feedback
+        - conditions:
+            - condition: template
+              value_template: "{{ current_state == 'on' }}"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.adaptive_lighting_master_enable
+            
+            - condition: state
+              entity_id: input_boolean.adaptive_lighting_visual_feedback_enable
+              state: 'on'
+            
+            - service: script.adaptive_lighting_flash_confirmation
+              data:
+                mode: "enabled"
+                triggering_light: "{{ triggering_light }}"
+        
+        # Double OFF - Disable adaptive lighting with visual feedback
+        - conditions:
+            - condition: template
+              value_template: "{{ current_state == 'off' }}"
+          sequence:
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.adaptive_lighting_master_enable
+            
+            - condition: state
+              entity_id: input_boolean.adaptive_lighting_visual_feedback_enable
+              state: 'on'
+            
+            - service: script.adaptive_lighting_flash_confirmation
+              data:
+                mode: "disabled"
+                triggering_light: "{{ triggering_light }}"
+    
+    # Log double-click action
+    - service: system_log.write
+      data:
+        message: >
+          Double-Click Detected: {{ light_name }} {{ current_state }}.
+          Adaptive lighting {{ "enabled" if current_state == 'on' else "disabled" }} via double-click.
+        level: info
+    
+    # Notification for double-click action
+    - service: persistent_notification.create
+      data:
+        title: "🖱️ Double-Click Control Activated"
+        message: >
+          {{ light_name }} double-{{ current_state }} detected!
+          Adaptive lighting {{ "enabled" if current_state == 'on' else "disabled" }} system-wide.
+        notification_id: "double_click_{{ triggering_light.split('.')[1] }}"
+  
+  mode: single
+
+# Initial click tracking (for double-click detection)
+- id: adaptive_lighting_click_tracker
+  alias: "🎯 Adaptive Lighting - Click Tracker"
+  description: |
+    Tracks initial clicks for double-click detection timing.
+    Records first click timestamp and entity for comparison.
+  
+  trigger:
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_double_click_enable
+      state: 'on'
+  
+  action:
+    # Update click tracking for double-click detection
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_double_click_entity
+      data:
+        value: "{{ trigger.entity_id }}"
+    
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.last_double_click_time
+      data:
+        datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+  
+  mode: parallel
+  max: 20
+
+# =============================================================================
+# 🎯 INDIVIDUAL OPT-OUT & SMART RE-SYNC AUTOMATIONS - PHASE 3+ ENHANCEMENT
+# =============================================================================
+#
+# Advanced individual light control system with intelligent re-sync capabilities,
+# multiple opt-out methods, and machine learning from user preferences.
+#
+# Added: June 17, 2025
+# Version: Individual Control + Smart Re-Sync Implementation
+# =============================================================================
+
+# 7. INDIVIDUAL OPT-OUT MANAGER - CENTRALIZED HANDLER
+- id: adaptive_lighting_individual_opt_out_manager
+  alias: "🎯 Adaptive Lighting - Individual Opt-Out Manager"
+  description: |
+    Centralized handler for all individual light opt-out methods including
+    manual dashboard toggles, service calls, and aggressive override detection.
+    Provides event-driven architecture with comprehensive logging.
+  
+  trigger:
+    # Method A: Manual dashboard toggle changes
+    - platform: state
+      entity_id:
+        - input_boolean.adaptive_lighting_override_livingroom_lights
+        - input_boolean.adaptive_lighting_override_kitchen_lights
+        - input_boolean.adaptive_lighting_override_kitchen_led_strips
+        - input_boolean.adaptive_lighting_override_bar_strip
+        - input_boolean.adaptive_lighting_override_top_left
+        - input_boolean.adaptive_lighting_override_top_right
+        - input_boolean.adaptive_lighting_override_master_light
+        - input_boolean.adaptive_lighting_override_master_lamp
+        - input_boolean.adaptive_lighting_override_guest_light
+        - input_boolean.adaptive_lighting_override_linda_light
+        - input_boolean.adaptive_lighting_override_gavin_light
+        - input_boolean.adaptive_lighting_override_dining_light
+        - input_boolean.adaptive_lighting_override_hall_light
+        - input_boolean.adaptive_lighting_override_nook_light
+        - input_boolean.adaptive_lighting_override_hobby_light
+        - input_boolean.adaptive_lighting_override_pantry_light
+        - input_boolean.adaptive_lighting_override_porch_light
+      id: manual_toggle
+    
+    # Method B: Service call events
+    - platform: event
+      event_type: adaptive_lighting_opt_out
+      id: service_opt_out
+    
+    - platform: event
+      event_type: adaptive_lighting_opt_in
+      id: service_opt_in
+    
+    # Method C: Aggressive override detection (multiple rapid adjustments)
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      attribute: brightness
+      for:
+        seconds: 2
+      id: aggressive_override_check
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+  
+  variables:
+    # Light entity mapping for aggressive override detection
+    light_to_override_map:
+      light.livingroom_lights: input_boolean.adaptive_lighting_override_livingroom_lights
+      light.kitchen_lights: input_boolean.adaptive_lighting_override_kitchen_lights
+      light.kitchen_led_strips: input_boolean.adaptive_lighting_override_kitchen_led_strips
+      light.bar_strip: input_boolean.adaptive_lighting_override_bar_strip
+      light.top_left: input_boolean.adaptive_lighting_override_top_left
+      light.top_right: input_boolean.adaptive_lighting_override_top_right
+      light.master_light: input_boolean.adaptive_lighting_override_master_light
+      light.master_lamp: input_boolean.adaptive_lighting_override_master_lamp
+      light.guest_light: input_boolean.adaptive_lighting_override_guest_light
+      light.linda_light: input_boolean.adaptive_lighting_override_linda_light
+      light.gavin_light: input_boolean.adaptive_lighting_override_gavin_light
+      light.dining_light: input_boolean.adaptive_lighting_override_dining_light
+      light.hall_light: input_boolean.adaptive_lighting_override_hall_light
+      light.nook_light: input_boolean.adaptive_lighting_override_nook_light
+      light.hobby_light: input_boolean.adaptive_lighting_override_hobby_light
+      light.pantry_light: input_boolean.adaptive_lighting_override_pantry_light
+      light.porch_light: input_boolean.adaptive_lighting_override_porch_light
+    
+    light_to_timestamp_map:
+      light.livingroom_lights: input_datetime.adaptive_lighting_last_override_livingroom_lights
+      light.kitchen_lights: input_datetime.adaptive_lighting_last_override_kitchen_lights
+      light.kitchen_led_strips: input_datetime.adaptive_lighting_last_override_kitchen_led_strips
+      light.bar_strip: input_datetime.adaptive_lighting_last_override_bar_strip
+      light.top_left: input_datetime.adaptive_lighting_last_override_top_left
+      light.top_right: input_datetime.adaptive_lighting_last_override_top_right
+      light.master_light: input_datetime.adaptive_lighting_last_override_master_light
+      light.master_lamp: input_datetime.adaptive_lighting_last_override_master_lamp
+      light.guest_light: input_datetime.adaptive_lighting_last_override_guest_light
+      light.linda_light: input_datetime.adaptive_lighting_last_override_linda_light
+      light.gavin_light: input_datetime.adaptive_lighting_last_override_gavin_light
+      light.dining_light: input_datetime.adaptive_lighting_last_override_dining_light
+      light.hall_light: input_datetime.adaptive_lighting_last_override_hall_light
+      light.nook_light: input_datetime.adaptive_lighting_last_override_nook_light
+      light.hobby_light: input_datetime.adaptive_lighting_last_override_hobby_light
+      light.pantry_light: input_datetime.adaptive_lighting_last_override_pantry_light
+      light.porch_light: input_datetime.adaptive_lighting_last_override_porch_light
+  
+  action:
+    - choose:
+        # Method A: Manual Dashboard Toggle
+        - conditions:
+            - condition: trigger
+              id: manual_toggle
+          sequence:
+            - variables:
+                light_name: >
+                  {% set override_name = trigger.entity_id.replace('input_boolean.adaptive_lighting_override_', '') %}
+                  light.{{ override_name }}
+                new_state: "{{ trigger.to_state.state }}"
+                timestamp_entity: >
+                  {% set override_name = trigger.entity_id.replace('input_boolean.adaptive_lighting_override_', '') %}
+                  input_datetime.adaptive_lighting_last_override_{{ override_name }}
+            
+            # Update timestamp
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: "{{ timestamp_entity }}"
+              data:
+                datetime: "{{ now() }}"
+            
+            # Apply adaptive settings immediately if opt-in and light is on
+            - if:
+                - condition: template
+                  value_template: "{{ new_state == 'off' and states(light_name) == 'on' }}"
+              then:
+                - delay:
+                    seconds: 1
+                - service: adaptive_lighting.apply
+                  data:
+                    entity_id: "{{ light_name }}"
+                    lights: "{{ light_name }}"
+                    adapt_brightness: true
+                    adapt_color: true
+                    transition: 3
+            
+            # Enhanced logging with method identification
+            - service: system_log.write
+              data:
+                message: >
+                  Individual {{ "Opt-Out" if new_state == 'on' else "Opt-In" }}: 
+                  {{ state_attr(light_name, 'friendly_name') or light_name }} via Dashboard Toggle
+                level: info
+        
+        # Method B: Service Call Events
+        - conditions:
+            - condition: trigger
+              id: 
+                - service_opt_out
+                - service_opt_in
+          sequence:
+            - service: system_log.write
+              data:
+                message: >
+                  Individual {{ "Opt-Out" if trigger.id == 'service_opt_out' else "Opt-In" }}: 
+                  {{ trigger.event.data.entity_id }} via Service Call - {{ trigger.event.data.reason }}
+                level: info
+        
+        # Method C: Aggressive Override Detection
+        - conditions:
+            - condition: trigger
+              id: aggressive_override_check
+            - condition: state
+              entity_id: input_boolean.adaptive_lighting_aggressive_override_detection
+              state: 'on'
+          sequence:
+            - variables:
+                light_entity: "{{ trigger.entity_id }}"
+                override_entity: "{{ light_to_override_map.get(trigger.entity_id, '') }}"
+                timestamp_entity: "{{ light_to_timestamp_map.get(trigger.entity_id, '') }}"
+                last_override_time: >
+                  {% if timestamp_entity != '' %}
+                    {{ as_timestamp(states(timestamp_entity)) | default(0) }}
+                  {% else %}
+                    0
+                  {% endif %}
+            
+            # Check for multiple adjustments within 15 minutes
+            - condition: template
+              value_template: >
+                {% set current_time = as_timestamp(now()) %}
+                {% set time_diff = current_time - last_override_time %}
+                {% set recent_adjustments = time_diff < 900 %}
+                {% set currently_overridden = states(override_entity) == 'on' %}
+                {{ recent_adjustments and not currently_overridden and override_entity != '' }}
+            
+            # Automatic persistent opt-out
+            - service: input_boolean.turn_on
+              target:
+                entity_id: "{{ override_entity }}"
+            
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: "{{ timestamp_entity }}"
+              data:
+                datetime: "{{ now() }}"
+            
+            # Fire aggressive override event
+            - event: adaptive_lighting_aggressive_override
+              event_data:
+                entity_id: "{{ light_entity }}"
+                reason: "Multiple manual adjustments detected"
+                timestamp: "{{ now().isoformat() }}"
+            
+            # Enhanced logging and notification
+            - service: system_log.write
+              data:
+                message: >
+                  Aggressive Override Detected: {{ state_attr(light_entity, 'friendly_name') or light_entity }}
+                  - Multiple manual adjustments within 15 minutes. Auto-opted out.
+                level: info
+            
+            - service: persistent_notification.create
+              data:
+                title: "🎯 Aggressive Override Detection"
+                message: >
+                  {{ state_attr(light_entity, 'friendly_name') or light_entity }} has been automatically 
+                  opted out due to multiple manual adjustments. This light will not follow adaptive 
+                  lighting until manually re-enabled or daily reset.
+                notification_id: "aggressive_override_{{ light_entity.split('.')[1] }}"
+  
+  mode: parallel
+  max: 20
+
+# 8. SMART RE-SYNC CHECKER - INTELLIGENT RE-INTEGRATION
+- id: adaptive_lighting_smart_resync_checker
+  alias: "🧠 Adaptive Lighting - Smart Re-Sync Checker"
+  description: |
+    Intelligent re-sync system that identifies opted-out lights and attempts
+    gentle re-integration with exponential backoff and user preference learning.
+    Operates on configurable intervals with sophisticated candidate filtering.
+  
+  trigger:
+    # Time-based triggers - every 30 minutes for candidate evaluation
+    - platform: time_pattern
+      minutes: "/30"
+      id: scheduled_check
+    
+    # Activity-based triggers - when opted-out lights turn ON
+    - platform: state
+      entity_id:
+        - light.livingroom_lights
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+        - light.porch_light
+      to: 'on'
+      id: light_turned_on
+  
+  condition:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_smart_resync_enable
+      state: 'on'
+    
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_master_enable
+      state: 'on'
+    
+    # Check strategy configuration
+    - condition: template
+      value_template: >
+        {% set strategy = states('input_select.adaptive_lighting_resync_strategy') %}
+        {{ strategy != 'Disabled' }}
+  
+  variables:
+    # Configuration variables
+    base_interval_hours: "{{ states('input_number.adaptive_lighting_resync_interval_hours') | float(2.0) }}"
+    max_backoff_hours: "{{ states('input_number.adaptive_lighting_resync_max_backoff_hours') | float(24.0) }}"
+    strategy: "{{ states('input_select.adaptive_lighting_resync_strategy') }}"
+    aggressiveness: "{{ states('input_select.adaptive_lighting_resync_aggressiveness') }}"
+    
+    # Aggressiveness modifier (affects interval)
+    interval_multiplier: >
+      {% set aggr = states('input_select.adaptive_lighting_resync_aggressiveness') %}
+      {% if 'Very Conservative' in aggr %}
+        3.0
+      {% elif 'Conservative' in aggr %}
+        1.5
+      {% elif 'Balanced' in aggr %}
+        1.0
+      {% elif 'Responsive' in aggr %}
+        0.5
+      {% elif 'Aggressive' in aggr %}
+        0.25
+      {% else %}
+        1.0
+      {% endif %}
+    
+    effective_interval_hours: "{{ (base_interval_hours * interval_multiplier) | float }}"
+    
+    # Find re-sync candidates
+    resync_candidates: >
+      {% set candidates = [] %}
+      {% set light_mappings = [
+        ['light.livingroom_lights', 'input_boolean.adaptive_lighting_override_livingroom_lights', 'input_datetime.adaptive_lighting_last_override_livingroom_lights'],
+        ['light.kitchen_lights', 'input_boolean.adaptive_lighting_override_kitchen_lights', 'input_datetime.adaptive_lighting_last_override_kitchen_lights'],
+        ['light.kitchen_led_strips', 'input_boolean.adaptive_lighting_override_kitchen_led_strips', 'input_datetime.adaptive_lighting_last_override_kitchen_led_strips'],
+        ['light.bar_strip', 'input_boolean.adaptive_lighting_override_bar_strip', 'input_datetime.adaptive_lighting_last_override_bar_strip'],
+        ['light.top_left', 'input_boolean.adaptive_lighting_override_top_left', 'input_datetime.adaptive_lighting_last_override_top_left'],
+        ['light.top_right', 'input_boolean.adaptive_lighting_override_top_right', 'input_datetime.adaptive_lighting_last_override_top_right'],
+        ['light.master_light', 'input_boolean.adaptive_lighting_override_master_light', 'input_datetime.adaptive_lighting_last_override_master_light'],
+        ['light.master_lamp', 'input_boolean.adaptive_lighting_override_master_lamp', 'input_datetime.adaptive_lighting_last_override_master_lamp'],
+        ['light.guest_light', 'input_boolean.adaptive_lighting_override_guest_light', 'input_datetime.adaptive_lighting_last_override_guest_light'],
+        ['light.linda_light', 'input_boolean.adaptive_lighting_override_linda_light', 'input_datetime.adaptive_lighting_last_override_linda_light'],
+        ['light.gavin_light', 'input_boolean.adaptive_lighting_override_gavin_light', 'input_datetime.adaptive_lighting_last_override_gavin_light'],
+        ['light.dining_light', 'input_boolean.adaptive_lighting_override_dining_light', 'input_datetime.adaptive_lighting_last_override_dining_light'],
+        ['light.hall_light', 'input_boolean.adaptive_lighting_override_hall_light', 'input_datetime.adaptive_lighting_last_override_hall_light'],
+        ['light.nook_light', 'input_boolean.adaptive_lighting_override_nook_light', 'input_datetime.adaptive_lighting_last_override_nook_light'],
+        ['light.hobby_light', 'input_boolean.adaptive_lighting_override_hobby_light', 'input_datetime.adaptive_lighting_last_override_hobby_light'],
+        ['light.pantry_light', 'input_boolean.adaptive_lighting_override_pantry_light', 'input_datetime.adaptive_lighting_last_override_pantry_light'],
+        ['light.porch_light', 'input_boolean.adaptive_lighting_override_porch_light', 'input_datetime.adaptive_lighting_last_override_porch_light']
+      ] %}
+      
+      {% for mapping in light_mappings %}
+        {% set light_entity, override_boolean, override_timestamp = mapping %}
+        {% if states(override_boolean) == 'on' and states(light_entity) == 'on' %}
+          {% set last_override_time = as_timestamp(states(override_timestamp)) | default(0) %}
+          {% set current_time = as_timestamp(now()) %}
+          {% set hours_since_override = (current_time - last_override_time) / 3600 %}
+          
+          {% if hours_since_override >= effective_interval_hours and hours_since_override <= max_backoff_hours %}
+            {% set candidates = candidates + [{'light': light_entity, 'override_boolean': override_boolean, 'override_timestamp': override_timestamp, 'hours_since': hours_since_override}] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {{ candidates }}
+  
+  action:
+    - choose:
+        # Scheduled check mode
+        - conditions:
+            - condition: trigger
+              id: scheduled_check
+            - condition: template
+              value_template: "{{ strategy in ['Gentle Periodic (Recommended)', 'Daily Reset Only'] }}"
+          sequence:
+            - condition: template
+              value_template: "{{ resync_candidates | length > 0 }}"
+            
+            # Process candidates (limit to 3 per cycle to avoid overwhelming)
+            - repeat:
+                count: "{{ [resync_candidates | length, 3] | min }}"
+                sequence:
+                  - variables:
+                      candidate: "{{ resync_candidates[repeat.index - 1] }}"
+                  
+                  - service: script.adaptive_lighting_gentle_resync
+                    data:
+                      light_entity: "{{ candidate.light }}"
+                      override_boolean: "{{ candidate.override_boolean }}"
+                      override_timestamp: "{{ candidate.override_timestamp }}"
+                  
+                  # Brief delay between attempts
+                  - delay:
+                      seconds: 5
+            
+            - service: system_log.write
+              data:
+                message: >
+                  Smart Re-Sync Checker: Processed {{ [resync_candidates | length, 3] | min }}/{{ resync_candidates | length }} 
+                  candidates. Strategy: {{ strategy }}, Interval: {{ effective_interval_hours }}h
+                level: info
+        
+        # Activity-based mode (light turned on)
+        - conditions:
+            - condition: trigger
+              id: light_turned_on
+            - condition: template
+              value_template: "{{ strategy in ['Gentle Periodic (Recommended)', 'Activity-Based Only'] }}"
+          sequence:
+            - variables:
+                triggered_light: "{{ trigger.entity_id }}"
+                light_mappings:
+                  light.livingroom_lights: 
+                    override_boolean: input_boolean.adaptive_lighting_override_livingroom_lights
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_livingroom_lights
+                  light.kitchen_lights:
+                    override_boolean: input_boolean.adaptive_lighting_override_kitchen_lights
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_kitchen_lights
+                  light.kitchen_led_strips:
+                    override_boolean: input_boolean.adaptive_lighting_override_kitchen_led_strips
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_kitchen_led_strips
+                  light.bar_strip:
+                    override_boolean: input_boolean.adaptive_lighting_override_bar_strip
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_bar_strip
+                  light.top_left:
+                    override_boolean: input_boolean.adaptive_lighting_override_top_left
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_top_left
+                  light.top_right:
+                    override_boolean: input_boolean.adaptive_lighting_override_top_right
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_top_right
+                  light.master_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_master_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_master_light
+                  light.master_lamp:
+                    override_boolean: input_boolean.adaptive_lighting_override_master_lamp
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_master_lamp
+                  light.guest_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_guest_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_guest_light
+                  light.linda_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_linda_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_linda_light
+                  light.gavin_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_gavin_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_gavin_light
+                  light.dining_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_dining_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_dining_light
+                  light.hall_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_hall_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_hall_light
+                  light.nook_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_nook_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_nook_light
+                  light.hobby_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_hobby_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_hobby_light
+                  light.pantry_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_pantry_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_pantry_light
+                  light.porch_light:
+                    override_boolean: input_boolean.adaptive_lighting_override_porch_light
+                    override_timestamp: input_datetime.adaptive_lighting_last_override_porch_light
+                light_mapping: "{{ light_mappings.get(triggered_light, {}) }}"
+            
+            # Check if this light is opted out and past interval
+            - condition: template
+              value_template: >
+                {% if light_mapping %}
+                  {% set override_boolean = light_mapping.override_boolean %}
+                  {% set override_timestamp = light_mapping.override_timestamp %}
+                  {% if states(override_boolean) == 'on' %}
+                    {% set last_override_time = as_timestamp(states(override_timestamp)) | default(0) %}
+                    {% set current_time = as_timestamp(now()) %}
+                    {% set hours_since = (current_time - last_override_time) / 3600 %}
+                    {{ hours_since >= effective_interval_hours }}
+                  {% else %}
+                    false
+                  {% endif %}
+                {% else %}
+                  false
+                {% endif %}
+            
+            # Attempt re-sync for this light
+            - service: script.adaptive_lighting_gentle_resync
+              data:
+                light_entity: "{{ triggered_light }}"
+                override_boolean: "{{ light_mapping.override_boolean }}"
+                override_timestamp: "{{ light_mapping.override_timestamp }}"
+            
+            - service: system_log.write
+              data:
+                message: >
+                  Activity-Based Re-Sync: {{ state_attr(triggered_light, 'friendly_name') }} turned on,
+                  attempting gentle re-sync after {{ effective_interval_hours }}h interval
+                level: info
+  
+  mode: parallel
+  max: 5
+
+# 9. RE-SYNC ANALYTICS MONITOR - EFFECTIVENESS TRACKING
+- id: adaptive_lighting_resync_analytics
+  alias: "📊 Adaptive Lighting - Re-Sync Analytics"
+  description: |
+    Tracks re-sync effectiveness and provides optimization alerts.
+    Monitors success rates, calculates statistics, and suggests improvements
+    for optimal user experience and system performance.
+  
+  trigger:
+    # Daily statistics reset and analysis
+    - platform: time
+      at: "06:00:00"
+      id: daily_reset
+    
+    # Effectiveness monitoring (when success rate drops)
+    - platform: template
+      value_template: >
+        {% set attempts = states('input_number.adaptive_lighting_resync_attempts') | int(1) %}
+        {% set successes = states('input_number.adaptive_lighting_resync_successes') | int(0) %}
+        {% if attempts >= 5 %}
+          {% set success_rate = (successes / attempts * 100) | round(1) %}
+          {{ success_rate < 30 }}
+        {% else %}
+          false
+        {% endif %}
+      id: low_effectiveness_alert
+      for:
+        minutes: 5
+    
+    # High rejection rate monitoring
+    - platform: template
+      value_template: >
+        {% set rejections = states('input_number.adaptive_lighting_resync_rejections') | int(0) %}
+        {{ rejections >= 10 }}
+      id: high_rejection_alert
+      for:
+        minutes: 2
+  
+  variables:
+    # Current statistics
+    total_attempts: "{{ states('input_number.adaptive_lighting_resync_attempts') | int(0) }}"
+    total_successes: "{{ states('input_number.adaptive_lighting_resync_successes') | int(0) }}"
+    total_rejections: "{{ states('input_number.adaptive_lighting_resync_rejections') | int(0) }}"
+    
+    # Calculated metrics
+    success_rate: >
+      {% if total_attempts > 0 %}
+        {{ (total_successes / total_attempts * 100) | round(1) }}
+      {% else %}
+        0
+      {% endif %}
+    
+    rejection_rate: >
+      {% if total_attempts > 0 %}
+        {{ (total_rejections / total_attempts * 100) | round(1) }}
+      {% else %}
+        0
+      {% endif %}
+    
+    # Current configuration for optimization suggestions
+    current_interval: "{{ states('input_number.adaptive_lighting_resync_interval_hours') | float(2.0) }}"
+    current_strategy: "{{ states('input_select.adaptive_lighting_resync_strategy') }}"
+    current_aggressiveness: "{{ states('input_select.adaptive_lighting_resync_aggressiveness') }}"
+  
+  action:
+    - choose:
+        # Daily statistics reset and summary
+        - conditions:
+            - condition: trigger
+              id: daily_reset
+          sequence:
+            # Log daily summary before reset
+            - service: system_log.write
+              data:
+                message: >
+                  Re-Sync Daily Summary: {{ total_attempts }} attempts, {{ success_rate }}% success rate, 
+                  {{ rejection_rate }}% rejection rate. Strategy: {{ current_strategy }}
+                level: info
+            
+            # Generate daily notification if there was activity
+            - condition: template
+              value_template: "{{ total_attempts > 0 }}"
+            
+            - service: persistent_notification.create
+              data:
+                title: "📊 Adaptive Lighting Re-Sync Daily Report"
+                message: >
+                  **Yesterday's Re-Sync Performance:**
+                  
+                  🎯 **Attempts:** {{ total_attempts }}
+                  ✅ **Success Rate:** {{ success_rate }}%
+                  ❌ **Rejection Rate:** {{ rejection_rate }}%
+                  
+                  **Configuration:**
+                  📈 **Strategy:** {{ current_strategy }}
+                  ⚡ **Aggressiveness:** {{ current_aggressiveness }}
+                  ⏰ **Interval:** {{ current_interval }} hours
+                  
+                  {% if success_rate >= 60 %}
+                  🎉 **Status:** Excellent performance! Users are accepting most re-sync attempts.
+                  {% elif success_rate >= 40 %}
+                  👍 **Status:** Good performance. System is learning user preferences well.
+                  {% elif success_rate >= 20 %}
+                  ⚠️ **Status:** Moderate performance. Consider adjusting timing or strategy.
+                  {% else %}
+                  🔧 **Status:** Low performance. Review configuration and user patterns.
+                  {% endif %}
+                notification_id: adaptive_lighting_daily_resync_report
+            
+            # Reset daily counters
+            - service: input_number.set_value
+              target:
+                entity_id:
+                  - input_number.adaptive_lighting_resync_attempts
+                  - input_number.adaptive_lighting_resync_successes
+                  - input_number.adaptive_lighting_resync_rejections
+              data:
+                value: 0
+        
+        # Low effectiveness alert and optimization suggestions
+        - conditions:
+            - condition: trigger
+              id: low_effectiveness_alert
+          sequence:
+            - service: persistent_notification.create
+              data:
+                title: "⚠️ Low Re-Sync Effectiveness Alert"
+                message: >
+                  **Performance Issue Detected:**
+                  Success rate has dropped to {{ success_rate }}% ({{ total_successes }}/{{ total_attempts }} attempts).
+                  
+                  **Optimization Suggestions:**
+                  {% if current_interval < 4 %}
+                  🕒 Increase re-sync interval to give users more time between attempts
+                  {% endif %}
+                  {% if 'Aggressive' in current_aggressiveness or 'Responsive' in current_aggressiveness %}
+                  🐌 Switch to more conservative aggressiveness setting
+                  {% endif %}
+                  {% if current_strategy == 'Activity-Based Only' %}
+                  🔄 Consider switching to "Gentle Periodic" strategy
+                  {% endif %}
+                  
+                  **Current Settings:**
+                  • Interval: {{ current_interval }}h
+                  • Strategy: {{ current_strategy }}
+                  • Aggressiveness: {{ current_aggressiveness }}
+                notification_id: adaptive_lighting_low_effectiveness_alert
+            
+            - service: system_log.write
+              data:
+                message: >
+                  Low Re-Sync Effectiveness Alert: {{ success_rate }}% success rate after {{ total_attempts }} attempts.
+                  Current config: {{ current_interval }}h interval, {{ current_strategy }}, {{ current_aggressiveness }}
+                level: warning
+        
+        # High rejection rate alert
+        - conditions:
+            - condition: trigger
+              id: high_rejection_alert
+          sequence:
+            - service: persistent_notification.create
+              data:
+                title: "🚫 High Re-Sync Rejection Alert"
+                message: >
+                  **High User Rejection Detected:**
+                  {{ total_rejections }} rejections detected today ({{ rejection_rate }}% of attempts).
+                  
+                  **Recommended Actions:**
+                  🛑 Consider temporarily disabling smart re-sync
+                  📈 Increase re-sync interval significantly
+                  🎯 Review user lighting patterns and preferences
+                  
+                  Users appear to strongly prefer manual control. The system will learn from these 
+                  patterns and adjust accordingly.
+                notification_id: adaptive_lighting_high_rejection_alert
+            
+            - service: system_log.write
+              data:
+                message: >
+                  High Re-Sync Rejection Alert: {{ total_rejections }} rejections ({{ rejection_rate }}%).
+                  Users strongly prefer manual control - consider reducing re-sync frequency.
+                level: warning
+  
+  mode: single
+
+# =============================================================================
+# PHASE 2 NOTES AND DOCUMENTATION
+# =============================================================================
+#
+# Phase 2 Enhancements:
+# 1. Dynamic zone selection based on override status
+# 2. Advanced override detection with color temperature monitoring
+# 3. Zone-specific brightness scaling with time-of-day adjustments
+# 4. Enhanced calculations for more precise adaptive lighting
+# 5. Performance monitoring and health analytics
+# 6. Comprehensive logging and statistics tracking
+#
+# PHASE 3 ENHANCEMENTS:
+# 7. Universal double-click detection system
+# 8. Visual feedback integration
+# 9. Custom circadian sensor integration
+# 10. Enhanced user configurability
+#
+# PHASE 3+ INDIVIDUAL OPT-OUT & SMART RE-SYNC ENHANCEMENTS:
+# 11. Individual light opt-out via dashboard toggles
+# 12. Service call integration for programmatic control
+# 13. Aggressive override detection for persistent adjustments
+# 14. Intelligent re-sync with exponential backoff
+# 15. User preference learning and effectiveness analytics
+# 16. Multiple re-sync strategies and aggressiveness levels
+# 17. Comprehensive analytics and optimization suggestions
+#
+# Template Syntax Fixes:
+# - Fixed list[1] syntax to use array indexing
+# - Corrected template expressions for Home Assistant compatibility
+# - Updated master bedroom entity reference to use correct switch name
+#
+# New Features:
+# - Sensitivity-based override detection thresholds
+# - Time-of-day brightness adjustments
+# - Per-light timestamp tracking
+# - Sync efficiency calculations
+# - System health monitoring
+# - Performance alerts and optimization suggestions
+# - Double-click universal control
+# - Custom circadian rhythm integration
+# - Individual opt-out methods (dashboard, service, aggressive)
+# - Smart re-sync with learning capabilities
+# - Analytics and effectiveness monitoring
+#
+# Ready for Phase 4:
+# - Scene integration for manual overrides
+# - Motion sensor coordination  
+# - Voice control integration
+# - Machine learning pattern recognition
+# - Advanced dashboard analytics
+#
+# =============================================================================

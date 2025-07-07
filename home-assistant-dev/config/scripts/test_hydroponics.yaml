@@ -1,0 +1,12 @@
+test_hydroponics_condition:
+  alias: "Test Hydroponics Fertigation Conditions"
+  description: "Run a test to verify if hydroponics fertigation would proceed with current conditions"
+  sequence:
+    - service: python_script.test_hydroponics_condition
+    - delay:
+        seconds: 2
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "Hydroponics Test Complete"
+        message: "Check Home Assistant notifications for test results."
+  icon: mdi:test-tube

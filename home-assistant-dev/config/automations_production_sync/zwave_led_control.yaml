@@ -1,0 +1,582 @@
+# Z-Wave Switch LED Control Automations
+# Enhanced with error handling, availability checks, and individual device processing
+# Controls Leviton DZ1KD and ZW4SF switch LEDs based on time and manual selection
+
+# Night Mode LED Control - Triggered at 10 PM
+- id: zwave_led_night_mode_on
+  alias: "Z-Wave LEDs - Night Mode On"
+  description: "Turns off selected Z-Wave switch LEDs at night (10 PM)"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+  action:
+    # Hobby Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_hobby_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.hobby_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.hobby_light
+          data:
+            parameter: 7  # LED Indicator parameter for DZ1KD
+            value: 0      # 0 = LED off when load is off, 1 = LED on when load is off
+          continue_on_error: true
+    
+    # Gavin Light LED Control  
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_gavin_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.gavin_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.gavin_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Pantry Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_pantry_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.pantry_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.pantry_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Master Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_master_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.master_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.master_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Nook Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_nook_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.nook_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.nook_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Guest Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_guest_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.guest_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.guest_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Porch Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_porch_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.porch_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.porch_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Hall Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_hall_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.hall_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.hall_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Dining Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_dining_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.dining_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.dining_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Linda Light LED Control
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_linda_light
+          state: "on"
+        - condition: template
+          value_template: "{{ states('light.linda_light') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: light.linda_light
+          data:
+            parameter: 7
+            value: 0
+          continue_on_error: true
+    
+    # Fan Switch LED Control (ZW4SF uses parameter 3)
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_hobby_fan
+          state: "on"
+        - condition: template
+          value_template: "{{ states('fan.hobby_fan') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: fan.hobby_fan
+          data:
+            parameter: 3  # LED Indicator parameter for ZW4SF
+            value: 0      # 0 = LED off when load is off
+          continue_on_error: true
+    
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_master_fan
+          state: "on"
+        - condition: template
+          value_template: "{{ states('fan.master_fan') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: fan.master_fan
+          data:
+            parameter: 3
+            value: 0
+          continue_on_error: true
+    
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_linda_fan
+          state: "on"
+        - condition: template
+          value_template: "{{ states('fan.linda_fan') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: fan.linda_fan
+          data:
+            parameter: 3
+            value: 0
+          continue_on_error: true
+    
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_guest_fan
+          state: "on"
+        - condition: template
+          value_template: "{{ states('fan.guest_fan') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: fan.guest_fan
+          data:
+            parameter: 3
+            value: 0
+          continue_on_error: true
+    
+    - if:
+        - condition: state
+          entity_id: input_boolean.zwave_led_darken_gavin_fan
+          state: "on"
+        - condition: template
+          value_template: "{{ states('fan.gavin_fan') not in ['unavailable', 'unknown'] }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: fan.gavin_fan
+          data:
+            parameter: 3
+            value: 0
+          continue_on_error: true
+
+# Day Mode LED Control - Restores all LEDs to normal operation
+- id: zwave_led_day_mode_on
+  alias: "Z-Wave LEDs - Day Mode On"
+  description: "Restores Z-Wave switch LEDs to normal operation with error handling (7 AM)"
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  action:
+    # Log automation start
+    - service: logbook.log
+      data:
+        name: "Z-Wave LED Day Mode"
+        message: "Starting LED restoration for available devices"
+    
+    # Process each light individually with availability checks
+    - repeat:
+        count: 10
+        sequence:
+          - variables:
+              light_entities:
+                - light.hobby_light
+                - light.gavin_light
+                - light.pantry_light
+                - light.master_light
+                - light.nook_light
+                - light.guest_light
+                - light.porch_light
+                - light.hall_light
+                - light.dining_light
+                - light.linda_light
+              current_light: "{{ light_entities[repeat.index - 1] }}"
+          - if:
+              - condition: template
+                value_template: "{{ states(current_light) not in ['unavailable', 'unknown'] }}"
+            then:
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ current_light }}"
+                data:
+                  parameter: 7
+                  value: 1  # LED on when load is off (normal operation)
+                continue_on_error: true
+              - service: logbook.log
+                data:
+                  name: "Z-Wave LED"
+                  message: "Restored LED for {{ current_light }}"
+            else:
+              - service: logbook.log
+                data:
+                  name: "Z-Wave LED"
+                  message: "Skipped unavailable device: {{ current_light }}"
+    
+    # Process each fan individually with availability checks  
+    - repeat:
+        count: 5
+        sequence:
+          - variables:
+              fan_entities:
+                - fan.hobby_fan
+                - fan.master_fan
+                - fan.linda_fan
+                - fan.guest_fan
+                - fan.gavin_fan
+              current_fan: "{{ fan_entities[repeat.index - 1] }}"
+          - if:
+              - condition: template
+                value_template: "{{ states(current_fan) not in ['unavailable', 'unknown'] }}"
+            then:
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ current_fan }}"
+                data:
+                  parameter: 3
+                  value: 1  # LED on when load is off (normal operation)
+                continue_on_error: true
+              - service: logbook.log
+                data:
+                  name: "Z-Wave LED"
+                  message: "Restored LED for {{ current_fan }}"
+            else:
+              - service: logbook.log
+                data:
+                  name: "Z-Wave LED"
+                  message: "Skipped unavailable device: {{ current_fan }}"
+    
+    # Final completion log
+    - service: logbook.log
+      data:
+        name: "Z-Wave LED Day Mode"
+        message: "Completed LED restoration process"
+
+# Manual LED Control - Immediately applies changes during night hours
+- id: zwave_led_manual_control
+  alias: "Z-Wave LEDs - Manual Control"
+  description: "Immediately applies LED changes when manual toggles are changed during night hours"
+  trigger:
+    - platform: state
+      entity_id:
+        - input_boolean.zwave_led_darken_hobby_light
+        - input_boolean.zwave_led_darken_gavin_light
+        - input_boolean.zwave_led_darken_pantry_light
+        - input_boolean.zwave_led_darken_master_light
+        - input_boolean.zwave_led_darken_nook_light
+        - input_boolean.zwave_led_darken_guest_light
+        - input_boolean.zwave_led_darken_porch_light
+        - input_boolean.zwave_led_darken_hall_light
+        - input_boolean.zwave_led_darken_dining_light
+        - input_boolean.zwave_led_darken_linda_light
+        - input_boolean.zwave_led_darken_hobby_fan
+        - input_boolean.zwave_led_darken_master_fan
+        - input_boolean.zwave_led_darken_linda_fan
+        - input_boolean.zwave_led_darken_guest_fan
+        - input_boolean.zwave_led_darken_gavin_fan
+  condition:
+    # Only apply changes during night hours (10 PM to 7 AM)
+    - condition: time
+      after: "22:00:00"
+      before: "07:00:00"
+  action:
+    - choose:
+        # Light Switch Controls (DZ1KD)
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_hobby_light' }}"
+            - condition: template
+              value_template: "{{ states('light.hobby_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.hobby_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_hobby_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_gavin_light' }}"
+            - condition: template
+              value_template: "{{ states('light.gavin_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.gavin_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_gavin_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_pantry_light' }}"
+            - condition: template
+              value_template: "{{ states('light.pantry_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.pantry_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_pantry_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_master_light' }}"
+            - condition: template
+              value_template: "{{ states('light.master_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.master_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_master_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_nook_light' }}"
+            - condition: template
+              value_template: "{{ states('light.nook_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.nook_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_nook_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_guest_light' }}"
+            - condition: template
+              value_template: "{{ states('light.guest_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.guest_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_guest_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_porch_light' }}"
+            - condition: template
+              value_template: "{{ states('light.porch_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.porch_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_porch_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_hall_light' }}"
+            - condition: template
+              value_template: "{{ states('light.hall_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.hall_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_hall_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_dining_light' }}"
+            - condition: template
+              value_template: "{{ states('light.dining_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.dining_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_dining_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_linda_light' }}"
+            - condition: template
+              value_template: "{{ states('light.linda_light') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: light.linda_light
+              data:
+                parameter: 7
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_linda_light', 'on') else 1 }}"
+              continue_on_error: true
+        
+        # Fan Switch Controls (ZW4SF) - Controls LED indicators on fan switches
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_hobby_fan' }}"
+            - condition: template
+              value_template: "{{ states('fan.hobby_fan') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: fan.hobby_fan
+              data:
+                parameter: 3
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_hobby_fan', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_master_fan' }}"
+            - condition: template
+              value_template: "{{ states('fan.master_fan') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: fan.master_fan
+              data:
+                parameter: 3
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_master_fan', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_linda_fan' }}"
+            - condition: template
+              value_template: "{{ states('fan.linda_fan') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: fan.linda_fan
+              data:
+                parameter: 3
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_linda_fan', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_guest_fan' }}"
+            - condition: template
+              value_template: "{{ states('fan.guest_fan') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: fan.guest_fan
+              data:
+                parameter: 3
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_guest_fan', 'on') else 1 }}"
+              continue_on_error: true
+        
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'input_boolean.zwave_led_darken_gavin_fan' }}"
+            - condition: template
+              value_template: "{{ states('fan.gavin_fan') not in ['unavailable', 'unknown'] }}"
+          sequence:
+            - service: zwave_js.set_config_parameter
+              target:
+                entity_id: fan.gavin_fan
+              data:
+                parameter: 3
+                value: "{{ 0 if is_state('input_boolean.zwave_led_darken_gavin_fan', 'on') else 1 }}"
+              continue_on_error: true
+
+  mode: parallel
+  max: 20

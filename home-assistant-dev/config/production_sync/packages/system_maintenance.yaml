@@ -1,0 +1,171 @@
+- id: zwave_js_startup_check
+  alias: Z-Wave JS Startup Connection Check
+  description: Checks Z-Wave JS connectivity when Home Assistant starts and periodically
+  mode: restart
+  trigger:
+    - platform: homeassistant
+      event: start
+      id: ha_start
+    - platform: time_pattern
+      hours: "/4"
+      id: scheduled_check
+    - platform: event
+      event_type: check_zwave_js
+      id: manual_check
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: ha_start
+          sequence:
+            - delay:
+                minutes: 3
+      default: []
+    - service: shell_command.check_zwave_js
+    - service: system_log.write
+      data:
+        message: "Z-Wave JS connectivity check completed. See /config/logs/zwave_js_check.log for details."
+        level: info
+
+- id: daily_database_maintenance
+  alias: Daily Database Maintenance
+  description: Performs routine database optimizations without requiring full maintenance
+  mode: single
+  trigger:
+    - platform: time
+      at: "03:45:00"
+      id: daily_maintenance
+  condition:
+    - condition: template
+      value_template: true
+  action:
+    - service: system_log.write
+      data:
+        message: "Starting daily database optimization"
+        level: info
+    - service: recorder.purge
+      data:
+        keep_days: 30
+        repack: true
+    - service: system_log.write
+      data:
+        message: "Daily database optimization completed"
+        level: info
+    - service: persistent_notification.create
+      data:
+        title: "Database Maintenance"
+        message: "Daily database optimization completed at {{ now().strftime('%Y-%m-%d %H:%M') }}"
+        notification_id: "db_maintenance_daily"
+
+- id: entity_registry_check
+  alias: Entity Registry Check
+  description: Checks for entity conflicts and problems in the entity registry
+  mode: single
+  trigger:
+    - platform: homeassistant
+      event: start
+      id: ha_start
+    - platform: time
+      at: "05:00:00"
+      id: weekly_check
+    - platform: event
+      event_type: check_entity_registry
+      id: manual_check
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: ha_start
+          sequence:
+            - delay:
+                minutes: 5
+      default: []
+    - variables:
+        problem_entities: >
+          {% set problematic = namespace(count=0, entities=[]) %}
+          {% set renamed_entities = [] %}
+          {% for old_entity, new_entity in renamed_entities %}
+            {% if state_attr(old_entity, 'friendly_name') is not none or 
+                 states(old_entity) not in ['unavailable', 'unknown', ''] %}
+              {% set problematic.count = problematic.count + 1 %}
+              {% set problematic.entities = problematic.entities + [old_entity] %}
+            {% endif %}
+            {% if state_attr(new_entity, 'friendly_name') is none %}
+              {% set problematic.count = problematic.count + 1 %}
+              {% set problematic.entities = problematic.entities + [new_entity] %}
+            {% endif %}
+          {% endfor %}
+          {{ problematic.entities|join(', ') }}
+    - service: system_log.write
+      data:
+        message: >
+          Entity registry check completed. 
+          {% if problem_entities|length > 0 %}
+            Found problematic entities: {{ problem_entities }}
+          {% else %}
+            No issues found.
+          {% endif %}
+        level: info
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ problem_entities|length > 0 }}"
+          sequence:
+            - service: persistent_notification.create
+              data:
+                title: "Entity Registry Issues"
+                message: >
+                  The following entities may have registry conflicts: {{ problem_entities }}
+                  
+                  This usually occurs after renaming entities. You may need to:
+                  1. Restart Home Assistant one more time
+                  2. Check the entity registry in Configuration > Entities
+                  3. Remove any duplicate entities manually
+                notification_id: "entity_registry_check"
+
+- id: maintenance_duplicate_entity_alert
+  alias: "Maintenance - Duplicate Entity Alert"
+  description: "Alert when duplicate entities exceed threshold"
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.duplicate_entities_scanner
+      above: 2
+      for:
+        minutes: 5
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.duplicate_entities_scanner') not in ['unavailable', 'unknown'] }}"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "📄 Duplicate Entities Need Attention"
+        message: >
+          Found {{ states('sensor.duplicate_entities_scanner') }} duplicate entity groups.
+          Manual cleanup recommended: Go to Developer Tools > States and disable numbered duplicates.
+        notification_id: duplicate_alert
+
+- id: maintenance_critical_system_status_alert
+  alias: "Maintenance - Critical System Status Alert"
+  description: "Alert for critical maintenance issues"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.system_maintenance_status_enhanced
+      to: "critical"
+      for:
+        minutes: 2
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.system_maintenance_status_enhanced') not in ['unavailable', 'unknown'] }}"
+    - condition: template
+      value_template: "{{ trigger.to_state.state == 'critical' }}"
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "🚨 Critical System Maintenance Required"
+        message: >
+          System Status: {{ states('sensor.system_maintenance_status_enhanced') }}
+          Issues detected requiring immediate attention.
+        data:
+          priority: high

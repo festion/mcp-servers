@@ -1,0 +1,88 @@
+2025-04-11 16:05:04,124 - ab_ble_gateway - INFO - AB BLE Gateway logger initialized, logging to /config/logs/ab_ble_gateway.log
+2025-04-11 16:05:04,125 - ab_ble_gateway - INFO - AB BLE Gateway integration starting setup
+2025-04-11 16:05:04,126 - ab_ble_gateway - INFO - AB BLE Gateway integration setup complete with dedicated logging
+2025-04-11 16:05:04,126 - ab_ble_gateway - INFO - Created/Updated BLE gateway status sensor
+2025-04-11 16:05:04,128 - ab_ble_gateway - INFO - BLE Gateway integration setup complete
+2025-04-11 16:05:14,263 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:05:14,263 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:05:14,264 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:05:24,382 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:05:24,383 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:05:24,385 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:05:34,494 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:05:34,494 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:05:34,494 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:05:44,604 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:05:44,604 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:05:44,605 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:05:54,721 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:05:54,722 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:05:54,722 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:04,842 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:04,843 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:04,843 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:14,962 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:14,963 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:14,964 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:25,082 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:25,082 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:25,083 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:35,202 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:35,203 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:35,203 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:45,328 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:45,328 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:45,329 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:06:55,433 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:06:55,433 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:06:55,434 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:07:05,552 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:07:05,553 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:07:05,553 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:07:28,165 - ab_ble_gateway - INFO - AB BLE Gateway logger initialized, logging to /config/logs/ab_ble_gateway.log
+2025-04-11 16:07:28,166 - ab_ble_gateway - INFO - AB BLE Gateway integration starting setup
+2025-04-11 16:07:28,167 - ab_ble_gateway - INFO - AB BLE Gateway integration setup complete with dedicated logging
+2025-04-11 16:07:28,170 - ab_ble_gateway - INFO - Created/Updated BLE gateway status sensor
+2025-04-11 16:07:28,171 - ab_ble_gateway - INFO - BLE Gateway integration setup complete
+2025-04-11 16:07:35,896 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:07:35,896 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:07:35,896 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:07:46,004 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:07:46,005 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:07:46,009 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:07:56,125 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:07:56,126 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:07:56,127 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:08:06,243 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:08:06,244 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:08:06,244 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:08:45,627 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:08:45,628 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:08:45,629 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:08:55,745 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:08:55,746 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:08:55,746 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:05,862 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:05,862 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:05,864 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:15,977 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:15,978 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:15,978 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:26,096 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:26,097 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:26,097 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:36,207 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:36,208 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:36,209 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:46,327 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:46,328 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:46,328 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:09:56,439 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:09:56,440 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:09:56,441 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:10:06,558 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:10:06,558 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:10:06,559 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable
+2025-04-11 16:10:16,677 - ab_ble_gateway - INFO - Msgpack unpacking error: unpack(b) received extra data.
+2025-04-11 16:10:16,677 - ab_ble_gateway - INFO - Successfully extracted partial data from msgpack payload
+2025-04-11 16:10:16,678 - ab_ble_gateway - ERROR - Error in MQTT message handler: argument of type 'int' is not iterable

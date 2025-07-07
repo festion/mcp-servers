@@ -1,0 +1,87 @@
+- id: zwave_js_startup_check
+  alias: Z-Wave JS Startup Connection Check
+  description: Checks Z-Wave JS connectivity when Home Assistant starts and periodically
+  mode: restart
+  
+  # Triggers
+  trigger:
+    # Check when Home Assistant starts
+    - platform: homeassistant
+      event: start
+      id: ha_start
+    
+    # Also check periodically (every 4 hours)
+    - platform: time_pattern
+      hours: "/4"
+      id: scheduled_check
+    
+    # Allow manual trigger
+    - platform: event
+      event_type: check_zwave_js
+      id: manual_check
+  
+  # Sequence
+  action:
+    # Delay at startup to allow other services to initialize
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: ha_start
+          sequence:
+            - delay:
+                minutes: 3
+      default: []
+    
+    # Run the check script
+    - service: shell_command.check_zwave_js
+    
+    # Log the action
+    - service: system_log.write
+      data:
+        message: "Z-Wave JS connectivity check completed. See /config/logs/zwave_js_check.log for details."
+        level: info
+
+- id: daily_database_maintenance
+  alias: Daily Database Maintenance
+  description: Performs routine database optimizations without requiring full maintenance
+  mode: single
+  
+  # Run at 3:30 AM daily
+  trigger:
+    - platform: time
+      at: "03:30:00"
+      id: daily_maintenance
+  
+  # Only run if Home Assistant has been running for over 24 hours
+  condition:
+    - condition: template
+      value_template: >
+        {% set uptime_hours = states('sensor.home_assistant_uptime') | float(0) %}
+        {{ uptime_hours > 24 }}
+  
+  # Actions
+  action:
+    # Log the maintenance start
+    - service: system_log.write
+      data:
+        message: "Starting daily database optimization"
+        level: info
+    
+    # Call the recorder.purge service to clean up the database
+    - service: recorder.purge
+      data:
+        keep_days: 30
+        repack: true
+    
+    # Log completion
+    - service: system_log.write
+      data:
+        message: "Daily database optimization completed"
+        level: info
+    
+    # Send notification
+    - service: persistent_notification.create
+      data:
+        title: "Database Maintenance"
+        message: "Daily database optimization completed at {{ now().strftime('%Y-%m-%d %H:%M') }}"
+        notification_id: "db_maintenance_daily"

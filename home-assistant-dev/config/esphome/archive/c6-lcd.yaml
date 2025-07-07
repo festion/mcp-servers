@@ -1,0 +1,32 @@
+esphome:
+  name: c6-lcd
+  friendly_name: C6-LCD
+
+esp32:
+  board: esp32-c6-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "c6ZvqgihSygOZr8j2w1QV4+bTmwwo15EgnrdFww7b6g="
+
+ota:
+  - platform: esphome
+    password: "7b8d1f70de80a3a61abc674c3aa719c5"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "C6-Lcd Fallback Hotspot"
+    password: "Di8r1gAqo7D7"
+
+captive_portal:
+    

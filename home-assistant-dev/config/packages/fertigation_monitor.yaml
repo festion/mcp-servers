@@ -1,0 +1,152 @@
+###############################################################################
+#                        FERTIGATION MONITORING AUTOMATION                    #
+###############################################################################
+
+- id: fertigation_monitor
+  alias: Fertigation Monitor - Missed Execution Detection
+  description: Monitors for missed fertigation cycles and provides alerts with retry capability
+  mode: single
+  
+  trigger:
+    # Check 15 minutes after each scheduled fertigation time
+    - platform: time
+      at: "09:45:00"
+      id: check_morning
+    - platform: time
+      at: "12:45:00" 
+      id: check_midday
+    - platform: time
+      at: "15:45:00"
+      id: check_afternoon
+    - platform: time
+      at: "18:45:00"
+      id: check_evening
+    - platform: time
+      at: "21:45:00"
+      id: check_final
+  
+  condition:
+    # Only run if critical entities are available
+    - condition: template
+      value_template: >
+        {{ states('input_datetime.last_fertigation_timestamp') not in ['unavailable', 'unknown', ''] and
+           states('sensor.wroommicrousb_reservoir_current_volume') not in ['unavailable', 'unknown', ''] }}
+  
+  action:
+    - variables:
+        last_fertigation: "{{ states('input_datetime.last_fertigation_timestamp') }}"
+        current_time: "{{ now() }}"
+        time_diff_hours: "{{ ((as_timestamp(current_time) - as_timestamp(last_fertigation)) / 3600) | round(1) }}"
+        expected_time: >
+          {% if trigger.id == 'check_morning' %}09:30:00
+          {% elif trigger.id == 'check_midday' %}12:30:00  
+          {% elif trigger.id == 'check_afternoon' %}15:30:00
+          {% elif trigger.id == 'check_evening' %}18:30:00
+          {% elif trigger.id == 'check_final' %}21:30:00
+          {% endif %}
+        expected_datetime: "{{ now().strftime('%Y-%m-%d') }} {{ expected_time }}"
+        water_level: "{{ states('sensor.wroommicrousb_reservoir_current_volume') | float(0) }}"
+    
+    # Check if fertigation happened in the last 30 minutes
+    - choose:
+        - conditions:
+            # Fertigation is considered missed if last one was more than 30 minutes ago
+            - condition: template
+              value_template: "{{ time_diff_hours > 0.5 }}"
+            # And we have adequate water
+            - condition: template
+              value_template: "{{ water_level >= 10 }}"
+          sequence:
+            # Alert about missed fertigation
+            - service: persistent_notification.create
+              data:
+                title: "⚠️ Missed Fertigation Detected"
+                message: >
+                  Fertigation scheduled for {{ expected_time }} appears to have been missed.
+                  
+                  Last fertigation: {{ last_fertigation }}
+                  Time since last: {{ time_diff_hours }} hours
+                  Current water level: {{ water_level }}%
+                  
+                  Manual fertigation recommended.
+                notification_id: "missed_fertigation_{{ trigger.id }}"
+            
+            # Send mobile notification
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: "Hydroponics Alert"
+                message: "Missed fertigation at {{ expected_time }}. Last: {{ time_diff_hours }}h ago. Water: {{ water_level }}%"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: "missed_fertigation"
+                  actions:
+                    - action: "run_manual_fertigation"
+                      title: "Run Now"
+                    - action: "dismiss_missed_alert"
+                      title: "Dismiss"
+            
+            # Log the missed fertigation
+            - service: system_log.write
+              data:
+                message: "ALERT: Missed fertigation at {{ expected_time }}. Last fertigation was {{ time_diff_hours }} hours ago."
+                level: warning
+      
+      # If fertigation happened on time, clear any existing notifications
+      default:
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: "missed_fertigation_{{ trigger.id }}"
+
+# Manual fertigation trigger from mobile notification
+- id: manual_fertigation_from_notification
+  alias: Manual Fertigation - From Notification Action
+  description: Triggers manual fertigation when requested from missed fertigation notification
+  mode: single
+  
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "run_manual_fertigation"
+  
+  action:
+    - service: script.fertigation_cycle
+      data:
+        duration: "{{ states('input_number.hydroponics_feed_pump_duration') | int(15) }}"
+        force: true
+    
+    - service: persistent_notification.create
+      data:
+        title: "Manual Fertigation Initiated"
+        message: "Manual fertigation started at {{ now().strftime('%H:%M') }} from notification action."
+        notification_id: "manual_fertigation_notification"
+
+# Dismiss missed fertigation alerts
+- id: dismiss_missed_fertigation_alert
+  alias: Dismiss Missed Fertigation Alert
+  description: Dismisses missed fertigation notification when user chooses to dismiss
+  mode: single
+  
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "dismiss_missed_alert"
+  
+  action:
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: "missed_fertigation_check_morning"
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: "missed_fertigation_check_midday"  
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: "missed_fertigation_check_afternoon"
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: "missed_fertigation_check_evening"
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: "missed_fertigation_check_final"

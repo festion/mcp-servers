@@ -1,0 +1,191 @@
+# Home Assistant Light Automations
+
+- id: scheduled_lights
+  alias: Scheduled Light Control
+  description: Controls all scheduled lights (grow lights, morning lights, etc.) based on time with enhanced error handling
+  trigger:
+  - at: 07:00:00
+    id: morning
+    platform: time
+  - at: '19:00:00'
+    id: evening
+    platform: time
+  - at: '23:00:00'
+    id: night
+    platform: time
+  - event: sunset
+    id: sunset
+    platform: sun
+  - event: sunrise
+    id: sunrise
+    offset: +00:15:00
+    platform: sun
+  condition:
+    - condition: template
+      value_template: >
+        {{ states('sun.sun') not in ['unavailable', 'unknown', ''] }}
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: morning
+      sequence:
+      - target:
+          area_id: morning_lights
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          area_id: grow_lights
+        service: switch.turn_on
+      - service: persistent_notification.create
+        data:
+          title: Good Morning
+          message: All morning lights activated at {{ now().strftime('%H:%M') }}.
+          notification_id: morning_lights
+    - conditions:
+      - condition: trigger
+        id: evening
+      sequence:
+      - target:
+          area_id: grow_lights
+        service: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: night
+      sequence:
+      - target:
+          area_id: night_lights
+        service: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: sunset
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          entity_id: light.hall_light
+        data:
+          brightness_pct: 70
+        service: light.turn_on
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_on
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        service: light.turn_off
+      - target:
+          entity_id: light.hall_light
+        service: light.turn_off
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_off
+    default: []
+  - service: system_log.write
+    data:
+      message: Light schedule triggered at {{ now().strftime('%Y-%m-%d %H:%M:%S') }} by {{ trigger.id }}
+      level: info
+  mode: single
+
+- id: motion_activated_lights
+  alias: Motion Activated Lights
+  description: Controls lights based on motion sensors with priority logic to prevent conflicts
+  trigger:
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'on'
+    id: motion_detected
+    platform: state
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'off'
+    for:
+      minutes: 2
+    id: motion_cleared
+    platform: state
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      - condition: template
+        value_template: "{{ states('light.pantry_light') not in ['unknown', 'unavailable'] }}"
+      - condition: state
+        entity_id: light.pantry_light
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        data:
+          brightness_pct: 90
+        service: light.turn_on
+      - service: system_log.write
+        data:
+          message: "Motion light activated: pantry_light via eye_of_sauron"
+          level: info
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      - condition: template
+        value_template: "{{ states('light.pantry_light') not in ['unknown', 'unavailable'] }}"
+      - condition: state
+        entity_id: light.pantry_light
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - service: system_log.write
+        data:
+          message: "Motion light activated: pantry_light via pantry_motion"
+          level: info
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      - condition: template
+        value_template: '{{ state_attr("light.pantry_light", "brightness") | int(0) >= 230 }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        service: light.turn_off
+      - service: system_log.write
+        data:
+          message: "Motion light deactivated: pantry_light via eye_of_sauron"
+          level: info
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      - condition: template
+        value_template: '{{ state_attr("light.pantry_light", "brightness") | int(0) >= 200 and state_attr("light.pantry_light", "brightness") | int(0) < 230 }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        service: light.turn_off
+      - service: system_log.write
+        data:
+          message: "Motion light deactivated: pantry_light via pantry_motion"
+          level: info
+    default: []
+  mode: restart

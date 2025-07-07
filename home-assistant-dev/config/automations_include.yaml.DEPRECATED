@@ -1,0 +1,6 @@
+# DEPRECATED: This file is not being used anymore. 
+# Automations are now loaded directly from the automations/ directory using !include_dir_merge_list in configuration.yaml
+# Do not add includes here as it will cause duplicate entity definitions
+#- !include automations/curatron.yaml
+#- !include automations/system_maintenance.yaml
+#- !include automations/hydroponics.yaml

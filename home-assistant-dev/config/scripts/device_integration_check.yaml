@@ -1,0 +1,155 @@
+# Device Integration Identification Script
+# This script helps identify which integration each device uses and their capabilities
+
+identify_device_integrations:
+  alias: "Identify Device Integrations"
+  description: "Check which integration manages each device (Z-Wave, Zigbee, WiFi, etc.)"
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Device Integration Check"
+        message: "Starting device integration identification for LED control devices"
+    
+    # Test each suspect device to determine its actual integration
+    - repeat:
+        count: 5
+        sequence:
+          - variables:
+              device_entities:
+                - light.hobby_light
+                - light.gavin_light
+                - fan.hobby_fan
+                - light.pantry_light
+                - fan.master_fan
+              current_device: "{{ device_entities[repeat.index - 1] }}"
+          
+          - service: logbook.log
+            data:
+              name: "Device Integration Check"
+              message: >
+                Checking {{ current_device }}:
+                State: {{ states(current_device) }}
+                Domain: {{ current_device.split('.')[0] }}
+                Available: {{ states(current_device) not in ['unavailable', 'unknown'] }}
+          
+          # Test Z-Wave specific services
+          - service: logbook.log
+            data:
+              name: "Z-Wave Test"
+              message: "Testing Z-Wave services for {{ current_device }}"
+          
+          # Try Z-Wave ping (will fail if not Z-Wave)
+          - service: zwave_js.ping
+            target:
+              entity_id: "{{ current_device }}"
+            continue_on_error: true
+          
+          # Try Zigbee ping equivalent (if applicable)
+          - service: zha.issue_zigbee_cluster_command
+            target:
+              entity_id: "{{ current_device }}"
+            data:
+              cluster_id: 6  # On/Off cluster
+              cluster_type: in
+              command: 0  # Off command
+              command_type: server
+            continue_on_error: true
+          
+          - delay:
+              milliseconds: 500
+
+test_alternative_led_controls:
+  alias: "Test Alternative LED Control Methods"
+  description: "Try different methods to control device LEDs beyond Z-Wave"
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Alternative LED Control"
+        message: "Testing non-Z-Wave LED control methods for hobby light"
+    
+    # Test if it's a Zigbee device with cluster commands
+    - service: zha.issue_zigbee_cluster_command
+      target:
+        entity_id: light.hobby_light
+      data:
+        cluster_id: 8      # Level Control cluster
+        cluster_type: in
+        command: 4         # Move to Level command
+        command_type: server
+        params:
+          level: 0         # Try to set LED level
+          transition_time: 1
+      continue_on_error: true
+    
+    # Test if it's a WiFi device with custom attributes
+    - service: light.turn_on
+      target:
+        entity_id: light.hobby_light
+      data:
+        brightness: 255
+      continue_on_error: true
+    
+    - delay:
+        seconds: 1
+    
+    # Check if device supports custom attributes for LED control
+    - service: logbook.log
+      data:
+        name: "Device Attributes"
+        message: >
+          Hobby light attributes: {{ state_attr('light.hobby_light', '') }}
+          All attributes: {{ states.light.hobby_light.attributes }}
+
+check_device_models:
+  alias: "Check Device Models and Manufacturers"
+  description: "Log device model information to identify actual device types"
+  sequence:
+    - repeat:
+        count: 10
+        sequence:
+          - variables:
+              all_devices:
+                - light.hobby_light
+                - light.gavin_light  
+                - light.pantry_light
+                - light.master_light
+                - light.nook_light
+                - light.guest_light
+                - light.porch_light
+                - light.hall_light
+                - light.dining_light
+                - light.linda_light
+              current_device: "{{ all_devices[repeat.index - 1] }}"
+          
+          - service: logbook.log
+            data:
+              name: "Device Model Check"
+              message: >
+                Device: {{ current_device }}
+                Model: {{ state_attr(current_device, 'model') | default('Unknown') }}
+                Manufacturer: {{ state_attr(current_device, 'manufacturer') | default('Unknown') }}
+                Device Class: {{ state_attr(current_device, 'device_class') | default('None') }}
+                Supported Features: {{ state_attr(current_device, 'supported_features') | default('None') }}
+                Integration: {{ state_attr(current_device, 'source_type') | default('Unknown') }}
+                Via Device: {{ state_attr(current_device, 'via_device') | default('None') }}
+
+check_integration_health:
+  alias: "Check Integration Health and Services"
+  description: "Verify which integrations are loaded and their service availability"
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Integration Health"
+        message: "Checking integration health and available services"
+    
+    # Log available Z-Wave services
+    - service: system_log.write
+      data:
+        level: info
+        message: "Z-Wave LED Test: Available integrations and services check"
+    
+    # Try to call different integration services to see which ones work
+    - service: logbook.log
+      data:
+        name: "Service Availability"
+        message: "Testing service availability for different integrations"

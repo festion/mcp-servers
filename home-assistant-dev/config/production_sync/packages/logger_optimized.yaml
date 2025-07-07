@@ -1,0 +1,112 @@
+# OPTIMIZED LOGGING CONFIGURATION
+# Purpose: Manageable log sizes while preserving critical information
+# Updated: June 9, 2025 - Post troubleshooting optimization
+
+# --- STREAMLINED LOGGING FOR PRODUCTION ---
+logger:
+  default: warning
+  logs:
+    # === CRITICAL SYSTEM COMPONENTS (Keep at info) ===
+    homeassistant.core: info
+    homeassistant.setup: warning  # Reduced from info
+    homeassistant.config_entries: warning  # Reduced from info
+    
+    # === ESSENTIAL INTEGRATIONS ===
+    # Z-Wave (core functionality)
+    zwave_js_server.server: warning  # Reduced from info
+    zwave_js_server.zwave_client: warning  # Reduced from info
+    zwave_js: warning  # Reduced from info
+    
+    # Automation system (keep for debugging)
+    homeassistant.components.automation: info
+    homeassistant.helpers.template: warning  # Reduced from info
+    homeassistant.helpers.script: warning  # Reduced from info
+    
+    # === DATABASE & PERFORMANCE ===
+    homeassistant.components.recorder: warning  # Reduced from info
+    homeassistant.helpers.entity_registry: error  # Reduced from info
+    homeassistant.helpers.device_registry: error  # Reduced from info
+    homeassistant.helpers.area_registry: error  # Reduced from info
+    
+    # === NETWORK & CONNECTIVITY (Essential only) ===
+    homeassistant.components.network: warning  # Reduced from info
+    homeassistant.util.network: warning  # Reduced from info
+    homeassistant.components.http: warning  # Reduced from info
+    homeassistant.components.http.ban: error  # Keep security issues
+    
+    # === INTEGRATION HEALTH MONITORING ===
+    # Mobile app (reduce noise, already working well)
+    homeassistant.components.mobile_app: warning  # Reduced from info
+    
+    # Cloud services (essential notifications only)
+    homeassistant.components.cloud: warning  # Reduced from info
+    homeassistant.components.nabu_casa: warning  # Reduced from info
+    
+    # Alexa integration (reduce noise)
+    homeassistant.components.alexa: warning  # Reduced from info
+    homeassistant.components.alexa.smart_home: warning  # Reduced from info
+    hass_nabucasa.iot: warning  # Reduced from info
+    
+    # === DISCOVERY & SETUP (Minimal logging) ===
+    homeassistant.components.upnp: error  # Reduced from info
+    homeassistant.components.ssdp: error  # Reduced from info  
+    homeassistant.components.zeroconf: error  # Reduced from info
+    
+    # === SPECIFIC INTEGRATIONS ===
+    # Tuya integration
+    homeassistant.components.tuya: warning
+    
+    # SwitchBot integration
+    homeassistant.components.switchbot: warning  # Reduced from info
+    
+    # Supervisor
+    supervisor.api.ingress: warning  # Reduced from info
+    
+    # Blueprint system
+    homeassistant.components.blueprint: warning  # Reduced from info
+    homeassistant.loader: warning  # Reduced from info
+    
+    # Network utilities
+    urllib3.connectionpool: error  # Reduced from warning
+    
+    # === PREVIOUSLY PROBLEMATIC INTEGRATIONS (Monitor) ===
+    # 3D Printing integration (was failing, now expected offline)
+    homeassistant.components.octoprint: error  # Reduced to error only
+    
+    # Printer integration (was failing)
+    homeassistant.components.ipp: error  # Reduced to error only
+
+# --- OPTIMIZED SYSTEM LOG CONFIGURATION ---
+system_log:
+  fire_event: true
+  max_entries: 50  # Reduced from 100 for more manageable size
+  
+# --- OPTIMIZED RECORDER CONFIGURATION ---
+recorder:
+  db_url: mysql://homeassistant:Skyw4lk3rH4z3!@core-mariadb/homeassistant
+  # Optimized database settings for manageable size
+  purge_keep_days: 5  # Reduced from 7 days
+  auto_purge: true
+  auto_repack: true
+  # Exclude noisy domains from long-term storage
+  exclude:
+    domains:
+      - sun  # Changes twice daily, not needed in history
+      - automation  # State changes are noisy
+    entity_globs:
+      - sensor.*_uptime  # Uptime sensors create noise
+      - sensor.*_last_boot  # Boot time sensors
+      - sensor.*_cpu_*  # Detailed CPU metrics
+      - sensor.*_memory_*  # Detailed memory metrics
+    entities:
+      - sensor.date  # Changes daily
+      - sensor.time  # Changes every minute
+      - sensor.uptime  # Constantly changing
+  # Include critical entities for troubleshooting
+  include:
+    entities:
+      - sensor.integration_health_percentage  # Our new health monitoring
+      - sensor.unavailable_entities  # Problem tracking
+      - sensor.pitboss_grill_status  # Equipment status
+      - sensor.prusa_mini_printer_status  # Equipment status
+      - binary_sensor.system_health_ok  # System status

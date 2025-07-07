@@ -1,0 +1,134 @@
+- platform: template
+  sensors:
+    current_interval_average:
+      unique_id: current_interval_average_depth
+      friendly_name: Current Interval Average Depth
+      value_template: >-
+        {% set last_fertigation_str = states('input_datetime.last_fertigation_timestamp') %}
+        {% set readings_str = states('sensor.wroommicrousb_water_level') %}
+        {% if last_fertigation_str and readings_str is string and readings_str != 'unknown' %}
+          {% set last_fertigation = as_datetime(last_fertigation_str) %}
+          {% set readings_with_timestamps = [] %}
+          {% for item in readings_str.split(',') %}
+            {% set reading = item | float(default=none) %}
+            {% set timestamp_str = states('sensor.wroommicrousb_water_level').attributes.get('timestamps')[loop.index0] if states('sensor.wroommicrousb_water_level').attributes.get('timestamps') else '' %}
+            {% if reading is not none and timestamp_str %}
+              {% set timestamp = as_datetime(timestamp_str) %}
+              {% if timestamp > last_fertigation %}
+                {% set readings_with_timestamps = readings_with_timestamps + [reading] %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% if readings_with_timestamps | length > 0 %}
+            {{ readings_with_timestamps | average }}
+          {% else %}
+            {{ 'unavailable' }}
+          {% endif %}
+        {% else %}
+          {{ 'unavailable' }}
+        {% endif %}
+
+    water_quality_monitor_ph:
+      unique_id: water_quality_monitor_ph
+      friendly_name: Water Quality pH
+      device_class: ph
+      value_template: >-
+        {{ 6.5 }}
+      
+    water_quality_monitor_electrical_conductivity:
+      unique_id: water_quality_monitor_electrical_conductivity
+      friendly_name: Water Quality EC
+      unit_of_measurement: "mS/cm"
+      device_class: conductivity
+      value_template: >-
+        {{ 1.2 }}
+
+    water_quality_monitor_ec_us_cm:
+      unique_id: water_quality_monitor_ec_us_cm
+      friendly_name: Water Quality Monitor EC (µS/cm)
+      unit_of_measurement: "µS/cm"
+      device_class: conductivity
+      value_template: >-
+        {% set ec_raw = states('sensor.water_quality_monitor_electrical_conductivity') | float(0) %}
+        {{ (ec_raw * 1000) | round(0) }}
+
+    next_fertigation_time:
+      unique_id: next_fertigation_time
+      friendly_name: Next Fertigation
+      value_template: >-
+        {% set now_time = now() %}
+        {% set today = now_time.strftime('%Y-%m-%d') %}
+        {% set fertigation_times = ['09:30:00', '12:30:00', '15:30:00', '18:30:00', '21:30:00'] %}
+        
+        {% for time in fertigation_times %}
+          {% set fertigation_datetime = today + ' ' + time %}
+          {% set fertigation_timestamp = as_timestamp(fertigation_datetime) %}
+          {% set now_timestamp = as_timestamp(now_time) %}
+          {% if fertigation_timestamp > now_timestamp %}
+            {{ time[:5] }}
+            {%- break -%}
+          {% endif %}
+        {% else %}
+          09:30
+        {% endfor %}
+      icon_template: mdi:clock-outline
+      
+    fertigation_status:
+      unique_id: fertigation_status
+      friendly_name: Fertigation Status
+      value_template: >-
+        {% set last_fertigation = states('input_datetime.last_fertigation_timestamp') %}
+        {% set now_time = now() %}
+        {% if last_fertigation not in ['unavailable', 'unknown', ''] %}
+          {% set time_diff = ((as_timestamp(now_time) - as_timestamp(last_fertigation)) / 3600) | round(1) %}
+          {% if time_diff < 0.25 %}
+            Recently Completed
+          {% elif time_diff < 3.5 %}
+            On Schedule
+          {% else %}
+            Overdue
+          {% endif %}
+        {% else %}
+          Unknown
+        {% endif %}
+      icon_template: >-
+        {% set status = states('sensor.fertigation_status') %}
+        {% if status == 'Recently Completed' %}
+          mdi:check-circle
+        {% elif status == 'On Schedule' %}
+          mdi:clock-check
+        {% elif status == 'Overdue' %}
+          mdi:alert-circle
+        {% else %}
+          mdi:help-circle
+        {% endif %}
+
+- platform: statistics
+  name: Reservoir pH Change (Last 24 Hours)
+  entity_id: sensor.water_quality_monitor_ph
+  state_characteristic: change
+  max_age:
+    hours: 24
+
+- platform: statistics
+  name: Reservoir EC Change (Last 24 Hours)
+  entity_id: sensor.water_quality_monitor_electrical_conductivity
+  state_characteristic: change
+  max_age:
+    hours: 24
+
+# Curatron System - moved to mqtt.yaml
+
+# Z-Wave JS sensors handling
+- platform: template
+  sensors:
+    dishwasher_door_status:
+      friendly_name: "Dishwasher Door Status"
+      value_template: >-
+        {% if states('sensor.dishwasher_door_access_control_door_state') == '22' %}
+          Open
+        {% elif states('sensor.dishwasher_door_access_control_door_state') == 'Window/door is closed' %}
+          Closed
+        {% else %}
+          {{ states('sensor.dishwasher_door_access_control_door_state') }}
+        {% endif %}

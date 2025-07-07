@@ -1,0 +1,57 @@
+# LED Strip RF Remote Control Input Buttons
+
+# Power Controls
+led_strips_power_on:
+  name: "LED Strips On"
+  icon: mdi:lightbulb-on
+  
+led_strips_power_off:
+  name: "LED Strips Off" 
+  icon: mdi:lightbulb-off
+  
+# Brightness Controls
+led_strips_brightness_up:
+  name: "LED Strips Brighter"
+  icon: mdi:brightness-6
+  
+led_strips_brightness_down:
+  name: "LED Strips Dimmer"
+  icon: mdi:brightness-4
+  
+# Color Temperature Controls
+led_strips_warmer:
+  name: "LED Strips Warmer"
+  icon: mdi:thermometer-plus
+  
+led_strips_cooler:
+  name: "LED Strips Cooler" 
+  icon: mdi:thermometer-minus
+  
+# Preset Colors
+led_strips_warm_white:
+  name: "LED Strips Warm White"
+  icon: mdi:lightbulb-variant
+  
+led_strips_neutral_white:
+  name: "LED Strips Neutral White"
+  icon: mdi:lightbulb-variant-outline
+  
+led_strips_cool_white:
+  name: "LED Strips Cool White"
+  icon: mdi:lightbulb
+
+# =============================================================================
+# APPLIANCE REMINDER STOP BUTTONS
+# =============================================================================
+
+stop_dishwasher_reminders:
+  name: "Stop Dishwasher Reminders"
+  icon: mdi:dishwasher-off
+
+stop_washing_machine_reminders:
+  name: "Stop Washing Machine Reminders"
+  icon: mdi:washing-machine-off
+
+stop_dryer_reminders:
+  name: "Stop Dryer Reminders"
+  icon: mdi:tumble-dryer-off

@@ -1,0 +1,273 @@
+# BACKUP: Original templates.yaml before automation fixes deployment
+# Date: June 3, 2025 - Pre-deployment backup
+# Contains template security issues that will be fixed
+
+# COMPREHENSIVE HEALTH MONITORING TEMPLATE SENSORS
+# Date: June 2, 2025 - Complete System Health Monitoring Setup
+# Purpose: Provides all missing template sensors for health dashboard
+# Status: Production Ready - All sensors validated
+
+# Template sensors for comprehensive health monitoring
+- sensor:
+    # === CORE SYSTEM HEALTH SENSORS ===
+    
+    # Primary Health Dashboard Instructions (Enhanced)
+    - name: "Health Dashboard Instructions"
+      unique_id: health_dashboard_instructions_comprehensive
+      state: "Health monitoring active"
+      icon: "mdi:monitor-dashboard"
+      attributes:
+        system_health: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        critical_issues: "{{ states('sensor.failed_automations') | default('0') }} failed automations, {{ states('sensor.unavailable_entities_7') | default('0') }} unavailable entities"
+        last_refresh: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        status: >
+          {% set health = states('sensor.integration_health_percentage') | float(0) %}
+          {% if health >= 90 %}Excellent
+          {% elif health >= 75 %}Good
+          {% elif health >= 60 %}Fair
+          {% else %}Critical
+          {% endif %}
+        recommendations: >
+          {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+          {% set unavailable = states('sensor.unavailable_entities_7') | int(0) %}
+          {% if failed_autos > 0 %}Fix {{ failed_autos }} failed automations. {% endif %}
+          {% if unavailable > 50 %}Review {{ unavailable }} unavailable entities. {% endif %}
+          {% if failed_autos == 0 and unavailable < 50 %}System operating optimally!{% endif %}
+
+    # === CORE SYSTEM MONITORING SENSORS ===
+    
+    # System Status Summary  
+    - name: "System Status Core"
+      unique_id: system_status_core_monitor
+      state: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% set unavailable = states('sensor.unavailable_entities_7') | int(0) %}
+        {% if health >= 85 and failed_autos == 0 %}Optimal
+        {% elif health >= 75 and failed_autos <= 2 %}Good
+        {% elif health >= 60 and failed_autos <= 5 %}Fair
+        {% else %}Critical
+        {% endif %}
+      icon: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% if health >= 85 %}mdi:check-circle
+        {% elif health >= 75 %}mdi:check-circle-outline
+        {% elif health >= 60 %}mdi:alert-circle-outline
+        {% else %}mdi:alert-circle
+        {% endif %}
+      attributes:
+        overall_health: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        core_health: "{{ states('sensor.system_health') | default('Unknown') }}%"
+        failed_automations: "{{ states('sensor.failed_automations') | default('0') }}"
+        unavailable_entities: "{{ states('sensor.unavailable_entities_7') | default('0') }}"
+        alexa_health: "{{ states('sensor.alexa_integration_health_5') | default('Unknown') }}%"
+        mobile_health: "{{ states('sensor.mobile_app_integration_health_5') | default('Unknown') }}%"
+        switch_health: "{{ states('sensor.switch_integration_health_5') | default('Unknown') }}%"
+        health_trend: >
+          {% set current = states('sensor.integration_health_percentage') | float(0) %}
+          {% if current >= 85 %}Stable
+          {% elif current >= 75 %}Monitoring
+          {% else %}Attention Required
+          {% endif %}
+
+    # === INTEGRATION HEALTH AGGREGATOR ===
+    
+    # Comprehensive Integration Health Score
+    - name: "Integration Health Status"
+      unique_id: integration_health_status_aggregated
+      state: >
+        {% set alexa = states('sensor.alexa_integration_health_5') | float(100) %}
+        {% set mobile = states('sensor.mobile_app_integration_health_5') | float(100) %}
+        {% set switch = states('sensor.switch_integration_health_5') | float(100) %}
+        {{ ((alexa + mobile + switch) / 3) | round(1) }}
+      unit_of_measurement: "%"
+      state_class: "measurement"
+      icon: "mdi:network-strength-4"
+      attributes:
+        alexa_integration: "{{ states('sensor.alexa_integration_health_5') | default('Unknown') }}%"
+        mobile_app_integration: "{{ states('sensor.mobile_app_integration_health_5') | default('Unknown') }}%"
+        switch_integration: "{{ states('sensor.switch_integration_health_5') | default('Unknown') }}%"
+        lowest_health: >
+          {% set alexa = states('sensor.alexa_integration_health_5') | float(100) %}
+          {% set mobile = states('sensor.mobile_app_integration_health_5') | float(100) %}
+          {% set switch = states('sensor.switch_integration_health_5') | float(100) %}
+          {% set min_val = [alexa, mobile, switch] | min %}
+          {% if min_val == alexa %}Alexa ({{ alexa }}%)
+          {% elif min_val == mobile %}Mobile App ({{ mobile }}%)
+          {% else %}Switch ({{ switch }}%)
+          {% endif %}
+        needs_attention: >
+          {% set alexa = states('sensor.alexa_integration_health_5') | float(100) %}
+          {% set mobile = states('sensor.mobile_app_integration_health_5') | float(100) %}
+          {% set switch = states('sensor.switch_integration_health_5') | float(100) %}
+          {% set issues = [] %}
+          {% if alexa < 95 %}{{ issues.append('Alexa') }}{% endif %}
+          {% if mobile < 95 %}{{ issues.append('Mobile App') }}{% endif %}
+          {% if switch < 95 %}{{ issues.append('Switch') }}{% endif %}
+          {{ issues | join(', ') if issues | length > 0 else 'None' }}
+
+    # === SYSTEM ISSUE TRACKING ===
+    
+    # Critical Issues Counter
+    - name: "Critical Issues Count"
+      unique_id: critical_issues_count_monitor
+      state: >
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% set health = states('sensor.integration_health_percentage') | float(100) %}
+        {% set critical_count = 0 %}
+        {% if failed_autos > 0 %}{% set critical_count = critical_count + 1 %}{% endif %}
+        {% if health < 80 %}{% set critical_count = critical_count + 1 %}{% endif %}
+        {{ critical_count }}
+      unit_of_measurement: "issues"
+      icon: >
+        {% set count = this.state | int(0) %}
+        {% if count == 0 %}mdi:check-circle
+        {% elif count <= 2 %}mdi:alert-circle-outline
+        {% else %}mdi:alert-circle
+        {% endif %}
+      attributes:
+        failed_automations: "{{ states('sensor.failed_automations') | default('0') }}"
+        unavailable_entities: "{{ states('sensor.unavailable_entities_7') | default('0') }}"
+        low_health_integrations: >
+          {% set issues = [] %}
+          {% if states('sensor.alexa_integration_health_5') | float(100) < 95 %}{{ issues.append('Alexa') }}{% endif %}
+          {% if states('sensor.mobile_app_integration_health_5') | float(100) < 95 %}{{ issues.append('Mobile') }}{% endif %}
+          {% if states('sensor.switch_integration_health_5') | float(100) < 95 %}{{ issues.append('Switch') }}{% endif %}
+          {{ issues | join(', ') if issues | length > 0 else 'None' }}
+        severity: >
+          {% set count = this.state | int(0) %}
+          {% if count == 0 %}None
+          {% elif count <= 2 %}Moderate
+          {% else %}High
+          {% endif %}
+
+    # === SYSTEM READINESS INDICATOR ===
+    
+    # Overall System Readiness
+    - name: "System Readiness Status"
+      unique_id: system_readiness_status_monitor
+      state: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% set unavailable = states('sensor.unavailable_entities_7') | int(0) %}
+        {% set system_ok = states('binary_sensor.system_health_ok_7') == 'on' %}
+        {% if health >= 90 and failed_autos == 0 and system_ok %}Fully Operational
+        {% elif health >= 80 and failed_autos <= 2 %}Operational with Minor Issues
+        {% elif health >= 70 and failed_autos <= 5 %}Degraded Performance
+        {% else %}Critical Issues Present
+        {% endif %}
+      icon: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% if health >= 90 %}mdi:check-circle
+        {% elif health >= 80 %}mdi:check-circle-outline
+        {% elif health >= 70 %}mdi:alert-circle-outline
+        {% else %}mdi:alert-circle
+        {% endif %}
+      attributes:
+        overall_health_score: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        core_system_health: "{{ states('sensor.system_health') | default('Unknown') }}%"
+        system_health_binary: "{{ states('binary_sensor.system_health_ok_7') | default('Unknown') }}"
+        automation_failures: "{{ states('sensor.failed_automations') | default('0') }}"
+        entity_availability: "{{ (1319 - states('sensor.unavailable_entities_7') | int(0)) }}/1319 available"
+        performance_rating: >
+          {% set health = states('sensor.integration_health_percentage') | float(0) %}
+          {% if health >= 95 %}Excellent
+          {% elif health >= 85 %}Very Good
+          {% elif health >= 75 %}Good
+          {% elif health >= 65 %}Fair
+          {% else %}Poor
+          {% endif %}
+
+    # Simple working sensor for compatibility  
+    - name: "System Ready Status"
+      unique_id: system_ready_status_simple
+      state: "Ready"
+      availability: true
+
+# Template binary sensors for health monitoring
+- binary_sensor:
+    # === CRITICAL SYSTEM STATUS SENSORS ===
+    
+    # Overall System Health Status
+    - name: "System Health Critical"
+      unique_id: system_health_critical_status
+      state: >
+        {% set health = states('sensor.integration_health_percentage') | float(100) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {{ health < 70 or failed_autos > 5 }}
+      device_class: "problem"
+      icon: >
+        {% if this.state %}
+          mdi:alert-circle
+        {% else %}
+          mdi:check-circle
+        {% endif %}
+      attributes:
+        health_percentage: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        failed_automations: "{{ states('sensor.failed_automations') | default('0') }}"
+        trigger_reason: >
+          {% set health = states('sensor.integration_health_percentage') | float(100) %}
+          {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+          {% if health < 70 and failed_autos > 5 %}Low health ({{ health }}%) and high automation failures ({{ failed_autos }})
+          {% elif health < 70 %}Low health percentage ({{ health }}%)
+          {% elif failed_autos > 5 %}High automation failures ({{ failed_autos }})
+          {% else %}System operating normally
+          {% endif %}
+
+    # Maintenance Required Indicator
+    - name: "Maintenance Required"
+      unique_id: maintenance_required_indicator
+      state: >
+        {% set unavailable = states('sensor.unavailable_entities_7') | int(0) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% set health = states('sensor.integration_health_percentage') | float(100) %}
+        {{ unavailable > 50 or failed_autos > 0 or health < 85 }}
+      device_class: "problem"
+      icon: >
+        {% if this.state %}
+          mdi:wrench-outline
+        {% else %}
+          mdi:check-circle-outline
+        {% endif %}
+      attributes:
+        unavailable_entities: "{{ states('sensor.unavailable_entities_7') | default('0') }}"
+        failed_automations: "{{ states('sensor.failed_automations') | default('0') }}"
+        overall_health: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        maintenance_type: >
+          {% set unavailable = states('sensor.unavailable_entities_7') | int(0) %}
+          {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+          {% set health = states('sensor.integration_health_percentage') | float(100) %}
+          {% if failed_autos > 0 %}Automation Repair
+          {% elif unavailable > 50 %}Entity Cleanup
+          {% elif health < 85 %}Integration Health Review
+          {% else %}Preventive
+          {% endif %}
+
+    # Night Mode Status (Fixed from original)
+    - name: "Night Mode Active"
+      unique_id: night_mode_active_working
+      state: >
+        {% set current_hour = now().hour %}
+        {{ current_hour >= 22 or current_hour < 6 }}
+      device_class: "occupancy"
+      icon: >
+        {% if this.state %}
+          mdi:weather-night
+        {% else %}
+          mdi:weather-sunny
+        {% endif %}
+      attributes:
+        current_hour: "{{ now().hour }}"
+        next_change_time: >
+          {% set current_hour = now().hour %}
+          {% if current_hour >= 22 or current_hour < 6 %}
+            {{ (now().replace(hour=6, minute=0, second=0) + timedelta(days=1 if current_hour >= 22 else 0)).strftime('%H:%M') }}
+          {% else %}
+            {{ now().replace(hour=22, minute=0, second=0).strftime('%H:%M') }}
+          {% endif %}
+        mode_description: >
+          {% if this.state %}
+            Night mode active - System in low-activity monitoring
+          {% else %}
+            Day mode active - Full system monitoring
+          {% endif %}

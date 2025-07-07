@@ -1,0 +1,12 @@
+title: Smart Appliance Test
+views:
+  - title: Control Panel
+    path: control
+    cards:
+      - type: entities
+        title: Test Entities
+        entities:
+          - sensor.appliance_system_status
+          - binary_sensor.smart_thresholds_configured
+          - input_number.dishwasher_idle_threshold
+          - input_number.dishwasher_active_threshold

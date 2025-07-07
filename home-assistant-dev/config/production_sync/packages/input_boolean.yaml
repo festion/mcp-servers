@@ -1,0 +1,402 @@
+# =============================================================================
+# EXISTING ENTITIES (PRESERVED)
+# =============================================================================
+
+curatron_drying_active_mode:
+  name: Drying Active
+  icon: mdi:air-filter
+
+# LED Strips RF Remote Control Status
+led_strips_power_status:
+  name: "LED Strips Power Status"
+  icon: mdi:power
+  initial: false
+
+# Z-Wave Switch LED Night Control - Select which switches to darken
+zwave_led_darken_hobby_light:
+  name: "Darken Hobby Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_gavin_light:
+  name: "Darken Gavin Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_pantry_light:
+  name: "Darken Pantry Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_master_light:
+  name: "Darken Master Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_nook_light:
+  name: "Darken Nook Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_guest_light:
+  name: "Darken Guest Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_porch_light:
+  name: "Darken Porch Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_hall_light:
+  name: "Darken Hall Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_dining_light:
+  name: "Darken Dining Light LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_linda_light:
+  name: "Darken Linda Light LED"
+  icon: mdi:led-off
+  initial: false
+
+# Fan switches also have LEDs
+zwave_led_darken_hobby_fan:
+  name: "Darken Hobby Fan LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_master_fan:
+  name: "Darken Master Fan LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_linda_fan:
+  name: "Darken Linda Fan LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_guest_fan:
+  name: "Darken Guest Fan LED"
+  icon: mdi:led-off
+  initial: false
+
+zwave_led_darken_gavin_fan:
+  name: "Darken Gavin Fan LED"
+  icon: mdi:led-off
+  initial: false
+
+# Appliance Dash helpers
+appliance_quiet_hours_enabled:
+  name: "Enable Appliance Quiet Hours"
+  icon: mdi:sleep
+  initial: true
+
+appliance_completion_reminders:
+  name: "Enable Completion Reminders"
+  icon: mdi:bell-ring
+  initial: true
+
+appliance_maintenance_alerts:
+  name: "Enable Maintenance Alerts"
+  icon: mdi:wrench-clock
+  initial: true
+
+appliance_energy_reports:
+  name: "Enable Daily Energy Reports"
+  icon: mdi:chart-line
+  initial: true
+
+dishwasher_cycle_announced:
+  name: "Dishwasher Cycle Announced"
+  icon: mdi:dishwasher
+  initial: false
+
+# =============================================================================
+# APPLIANCE CYCLE ANNOUNCEMENT ENTITIES
+# =============================================================================
+
+washing_machine_cycle_announced:
+  name: "Washing Machine Cycle Announced"
+  icon: mdi:washing-machine
+  initial: false
+    
+dryer_cycle_announced:
+  name: "Dryer Cycle Announced" 
+  icon: mdi:tumble-dryer
+  initial: false
+
+# =============================================================================
+# APPLIANCE REMINDER STOP FLAGS
+# =============================================================================
+
+dishwasher_reminders_stopped:
+  name: "Dishwasher Reminders Stopped"
+  icon: mdi:dishwasher-off
+  initial: false
+
+washing_machine_reminders_stopped:
+  name: "Washing Machine Reminders Stopped"
+  icon: mdi:washing-machine-off
+  initial: false
+
+dryer_reminders_stopped:
+  name: "Dryer Reminders Stopped"
+  icon: mdi:tumble-dryer-off
+  initial: false
+
+# =============================================================================
+# ADAPTIVE LIGHTING SYSTEM - PHASE 1 IMPLEMENTATION
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# MASTER CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_master_enable:
+  name: "🌅 Master Adaptive Lighting"
+  icon: mdi:brightness-auto
+  initial: true
+
+adaptive_lighting_auto_sync:
+  name: "🔄 Auto-Sync New Lights"
+  icon: mdi:sync
+  initial: true
+
+adaptive_lighting_override_reset_daily:
+  name: "⏰ Daily Override Reset"
+  icon: mdi:refresh-auto
+  initial: true
+
+# -----------------------------------------------------------------------------
+# PER-LIGHT OVERRIDE TRACKING
+# -----------------------------------------------------------------------------
+
+# Primary Color-Capable Lights
+adaptive_lighting_override_livingroom_lights:
+  name: "Override Living Room Lights"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_kitchen_lights:
+  name: "Override Kitchen Lights"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_kitchen_led_strips:
+  name: "Override Kitchen LED Strips"
+  icon: mdi:led-strip-variant-off
+  initial: false
+
+# Accent Lights
+adaptive_lighting_override_bar_strip:
+  name: "Override Bar Strip"
+  icon: mdi:led-strip-variant-off
+  initial: false
+
+adaptive_lighting_override_top_left:
+  name: "Override Top Left Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_top_right:
+  name: "Override Top Right Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+# Individual Room Lights (Brightness-Only)
+adaptive_lighting_override_master_light:
+  name: "Override Master Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_master_lamp:
+  name: "Override Master Lamp"
+  icon: mdi:lamp-off
+  initial: false
+
+adaptive_lighting_override_guest_light:
+  name: "Override Guest Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_linda_light:
+  name: "Override Linda Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_gavin_light:
+  name: "Override Gavin Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_dining_light:
+  name: "Override Dining Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_hall_light:
+  name: "Override Hall Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_nook_light:
+  name: "Override Nook Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_hobby_light:
+  name: "Override Hobby Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_pantry_light:
+  name: "Override Pantry Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+adaptive_lighting_override_porch_light:
+  name: "Override Porch Light"
+  icon: mdi:lightbulb-off-outline
+  initial: false
+
+# =============================================================================
+# 🌙 CUSTOM CIRCADIAN RHYTHM & DOUBLE-CLICK CONTROLS - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Enhanced controls for custom circadian rhythm implementation and universal
+# double-click control system as specified in the original document.
+#
+# Added: June 16, 2025
+# Version: Phase 3 Custom Circadian & Double-Click Implementation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CIRCADIAN RHYTHM CONFIGURATION
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_circadian_enable:
+  name: "🌙 Circadian Rhythm Mode"
+  icon: mdi:weather-sunset
+  initial: true
+
+adaptive_lighting_seasonal_adjustment:
+  name: "🍂 Seasonal Adjustment"
+  icon: mdi:calendar-month
+  initial: true
+
+adaptive_lighting_weekend_mode:
+  name: "📅 Weekend Schedule Mode"
+  icon: mdi:calendar-weekend
+  initial: false
+
+adaptive_lighting_vacation_mode:
+  name: "✈️ Vacation Mode"
+  icon: mdi:airplane
+  initial: false
+
+adaptive_lighting_gradual_transitions:
+  name: "🌊 Gradual Transitions"
+  icon: mdi:transition-masked
+  initial: true
+
+# -----------------------------------------------------------------------------
+# DOUBLE-CLICK CONTROL SYSTEM
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_double_click_enable:
+  name: "🖱️ Double-Click Control"
+  icon: mdi:gesture-double-tap
+  initial: true
+
+adaptive_lighting_visual_feedback_enable:
+  name: "💫 Visual Feedback"
+  icon: mdi:flash
+  initial: true
+
+adaptive_lighting_flash_confirmation_enable:
+  name: "🌈 Flash Confirmations"
+  icon: mdi:lightbulb-flash
+  initial: true
+
+adaptive_lighting_universal_control:
+  name: "🌐 Universal Control Mode"
+  icon: mdi:home-lightning-bolt
+  initial: true
+
+# -----------------------------------------------------------------------------
+# ADVANCED CIRCADIAN FEATURES
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_location_based:
+  name: "📍 Location-Based Adjustment"
+  icon: mdi:map-marker-radius
+  initial: true
+
+adaptive_lighting_weather_compensation:
+  name: "🌤️ Weather Compensation"
+  icon: mdi:weather-partly-cloudy
+  initial: false
+
+adaptive_lighting_energy_saving_mode:
+  name: "⚡ Energy Saving Mode"
+  icon: mdi:battery-heart
+  initial: false
+
+adaptive_lighting_night_light_mode:
+  name: "🔦 Smart Night Light"
+  icon: mdi:flashlight
+  initial: true
+
+# -----------------------------------------------------------------------------
+# AUTOMATION INTELLIGENCE CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_learning_mode:
+  name: "🧠 Learning Mode"
+  icon: mdi:brain
+  initial: false
+
+adaptive_lighting_motion_integration:
+  name: "🚶 Motion Integration"
+  icon: mdi:motion-sensor
+  initial: false
+
+adaptive_lighting_scene_awareness:
+  name: "🎭 Scene Awareness"
+  icon: mdi:palette
+  initial: false
+
+adaptive_lighting_occupancy_detection:
+  name: "👥 Occupancy Detection"
+  icon: mdi:account-multiple
+  initial: false
+
+# =============================================================================
+# 🎯 INDIVIDUAL OPT-OUT & SMART RE-SYNC SYSTEM - PHASE 3+ ENHANCEMENT  
+# =============================================================================
+#
+# Individual light control and intelligent re-sync system for enhanced user
+# experience with adaptive lighting. Provides multiple opt-out methods and
+# smart learning capabilities.
+#
+# Added: June 17, 2025  
+# Version: Individual Control + Smart Re-Sync Implementation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SMART RE-SYNC SYSTEM CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_smart_resync_enable:
+  name: "🧠 Smart Re-sync Enable"
+  icon: mdi:sync-circle
+  initial: true
+
+adaptive_lighting_aggressive_override_detection:
+  name: "🎯 Aggressive Override Detection"
+  icon: mdi:target-account
+  initial: true

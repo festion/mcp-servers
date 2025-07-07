@@ -1,0 +1,582 @@
+# =============================================================================
+# ENHANCED APPLIANCE AUTOMATION SYSTEM - DEPLOYED
+# Enhanced power consumption monitoring with hysteresis and robust state tracking
+# Fixes false triggers, premature completions, and duplicate announcements
+# Deployed: June 21, 2025
+# =============================================================================
+
+# =============================================================================
+# DISHWASHER AUTOMATIONS - Enhanced with Hysteresis
+# =============================================================================
+
+- alias: "Dishwasher - Cycle Start Detection Enhanced"
+  description: "Enhanced dishwasher cycle start detection with hysteresis to prevent false triggers"
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      above: 50
+      for:
+        minutes: 3  # Increased from 2 minutes to ensure sustained operation
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.dishwasher_cycle_announced
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.dishwasher_electric_consumption_w
+          above: 30  # Secondary confirmation threshold
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: input_boolean.appliance_quiet_hours_enabled
+              state: 'off'
+            - condition: time
+              after: "07:30:00"
+              before: "22:30:00"
+  action:
+    # Set cycle tracking state
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.dishwasher_cycle_announced
+    
+    # Store cycle start time for duration tracking
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.dishwasher_cycle_start
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Enhanced announcement with power level
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "The dishwasher cycle has started. Current power consumption is {{ states('sensor.dishwasher_electric_consumption_w') | round(0) }} watts."
+        data:
+          type: announce
+
+    # Fallback mobile notification
+    - condition: template
+      value_template: "{{ states('media_player.everywhere') == 'unavailable' }}"
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "Dishwasher Started"
+        message: "Cycle started at {{ now().strftime('%I:%M %p') }} - {{ states('sensor.dishwasher_electric_consumption_w') | round(0) }}W"
+
+    - service: input_text.set_value
+      data:
+        entity_id: input_text.appliance_last_announcement
+        value: "Dishwasher cycle started - {{ states('sensor.dishwasher_electric_consumption_w') | round(0) }}W"
+
+- alias: "Dishwasher - Cycle Running Monitor"
+  description: "Monitor dishwasher during cycle to handle power fluctuations"
+  mode: restart
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      below: 15
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      state: 'on'
+    - condition: template
+      value_template: >
+        {% set start_time = states('input_datetime.dishwasher_cycle_start') %}
+        {% if start_time not in ['unknown', 'unavailable'] %}
+          {% set elapsed = (now().timestamp() - as_timestamp(start_time)) / 60 %}
+          {{ elapsed > 10 }}  {# Only trigger if cycle has been running for at least 10 minutes #}
+        {% else %}
+          false
+        {% endif %}
+  action:
+    # Wait longer to confirm cycle is actually ending
+    - delay:
+        minutes: 8  # Increased delay to handle intermittent operation
+    
+    # Double-check power consumption is still low
+    - condition: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      below: 10
+    
+    # Proceed with completion detection
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # Calculate cycle duration
+    - variables:
+        cycle_duration: >
+          {% set start_time = states('input_datetime.dishwasher_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+    
+    # Enhanced completion announcement with duration
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Dishwasher cycle is complete after {{ cycle_duration }} minutes! 
+          Don't forget to open the door to let dishes air dry.
+        data:
+          type: announce
+    
+    # Reset cycle tracking
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.dishwasher_cycle_announced
+    
+    # Wait before door reminder
+    - delay:
+        minutes: 30
+    
+    # Door reminder logic (only if sensor available and door still closed)
+    - condition: template
+      value_template: "{{ states('binary_sensor.dishwasher_door_window_door_is_open') not in ['unknown', 'unavailable'] }}"
+    - condition: state
+      entity_id: binary_sensor.dishwasher_door_window_door_is_open
+      state: 'off'
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Reminder: The dishwasher door is still closed. Opening it will help dishes dry faster."
+        data:
+          type: announce
+
+# =============================================================================
+# WASHING MACHINE AUTOMATIONS - Enhanced with Hysteresis
+# =============================================================================
+
+- alias: "Washing Machine - Cycle Start Detection Enhanced"
+  description: "Enhanced washing machine cycle start detection with power confirmation"
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      above: 100
+      for:
+        minutes: 3  # Increased delay for sustained operation
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.washing_machine_cycle_announced
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.washing_machine_electric_consumption_w
+          above: 50  # Secondary confirmation threshold
+        - condition: time
+          after: "07:30:00"
+          before: "22:30:00"
+  action:
+    # Set cycle tracking state
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.washing_machine_cycle_announced
+      
+    # Store cycle start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.washing_machine_cycle_start
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Enhanced announcement
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Washing machine cycle has started at {{ states('sensor.washing_machine_electric_consumption_w') | round(0) }} watts. I'll let you know when it's finished."
+        data:
+          type: announce
+    
+    - service: logbook.log
+      data:
+        name: "Washing Machine Monitoring"
+        message: "Washing machine cycle started - power consumption: {{ states('sensor.washing_machine_electric_consumption_w') }}W"
+
+- alias: "Washing Machine - Cycle Completion Enhanced"
+  description: "Enhanced washing machine completion detection with progressive reminders"
+  mode: restart
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      below: 10
+      for:
+        minutes: 5  # Increased delay
+  condition:
+    - condition: state
+      entity_id: input_boolean.washing_machine_cycle_announced
+      state: 'on'
+    - condition: template
+      value_template: >
+        {% set start_time = states('input_datetime.washing_machine_cycle_start') %}
+        {% if start_time not in ['unknown', 'unavailable'] %}
+          {% set elapsed = (now().timestamp() - as_timestamp(start_time)) / 60 %}
+          {{ elapsed > 15 }}  {# Minimum 15 minutes for a valid cycle #}
+        {% else %}
+          false
+        {% endif %}
+  action:
+    # Additional confirmation wait
+    - delay:
+        minutes: 10
+    
+    # Confirm power is still low
+    - condition: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      below: 15
+    
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    # Calculate cycle duration
+    - variables:
+        cycle_duration: >
+          {% set start_time = states('input_datetime.washing_machine_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+    
+    # Completion announcement with duration
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Washing machine cycle is complete after {{ cycle_duration }} minutes! 
+          Time to move your clothes to the dryer.
+        data:
+          type: announce
+    
+    # Reset tracking
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.washing_machine_cycle_announced
+    
+    # Progressive reminders with longer delays
+    - delay:
+        minutes: 20  # Increased from 15
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Reminder: Your laundry is still waiting in the washing machine."
+        data:
+          type: announce
+    
+    - delay:
+        minutes: 40  # Increased from 30
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+    
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Final reminder: Please don't forget about your laundry in the washing machine."
+        data:
+          type: announce
+
+# =============================================================================
+# DRYER AUTOMATIONS - Enhanced
+# =============================================================================
+
+- alias: "Dryer - Cycle Start Detection Enhanced"
+  description: "Enhanced dryer start detection using SmartThings with confirmation"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'run'
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      to: 'drying'
+  condition:
+    - condition: and
+      conditions:
+        - condition: template
+          value_template: "{{ states('sensor.dryer_machine_state') not in ['unknown', 'unavailable'] }}"
+        - condition: state
+          entity_id: sensor.dryer_machine_state
+          state: 'run'
+        - condition: state
+          entity_id: input_boolean.dryer_cycle_announced
+          state: 'off'
+        - condition: time
+          after: "07:30:00"
+          before: "22:30:00"
+  action:
+    # Set tracking state
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.dryer_cycle_announced
+      
+    # Store start time
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.dryer_cycle_start
+      data:
+        timestamp: "{{ now().timestamp() }}"
+    
+    # Enhanced announcement with completion time
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Dryer cycle has started.
+          {% set completion_time = states('sensor.dryer_completion_time') %}
+          {% if completion_time not in ['unknown', 'unavailable'] and completion_time != None %}
+            Expected completion time is {{ as_timestamp(completion_time) | timestamp_custom('%I:%M %p', true) }}.
+          {% else %}
+            I'll monitor the cycle and let you know when it's finished.
+          {% endif %}
+        data:
+          type: announce
+    
+    - service: logbook.log
+      data:
+        name: "Dryer Monitoring"
+        message: "Dryer cycle started - Job state: {{ states('sensor.dryer_job_state') }}"
+
+- alias: "Dryer - Cycle Completion Enhanced"
+  description: "Enhanced dryer completion detection using SmartThings states"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      from: 'run'
+      to: 'stop'
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      from: 'drying'
+      to: 'none'
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.dryer_cycle_announced
+          state: 'on'
+        - condition: template
+          value_template: "{{ states('sensor.dryer_machine_state') in ['stop', 'pause'] }}"
+        - condition: time
+          after: "07:00:00"
+          before: "22:30:00"
+  action:
+    # Wait to confirm completion
+    - delay:
+        minutes: 2
+    
+    # Double-check state
+    - condition: template
+      value_template: "{{ states('sensor.dryer_machine_state') in ['stop', 'pause'] }}"
+    
+    # Calculate duration
+    - variables:
+        cycle_duration: >
+          {% set start_time = states('input_datetime.dryer_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+    
+    # Completion announcement
+    - service: notify.alexa_media_everywhere
+      data:
+        message: >
+          The dryer cycle is complete after {{ cycle_duration }} minutes. 
+          Please remove clothes promptly to prevent wrinkles.
+        data:
+          type: announce
+    
+    # Reset tracking
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.dryer_cycle_announced
+    
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dryer complete - {{ cycle_duration }}min - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# APPLIANCE MONITORING AND ERROR DETECTION
+# =============================================================================
+
+- alias: "Appliance - Power Anomaly Detection"
+  description: "Detect unusual power consumption patterns that might indicate issues"
+  mode: parallel
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dishwasher_electric_consumption_w
+      above: 2000  # Unusually high power consumption
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      above: 2500  # Unusually high power consumption
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: >
+          Attention: {{ trigger.to_state.attributes.friendly_name }} is consuming 
+          {{ trigger.to_state.state }} watts, which is unusually high. 
+          Please check the appliance.
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "⚠️ High Power Consumption Alert"
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} consuming 
+          {{ trigger.to_state.state }}W at {{ now().strftime('%H:%M') }}
+        notification_id: "power_anomaly_{{ trigger.entity_id.split('.')[1] }}"
+
+- alias: "Appliance - Stuck Cycle Detection"
+  description: "Detect cycles that run too long (possible malfunction)"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      to: 'on'
+      for:
+        hours: 4  # Dishwasher running for more than 4 hours
+    - platform: state
+      entity_id: input_boolean.washing_machine_cycle_announced
+      to: 'on'
+      for:
+        hours: 3  # Washing machine running for more than 3 hours
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: >
+          Attention: The {{ trigger.entity_id.split('.')[1].replace('_cycle_announced', '').replace('_', ' ') }} 
+          has been running for an unusually long time. Please check if everything is okay.
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🕐 Long Cycle Alert"
+        message: >
+          {{ trigger.entity_id.split('.')[1].replace('_cycle_announced', '').replace('_', ' ').title() }} 
+          running for {{ (trigger.for.total_seconds() / 3600) | round(1) }} hours
+        notification_id: "long_cycle_{{ trigger.entity_id.split('.')[1] }}"
+
+# =============================================================================
+# ENHANCED MAINTENANCE AND UTILITY
+# =============================================================================
+
+- alias: "Appliance - Smart Energy Optimization"
+  description: "Suggest optimal times to run appliances based on usage patterns"
+  trigger:
+    - platform: time
+      at: "20:30:00"  # 8:30 PM suggestion for off-peak
+  condition:
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+    - condition: template
+      value_template: >
+        {{ states('input_boolean.dishwasher_cycle_announced') == 'off' and 
+           states('input_boolean.washing_machine_cycle_announced') == 'off' }}
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: >
+          Energy optimization tip: Off-peak hours start at 10 PM. 
+          {% if states('sensor.dishwasher_electric_consumption_w') | float > 2 %}
+            The dishwasher appears to be in standby and ready to run.
+          {% endif %}
+          {% if states('sensor.washing_machine_electric_consumption_w') | float > 2 %}
+            The washing machine appears to be in standby and ready to run.
+          {% endif %}
+          Running appliances after 10 PM can save on energy costs.
+        data:
+          type: announce
+
+# =============================================================================
+# APPLIANCE ERROR MONITORING (PRESERVED FROM ORIGINAL)
+# =============================================================================
+
+- alias: "Appliance - Error Monitoring"
+  description: "Monitor for appliance errors and announce"
+  trigger:
+    - platform: state
+      entity_id: 
+        - sensor.dishwasher_door_status
+        - sensor.washing_machine_status
+        - sensor.dryer_status
+      to: "error"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Attention: {{ trigger.to_state.attributes.friendly_name }} is reporting an error. Please check the appliance."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🚨 Appliance Error"
+        message: "{{ trigger.to_state.attributes.friendly_name }} error at {{ now().strftime('%H:%M') }}"
+        notification_id: "appliance_error_{{ trigger.entity_id.split('.')[1] }}"
+
+# =============================================================================
+# MAINTENANCE AND UTILITY AUTOMATIONS (PRESERVED FROM ORIGINAL)
+# =============================================================================
+
+- alias: "Appliance - Monthly Maintenance Reminder"
+  description: "Monthly maintenance reminders for appliances"
+  trigger:
+    - platform: time
+      at: "09:00:00"
+  condition:
+    - condition: template
+      value_template: "{{ now().day == 1 }}"  # First day of month
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Monthly appliance maintenance reminder: Please clean the dishwasher filter, check washing machine hoses, and clean the dryer lint trap."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🔧 Monthly Appliance Maintenance"
+        message: |
+          Time for monthly appliance maintenance:
+          - Clean dishwasher filter
+          - Check washing machine hoses  
+          - Clean dryer lint trap
+          - Wipe down appliance exteriors
+        notification_id: monthly_maintenance
+
+- alias: "Appliance - Maintenance Tracking"
+  description: "Track when maintenance tasks are completed"
+  trigger:
+    - platform: state
+      entity_id:
+        - input_datetime.dishwasher_last_filter_clean
+        - input_datetime.washing_machine_last_hose_check
+      to: ~
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Thank you for completing the {{ trigger.to_state.attributes.friendly_name.replace('Last ', '').lower() }}. Maintenance has been logged."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Maintenance logged - {{ now().strftime('%H:%M') }}"

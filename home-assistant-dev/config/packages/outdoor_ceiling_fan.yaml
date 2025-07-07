@@ -1,0 +1,246 @@
+# === MINIMAL OUTDOOR CEILING FAN PACKAGE (RF VERSION) ===
+# This configuration uses RF commands for ceiling fan control
+# Updated for Radio Frequency (433MHz) instead of Infrared
+
+# === INPUT HELPERS FOR MANUAL CONTROL ===
+input_select:
+  outdoor_ceiling_fan_speed:
+    name: "Outdoor Ceiling Fan Speed"
+    options:
+      - "Off"
+      - "Speed 1"
+      - "Speed 2" 
+      - "Speed 3"
+      - "Speed 4"
+      - "Speed 5"
+      - "Speed 6"
+    initial: "Off"
+    icon: mdi:fan
+
+  outdoor_ceiling_fan_direction:
+    name: "Outdoor Ceiling Fan Direction"
+    options:
+      - "Forward"
+      - "Reverse"
+    initial: "Forward"
+    icon: mdi:rotate-3d-variant
+
+# === TEMPLATE FAN ENTITY ===
+fan:
+  - platform: template
+    fans:
+      outdoor_ceiling_fan:
+        friendly_name: "Outdoor Ceiling Fan"
+        value_template: >-
+          {% if states('input_select.outdoor_ceiling_fan_speed') != 'Off' %}
+            on
+          {% else %}
+            off
+          {% endif %}
+        percentage_template: >-
+          {% if states('input_select.outdoor_ceiling_fan_speed') == 'Speed 6' %}
+            100
+          {% elif states('input_select.outdoor_ceiling_fan_speed') == 'Speed 5' %}
+            83
+          {% elif states('input_select.outdoor_ceiling_fan_speed') == 'Speed 4' %}
+            66
+          {% elif states('input_select.outdoor_ceiling_fan_speed') == 'Speed 3' %}
+            50
+          {% elif states('input_select.outdoor_ceiling_fan_speed') == 'Speed 2' %}
+            33
+          {% elif states('input_select.outdoor_ceiling_fan_speed') == 'Speed 1' %}
+            17
+          {% else %}
+            0
+          {% endif %}
+        turn_on:
+          service: input_select.select_option
+          target:
+            entity_id: input_select.outdoor_ceiling_fan_speed
+          data:
+            option: "Speed 1"
+        turn_off:
+          service: input_select.select_option
+          target:
+            entity_id: input_select.outdoor_ceiling_fan_speed
+          data:
+            option: "Off"
+        set_percentage:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 95 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 6"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 80 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 5"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 60 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 4"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 45 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 3"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 25 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 2"
+              - conditions:
+                  - condition: template
+                    value_template: "{{ percentage | int > 0 }}"
+                sequence:
+                  - service: input_select.select_option
+                    target:
+                      entity_id: input_select.outdoor_ceiling_fan_speed
+                    data:
+                      option: "Speed 1"
+            default:
+              - service: input_select.select_option
+                target:
+                  entity_id: input_select.outdoor_ceiling_fan_speed
+                data:
+                  option: "Off"
+
+# === AUTOMATIONS FOR RF CONTROL ===
+automation:
+  - alias: "Outdoor Ceiling Fan Speed Control"
+    description: "Control outdoor ceiling fan speed via RF commands"
+    trigger:
+      - platform: state
+        entity_id: input_select.outdoor_ceiling_fan_speed
+    action:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Off"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "stop"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 1"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_1"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 2"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_2"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 3"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_3"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 4"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_4"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 5"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_5"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_speed
+                state: "Speed 6"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "speed_6"
+
+  - alias: "Outdoor Ceiling Fan Direction Control"
+    description: "Control outdoor ceiling fan direction via RF commands"
+    trigger:
+      - platform: state
+        entity_id: input_select.outdoor_ceiling_fan_direction
+    action:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_direction
+                state: "Forward"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "forward"
+          - conditions:
+              - condition: state
+                entity_id: input_select.outdoor_ceiling_fan_direction
+                state: "Reverse"
+            sequence:
+              - service: remote.send_command
+                target:
+                  entity_id: remote.rm4_pro
+                data:
+                  device: "outdoor_ceiling_fan"
+                  command: "reverse"

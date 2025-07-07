@@ -1,0 +1,321 @@
+title: "🌪️ Outdoor Ceiling Fan Control Center"
+views:
+  - title: "Learning Center"
+    cards:
+      # === HEADER CARD ===
+      - type: markdown
+        content: |
+          # 🌪️ Outdoor Ceiling Fan Control Center
+          **Status:** Learning Mode Ready  
+          **RM4 Pro:** {{ states('remote.rm4_pro') | title }}  
+          **Last Updated:** {{ now().strftime('%I:%M %p') }}
+          
+          ---
+          
+          ## 📋 Learning Progress Checklist
+          ✅ Basic Setup Complete  
+          ✅ Dashboard Working  
+          ✅ Individual Learning Active
+          ⏳ Learning IR Codes  
+          ⏳ Testing Commands  
+          ⏳ Final Configuration  
+
+      # === QUICK ACTION BUTTONS (Fixed) ===
+      - type: horizontal-stack
+        cards:
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "power"
+                timeout: 30
+            name: "🔴 Learn Power"
+            icon: mdi:power
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "stop"
+                timeout: 30
+            name: "🔴 Learn Stop"
+            icon: mdi:stop
+            show_name: true
+            show_icon: true
+
+      # === SPEED LEARNING BUTTONS ===
+      - type: horizontal-stack
+        cards:
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_1"
+                timeout: 30
+            name: "🔴 Learn Speed 1"
+            icon: mdi:numeric-1-circle
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_2"
+                timeout: 30
+            name: "🔴 Learn Speed 2"
+            icon: mdi:numeric-2-circle
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_3"
+                timeout: 30
+            name: "🔴 Learn Speed 3"
+            icon: mdi:numeric-3-circle
+            show_name: true
+            show_icon: true
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_4"
+                timeout: 30
+            name: "🔴 Learn Speed 4"
+            icon: mdi:numeric-4-circle
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_5"
+                timeout: 30
+            name: "🔴 Learn Speed 5"
+            icon: mdi:numeric-5-circle
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "speed_6"
+                timeout: 30
+            name: "🔴 Learn Speed 6"
+            icon: mdi:numeric-6-circle
+            show_name: true
+            show_icon: true
+
+      # === DIRECTION LEARNING BUTTONS ===
+      - type: horizontal-stack
+        cards:
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "forward"
+                timeout: 30
+            name: "🔴 Learn Forward (F)"
+            icon: mdi:arrow-right-circle
+            show_name: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: call-service
+              service: remote.learn_command
+              target:
+                entity_id: remote.rm4_pro
+              service_data:
+                device: "outdoor_ceiling_fan"
+                command: "reverse"
+                timeout: 30
+            name: "🔴 Learn Reverse (R)"
+            icon: mdi:arrow-left-circle
+            show_name: true
+            show_icon: true
+
+      # === TESTING BUTTON ===
+      - type: button
+        tap_action:
+          action: call-service
+          service: script.turn_on
+          target:
+            entity_id: script.test_outdoor_fan_codes_final
+        name: "🎯 Test All Learned Codes"
+        icon: mdi:test-tube
+        show_name: true
+        show_icon: true
+
+      # === INSTRUCTIONS ===
+      - type: markdown
+        content: |
+          ## 🎮 How to Use Learning Buttons
+          
+          1. **Click any red learning button** above
+          2. **Watch for RM4 Pro red light** to turn on
+          3. **Press the corresponding button** on your remote
+          4. **Wait for red light to turn off** (code captured)
+          5. **Repeat for each button** you want to learn
+          
+          ## 📖 Remote Button Guide
+          **Based on your remote photo:**
+          - **⏻ Power** (top left) - toggles fan on/off
+          - **STOP** (center of dial) - stops fan
+          - **1-6** (dial positions) - speed settings
+          - **F** (bottom) - forward direction
+          - **R** (bottom) - reverse direction
+          
+          ## ⚠️ Important Notes
+          - **Red light ON** = Learning mode active, press remote button
+          - **Red light OFF** = Code captured successfully
+          - **No timeout errors** = Learning successful
+          - **Learn essential commands first**: Power, Stop, Speed 3, Forward
+
+      # === CURRENT FAN CONTROLS (will appear after learning) ===
+      - type: conditional
+        conditions:
+          - entity: input_select.outdoor_ceiling_fan_speed
+            state_not: "unavailable"
+        card:
+          type: entities
+          title: "🌪️ Outdoor Ceiling Fan Controls"
+          show_header_toggle: false
+          entities:
+            - entity: input_select.outdoor_ceiling_fan_speed
+              name: "Fan Speed Control"
+            - entity: input_select.outdoor_ceiling_fan_direction
+              name: "Fan Direction Control"
+            - entity: fan.outdoor_ceiling_fan
+              name: "Fan Entity Status"
+
+      # === TROUBLESHOOTING GUIDE ===
+      - type: markdown
+        content: |
+          ## 🛠️ Troubleshooting Tips
+          
+          **🔴 Red Light Won't Turn On?**
+          - Check RM4 Pro power connection
+          - Verify RM4 Pro is connected to WiFi
+          - Try restarting RM4 Pro (unplug 10 seconds)
+          
+          **🟡 Red Light Stays On?**
+          - Move remote closer to RM4 Pro (6-12 inches)
+          - Press button firmly and hold briefly
+          - Check remote battery level
+          
+          **🟢 Codes Not Working After Learning?**
+          - Restart Home Assistant after learning
+          - Check that codes were saved in storage file
+          - Re-learn any problematic commands
+          
+          ## 📂 Code Storage Location
+          Learned codes are stored in:  
+          `.storage/broadlink_remote_e87072ba7282_codes`
+
+  - title: "Fan Controls"
+    cards:
+      # === FAN CONTROL DASHBOARD (Post-Learning) ===
+      - type: conditional
+        conditions:
+          - entity: fan.outdoor_ceiling_fan
+            state_not: "unavailable"
+        card:
+          type: entities
+          title: "🌪️ Outdoor Ceiling Fan"
+          entities:
+            - entity: fan.outdoor_ceiling_fan
+              name: "Ceiling Fan"
+            - entity: input_select.outdoor_ceiling_fan_speed
+              name: "Speed Control"
+            - entity: input_select.outdoor_ceiling_fan_direction
+              name: "Direction Control"
+
+      # === INDIVIDUAL SWITCH CONTROLS ===
+      - type: conditional
+        conditions:
+          - entity: switch.outdoor_ceiling_fan_power
+            state_not: "unavailable"
+        card:
+          type: entities
+          title: "🎛️ Individual Controls"
+          entities:
+            - entity: switch.outdoor_ceiling_fan_power
+              name: "Power Toggle"
+            - entity: switch.outdoor_ceiling_fan_stop
+              name: "Stop Fan"
+            - entity: switch.outdoor_ceiling_fan_speed_1
+              name: "Speed 1"
+            - entity: switch.outdoor_ceiling_fan_speed_2
+              name: "Speed 2"
+            - entity: switch.outdoor_ceiling_fan_speed_3
+              name: "Speed 3"
+            - entity: switch.outdoor_ceiling_fan_speed_4
+              name: "Speed 4"
+            - entity: switch.outdoor_ceiling_fan_speed_5
+              name: "Speed 5"
+            - entity: switch.outdoor_ceiling_fan_speed_6
+              name: "Speed 6"
+            - entity: switch.outdoor_ceiling_fan_forward
+              name: "Forward Direction"
+            - entity: switch.outdoor_ceiling_fan_reverse
+              name: "Reverse Direction"
+
+      # === PLACEHOLDER WHEN NOT CONFIGURED ===
+      - type: conditional
+        conditions:
+          - entity: fan.outdoor_ceiling_fan
+            state: "unavailable"
+        card:
+          type: markdown
+          content: |
+            ## ⚠️ Fan Not Yet Configured
+            
+            The outdoor ceiling fan controls will appear here after:
+            
+            1. ✅ **Learning IR codes** (Go to Learning Center tab)
+            2. ✅ **Testing codes** work properly
+            3. ✅ **Updating configuration** with learned codes
+            4. ✅ **Restarting Home Assistant**
+            
+            **Next Step:** Go to the "Learning Center" tab and use the red learning buttons.

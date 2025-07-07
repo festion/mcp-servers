@@ -1,0 +1,456 @@
+# FIXED HEALTH MONITORING PACKAGE - Template Loop Resolution COMPLETE
+# File: packages/health_monitoring.yaml  
+# Date: June 16, 2025 - CIRCULAR DEPENDENCY FIX APPLIED
+# Purpose: Complete system health monitoring solution with circular dependencies resolved
+# Fix Applied: Use intermediate sensor.available_entity_count_base from templates.yaml
+
+template:
+  - sensor:
+      # ===== APPLIANCE SYSTEM STATUS =====
+      - name: "Appliance System Status"
+        unique_id: appliance_system_status
+        state: >
+          {% set alexa_available = states('media_player.everywhere') not in ['unavailable', 'unknown'] %}
+          {% set mobile_available = states('device_tracker.pixel_9_pro_xl') == 'home' %}
+          {% set dishwasher_sensor = states('sensor.dishwasher_electric_consumption_w') not in ['unavailable', 'unknown'] %}
+          {% set washer_sensor = states('sensor.washing_machine_electric_consumption_w') not in ['unavailable', 'unknown'] %}
+          
+          {% if alexa_available and mobile_available and dishwasher_sensor and washer_sensor %}
+            System Ready
+          {% elif alexa_available and (dishwasher_sensor or washer_sensor) %}
+            Alexa Available
+          {% elif mobile_available and (dishwasher_sensor or washer_sensor) %}
+            Mobile Only
+          {% elif dishwasher_sensor or washer_sensor %}
+            Sensors Only
+          {% else %}
+            System Down
+          {% endif %}
+        icon: >
+          {% set status = this.state %}
+          {% if status == 'System Ready' %}
+            mdi:check-circle
+          {% elif status in ['Alexa Available', 'Mobile Only', 'Sensors Only'] %}
+            mdi:alert-circle
+          {% else %}
+            mdi:alert-octagon
+          {% endif %}
+        attributes:
+          alexa_status: "{{ states('media_player.everywhere') }}"
+          mobile_status: "{{ states('device_tracker.pixel_9_pro_xl') }}"
+          dishwasher_sensor: "{{ states('sensor.dishwasher_electric_consumption_w') }}"
+          washer_sensor: "{{ states('sensor.washing_machine_electric_consumption_w') }}"
+          last_updated: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+      # ===== INTEGRATION HEALTH MONITORING (REFINED) =====
+      - name: "Integration Health Status"
+        unique_id: integration_health_status
+        state: >
+          {% set unavailable_count = states | selectattr('state', 'eq', 'unavailable') 
+             | rejectattr('entity_id', 'search', 'pbm_07695e8')
+             | rejectattr('entity_id', 'search', 'prusa_mini')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time')
+             | rejectattr('entity_id', 'in', ['sensor.failed_automations', 'sensor.system_health'])
+             | list | count %}
+          
+          {% if unavailable_count == 0 %}
+            Excellent
+          {% elif unavailable_count <= 5 %}
+            Very Good
+          {% elif unavailable_count <= 15 %}
+            Good
+          {% elif unavailable_count <= 30 %}
+            Fair
+          {% elif unavailable_count <= 60 %}
+            Poor
+          {% else %}
+            Critical
+          {% endif %}
+        icon: >
+          {% set status = this.state %}
+          {% if status in ['Excellent', 'Very Good'] %}
+            mdi:check-circle
+          {% elif status in ['Good', 'Fair'] %}
+            mdi:alert-circle-outline
+          {% else %}
+            mdi:alert-octagon
+          {% endif %}
+        availability: true
+
+      # CIRCULAR DEPENDENCY FIX: Use intermediate sensor to avoid self-reference
+      # Uses sensor.available_entity_count_base from templates.yaml to break the loop
+      - name: "Integration Health Percentage"
+        unique_id: integration_health_percentage
+        state: >
+          {% set available = states('sensor.available_entity_count_base') | int(0) %}
+          {% set total = states | list | count %}
+          {% if total > 0 %}
+            {{ (available / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+        attributes:
+          calculation_method: "Uses sensor.available_entity_count_base to avoid circular dependency"
+          total_entities: "{{ states | list | count }}"
+          available_entities: "{{ states('sensor.available_entity_count_base') | int(0) }}"
+          excluded_entities: "Uses exclusions from intermediate sensor calculation"
+          last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+      # ===== SPECIFIC INTEGRATION HEALTH =====
+      - name: "Alexa Integration Health"
+        unique_id: alexa_integration_health
+        state: >
+          {% set total = states | selectattr('entity_id', 'search', 'alexa') | list | count %}
+          {% set unavailable = states | selectattr('entity_id', 'search', 'alexa') 
+             | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+
+      - name: "Mobile App Integration Health"
+        unique_id: mobile_app_integration_health
+        state: >
+          {% set total = states | selectattr('entity_id', 'search', 'mobile_app|pixel_9')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time') | list | count %}
+          {% set unavailable = states | selectattr('entity_id', 'search', 'mobile_app|pixel_9')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time')
+             | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement  
+        availability: true
+
+      - name: "Switch Integration Health"
+        unique_id: switch_integration_health
+        state: >
+          {% set total = states.switch | rejectattr('entity_id', 'search', 'pbm_07695e8') | list | count %}
+          {% set unavailable = states.switch | selectattr('state', 'eq', 'unavailable')
+             | rejectattr('entity_id', 'search', 'pbm_07695e8') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+
+      # ===== SYSTEM COUNTERS (REFINED) =====
+      - name: "System Health"
+        unique_id: system_health
+        state: >
+          {% set total = states | rejectattr('entity_id', 'search', 'pbm_07695e8')
+             | rejectattr('entity_id', 'search', 'prusa_mini')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time') | list | count %}
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable')
+             | rejectattr('entity_id', 'search', 'pbm_07695e8')
+             | rejectattr('entity_id', 'search', 'prusa_mini')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time') | list | count %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        availability: true
+
+      # TEMPLATE LOOP FIX: Remove self-referential exclusions to break circular dependency
+      # No longer excludes 'health' entities to prevent loop with integration_health_percentage
+      - name: "Unavailable Entities"
+        unique_id: unavailable_entities
+        state: >
+          {{ states | selectattr('state', 'eq', 'unavailable') 
+             | rejectattr('entity_id', 'search', 'pbm_07695e8')
+             | rejectattr('entity_id', 'search', 'prusa_mini')
+             | rejectattr('entity_id', 'search', 'car_')
+             | rejectattr('entity_id', 'search', 'next_alarm')
+             | rejectattr('entity_id', 'search', 'remaining_charge_time')
+             | rejectattr('entity_id', 'in', ['sensor.failed_automations', 'sensor.system_health'])
+             | list | count }}
+        unit_of_measurement: "entities"
+        state_class: measurement
+        availability: true
+        attributes:
+          exclusions_applied: "pbm_07695e8, prusa_mini, car_, next_alarm, remaining_charge_time, failed_automations, system_health"
+          circular_dependency_fix: "Removed 'health' entity exclusions to prevent template loop"
+          last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+      - name: "Failed Automations"
+        unique_id: failed_automations
+        state: >
+          {{ states.automation | selectattr('state', 'eq', 'unavailable') | list | count }}
+        unit_of_measurement: "automations"
+        state_class: measurement
+        availability: true
+
+      # ===== EQUIPMENT STATUS MONITORS =====
+      - name: "PitBoss Grill Status"
+        unique_id: pitboss_grill_status
+        state: >
+          {% if is_state('climate.pbm_07695e8_grill_temperature', 'unavailable') %}
+            Powered Off
+          {% elif is_state('climate.pbm_07695e8_grill_temperature', 'off') %}
+            Online & Standby
+          {% else %}
+            Online & Active  
+          {% endif %}
+        icon: >
+          {% if is_state('climate.pbm_07695e8_grill_temperature', 'unavailable') %}
+            mdi:grill-outline
+          {% else %}
+            mdi:grill
+          {% endif %}
+        attributes:
+          temperature_control: "{{ states('climate.pbm_07695e8_grill_temperature') }}"
+          probe_1_error: "{{ states('binary_sensor.pbm_07695e8_probe_1_error') }}"
+          probe_2_error: "{{ states('binary_sensor.pbm_07695e8_probe_2_error') }}"
+          probe_3_error: "{{ states('binary_sensor.pbm_07695e8_probe_3_error') }}"
+          auger_status: "{{ states('binary_sensor.pbm_07695e8_auger') }}"
+
+      - name: "Prusa Mini Printer Status"
+        unique_id: prusa_mini_printer_status
+        state: >
+          {% if is_state('sensor.prusa_mini_progress', 'unavailable') %}
+            Powered Off
+          {% elif states('sensor.prusa_mini_progress') | default('0') | int(0) > 0 %}
+            Printing ({{ states('sensor.prusa_mini_progress') }}%)
+          {% elif not is_state('sensor.prusa_mini_filename', 'unavailable') %}
+            Online & Ready
+          {% else %}
+            Unknown
+          {% endif %}
+        icon: >
+          {% if is_state('sensor.prusa_mini_progress', 'unavailable') %}
+            mdi:printer-3d-off
+          {% elif states('sensor.prusa_mini_progress') | default('0') | int(0) > 0 %}
+            mdi:printer-3d
+          {% else %}
+            mdi:printer-3d-nozzle-outline
+          {% endif %}
+        attributes:
+          current_file: "{{ states('sensor.prusa_mini_filename') }}"
+          progress: "{{ states('sensor.prusa_mini_progress') }}%"
+          print_start: "{{ states('sensor.prusa_mini_print_start') }}"
+          print_finish: "{{ states('sensor.prusa_mini_print_finish') }}"
+
+      # ===== NEW: BLUETOOTH SENSOR STATUS =====
+      - name: "Bluetooth Sensor Status"
+        unique_id: bluetooth_sensor_status
+        state: >
+          {% set ble_sensors = states | selectattr('entity_id', 'search', 'h5074|bleproxy') 
+             | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if ble_sensors == 0 %}
+            All Online
+          {% elif ble_sensors <= 2 %}
+            Some Offline
+          {% else %}
+            Multiple Offline
+          {% endif %}
+        icon: >
+          {% set ble_sensors = states | selectattr('entity_id', 'search', 'h5074|bleproxy') 
+             | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% if ble_sensors == 0 %}
+            mdi:bluetooth-connect
+          {% else %}
+            mdi:bluetooth-off
+          {% endif %}
+        attributes:
+          offline_count: >
+            {{ states | selectattr('entity_id', 'search', 'h5074|bleproxy') 
+               | selectattr('state', 'eq', 'unavailable') | list | count }}
+
+  - binary_sensor:
+      # ===== SYSTEM HEALTH STATUS =====
+      - name: "System Health OK"
+        unique_id: system_health_ok
+        state: >
+          {% set health_pct = states('sensor.integration_health_percentage') | default(0) | float(0) %}
+          {% set unavailable = states('sensor.unavailable_entities') | default(0) | int(0) %}
+          {% set failed_autos = states('sensor.failed_automations') | default(0) | int(0) %}
+          {{ health_pct >= 95 and unavailable <= 10 and failed_autos == 0 }}
+        device_class: connectivity
+        availability: true
+
+      # ===== EQUIPMENT CONNECTIVITY STATUS =====
+      - name: "PitBoss Grill Online"
+        unique_id: pitboss_grill_online
+        state: >
+          {{ not is_state('climate.pbm_07695e8_grill_temperature', 'unavailable') }}
+        device_class: connectivity
+        icon: >
+          {% if is_state('climate.pbm_07695e8_grill_temperature', 'unavailable') %}
+            mdi:grill-outline
+          {% else %}
+            mdi:grill
+          {% endif %}
+        attributes:
+          status: >
+            {% if is_state('climate.pbm_07695e8_grill_temperature', 'unavailable') %}
+              Powered Off (Normal)
+            {% else %}
+              Online and Ready
+            {% endif %}
+
+      - name: "Prusa Mini Printer Online"
+        unique_id: prusa_mini_printer_online
+        state: >
+          {{ not is_state('sensor.prusa_mini_progress', 'unavailable') }}
+        device_class: connectivity
+        icon: >
+          {% if is_state('sensor.prusa_mini_progress', 'unavailable') %}
+            mdi:printer-3d-off
+          {% else %}
+            mdi:printer-3d-nozzle-outline
+          {% endif %}
+        attributes:
+          status: >
+            {% if is_state('sensor.prusa_mini_progress', 'unavailable') %}
+              Powered Off (Normal)
+            {% else %}
+              Online and Ready
+            {% endif %}
+
+# ===== HEALTH MONITORING AUTOMATIONS =====
+automation:
+  - id: system_health_status_reporter
+    alias: "System Health - Status Reporter"
+    description: "Report system health status every hour"
+    trigger:
+      - platform: time_pattern
+        minutes: 0
+    condition:
+      - condition: time
+        after: "08:00:00"
+        before: "22:00:00"
+    action:
+      - service: logbook.log
+        data:
+          name: "System Health Report"
+          message: >
+            System Status: {{ states('sensor.appliance_system_status') | default('Unknown') }}
+            Integration Health: {{ states('sensor.integration_health_status') | default('Unknown') }}
+            Health %: {{ states('sensor.integration_health_percentage') | default('Unknown') }}%
+            Unavailable: {{ states('sensor.unavailable_entities') | default('Unknown') }}
+            PitBoss: {{ states('sensor.pitboss_grill_status') | default('Unknown') }}
+            Prusa Mini: {{ states('sensor.prusa_mini_printer_status') | default('Unknown') }}
+            Bluetooth Sensors: {{ states('sensor.bluetooth_sensor_status') | default('Unknown') }}
+            Alexa: {{ states('media_player.everywhere') | default('Unknown') }}
+
+  - id: health_monitor_critical_integration_health_drop
+    alias: "Health Monitor - Critical Integration Health Drop"
+    description: "Monitor for significant drops in integration health"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.integration_health_percentage
+        below: 90
+        for:
+          minutes: 5
+    condition:
+      - condition: time
+        after: "08:00:00"
+        before: "22:00:00"
+    action:
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "⚠️ Integration Health Drop"
+          message: >
+            System health dropped to {{ states('sensor.integration_health_percentage') }}%.
+            Check {{ states('sensor.unavailable_entities') }} unavailable entities.
+          data:
+            priority: high
+
+  - id: critical_system_failure_alert
+    alias: "System Health - Critical Failure Alert"
+    description: "Alert when critical systems fail"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.system_health_ok
+        to: 'off'
+        for:
+          minutes: 5
+    action:
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "🚨 CRITICAL SYSTEM FAILURE"
+          message: >
+            Multiple critical integrations have failed.
+            Check Settings > Devices & Services immediately.
+          data:
+            priority: high
+            importance: max
+      
+      - service: logbook.log
+        data:
+          name: "CRITICAL FAILURE"
+          message: "Critical integration failures detected"
+
+  # ===== EQUIPMENT ONLINE NOTIFICATIONS =====
+  - id: pitboss_grill_power_on_notification
+    alias: "PitBoss Grill - Power On Notification" 
+    description: "Notify when grill comes online for cooking"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.pitboss_grill_online
+        to: 'on'
+        for:
+          minutes: 2
+    action:
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "🔥 PitBoss Grill Online"
+          message: "Grill is powered on and ready for cooking!"
+          data:
+            priority: normal
+
+  - id: prusa_mini_printer_power_on_notification
+    alias: "Prusa Mini - Power On Notification"
+    description: "Notify when 3D printer comes online"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.prusa_mini_printer_online
+        to: 'on'
+        for:
+          minutes: 2
+    action:
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "🖨️ Prusa Mini Online"
+          message: "3D printer is powered on and ready for printing!"
+          data:
+            priority: normal
+
+# ===== INPUT HELPERS =====
+input_boolean:
+  system_recovery_in_progress:
+    name: "System Recovery In Progress"
+    icon: mdi:reload
+    initial: false
+
+input_text:
+  system_health_log:
+    name: "System Health Log"
+    max: 1000
+    initial: "System health monitoring initialized"

@@ -1,0 +1,88 @@
+- id: 'lakehouse_wifi_presence_welcome'
+  alias: "Welcome Home - Lakehouse WiFi Detection"
+  description: "Triggers welcome scene when Jeremy, Gavin, or Kristy connects to Lakehouse WiFi"
+  trigger:
+    - platform: state
+      entity_id: sensor.pixel_9_pro_xl_wi_fi_connection
+      to: "Lakehouse"
+    - platform: state
+      entity_id: sensor.gavins_iphone_2_ssid
+      to: "Lakehouse"
+    - platform: state
+      entity_id: sensor.iphone_ssid
+      to: "Lakehouse"
+  condition:
+    # Only trigger if someone actually connected to Lakehouse WiFi
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: sensor.pixel_9_pro_xl_wi_fi_connection
+          state: "Lakehouse"
+        - condition: state
+          entity_id: sensor.gavins_iphone_2_ssid
+          state: "Lakehouse"
+        - condition: state
+          entity_id: sensor.iphone_ssid
+          state: "Lakehouse"
+    # Optional: Add time-based condition to prevent triggering at night
+    # - condition: time
+    #   after: "06:00:00"
+    #   before: "22:00:00"
+    # Optional: Only if someone hasn't been home recently (prevents multiple triggers)
+    # - condition: template
+    #   value_template: >
+    #     {{ (as_timestamp(now()) - as_timestamp(states.automation.lakehouse_wifi_presence_welcome.attributes.last_triggered | default(0))) > 1800 }}
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.welcome_home
+    # Send notification to Jeremy's Pixel if it triggered
+    - if:
+        - condition: state
+          entity_id: sensor.pixel_9_pro_xl_wi_fi_connection
+          state: "Lakehouse"
+      then:
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            message: "Welcome to the lakehouse! The house is ready for you."
+            title: "Welcome Home"
+            data:
+              actions:
+                - action: "turn_off_lights"
+                  title: "Turn Off Lights"
+                - action: "lock_doors"
+                  title: "Lock Doors"
+    # Send notification to Gavin's iPhone if it triggered
+    - if:
+        - condition: state
+          entity_id: sensor.gavins_iphone_2_ssid
+          state: "Lakehouse"
+      then:
+        - service: notify.mobile_app_gavins_iphone_2
+          data:
+            message: "Welcome to the lakehouse! The house is ready for you."
+            title: "Welcome Home"
+            data:
+              actions:
+                - action: "turn_off_lights"
+                  title: "Turn Off Lights"
+                - action: "lock_doors"
+                  title: "Lock Doors"
+    # Send notification to Kristy's iPhone if it triggered
+    - if:
+        - condition: state
+          entity_id: sensor.iphone_ssid
+          state: "Lakehouse"
+      then:
+        - service: notify.mobile_app_iphone
+          data:
+            message: "Welcome to the lakehouse! The house is ready for you."
+            title: "Welcome Home"
+            data:
+              actions:
+                - action: "turn_off_lights"
+                  title: "Turn Off Lights"
+                - action: "lock_doors"
+                  title: "Lock Doors"
+  mode: single
+  max_exceeded: silent

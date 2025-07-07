@@ -1,0 +1,151 @@
+set_all_strips_color:
+  alias: "Set All LED Strips Color"
+  description: "Set color to all LED strips using RGB instead of x,y coordinates"
+  fields:
+    color_r:
+      name: Red
+      description: "Red component (0-255)"
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+    color_g:
+      name: Green
+      description: "Green component (0-255)"
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+    color_b:
+      name: Blue
+      description: "Blue component (0-255)"
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+    brightness:
+      name: Brightness
+      description: "Brightness level (0-255)"
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 255
+          step: 1
+  sequence:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.bar_strip
+          - light.top_left
+          - light.top_right
+      data:
+        brightness: "{{ brightness if brightness is defined else 255 }}"
+        color:
+          r: "{{ color_r }}"
+          g: "{{ color_g }}"
+          b: "{{ color_b }}"
+
+set_strips_warm_white:
+  alias: "Set LED Strips to Warm White"
+  description: "Sets all LED strips to a warm white color"
+  sequence:
+    - service: script.set_all_strips_color
+      data:
+        color_r: 255
+        color_g: 223
+        color_b: 159
+        brightness: 255
+
+set_strips_cool_white:
+  alias: "Set LED Strips to Cool White"
+  description: "Sets all LED strips to a cool white color"
+  sequence:
+    - service: script.set_all_strips_color
+      data:
+        color_r: 201
+        color_g: 226
+        color_b: 255
+        brightness: 255
+
+# --- Enhanced scripts for adaptive lighting integration ---
+# These scripts bridge the gap between adaptive lighting system and RF-controlled LED strips
+
+led_strips_set_brightness:
+  alias: "LED Strips - Set Brightness"
+  description: "Set LED strips brightness via RF commands for adaptive lighting"
+  fields:
+    brightness:
+      description: "Brightness level (0-255)"
+      example: 128
+  sequence:
+    - variables:
+        target_percent: "{{ (brightness / 2.55) | round }}"
+        current_percent: "{{ states('input_number.led_strips_brightness_level') | int }}"
+        difference: "{{ (target_percent - current_percent) | abs }}"
+    - if:
+        - condition: template
+          value_template: "{{ difference > 5 }}"  # Only adjust if difference is significant
+      then:
+        - if:
+            - condition: template
+              value_template: "{{ target_percent > current_percent }}"
+          then:
+            - repeat:
+                count: "{{ ((target_percent - current_percent) / 10) | round }}"
+                sequence:
+                  - service: script.led_strips_rf_brightness_up
+                  - delay: "00:00:01"
+          else:
+            - repeat:
+                count: "{{ ((current_percent - target_percent) / 10) | round }}"
+                sequence:
+                  - service: script.led_strips_rf_brightness_down
+                  - delay: "00:00:01"
+  icon: mdi:brightness-6
+
+led_strips_set_color_temp:
+  alias: "LED Strips - Set Color Temperature"
+  description: "Set LED strips color temperature via RF commands for adaptive lighting"
+  fields:
+    color_temp:
+      description: "Color temperature in mireds"
+      example: 350
+  sequence:
+    - variables:
+        target_setting: >
+          {% if color_temp | int <= 250 %}
+            1
+          {% elif color_temp | int <= 400 %}
+            2
+          {% else %}
+            3
+          {% endif %}
+        current_setting: "{{ states('input_number.led_strips_color_temp') | int }}"
+    - if:
+        - condition: template
+          value_template: "{{ target_setting != current_setting }}"
+      then:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ target_setting == 1 }}"
+              sequence:
+                - service: script.led_strips_rf_cool_white
+            - conditions:
+                - condition: template
+                  value_template: "{{ target_setting == 2 }}"
+              sequence:
+                - service: script.led_strips_rf_neutral_white
+            - conditions:
+                - condition: template
+                  value_template: "{{ target_setting == 3 }}"
+              sequence:
+                - service: script.led_strips_rf_warm_white
+  icon: mdi:palette

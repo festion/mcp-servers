@@ -1,0 +1,175 @@
+- id: '1742000000001'
+  alias: Update Map Entities Sensor
+  description: Forces the map entities sensor to refresh when presence changes
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.hide_home_icon
+  action:
+  - delay:
+      seconds: 1
+  - service: homeassistant.update_entity
+    target:
+      entity_id: sensor.map_entities
+    data: {}
+  mode: single
+
+- id: scheduled_lights
+  alias: Scheduled Light Control
+  description: Controls all scheduled lights (grow lights, morning lights, etc.) based on time
+  trigger:
+  - at: 07:00:00
+    id: morning
+    platform: time
+  - at: '19:00:00'
+    id: evening
+    platform: time
+  - at: '23:00:00'
+    id: night
+    platform: time
+  - event: sunset
+    id: sunset
+    platform: sun
+  - event: sunrise
+    id: sunrise
+    offset: +00:15:00
+    platform: sun
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: morning
+      sequence:
+      - target:
+          area_id: morning_lights
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          area_id: grow_lights
+        service: switch.turn_on
+      - service: persistent_notification.create
+        data:
+          title: Good Morning
+          message: All morning lights activated at {{ now().strftime('%H:%M') }}.
+          notification_id: morning_lights
+    - conditions:
+      - condition: trigger
+        id: evening
+      sequence:
+      - target:
+          area_id: grow_lights
+        service: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: night
+      sequence:
+      - target:
+          area_id: night_lights
+        service: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: sunset
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          entity_id: light.hall_light
+        data:
+          brightness_pct: 70
+        service: light.turn_on
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_on
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        service: light.turn_off
+      - target:
+          entity_id: light.hall_light
+        service: light.turn_off
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_off
+    default: []
+  - service: system_log.write
+    data:
+      message: Light schedule triggered at {{ now().strftime('%Y-%m-%d %H:%M:%S') }} by {{ trigger.id }}
+      level: info
+  mode: single
+
+- id: motion_activated_lights
+  alias: Motion Activated Lights
+  description: Controls lights based on motion sensors
+  trigger:
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'on'
+    id: motion_detected
+    platform: state
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'off'
+    for:
+      minutes: 2
+    id: motion_cleared
+    platform: state
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        data:
+          brightness_pct: 90
+        service: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        service: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        service: light.turn_off
+    default: []
+  mode: restart
+
+
+# MOVED: This automation has been moved to automations/hydroponics.yaml
+# If you need to edit it, please edit it there instead

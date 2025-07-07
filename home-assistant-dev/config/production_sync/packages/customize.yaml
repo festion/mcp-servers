@@ -1,0 +1,66 @@
+# Climate Controls - OPTIMIZED FOR PERFORMANCE
+climate.family_room:
+  friendly_name: "Family Room Thermostat"
+  scan_interval: 60  # Reduced from 300 to 60 seconds for better responsiveness
+climate.upstairs:
+  friendly_name: "Upstairs Thermostat"
+  scan_interval: 60  # Reduced from 300 to 60 seconds for better responsiveness
+climate.master_bedroom:
+  friendly_name: "Master Bedroom Thermostat"
+  scan_interval: 60  # Reduced from 300 to 60 seconds for better responsiveness
+
+# Z-Wave Door Sensor Fix - Proper enum mapping for access control values
+sensor.dishwasher_door_access_control_door_state:
+  friendly_name: "Dishwasher Door State"
+  options:
+    - "Window/door is closed"  # State value 23
+    - "Window/door is open"    # State value 22
+  device_class: enum
+
+# Kitchen Lights
+light.amico_smart_recessed_light_6:
+  friendly_name: "Kitchen North Light"
+light.amico_smart_recessed_light_7:
+  friendly_name: "Kitchen Northeast Light"
+light.amico_smart_recessed_light_8:
+  friendly_name: "Kitchen Center Light"
+light.amico_smart_recessed_light_9:
+  friendly_name: "Kitchen South Light"
+light.amico_smart_recessed_light_10:
+  friendly_name: "Kitchen Southeast Light"
+light.amico_smart_recessed_light_11:
+  friendly_name: "Kitchen Southwest Light"
+
+# Living Room Lights
+light.amico_smart_recessed_light_1:
+  friendly_name: "Living Room North Light"
+light.amico_smart_recessed_light_2:
+  friendly_name: "Living Room Northeast Light"
+light.amico_smart_recessed_light_3:
+  friendly_name: "Living Room Center Light"
+light.amico_smart_recessed_light_4:
+  friendly_name: "Living Room South Light"
+light.amico_smart_recessed_light_5:
+  friendly_name: "Living Room Southeast Light"
+
+# LED Strips
+light.top_left:
+  friendly_name: "Kitchen Strip - Left"
+light.top_right:
+  friendly_name: "Kitchen Strip - Right"
+light.bar_strip:
+  friendly_name: "Kitchen Bar Strip"
+
+# Kitchen LED Strips Template Light
+light.kitchen_led_strips:
+  friendly_name: "Kitchen LED Strips"
+  icon: mdi:led-strip-variant
+
+# Hide appliance datetime inputs from auto-discovery in dashboards
+input_datetime.appliance_quiet_start:
+  hidden: true
+  friendly_name: "Appliance Quiet Hours Start"
+
+input_datetime.appliance_quiet_end:
+  hidden: true
+  friendly_name: "Appliance Quiet Hours End"

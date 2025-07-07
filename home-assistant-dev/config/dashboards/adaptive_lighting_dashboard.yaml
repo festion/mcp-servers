@@ -1,0 +1,444 @@
+# Add this line at the very top
+views:
+  # Indent your entire dashboard configuration under a dash
+  - title: 🌅 Adaptive Lighting Control Center
+    path: adaptive-lighting
+    icon: mdi:brightness-auto
+
+    # Quick status badges at the top (ensure this is also indented correctly)
+    badges:
+      - entity: input_boolean.adaptive_lighting_master_enable
+        name: System Status
+      - entity: sun.sun
+        name: Sun Position
+      - entity: input_number.adaptive_lighting_zones_active
+        name: Active Zones
+      - entity: input_number.adaptive_lighting_efficiency_percentage
+        name: Efficiency
+      - entity: sensor.circadian_color_temperature
+        name: Circadian Temp
+      - entity: sensor.circadian_brightness
+        name: Circadian Brightness
+
+    # All your cards must also be correctly indented under this view
+    cards:
+      # =============================================================================
+      # SYSTEM OVERVIEW & CURRENT CIRCADIAN STATUS
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🌅 Adaptive Lighting System - Phase 4 Complete
+
+              **Status**: {{ "🟢 ACTIVE" if is_state('input_boolean.adaptive_lighting_master_enable', 'on') else "🔴 INACTIVE" }}
+              **Active Zones**: {{ states('input_number.adaptive_lighting_zones_active') | int(0) }}/14
+              **System Efficiency**: {{ states('input_number.adaptive_lighting_efficiency_percentage') | int(0) }}%
+              
+              ---
+              
+              ### 🌙 Current Circadian Settings
+              
+              **Sun Elevation**: {{ state_attr('sun.sun', 'elevation') | round(1) }}°
+              **Current Period**: {{ state_attr('sensor.circadian_color_temperature', 'current_period') | title }}
+              
+              **Target Color Temperature**: {{ states('sensor.circadian_color_temperature') }}K
+              **Target Brightness**: {{ states('sensor.circadian_brightness') }}%
+              
+              **User Schedule**: Wake {{ states('input_number.adaptive_lighting_wake_time_hour') }}:00 | Sleep {{ states('input_number.adaptive_lighting_bedtime_hour') }}:00
+              
+              ---
+              
+              ### 🖱️ Double-Click Control Status
+              
+              **Last Double-Click**: {% if states('input_text.last_double_click_entity') != 'none' %}{{ state_attr(states('input_text.last_double_click_entity'), 'friendly_name') or states('input_text.last_double_click_entity') }} at {{ states('input_datetime.last_double_click_time').split(' ')[1][:5] }}{% else %}No recent activity{% endif %}
+
+      # =============================================================================
+      # PHASE 4: MASTER CONTROL CENTER - TEMPERATURE & BRIGHTNESS
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🎛️ Master Control Center - Phase 4
+
+          # Master Temperature Control Panel
+          - type: entities
+            title: "🌡️ Master Temperature Control"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_master_color_temp
+                name: "Master Color Temperature"
+                icon: mdi:thermometer
+              - type: divider
+              - entity: sensor.circadian_color_temperature
+                name: "🌅 Adaptive Target"
+                icon: mdi:brightness-auto
+              - entity: input_select.adaptive_lighting_override_mode
+                name: "Control Mode"
+                icon: mdi:cog
+              - type: divider
+              - type: buttons
+                entities:
+                  - entity: script.adaptive_lighting_temp_warm
+                    name: "Warm"
+                    icon: mdi:fire
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_temp_warm
+                  - entity: script.adaptive_lighting_temp_neutral
+                    name: "Neutral"
+                    icon: mdi:circle
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_temp_neutral
+                  - entity: script.adaptive_lighting_temp_cool
+                    name: "Cool"
+                    icon: mdi:snowflake
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_temp_cool
+                  - entity: script.adaptive_lighting_temp_auto
+                    name: "Auto"
+                    icon: mdi:brightness-auto
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_temp_auto
+
+          # Master Brightness Control Panel
+          - type: entities
+            title: "💡 Master Brightness Control"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_master_brightness
+                name: "Master Brightness Level"
+                icon: mdi:brightness-6
+              - type: divider
+              - entity: sensor.circadian_brightness
+                name: "🌅 Adaptive Target"
+                icon: mdi:brightness-auto
+              - entity: input_text.adaptive_lighting_system_status
+                name: "System Status"
+                icon: mdi:information
+              - type: divider
+              - type: buttons
+                entities:
+                  - entity: script.adaptive_lighting_brightness_dim
+                    name: "Dim"
+                    icon: mdi:brightness-2
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_brightness_dim
+                  - entity: script.adaptive_lighting_brightness_medium
+                    name: "Medium"
+                    icon: mdi:brightness-5
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_brightness_medium
+                  - entity: script.adaptive_lighting_brightness_bright
+                    name: "Bright"
+                    icon: mdi:brightness-7
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_brightness_bright
+                  - entity: script.adaptive_lighting_brightness_auto
+                    name: "Auto"
+                    icon: mdi:brightness-auto
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_brightness_auto
+
+          # Quick Actions Panel
+          - type: entities
+            title: "⚡ Quick Actions"
+            show_header_toggle: false
+            entities:
+              - type: buttons
+                entities:
+                  - entity: script.adaptive_lighting_sync_all
+                    name: "Sync All"
+                    icon: mdi:sync-circle
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_sync_all
+                  - entity: script.adaptive_lighting_return_to_adaptive
+                    name: "Resume Adaptive"
+                    icon: mdi:brightness-auto
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_return_to_adaptive
+                  - entity: input_boolean.adaptive_lighting_master_enable
+                    name: "Master Enable"
+                    icon: mdi:power
+                    tap_action:
+                      action: toggle
+
+      # =============================================================================
+      # ZONE SCALING CONTROLS - INDIVIDUAL ROOM ADJUSTMENTS
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## ⚙️ Zone Brightness Scaling - Fine Tuning
+
+          - type: entities
+            title: "🏠 Main Living Areas"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_zone_living_room_scale
+                name: "🛋️ Living Room Scale"
+                icon: mdi:sofa
+              - entity: input_number.adaptive_lighting_zone_kitchen_main_scale
+                name: "🍳 Kitchen Main Lights Scale"
+                icon: mdi:stove
+              - entity: input_number.adaptive_lighting_zone_kitchen_accent_scale
+                name: "💡 Kitchen LED Strips Scale"
+                icon: mdi:led-strip-variant
+              - entity: input_number.adaptive_lighting_zone_dining_room_scale
+                name: "🍽️ Dining Room Scale"
+                icon: mdi:silverware-fork-knife
+
+          - type: entities
+            title: "🛏️ Bedroom Areas"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_zone_master_bedroom_scale
+                name: "🛏️ Master Bedroom Scale"
+                icon: mdi:bed
+              - entity: input_number.adaptive_lighting_zone_guest_bedroom_scale
+                name: "🏨 Guest Bedroom Scale"
+                icon: mdi:bed-single
+              - entity: input_number.adaptive_lighting_zone_linda_room_scale
+                name: "🦄 Linda's Room Scale"
+                icon: mdi:account-child
+              - entity: input_number.adaptive_lighting_zone_gavin_room_scale
+                name: "🎮 Gavin's Room Scale"
+                icon: mdi:gamepad-variant
+
+          - type: entities
+            title: "🏡 Utility & Other Areas"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_zone_hallway_scale
+                name: "🚪 Hallway Scale"
+                icon: mdi:home-floor-1
+              - entity: input_number.adaptive_lighting_zone_nook_scale
+                name: "📚 Nook Area Scale"
+                icon: mdi:book-open-page-variant
+              - entity: input_number.adaptive_lighting_zone_hobby_room_scale
+                name: "🎨 Hobby Room Scale"
+                icon: mdi:palette
+              - entity: input_number.adaptive_lighting_zone_pantry_scale
+                name: "🥫 Pantry Scale"
+                icon: mdi:food-apple
+              - entity: input_number.adaptive_lighting_zone_exterior_scale
+                name: "🌙 Exterior (Porch) Scale"
+                icon: mdi:home-roof
+              - entity: input_number.adaptive_lighting_zone_accent_scale
+                name: "✨ Accent Lighting Scale"
+                icon: mdi:spotlight-beam
+
+      # =============================================================================
+      # ADVANCED OVERRIDE & AUTO-RESTORE CONTROLS
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🕐 Override Management & Auto-Restore
+
+          - type: entities
+            title: "⏰ Auto-Restore Configuration"
+            show_header_toggle: false
+            entities:
+              - entity: input_select.adaptive_lighting_auto_restore
+                name: "Auto-Restore Timer"
+                icon: mdi:timer-outline
+              - entity: input_number.adaptive_lighting_auto_restore_minutes
+                name: "Custom Timer (Minutes)"
+                icon: mdi:timer
+              - entity: input_datetime.adaptive_lighting_override_start
+                name: "Override Started"
+                icon: mdi:clock-start
+              - entity: input_datetime.adaptive_lighting_last_full_sync
+                name: "Last Full Sync"
+                icon: mdi:sync-circle
+
+      # =============================================================================
+      # INDIVIDUAL ZONE STATUS & CONTROLS
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🏠 Individual Zone Management
+
+          - type: entities
+            title: "🛋️ Living Room Zone"
+            show_header_toggle: false
+            entities:
+              - entity: switch.adaptive_lighting_living_room
+                name: "Adaptive Control"
+                icon: mdi:brightness-auto
+              - entity: input_boolean.adaptive_lighting_override_livingroom_lights
+                name: "Override Status"
+                icon: mdi:hand-back-left
+              - entity: input_datetime.adaptive_lighting_last_override_livingroom_lights
+                name: "Last Override"
+                icon: mdi:clock-outline
+              - type: buttons
+                entities:
+                  - entity: script.adaptive_lighting_sync_zone_living_room
+                    name: "Sync Zone"
+                    icon: mdi:sync
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_sync_zone_living_room
+                  - entity: script.adaptive_lighting_flash_zone_living_room
+                    name: "Identify"
+                    icon: mdi:lightbulb-flash
+                    tap_action:
+                      action: call-service
+                      service: script.adaptive_lighting_flash_zone_living_room
+
+          - type: entities
+            title: "🍳 Kitchen Zone"
+            show_header_toggle: false
+            entities:
+              - entity: switch.adaptive_lighting_kitchen_lights
+                name: "Main Lights Adaptive Control"
+                icon: mdi:brightness-auto
+              - entity: switch.adaptive_lighting_kitchen_led_strips
+                name: "LED Strips Adaptive Control"
+                icon: mdi:led-strip-variant
+              - entity: input_boolean.adaptive_lighting_override_kitchen_lights
+                name: "Main Lights Override"
+                icon: mdi:hand-back-left
+              - entity: input_boolean.adaptive_lighting_override_kitchen_led_strips
+                name: "LED Strips Override"
+                icon: mdi:hand-back-left
+
+      # =============================================================================
+      # SYSTEM ANALYTICS & PERFORMANCE
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 📊 System Performance & Analytics
+
+          - type: entities
+            title: "📈 Daily Performance Metrics"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_sync_count
+                name: "Daily Sync Count"
+                icon: mdi:counter
+              - entity: input_number.adaptive_lighting_override_count
+                name: "Daily Override Count"
+                icon: mdi:hand-back-left
+              - entity: input_number.adaptive_lighting_auto_sync_count
+                name: "Auto-Sync Count"
+                icon: mdi:sync
+              - entity: input_number.adaptive_lighting_efficiency_percentage
+                name: "System Efficiency"
+                icon: mdi:speedometer
+              - entity: input_number.adaptive_lighting_avg_response_time
+                name: "Average Response Time"
+                icon: mdi:timer-outline
+
+      # =============================================================================
+      # CIRCADIAN CUSTOMIZATION
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🌙 Circadian Rhythm Customization
+
+          - type: entities
+            title: "🕐 Schedule Configuration"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_wake_time_hour
+                name: "Wake Time"
+                icon: mdi:weather-sunset-up
+              - entity: input_number.adaptive_lighting_bedtime_hour
+                name: "Bedtime"
+                icon: mdi:sleep
+              - entity: input_number.adaptive_lighting_sunrise_offset
+                name: "Sunrise Offset"
+                icon: mdi:clock-time-one
+              - entity: input_number.adaptive_lighting_sunset_offset
+                name: "Sunset Offset"
+                icon: mdi:clock-time-seven
+
+          - type: entities
+            title: "🌡️ Temperature & Brightness Limits"
+            show_header_toggle: false
+            entities:
+              - entity: input_number.adaptive_lighting_max_color_temp
+                name: "Maximum Color Temperature"
+                icon: mdi:thermometer-high
+              - entity: input_number.adaptive_lighting_min_color_temp
+                name: "Minimum Color Temperature"
+                icon: mdi:thermometer-low
+              - entity: input_number.adaptive_lighting_max_brightness
+                name: "Maximum Brightness"
+                icon: mdi:brightness-7
+              - entity: input_number.adaptive_lighting_min_brightness
+                name: "Minimum Brightness"
+                icon: mdi:brightness-2
+
+      # =============================================================================
+      # SYSTEM CONTROL & FEATURES
+      # =============================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🎛️ System Features & Advanced Controls
+
+          - type: entities
+            title: "🌟 Feature Toggles"
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.adaptive_lighting_master_enable
+                name: "Master System Enable"
+                icon: mdi:brightness-auto
+              - entity: input_boolean.adaptive_lighting_double_click_enable
+                name: "Double-Click Control"
+                icon: mdi:gesture-double-tap
+              - entity: input_boolean.adaptive_lighting_visual_feedback_enable
+                name: "Visual Feedback"
+                icon: mdi:flash
+              - entity: input_boolean.adaptive_lighting_flash_confirmation_enable
+                name: "Flash Confirmations"
+                icon: mdi:lightbulb-flash
+              - entity: input_boolean.adaptive_lighting_circadian_enable
+                name: "Circadian Rhythm Mode"
+                icon: mdi:weather-sunset
+              - entity: input_boolean.adaptive_lighting_auto_sync
+                name: "Auto-Sync New Lights"
+                icon: mdi:sync
+              - entity: input_boolean.adaptive_lighting_override_reset_daily
+                name: "Daily Override Reset"
+                icon: mdi:refresh-auto
+
+          - type: entities
+            title: "⚙️ Advanced Settings"
+            show_header_toggle: false
+            entities:
+              - entity: input_select.adaptive_lighting_operation_mode
+                name: "Operation Mode"
+                icon: mdi:brightness-auto
+              - entity: input_select.adaptive_lighting_override_reset_time
+                name: "Override Reset Time"
+                icon: mdi:clock-time-six
+              - entity: input_number.adaptive_lighting_transition_speed
+                name: "Transition Speed"
+                icon: mdi:transition
+              - entity: input_number.adaptive_lighting_override_sensitivity
+                name: "Override Detection Sensitivity"
+                icon: mdi:motion-sensor

@@ -1,0 +1,483 @@
+# =============================================================================
+# 🌅 ADAPTIVE LIGHTING VISUAL FEEDBACK SYSTEM - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Enhanced visual feedback system for adaptive lighting double-click control
+# as specified in the original implementation document.
+#
+# Created: June 16, 2025
+# Version: Phase 3 Visual Feedback Implementation
+# =============================================================================
+
+adaptive_lighting_flash_confirmation:
+  alias: "💫 Adaptive Lighting Flash Confirmation"
+  icon: mdi:lightbulb-flash
+  description: |
+    Provides visual feedback for double-click adaptive lighting control.
+    Flashes lights in specific patterns to confirm system enable/disable.
+  
+  mode: single
+  max_exceeded: silent
+  
+  fields:
+    mode:
+      description: "Confirmation mode: 'enabled' or 'disabled'"
+      example: "enabled"
+      selector:
+        select:
+          options:
+            - "enabled"
+            - "disabled"
+    
+    triggering_light:
+      description: "Entity ID of the light that triggered the double-click"
+      example: "light.livingroom_lights"
+  
+  variables:
+    # Get all color-capable lights for visual feedback
+    color_lights:
+      - light.livingroom_lights
+      - light.kitchen_lights
+      - light.kitchen_led_strips
+      - light.bar_strip
+      - light.top_left
+      - light.top_right
+    
+    # Get brightness-only lights for simple flash
+    brightness_lights:
+      - light.master_light
+      - light.master_lamp
+      - light.guest_light
+      - light.linda_light
+      - light.gavin_light
+      - light.dining_light
+      - light.hall_light
+      - light.nook_light
+      - light.hobby_light
+      - light.pantry_light
+      - light.porch_light
+    
+    # Visual feedback patterns
+    enabled_pattern:
+      flash_count: 3
+      flash_duration: 0.5
+      flash_color: [0, 255, 0]  # Green
+      color_temp: 4000
+    
+    disabled_pattern:
+      flash_count: 2
+      flash_duration: 0.8
+      flash_color: [255, 100, 0]  # Orange
+      color_temp: 2500
+    
+    # Current pattern based on mode
+    pattern: >
+      {% if mode == 'enabled' %}
+        {{ enabled_pattern }}
+      {% else %}
+        {{ disabled_pattern }}
+      {% endif %}
+  
+  sequence:
+    # Store current states of all lights for restoration
+    - variables:
+        light_states: >
+          {% set ns = namespace(states={}) %}
+          {% for light in color_lights + brightness_lights %}
+            {% if states(light) in ['on', 'off'] %}
+              {% set state_info = {
+                'state': states(light),
+                'brightness': state_attr(light, 'brightness'),
+                'color_temp_kelvin': state_attr(light, 'color_temp_kelvin'),
+                'rgb_color': state_attr(light, 'rgb_color')
+              } %}
+              {% set ns.states = dict(ns.states, **{light: state_info}) %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.states }}
+    
+    # Enhanced visual feedback sequence
+    - choose:
+        # ENABLED confirmation - Green flash pattern
+        - conditions:
+            - condition: template
+              value_template: "{{ mode == 'enabled' }}"
+          sequence:
+            # Flash all color-capable lights in green
+            - repeat:
+                count: "{{ pattern.flash_count }}"
+                sequence:
+                  # Flash color lights in green
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ color_lights }}"
+                    data:
+                      rgb_color: "{{ pattern.flash_color }}"
+                      brightness: 255
+                      color_temp_kelvin: "{{ pattern.color_temp }}"
+                      transition: 0.1
+                  
+                  # Flash brightness-only lights bright
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ brightness_lights }}"
+                    data:
+                      brightness: 255
+                      transition: 0.1
+                  
+                  - delay:
+                      seconds: "{{ pattern.flash_duration }}"
+                  
+                  # Brief off
+                  - service: light.turn_off
+                    target:
+                      entity_id: "{{ color_lights + brightness_lights }}"
+                    data:
+                      transition: 0.1
+                  
+                  - delay:
+                      seconds: 0.3
+        
+        # DISABLED confirmation - Orange flash pattern
+        - conditions:
+            - condition: template
+              value_template: "{{ mode == 'disabled' }}"
+          sequence:
+            # Flash all lights in warm orange/red
+            - repeat:
+                count: "{{ pattern.flash_count }}"
+                sequence:
+                  # Flash color lights in orange
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ color_lights }}"
+                    data:
+                      rgb_color: "{{ pattern.flash_color }}"
+                      brightness: 200
+                      color_temp_kelvin: "{{ pattern.color_temp }}"
+                      transition: 0.1
+                  
+                  # Flash brightness-only lights dimmed
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ brightness_lights }}"
+                    data:
+                      brightness: 150
+                      transition: 0.1
+                  
+                  - delay:
+                      seconds: "{{ pattern.flash_duration }}"
+                  
+                  # Brief off
+                  - service: light.turn_off
+                    target:
+                      entity_id: "{{ color_lights + brightness_lights }}"
+                    data:
+                      transition: 0.1
+                  
+                  - delay:
+                      seconds: 0.5
+    
+    # Wait before restoration
+    - delay:
+        seconds: 1
+    
+    # Restore original light states
+    - repeat:
+        for_each: "{{ light_states.keys() | list }}"
+        sequence:
+          - variables:
+              light_entity: "{{ repeat.item }}"
+              light_info: "{{ light_states[repeat.item] }}"
+          
+          - choose:
+              # Restore lights that were on
+              - conditions:
+                  - condition: template
+                    value_template: "{{ light_info.state == 'on' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ light_entity }}"
+                    data: >
+                      {% set data = {'transition': 2} %}
+                      {% if light_info.brightness %}
+                        {% set data = dict(data, brightness=light_info.brightness) %}
+                      {% endif %}
+                      {% if light_info.color_temp_kelvin %}
+                        {% set data = dict(data, color_temp_kelvin=light_info.color_temp_kelvin) %}
+                      {% endif %}
+                      {% if light_info.rgb_color %}
+                        {% set data = dict(data, rgb_color=light_info.rgb_color) %}
+                      {% endif %}
+                      {{ data }}
+              
+              # Keep lights that were off in off state
+              default:
+                - service: light.turn_off
+                  target:
+                    entity_id: "{{ light_entity }}"
+                  data:
+                    transition: 1
+    
+    # Log the confirmation action
+    - service: system_log.write
+      data:
+        message: >
+          Visual Confirmation Complete: Adaptive lighting {{ mode }} via {{ triggering_light }}.
+          Flash pattern: {{ pattern.flash_count }} flashes, {{ pattern.flash_duration }}s duration.
+        level: info
+
+# =============================================================================
+# 🎯 ADAPTIVE LIGHTING ZONE FLASH - PHASE 3 ENHANCEMENT
+# =============================================================================
+
+adaptive_lighting_flash_zone:
+  alias: "🎯 Adaptive Lighting Zone Flash"
+  icon: mdi:lightbulb-group
+  description: |
+    Flash specific lighting zones for testing and identification.
+    Useful for validating zone configurations and double-click responses.
+  
+  mode: single
+  
+  fields:
+    zone_name:
+      description: "Zone to flash: living_room, kitchen, bedroom, accent, utility, exterior"
+      example: "living_room"
+      selector:
+        select:
+          options:
+            - "living_room"
+            - "kitchen"
+            - "bedroom"
+            - "accent"
+            - "utility"
+            - "exterior"
+            - "all"
+    
+    flash_color:
+      description: "RGB color for flash [r, g, b]"
+      example: "[255, 255, 255]"
+      default: [255, 255, 255]
+  
+  variables:
+    zone_lights:
+      living_room:
+        - light.livingroom_lights
+      kitchen:
+        - light.kitchen_lights
+        - light.kitchen_led_strips
+      bedroom:
+        - light.master_light
+        - light.master_lamp
+        - light.guest_light
+        - light.linda_light
+        - light.gavin_light
+      accent:
+        - light.bar_strip
+        - light.top_left
+        - light.top_right
+      utility:
+        - light.dining_light
+        - light.hall_light
+        - light.nook_light
+        - light.hobby_light
+        - light.pantry_light
+      exterior:
+        - light.porch_light
+    
+    target_lights: >
+      {% if zone_name == 'all' %}
+        {{ zone_lights.values() | list | sum(start=[]) }}
+      {% else %}
+        {{ zone_lights.get(zone_name, []) }}
+      {% endif %}
+  
+  sequence:
+    - condition: template
+      value_template: "{{ target_lights | length > 0 }}"
+    
+    # Store current states
+    - variables:
+        original_states: >
+          {% set ns = namespace(states={}) %}
+          {% for light in target_lights %}
+            {% if states(light) in ['on', 'off'] %}
+              {% set state_info = {
+                'state': states(light),
+                'brightness': state_attr(light, 'brightness'),
+                'color_temp_kelvin': state_attr(light, 'color_temp_kelvin'),
+                'rgb_color': state_attr(light, 'rgb_color')
+              } %}
+              {% set ns.states = dict(ns.states, **{light: state_info}) %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.states }}
+    
+    # Flash sequence
+    - repeat:
+        count: 2
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: "{{ target_lights }}"
+            data:
+              rgb_color: "{{ flash_color }}"
+              brightness: 255
+              transition: 0.1
+          
+          - delay:
+              seconds: 0.5
+          
+          - service: light.turn_off
+            target:
+              entity_id: "{{ target_lights }}"
+            data:
+              transition: 0.1
+          
+          - delay:
+              seconds: 0.3
+    
+    # Restore original states
+    - delay:
+        seconds: 1
+    
+    - repeat:
+        for_each: "{{ original_states.keys() | list }}"
+        sequence:
+          - variables:
+              light_entity: "{{ repeat.item }}"
+              light_info: "{{ original_states[repeat.item] }}"
+          
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ light_info.state == 'on' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ light_entity }}"
+                    data: >
+                      {% set data = {'transition': 2} %}
+                      {% if light_info.brightness %}
+                        {% set data = dict(data, brightness=light_info.brightness) %}
+                      {% endif %}
+                      {% if light_info.color_temp_kelvin %}
+                        {% set data = dict(data, color_temp_kelvin=light_info.color_temp_kelvin) %}
+                      {% endif %}
+                      {% if light_info.rgb_color %}
+                        {% set data = dict(data, rgb_color=light_info.rgb_color) %}
+                      {% endif %}
+                      {{ data }}
+              default:
+                - service: light.turn_off
+                  target:
+                    entity_id: "{{ light_entity }}"
+                  data:
+                    transition: 1
+    
+    # Notification
+    - service: persistent_notification.create
+      data:
+        title: "🎯 Zone Flash Complete"
+        message: "Zone '{{ zone_name }}' flash test completed. {{ target_lights | length }} lights flashed."
+        notification_id: "zone_flash_{{ zone_name }}"
+
+# =============================================================================
+# 🧪 ADAPTIVE LIGHTING SYSTEM TEST - PHASE 3 ENHANCEMENT
+# =============================================================================
+
+adaptive_lighting_system_test:
+  alias: "🧪 Adaptive Lighting System Test"
+  icon: mdi:test-tube
+  description: |
+    Comprehensive system test for adaptive lighting Phase 3 functionality.
+    Tests double-click detection, visual feedback, and zone synchronization.
+  
+  mode: single
+  
+  sequence:
+    # Test 1: System Health Check
+    - service: system_log.write
+      data:
+        message: "Starting Adaptive Lighting Phase 3 System Test"
+        level: info
+    
+    - service: persistent_notification.create
+      data:
+        title: "🧪 System Test Starting"
+        message: "Testing adaptive lighting Phase 3 functionality..."
+        notification_id: adaptive_lighting_test
+    
+    # Test 2: Zone Flash Test
+    - service: script.adaptive_lighting_flash_zone
+      data:
+        zone_name: "living_room"
+        flash_color: [0, 255, 0]
+    
+    - delay:
+        seconds: 3
+    
+    # Test 3: Visual Feedback Test (Enabled)
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        mode: "enabled"
+        triggering_light: "light.livingroom_lights"
+    
+    - delay:
+        seconds: 5
+    
+    # Test 4: Visual Feedback Test (Disabled)
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        mode: "disabled"
+        triggering_light: "light.kitchen_lights"
+    
+    - delay:
+        seconds: 3
+    
+    # Test 5: Performance Check
+    - variables:
+        test_results: >
+          {% set active_overrides = states | selectattr('entity_id', 'match', 'input_boolean.adaptive_lighting_override_.*') | selectattr('state', 'eq', 'on') | list | count %}
+          {% set sync_count = states('input_number.adaptive_lighting_sync_count') | int(0) %}
+          {% set override_count = states('input_number.adaptive_lighting_override_count') | int(0) %}
+          {% set system_health = states('automation.adaptive_lighting_master_coordinator') == 'on' and states('automation.adaptive_lighting_advanced_override_detection') == 'on' %}
+          {
+            "active_overrides": {{ active_overrides }},
+            "sync_count": {{ sync_count }},
+            "override_count": {{ override_count }},
+            "system_health": {{ system_health }},
+            "double_click_enabled": {{ states('input_boolean.adaptive_lighting_double_click_enable') == 'on' }},
+            "visual_feedback_enabled": {{ states('input_boolean.adaptive_lighting_visual_feedback_enable') == 'on' }}
+          }
+    
+    # Final Results
+    - service: persistent_notification.create
+      data:
+        title: "🧪 System Test Complete"
+        message: |
+          Adaptive Lighting Phase 3 Test Results:
+          
+          ✅ Zone flash test completed
+          ✅ Visual feedback tested (enabled/disabled)
+          ✅ Double-click system: {{ 'Active' if test_results.double_click_enabled else 'Inactive' }}
+          ✅ Visual feedback: {{ 'Active' if test_results.visual_feedback_enabled else 'Inactive' }}
+          
+          Performance Metrics:
+          • Active overrides: {{ test_results.active_overrides }}/17
+          • Daily syncs: {{ test_results.sync_count }}
+          • Daily overrides: {{ test_results.override_count }}
+          • System health: {{ 'Good' if test_results.system_health else 'Issues detected' }}
+          
+          Test completed at {{ now().strftime('%H:%M:%S') }}
+        notification_id: adaptive_lighting_test_results
+    
+    - service: system_log.write
+      data:
+        message: >
+          Adaptive Lighting Phase 3 System Test Complete. 
+          Results: {{ test_results.active_overrides }} overrides active, 
+          system health {{ 'good' if test_results.system_health else 'impaired' }}
+        level: info

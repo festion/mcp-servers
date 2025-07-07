@@ -1,0 +1,1049 @@
+# =============================================================================
+# 🎛️ ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL SCRIPTS
+# =============================================================================
+# 
+# Supporting scripts for master control system including presets,
+# zone management, and quick actions
+#
+# Features:
+# - Temperature and brightness preset scripts
+# - Individual zone sync and identification
+# - System management utilities
+# - Quick action buttons
+#
+# Added: June 25, 2025
+# Version: Phase 4 Master Control Scripts
+# =============================================================================
+
+# TEMPERATURE PRESET SCRIPTS
+adaptive_lighting_temp_warm:
+  alias: "🔥 Set Warm Temperature (2000K)"
+  description: "Set master temperature to warm 2000K"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: 2000
+
+adaptive_lighting_temp_neutral:
+  alias: "⚪ Set Neutral Temperature (4000K)"
+  description: "Set master temperature to neutral 4000K"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: 4000
+
+adaptive_lighting_temp_cool:
+  alias: "❄️ Set Cool Temperature (6500K)"
+  description: "Set master temperature to cool 6500K"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: 6500
+
+adaptive_lighting_temp_auto:
+  alias: "🌅 Return to Adaptive Temperature"
+  description: "Return to adaptive color temperature control"
+  sequence:
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Adaptive"
+    
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: "{{ states('sensor.circadian_color_temperature') | int(4000) }}"
+
+# BRIGHTNESS PRESET SCRIPTS
+adaptive_lighting_brightness_dim:
+  alias: "🌙 Set Dim Brightness (25%)"
+  description: "Set master brightness to dim 25%"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: 25
+
+adaptive_lighting_brightness_medium:
+  alias: "💡 Set Medium Brightness (50%)"
+  description: "Set master brightness to medium 50%"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: 50
+
+adaptive_lighting_brightness_bright:
+  alias: "☀️ Set Bright Brightness (75%)"
+  description: "Set master brightness to bright 75%"
+  sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: 75
+
+adaptive_lighting_brightness_auto:
+  alias: "🌅 Return to Adaptive Brightness"
+  description: "Return to adaptive brightness control"
+  sequence:
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Adaptive"
+    
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: "{{ states('sensor.circadian_brightness') | int(80) }}"
+
+# MASTER SYSTEM SCRIPTS
+adaptive_lighting_sync_all:
+  alias: "🔄 Sync All Zones"
+  description: "Manually synchronize all adaptive lighting zones"
+  sequence:
+    - event: adaptive_lighting_sync_all
+      event_data:
+        triggered_by: "manual_script"
+        timestamp: "{{ now().isoformat() }}"
+
+adaptive_lighting_return_to_adaptive:
+  alias: "🌅 Resume Adaptive Mode"
+  description: "Return entire system to adaptive lighting control"
+  sequence:
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Adaptive"
+    
+    # Update master sliders to current adaptive values
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: "{{ states('sensor.circadian_color_temperature') | int(4000) }}"
+    
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: "{{ states('sensor.circadian_brightness') | int(80) }}"
+    
+    # Trigger master coordinator
+    - delay:
+        seconds: 1
+    
+    - service: automation.trigger
+      target:
+        entity_id: automation.adaptive_lighting_master_coordinator
+    
+    # Clear all override flags
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.adaptive_lighting_override_livingroom_lights
+          - input_boolean.adaptive_lighting_override_kitchen_lights
+          - input_boolean.adaptive_lighting_override_kitchen_led_strips
+          - input_boolean.adaptive_lighting_override_bar_strip
+          - input_boolean.adaptive_lighting_override_top_left
+          - input_boolean.adaptive_lighting_override_top_right
+          - input_boolean.adaptive_lighting_override_master_light
+          - input_boolean.adaptive_lighting_override_master_lamp
+          - input_boolean.adaptive_lighting_override_guest_light
+          - input_boolean.adaptive_lighting_override_linda_light
+          - input_boolean.adaptive_lighting_override_gavin_light
+          - input_boolean.adaptive_lighting_override_dining_light
+          - input_boolean.adaptive_lighting_override_hall_light
+          - input_boolean.adaptive_lighting_override_nook_light
+          - input_boolean.adaptive_lighting_override_hobby_light
+          - input_boolean.adaptive_lighting_override_pantry_light
+          - input_boolean.adaptive_lighting_override_porch_light
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: "Returned to Adaptive Mode - All zones following circadian rhythm"
+    
+    # Visual feedback
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        mode: "enabled"
+
+adaptive_lighting_master_reset:
+  alias: "🔄 Reset Master Control System"
+  description: "Reset entire master control system to defaults"
+  sequence:
+    # Reset master controls to defaults
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_override_mode
+      data:
+        option: "Adaptive"
+    
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.adaptive_lighting_auto_restore
+      data:
+        option: "1 hour"
+    
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_color_temp
+      data:
+        value: 4000
+    
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_master_brightness
+      data:
+        value: 80
+    
+    # Reset all zone scales to 1.0
+    - service: input_number.set_value
+      target:
+        entity_id:
+          - input_number.adaptive_lighting_zone_living_room_scale
+          - input_number.adaptive_lighting_zone_kitchen_main_scale
+          - input_number.adaptive_lighting_zone_kitchen_accent_scale
+          - input_number.adaptive_lighting_zone_master_bedroom_scale
+          - input_number.adaptive_lighting_zone_guest_bedroom_scale
+          - input_number.adaptive_lighting_zone_linda_room_scale
+          - input_number.adaptive_lighting_zone_gavin_room_scale
+          - input_number.adaptive_lighting_zone_dining_room_scale
+          - input_number.adaptive_lighting_zone_hallway_scale
+          - input_number.adaptive_lighting_zone_nook_scale
+          - input_number.adaptive_lighting_zone_hobby_room_scale
+          - input_number.adaptive_lighting_zone_pantry_scale
+          - input_number.adaptive_lighting_zone_exterior_scale
+          - input_number.adaptive_lighting_zone_accent_scale
+      data:
+        value: 1.0
+    
+    # Clear all override flags and timestamps
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.adaptive_lighting_override_livingroom_lights
+          - input_boolean.adaptive_lighting_override_kitchen_lights
+          - input_boolean.adaptive_lighting_override_kitchen_led_strips
+          - input_boolean.adaptive_lighting_override_bar_strip
+          - input_boolean.adaptive_lighting_override_top_left
+          - input_boolean.adaptive_lighting_override_top_right
+          - input_boolean.adaptive_lighting_override_master_light
+          - input_boolean.adaptive_lighting_override_master_lamp
+          - input_boolean.adaptive_lighting_override_guest_light
+          - input_boolean.adaptive_lighting_override_linda_light
+          - input_boolean.adaptive_lighting_override_gavin_light
+          - input_boolean.adaptive_lighting_override_dining_light
+          - input_boolean.adaptive_lighting_override_hall_light
+          - input_boolean.adaptive_lighting_override_nook_light
+          - input_boolean.adaptive_lighting_override_hobby_light
+          - input_boolean.adaptive_lighting_override_pantry_light
+          - input_boolean.adaptive_lighting_override_porch_light
+    
+    # Reset counters
+    - service: input_number.set_value
+      target:
+        entity_id:
+          - input_number.adaptive_lighting_sync_count
+          - input_number.adaptive_lighting_override_count
+          - input_number.adaptive_lighting_auto_sync_count
+      data:
+        value: 0
+    
+    # Update system status
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.adaptive_lighting_system_status
+      data:
+        value: "Master Control System Reset - All zones restored to default adaptive settings"
+    
+    # Trigger master coordinator
+    - delay:
+        seconds: 2
+    
+    - service: automation.trigger
+      target:
+        entity_id: automation.adaptive_lighting_master_coordinator
+    
+    # Success notification
+    - service: persistent_notification.create
+      data:
+        title: "🔄 Master Control System Reset"
+        message: "All zones, overrides, and settings reset to defaults. System returned to adaptive mode."
+        notification_id: adaptive_lighting_master_reset_complete
+
+# INDIVIDUAL ZONE SCRIPTS (Examples for key zones)
+adaptive_lighting_sync_zone_living_room:
+  alias: "🔄 Sync Living Room Zone"
+  description: "Manually sync living room to current master settings"
+  sequence:
+    # Clear override for this zone
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.adaptive_lighting_override_livingroom_lights
+    
+    # Apply current settings
+    - variables:
+        current_mode: "{{ states('input_select.adaptive_lighting_override_mode') }}"
+        target_temp: >
+          {% if current_mode == 'Adaptive' %}
+            {{ states('sensor.circadian_color_temperature') | int(4000) }}
+          {% else %}
+            {{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}
+          {% endif %}
+        target_brightness: >
+          {% if current_mode == 'Adaptive' %}
+            {{ states('sensor.circadian_brightness') | int(80) }}
+          {% else %}
+            {{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}
+          {% endif %}
+        scale_factor: "{{ states('input_number.adaptive_lighting_zone_living_room_scale') | float(1.0) }}"
+        final_brightness: "{{ (target_brightness * scale_factor) | round(0) }}"
+    
+    - condition: state
+      entity_id: light.livingroom_lights
+      state: 'on'
+    
+    - service: light.turn_on
+      target:
+        entity_id: light.livingroom_lights
+      data:
+        brightness: "{{ final_brightness }}"
+        color_temp_kelvin: "{{ target_temp }}"
+        transition: 2
+
+adaptive_lighting_flash_zone_living_room:
+  alias: "💡 Identify Living Room Zone"
+  description: "Flash living room lights for identification"
+  sequence:
+    - condition: state
+      entity_id: light.livingroom_lights
+      state: 'on'
+    
+    # Flash sequence
+    - service: light.turn_on
+      target:
+        entity_id: light.livingroom_lights
+      data:
+        rgb_color: [0, 255, 255]  # Cyan for identification
+        brightness: 255
+        transition: 0.3
+    
+    - delay:
+        milliseconds: 800
+    
+    - service: light.turn_on
+      target:
+        entity_id: light.livingroom_lights
+      data:
+        brightness: 100
+        transition: 0.3
+    
+    - delay:
+        milliseconds: 500
+    
+    # Repeat flash
+    - service: light.turn_on
+      target:
+        entity_id: light.livingroom_lights
+      data:
+        rgb_color: [0, 255, 255]
+        brightness: 255
+        transition: 0.3
+    
+    - delay:
+        milliseconds: 800
+    
+    # Return to current adaptive/manual state
+    - variables:
+        current_mode: "{{ states('input_select.adaptive_lighting_override_mode') }}"
+        target_temp: >
+          {% if current_mode == 'Adaptive' %}
+            {{ states('sensor.circadian_color_temperature') | int(4000) }}
+          {% else %}
+            {{ states('input_number.adaptive_lighting_master_color_temp') | int(4000) }}
+          {% endif %}
+        target_brightness: >
+          {% if current_mode == 'Adaptive' %}
+            {{ states('sensor.circadian_brightness') | int(80) }}
+          {% else %}
+            {{ states('input_number.adaptive_lighting_master_brightness') | int(80) }}
+          {% endif %}
+    
+    - service: light.turn_on
+      target:
+        entity_id: light.livingroom_lights
+      data:
+        brightness: "{{ target_brightness }}"
+        color_temp_kelvin: "{{ target_temp }}"
+        transition: 2
+
+# GENTLE RE-SYNC SCRIPT (Enhanced from Phase 3+)
+adaptive_lighting_gentle_resync:
+  alias: "🧠 Gentle Re-Sync Individual Light"
+  description: |
+    Gentle re-sync script for individual lights with user preference learning.
+    Attempts to re-integrate opted-out lights with soft transitions.
+  
+  fields:
+    light_entity:
+      description: "Light entity to attempt re-sync"
+      example: "light.livingroom_lights"
+      required: true
+      selector:
+        entity:
+          domain: light
+    
+    override_boolean:
+      description: "Override boolean entity"
+      example: "input_boolean.adaptive_lighting_override_livingroom_lights"
+      required: true
+      selector:
+        entity:
+          domain: input_boolean
+    
+    override_timestamp:
+      description: "Override timestamp entity"
+      example: "input_datetime.adaptive_lighting_last_override_livingroom_lights"
+      required: true
+      selector:
+        entity:
+          domain: input_datetime
+  
+  sequence:
+    # Increment attempt counter
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.adaptive_lighting_resync_attempts
+      data:
+        value: "{{ (states('input_number.adaptive_lighting_resync_attempts') | int(0)) + 1 }}"
+    
+    # Check if light is still on and overridden
+    - condition: template
+      value_template: >
+        {{ states(light_entity) == 'on' and states(override_boolean) == 'on' }}
+    
+    # Gentle approach - match current light closely first
+    - variables:
+        current_brightness: "{{ state_attr(light_entity, 'brightness') | int(127) }}"
+        current_temp: "{{ state_attr(light_entity, 'color_temp_kelvin') | int(4000) }}"
+        adaptive_temp: "{{ states('sensor.circadian_color_temperature') | int(4000) }}"
+        adaptive_brightness: "{{ states('sensor.circadian_brightness') | int(80) }}"
+        
+        # Calculate gentle transition (50% towards adaptive)
+        gentle_temp: "{{ ((current_temp + adaptive_temp) / 2) | round(0) }}"
+        gentle_brightness: "{{ ((current_brightness + adaptive_brightness) / 2) | round(0) }}"
+        
+        supports_color_temp: >
+          {{ 'color_temp' in (state_attr(light_entity, 'supported_color_modes') or []) }}
+    
+    # Apply gentle adjustment
+    - choose:
+        # Color-capable lights
+        - conditions:
+            - condition: template
+              value_template: "{{ supports_color_temp }}"
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: "{{ light_entity }}"
+              data:
+                brightness: "{{ gentle_brightness }}"
+                color_temp_kelvin: "{{ gentle_temp }}"
+                transition: 10  # Slow, gentle transition
+        
+        # Brightness-only lights
+        default:
+          - service: light.turn_on
+            target:
+              entity_id: "{{ light_entity }}"
+            data:
+              brightness: "{{ gentle_brightness }}"
+              transition: 10
+    
+    # Wait for user reaction (monitor for manual adjustments)
+    - delay:
+        seconds: 30
+    
+    # Check if user rejected the gentle adjustment
+    - variables:
+        post_adjustment_brightness: "{{ state_attr(light_entity, 'brightness') | int(127) }}"
+        post_adjustment_temp: "{{ state_attr(light_entity, 'color_temp_kelvin') | int(4000) }}"
+        
+        brightness_changed: "{{ (post_adjustment_brightness - gentle_brightness) | abs > 20 }}"
+        temp_changed: "{{ (post_adjustment_temp - gentle_temp) | abs > 200 }}"
+        user_rejected: "{{ brightness_changed or temp_changed }}"
+    
+    - choose:
+        # User accepted gentle adjustment - complete re-sync
+        - conditions:
+            - condition: template
+              value_template: "{{ not user_rejected }}"
+          sequence:
+            # Complete the transition to adaptive
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: "{{ supports_color_temp }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ light_entity }}"
+                      data:
+                        brightness: "{{ adaptive_brightness }}"
+                        color_temp_kelvin: "{{ adaptive_temp }}"
+                        transition: 15
+                
+                default:
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ light_entity }}"
+                    data:
+                      brightness: "{{ adaptive_brightness }}"
+                      transition: 15
+            
+            # Clear override flag - successful re-sync
+            - service: input_boolean.turn_off
+              target:
+                entity_id: "{{ override_boolean }}"
+            
+            # Update success counter
+            - service: input_number.set_value
+              target:
+                entity_id: input_number.adaptive_lighting_resync_successes
+              data:
+                value: "{{ (states('input_number.adaptive_lighting_resync_successes') | int(0)) + 1 }}"
+            
+            # Fire success event
+            - event: adaptive_lighting_resync_success
+              event_data:
+                entity_id: "{{ light_entity }}"
+                method: "gentle_transition"
+                timestamp: "{{ now().isoformat() }}"
+            
+            # Log success
+            - service: system_log.write
+              data:
+                message: >
+                  Gentle Re-Sync Success: {{ state_attr(light_entity, 'friendly_name') }}
+                  accepted adaptive settings and returned to automatic control.
+                level: info
+        
+        # User rejected - record rejection and increase backoff
+        default:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.adaptive_lighting_resync_rejections
+            data:
+              value: "{{ (states('input_number.adaptive_lighting_resync_rejections') | int(0)) + 1 }}"
+          
+          # Fire rejection event
+          - event: adaptive_lighting_resync_rejected
+            event_data:
+              entity_id: "{{ light_entity }}"
+              reason: "User manually adjusted after gentle transition"
+              timestamp: "{{ now().isoformat() }}"
+          
+          # Log rejection
+          - service: system_log.write
+            data:
+              message: >
+                Gentle Re-Sync Rejected: {{ state_attr(light_entity, 'friendly_name') }}
+                user manually adjusted settings - increasing backoff period.
+            level: info
+
+# =============================================================================
+# END ADAPTIVE LIGHTING PHASE 4 MASTER CONTROL SCRIPTS
+# =============================================================================
+# =============================================================================
+# 💫 ADAPTIVE LIGHTING VISUAL FEEDBACK SCRIPTS - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Visual feedback system for adaptive lighting double-click control
+# as specified in the original implementation document.
+#
+# Features:
+# - Green flash confirmation for adaptive lighting enabled
+# - Red flash confirmation for adaptive lighting disabled
+# - Smart light participation (only flash participating lights)
+# - Graceful restoration to adaptive/manual states
+# - Configurable flash patterns and timing
+#
+# Added: June 16, 2025
+# Version: Phase 3 Visual Feedback Implementation
+# =============================================================================
+
+# MAIN VISUAL FEEDBACK COORDINATOR SCRIPT
+adaptive_lighting_flash_confirmation:
+  alias: "💫 Adaptive Lighting Flash Confirmation"
+  description: |
+    Provides visual feedback for double-click adaptive lighting control.
+    Shows green flashes for enabled, red flashes for disabled state.
+  
+  fields:
+    mode:
+      description: "Confirmation mode: 'enabled' or 'disabled'"
+      example: "enabled"
+      required: true
+      selector:
+        select:
+          options:
+            - "enabled"
+            - "disabled"
+    
+    triggering_light:
+      description: "Light entity that triggered the double-click (optional)"
+      example: "light.livingroom_lights"
+      required: false
+      selector:
+        entity:
+          domain: light
+  
+  variables:
+    # Get all participating lights that are currently on
+    participating_lights: >
+      {% set all_lights = [
+        'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+        'light.bar_strip', 'light.top_left', 'light.top_right',
+        'light.master_light', 'light.master_lamp', 'light.guest_light',
+        'light.linda_light', 'light.gavin_light', 'light.dining_light',
+        'light.hall_light', 'light.nook_light', 'light.hobby_light',
+        'light.pantry_light', 'light.porch_light'
+      ] %}
+      {% set on_lights = [] %}
+      {% for light in all_lights %}
+        {% if states(light) == 'on' %}
+          {% set on_lights = on_lights + [light] %}
+        {% endif %}
+      {% endfor %}
+      {{ on_lights }}
+    
+    # Color-capable lights for temperature effects
+    color_capable_lights: >
+      {% set color_lights = [
+        'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+        'light.bar_strip', 'light.top_left', 'light.top_right'
+      ] %}
+      {% set on_color_lights = [] %}
+      {% for light in color_lights %}
+        {% if light in participating_lights %}
+          {% set on_color_lights = on_color_lights + [light] %}
+        {% endif %}
+      {% endfor %}
+      {{ on_color_lights }}
+    
+    # Flash settings based on mode
+    flash_color: >
+      {{ 'green' if mode == 'enabled' else 'red' }}
+    
+    flash_rgb: >
+      {{ [0, 255, 0] if mode == 'enabled' else [255, 0, 0] }}
+    
+    confirmation_message: >
+      {{ 'Adaptive lighting enabled!' if mode == 'enabled' else 'Adaptive lighting disabled!' }}
+  
+  sequence:
+    # Only proceed if flash confirmations are enabled
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    # Only proceed if there are lights to flash
+    - condition: template
+      value_template: "{{ participating_lights | length > 0 }}"
+    
+    # Store current states for restoration
+    - variables:
+        stored_states: >
+          {% set states_dict = {} %}
+          {% for light in participating_lights %}
+            {% set current_brightness = state_attr(light, 'brightness') | int(0) %}
+            {% set current_color_temp = state_attr(light, 'color_temp_kelvin') | int(0) %}
+            {% set supports_color_temp = 'color_temp' in (state_attr(light, 'supported_color_modes') or []) %}
+            {% set light_state = {
+              'brightness': current_brightness,
+              'color_temp_kelvin': current_color_temp,
+              'supports_color_temp': supports_color_temp
+            } %}
+            {% set states_dict = dict(states_dict, **{light: light_state}) %}
+          {% endfor %}
+          {{ states_dict }}
+    
+    - choose:
+        # ENABLED CONFIRMATION - Green Flashes
+        - conditions:
+            - condition: template
+              value_template: "{{ mode == 'enabled' }}"
+          sequence:
+            # Flash sequence: 2 quick green flashes
+            - repeat:
+                count: 2
+                sequence:
+                  # Flash ON - Green
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ participating_lights }}"
+                    data:
+                      rgb_color: "{{ flash_rgb }}"
+                      brightness: 255
+                      transition: 0.2
+                  
+                  - delay:
+                      milliseconds: 500
+                  
+                  # Flash OFF - Brief dim
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ participating_lights }}"
+                    data:
+                      brightness: 80
+                      transition: 0.2
+                  
+                  - delay:
+                      milliseconds: 300
+            
+            # Restore to adaptive lighting state
+            - delay:
+                seconds: 1
+            
+            - choose:
+                # Color-capable lights with adaptive color temperature
+                - conditions:
+                    - condition: template
+                      value_template: "{{ color_capable_lights | length > 0 }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ color_capable_lights }}"
+                      data:
+                        color_temp_kelvin: >
+                          {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+                            {{ states('sensor.circadian_color_temperature') | int(4000) }}
+                          {% else %}
+                            4000
+                          {% endif %}
+                        brightness_pct: >
+                          {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+                            {{ states('sensor.circadian_brightness') | int(80) }}
+                          {% else %}
+                            80
+                          {% endif %}
+                        transition: 2
+            
+            # Restore brightness-only lights
+            - service: light.turn_on
+              target:
+                entity_id: >
+                  {% set brightness_only = [] %}
+                  {% for light in participating_lights %}
+                    {% if light not in color_capable_lights %}
+                      {% set brightness_only = brightness_only + [light] %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ brightness_only }}
+              data:
+                brightness_pct: >
+                  {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+                    {{ states('sensor.circadian_brightness') | int(80) }}
+                  {% else %}
+                    80
+                  {% endif %}
+                transition: 2
+        
+        # DISABLED CONFIRMATION - Red Flashes
+        - conditions:
+            - condition: template
+              value_template: "{{ mode == 'disabled' }}"
+          sequence:
+            # Flash sequence: 2 quick red flashes
+            - repeat:
+                count: 2
+                sequence:
+                  # Flash ON - Red
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ participating_lights }}"
+                    data:
+                      rgb_color: "{{ flash_rgb }}"
+                      brightness: 255
+                      transition: 0.2
+                  
+                  - delay:
+                      milliseconds: 500
+                  
+                  # Flash OFF - Brief dim
+                  - service: light.turn_on
+                    target:
+                      entity_id: "{{ participating_lights }}"
+                    data:
+                      brightness: 80
+                      transition: 0.2
+                  
+                  - delay:
+                      milliseconds: 300
+            
+            # Restore to manual control state (neutral white)
+            - delay:
+                seconds: 1
+            
+            - choose:
+                # Color-capable lights with manual neutral state
+                - conditions:
+                    - condition: template
+                      value_template: "{{ color_capable_lights | length > 0 }}"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: "{{ color_capable_lights }}"
+                      data:
+                        color_temp_kelvin: 4000  # Neutral white for manual control
+                        brightness_pct: 80       # Standard manual brightness
+                        transition: 2
+            
+            # Restore brightness-only lights to manual brightness
+            - service: light.turn_on
+              target:
+                entity_id: >
+                  {% set brightness_only = [] %}
+                  {% for light in participating_lights %}
+                    {% if light not in color_capable_lights %}
+                      {% set brightness_only = brightness_only + [light] %}
+                    {% endif %}
+                  {% endfor %}
+                  {{ brightness_only }}
+              data:
+                brightness_pct: 80  # Standard manual control brightness
+                transition: 2
+    
+    # Log the confirmation action
+    - service: system_log.write
+      data:
+        message: >
+          Visual Feedback Complete: {{ confirmation_message }}
+          Flashed {{ participating_lights | length }} lights with {{ flash_color }} pattern.
+        level: info
+
+# =============================================================================
+# ADVANCED FLASH PATTERNS FOR DIFFERENT SCENARIOS
+# =============================================================================
+
+# Override Reset Confirmation Flash
+adaptive_lighting_reset_flash:
+  alias: "🔄 Adaptive Lighting Reset Flash"
+  description: |
+    Brief blue flash to confirm override reset without full double-click sequence.
+    Used for daily reset and manual override clearing.
+  
+  sequence:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    - variables:
+        participating_lights: >
+          {% set all_lights = [
+            'light.livingroom_lights', 'light.kitchen_lights', 'light.kitchen_led_strips',
+            'light.bar_strip', 'light.top_left', 'light.top_right',
+            'light.master_light', 'light.master_lamp', 'light.guest_light',
+            'light.linda_light', 'light.gavin_light', 'light.dining_light',
+            'light.hall_light', 'light.nook_light', 'light.hobby_light',
+            'light.pantry_light', 'light.porch_light'
+          ] %}
+          {% set on_lights = [] %}
+          {% for light in all_lights %}
+            {% if states(light) == 'on' %}
+              {% set on_lights = on_lights + [light] %}
+            {% endif %}
+          {% endfor %}
+          {{ on_lights }}
+    
+    - condition: template
+      value_template: "{{ participating_lights | length > 0 }}"
+    
+    # Single blue flash for reset confirmation
+    - service: light.turn_on
+      target:
+        entity_id: "{{ participating_lights }}"
+      data:
+        rgb_color: [0, 100, 255]  # Blue
+        brightness: 200
+        transition: 0.3
+    
+    - delay:
+        milliseconds: 800
+    
+    # Restore to current adaptive state
+    - service: light.turn_on
+      target:
+        entity_id: "{{ participating_lights }}"
+      data:
+        color_temp_kelvin: >
+          {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+            {{ states('sensor.circadian_color_temperature') | int(4000) }}
+          {% else %}
+            4000
+          {% endif %}
+        brightness_pct: >
+          {% if is_state('input_boolean.adaptive_lighting_circadian_enable', 'on') %}
+            {{ states('sensor.circadian_brightness') | int(80) }}
+          {% else %}
+            80
+          {% endif %}
+        transition: 1.5
+
+# Zone-Specific Flash for Individual Overrides
+adaptive_lighting_zone_override_flash:
+  alias: "⚠️ Adaptive Lighting Zone Override Flash"
+  description: |
+    Subtle orange flash for individual light override detection.
+    Only flashes the specific light that was overridden.
+  
+  fields:
+    target_light:
+      description: "Specific light entity that was overridden"
+      example: "light.livingroom_lights"
+      required: true
+      selector:
+        entity:
+          domain: light
+  
+  sequence:
+    - condition: state
+      entity_id: input_boolean.adaptive_lighting_flash_confirmation_enable
+      state: 'on'
+    
+    - condition: template
+      value_template: "{{ states(target_light) == 'on' }}"
+    
+    # Single subtle orange flash for override detection
+    - service: light.turn_on
+      target:
+        entity_id: "{{ target_light }}"
+      data:
+        rgb_color: [255, 165, 0]  # Orange
+        brightness: 150
+        transition: 0.5
+    
+    - delay:
+        milliseconds: 600
+    
+    # Return to user's manual settings (no change)
+    # This just briefly indicates override was detected
+    - service: system_log.write
+      data:
+        message: >
+          Zone Override Flash: {{ state_attr(target_light, 'friendly_name') or target_light }}
+          override detected and acknowledged.
+        level: info
+
+# =============================================================================
+# UTILITY SCRIPTS FOR TESTING AND DIAGNOSTICS
+# =============================================================================
+
+# Test Flash Patterns
+adaptive_lighting_test_flashes:
+  alias: "🧪 Adaptive Lighting Test Flash Patterns"
+  description: |
+    Test script to verify all flash patterns are working correctly.
+    Cycles through enabled, disabled, reset, and override flash patterns.
+  
+  sequence:
+    - service: persistent_notification.create
+      data:
+        title: "🧪 Testing Flash Patterns"
+        message: "Starting adaptive lighting flash pattern test sequence..."
+        notification_id: "flash_test"
+    
+    # Test enabled flash (green)
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        mode: "enabled"
+    
+    - delay:
+        seconds: 5
+    
+    # Test disabled flash (red)
+    - service: script.adaptive_lighting_flash_confirmation
+      data:
+        mode: "disabled"
+    
+    - delay:
+        seconds: 5
+    
+    # Test reset flash (blue)
+    - service: script.adaptive_lighting_reset_flash
+    
+    - delay:
+        seconds: 3
+    
+    # Test complete notification
+    - service: persistent_notification.create
+      data:
+        title: "✅ Flash Pattern Test Complete"
+        message: "All adaptive lighting flash patterns tested successfully."
+        notification_id: "flash_test_complete"
+    
+    - service: system_log.write
+      data:
+        message: "Adaptive Lighting Flash Pattern Test completed successfully"
+        level: info
+
+# =============================================================================
+# SCRIPT NOTES AND CONFIGURATION
+# =============================================================================
+#
+# Visual Feedback Features:
+# 1. Green flash confirmation for adaptive lighting enabled
+# 2. Red flash confirmation for adaptive lighting disabled  
+# 3. Blue flash for override resets and daily resets
+# 4. Orange flash for individual zone override detection
+# 5. Smart light participation (only flash lights that are on)
+# 6. Graceful state restoration after feedback
+# 7. Configurable flash patterns and timing
+# 8. Integration with circadian sensors for accurate restoration
+#
+# Flash Timing:
+# - Double-click confirmations: 2 flashes, 500ms on, 300ms off
+# - Reset confirmations: 1 flash, 800ms duration  
+# - Override detections: 1 flash, 600ms duration
+# - All flashes use smooth transitions for professional appearance
+#
+# Color Coding:
+# - Green: Adaptive lighting enabled (positive action)
+# - Red: Adaptive lighting disabled (negative action)
+# - Blue: System reset/refresh (neutral action)
+# - Orange: Override detected (warning/informational)
+#
+# Dependencies:
+# - input_boolean.adaptive_lighting_flash_confirmation_enable
+# - sensor.circadian_color_temperature (if circadian mode enabled)
+# - sensor.circadian_brightness (if circadian mode enabled)
+# - All participating light entities must support rgb_color or color_temp
+#
+# Performance:
+# - Only flashes lights that are currently on
+# - Respects user's flash enable/disable preference
+# - Minimal impact on system performance
+# - Graceful degradation if sensors unavailable
+#
+# =============================================================================

@@ -14,5 +14,5 @@ mcp_info "GITHUB" "Starting GitHub MCP server with token: ${GITHUB_PERSONAL_ACCE
 
 exec docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN" \
-  local-github-mcp \
+  ghcr.io/github/github-mcp-server \
   stdio --toolsets context,projects,repos,issues,pull_requests

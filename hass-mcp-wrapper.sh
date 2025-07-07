@@ -3,7 +3,7 @@ cd /home/dev/workspace
 
 # Environment variables with defaults
 export HA_URL="${HA_URL:-http://192.168.1.155:8123}"
-export HA_TOKEN="${HA_TOKEN:-test-home-assistant-token-for-diagnostic}"
+export HA_TOKEN="${HA_TOKEN:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiOTJkNDM5Yjg2OTU0YWFmOTAwZmVhZmMyMmI1NjlhNCIsImlhdCI6MTc1MTQ5NjEyMiwiZXhwIjoyMDY2ODU2MTIyfQ.VnAswhqcZsIR4grBirx2IjdI3bvxCC2A0fKwVv4OXkQ}"
 
 # Diagnostic mode - run connectivity test first
 echo "Running Home Assistant connectivity test..."

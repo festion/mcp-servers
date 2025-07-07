@@ -11,15 +11,19 @@ The GitHub MCP Server now includes comprehensive support for GitHub Projects API
 - Column management (6 tools)
 - Card operations (7 tools)
 
-**Phase 2: Enhanced Features** 🔄 Planned
-- Bulk read operations
-- Advanced filtering
-- Performance optimizations
+**Phase 2: Enhanced Features** ✅ Complete (January 2025)
+- Full GraphQL implementations for card operations
+- Advanced error handling with user-friendly messages
+- GraphQL schema fragments for consistency
+- Comprehensive field value support (text, number, date, select, iteration, etc.)
+- Detailed card content retrieval (issues, PRs, draft issues)
 
 **Phase 3: Advanced Features** 📅 Future
-- Custom field management
-- Automation rules
-- Webhook integrations
+- Pagination support for large projects
+- Caching layer for read operations
+- Custom field CRUD operations
+- Automation rule management
+- Webhook event handling
 
 ## Available Tools
 
@@ -170,20 +174,35 @@ Move multiple cards between columns in bulk.
 - `target_column_id` (required): ID of the target column
 
 #### 17. `list_project_cards`
-List cards in a project board with filtering options.
+List cards in a project board with filtering options and full field values.
 
 **Parameters:**
 - `board_id` (required): ID of the project board
 - `column_id`: Filter by specific column
 - `content_type`: Filter by content type (issue, pull_request)
-- `include_archived`: Include archived cards
-- `limit`: Maximum number of cards to return
+- `include_archived`: Include archived cards (default: false)
+- `limit`: Maximum number of cards to return (default: 50, max: 100)
+- `after`: Cursor for pagination
+
+**Returns:**
+- Comprehensive card information including:
+  - Card metadata (ID, type, timestamps, archived status)
+  - Full content details (issue/PR with labels, assignees, milestone)
+  - All custom field values (text, number, date, select, iteration, etc.)
+  - Pagination info for large result sets
 
 #### 18. `get_project_card`
-Get detailed information about a specific project card.
+Get detailed information about a specific project card with all field values.
 
 **Parameters:**
 - `card_id` (required): ID of the card to retrieve
+
+**Returns:**
+- Complete card details including:
+  - Card metadata and status
+  - Full content (issue/PR/draft) with all attributes
+  - All custom field values with field names
+  - Related project and column information
 
 ## Technical Implementation
 
@@ -196,7 +215,11 @@ Get detailed information about a specific project card.
 ### Key Files
 - `pkg/github/projects.go` - Project board operations
 - `pkg/github/project_columns.go` - Column management
-- `pkg/github/project_cards.go` - Card operations
+- `pkg/github/project_cards.go` - Simplified card operations
+- `pkg/github/project_cards_v2.go` - Full GraphQL card implementations
+- `pkg/github/project_cards_enhanced.go` - Enhanced write operations
+- `pkg/github/graphql_schemas.go` - Reusable GraphQL fragments
+- `pkg/github/graphql_errors.go` - Error handling utilities
 - `pkg/github/tools.go` - Tool registration
 
 ### GitHub Projects API v2 Considerations
@@ -243,16 +266,17 @@ mcp-cli call bulk_move_cards '{
 
 ## Limitations
 
-### Current Limitations (Phase 1)
-1. **Simplified Mutations**: Some write operations return simplified responses
-2. **No Bulk Reads**: Bulk read operations planned for Phase 2
-3. **Limited Field Support**: Custom field management coming in Phase 3
+### Current Limitations
+1. **Pagination**: Large result sets require manual cursor management
+2. **Cache**: No caching layer, each request hits the API
+3. **Field Creation**: Cannot create custom fields (read/update only)
 4. **Template Constraints**: GitHub API v2 has limited template support
 
 ### API Constraints
 - GitHub Projects API v2 differs significantly from classic projects
-- Rate limits apply to GraphQL operations
+- Rate limits apply to GraphQL operations (5000 points per hour)
 - Some features require specific GitHub plan levels
+- Complex queries consume more rate limit points
 
 ## Troubleshooting
 
@@ -274,19 +298,46 @@ mcp-cli call bulk_move_cards '{
    - Verify issue/PR exists and is accessible
    - Check project accepts the content type
 
+## Phase 2 Features
+
+### Enhanced Card Operations
+The Phase 2 implementation provides comprehensive GraphQL support for cards:
+
+1. **Full Field Value Support**
+   - Text, number, date fields
+   - Single-select options (columns)
+   - Iteration fields with dates
+   - User, label, milestone fields
+   - Repository and pull request links
+
+2. **Content Details**
+   - Complete issue/PR information
+   - Labels with colors
+   - Assignees and authors
+   - Milestones with due dates
+   - PR-specific metrics (additions, deletions)
+
+3. **Error Handling**
+   - User-friendly error messages
+   - ID format validation
+   - Permission error guidance
+   - Not-found error suggestions
+
+### Example: Get Card with All Details
+```bash
+mcp-cli call get_project_card '{"card_id": "PVTI_123"}'
+# Returns full card details including all custom fields
+```
+
 ## Future Enhancements
 
-### Phase 2 (Planned)
-- Bulk read operations for performance
-- Advanced filtering and search
-- Pagination support
-- Caching layer
-
-### Phase 3 (Future)
+### Phase 3 (Planned)
+- Cursor-based pagination helpers
+- Response caching with TTL
 - Custom field CRUD operations
 - Automation rule management
 - Webhook event handling
-- Template creation
+- Batch operations for efficiency
 
 ## Related Documentation
 - [GitHub Projects API v2](https://docs.github.com/en/graphql/reference/objects#projectv2)

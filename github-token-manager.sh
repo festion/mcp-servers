@@ -103,7 +103,8 @@ load_credentials() {
         "github")
             if [ -f "$GITHUB_TOKEN_FILE" ]; then
                 export GITHUB_PERSONAL_ACCESS_TOKEN="$(cat "$GITHUB_TOKEN_FILE")"
-                echo "GitHub credentials loaded"
+                echo "export GITHUB_PERSONAL_ACCESS_TOKEN='$(cat "$GITHUB_TOKEN_FILE")'"
+                echo "GitHub credentials loaded" >&2
                 return 0
             fi
             ;;
@@ -111,7 +112,9 @@ load_credentials() {
             if [ -f "$HASS_TOKEN_FILE" ] && [ -f "$HASS_URL_FILE" ]; then
                 export HA_TOKEN="$(cat "$HASS_TOKEN_FILE")"
                 export HA_URL="$(cat "$HASS_URL_FILE")"
-                echo "Home Assistant credentials loaded"
+                echo "export HA_TOKEN='$(cat "$HASS_TOKEN_FILE")'"
+                echo "export HA_URL='$(cat "$HASS_URL_FILE")'"
+                echo "Home Assistant credentials loaded" >&2
                 return 0
             fi
             ;;
@@ -120,7 +123,10 @@ load_credentials() {
                 export PROXMOX_TOKEN="$(cat "$PROXMOX_TOKEN_FILE")"
                 export PROXMOX_HOST="$(cat "$PROXMOX_HOST_FILE")"
                 export PROXMOX_USER="$(cat "$PROXMOX_USER_FILE")"
-                echo "Proxmox credentials loaded"
+                echo "export PROXMOX_TOKEN='$(cat "$PROXMOX_TOKEN_FILE")'"
+                echo "export PROXMOX_HOST='$(cat "$PROXMOX_HOST_FILE")'"
+                echo "export PROXMOX_USER='$(cat "$PROXMOX_USER_FILE")'"
+                echo "Proxmox credentials loaded" >&2
                 return 0
             fi
             ;;
@@ -128,7 +134,9 @@ load_credentials() {
             if [ -f "$WIKIJS_TOKEN_FILE" ] && [ -f "$WIKIJS_URL_FILE" ]; then
                 export WIKIJS_TOKEN="$(cat "$WIKIJS_TOKEN_FILE")"
                 export WIKIJS_URL="$(cat "$WIKIJS_URL_FILE")"
-                echo "WikiJS credentials loaded"
+                echo "export WIKIJS_TOKEN='$(cat "$WIKIJS_TOKEN_FILE")'"
+                echo "export WIKIJS_URL='$(cat "$WIKIJS_URL_FILE")'"
+                echo "WikiJS credentials loaded" >&2
                 return 0
             fi
             ;;

@@ -1,14 +1,13 @@
 #!/bin/bash
 cd /home/dev/workspace
 # Load WikiJS credentials from secure storage
-source /home/dev/workspace/github-token-manager.sh
-if ! load_credentials wikijs; then
+eval "$(/home/dev/workspace/github-token-manager.sh load wikijs 2>/dev/null)" || {
     echo "ERROR: Failed to load WikiJS credentials"
     echo "Please run:"
     echo "  /home/dev/workspace/github-token-manager.sh store wikijs token <your_wikijs_token>"
     echo "  /home/dev/workspace/github-token-manager.sh store wikijs url <your_wikijs_url>"
     exit 1
-fi
+}
 
 # Log startup attempt
 source /home/dev/workspace/mcp-logger.sh 2>/dev/null || true

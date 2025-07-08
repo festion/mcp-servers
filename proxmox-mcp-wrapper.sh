@@ -9,15 +9,14 @@ SESSION_ID="${MCP_SESSION_ID:-$(echo "${SSH_TTY:-$(tty 2>/dev/null || echo unkno
 PID_FILE="${MCP_PID_FILE:-/tmp/mcp-sessions/pids/$SESSION_ID/proxmox.pid}"
 
 # Load Proxmox credentials from secure storage
-source /home/dev/workspace/github-token-manager.sh
-if ! load_credentials proxmox; then
+eval "$(/home/dev/workspace/github-token-manager.sh load proxmox 2>/dev/null)" || {
     echo "ERROR: Failed to load Proxmox credentials"
     echo "Please run:"
     echo "  /home/dev/workspace/github-token-manager.sh store proxmox token 'PVEAPIToken=user@realm!token=uuid'"
     echo "  /home/dev/workspace/github-token-manager.sh store proxmox host 192.168.1.137"
     echo "  /home/dev/workspace/github-token-manager.sh store proxmox user root@pam"
     exit 1
-fi
+}
 
 export PROXMOX_PASSWORD="${PROXMOX_PASSWORD:-placeholder}"
 

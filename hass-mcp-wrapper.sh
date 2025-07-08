@@ -2,14 +2,13 @@
 cd /home/dev/workspace
 
 # Load Home Assistant credentials from secure storage
-source /home/dev/workspace/github-token-manager.sh
-if ! load_credentials hass; then
+eval "$(/home/dev/workspace/github-token-manager.sh load hass 2>/dev/null)" || {
     echo "ERROR: Failed to load Home Assistant credentials"
     echo "Please run:"
     echo "  /home/dev/workspace/github-token-manager.sh store hass token <your_hass_token>"
     echo "  /home/dev/workspace/github-token-manager.sh store hass url <your_hass_url>"
     exit 1
-fi
+}
 
 # Diagnostic mode - run connectivity test first
 echo "Running Home Assistant connectivity test..."

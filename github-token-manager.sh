@@ -53,8 +53,8 @@ store_credential() {
             fi
             ;;
         "proxmox:host")
-            if [[ ! "$value" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-                echo "ERROR: Invalid IP address format"
+            if [[ ! "$value" =~ ^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|[a-zA-Z0-9.-]+)$ ]]; then
+                echo "ERROR: Invalid host format (IP address or hostname)"
                 return 1
             fi
             ;;

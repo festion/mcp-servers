@@ -1,9 +1,9 @@
 #!/bin/bash
 # Load GitHub token from secure storage
 source /home/dev/workspace/github-token-manager.sh
-if ! load_token; then
+if ! load_credentials github; then
     echo "ERROR: Failed to load GitHub token"
-    echo "Please run: /home/dev/workspace/github-token-manager.sh store <your_token>"
+    echo "Please run: /home/dev/workspace/github-token-manager.sh store github token <your_token>"
     exit 1
 fi
 

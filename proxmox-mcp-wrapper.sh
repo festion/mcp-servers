@@ -8,13 +8,18 @@ cd /home/dev/workspace
 SESSION_ID="${MCP_SESSION_ID:-$(echo "${SSH_TTY:-$(tty 2>/dev/null || echo unknown)}" | sed 's/[^a-zA-Z0-9]/_/g')}"
 PID_FILE="${MCP_PID_FILE:-/tmp/mcp-sessions/pids/$SESSION_ID/proxmox.pid}"
 
-# Environment setup
-export PROXMOX_HOST="${PROXMOX_HOST:-192.168.1.137}"
-export PROXMOX_USER="${PROXMOX_USER:-root@pam}"
-export PROXMOX_TOKEN="${PROXMOX_TOKEN:-PVEAPIToken=root@pam!claude=b2cb00a2-f76d-442c-a3a3-d48c0896ea8a}"
-export PROXMOX_PASSWORD="${PROXMOX_PASSWORD:-placeholder}"
+# Load Proxmox credentials from secure storage
+source /home/dev/workspace/github-token-manager.sh
+if ! load_credentials proxmox; then
+    echo "ERROR: Failed to load Proxmox credentials"
+    echo "Please run:"
+    echo "  /home/dev/workspace/github-token-manager.sh store proxmox token 'PVEAPIToken=user@realm!token=uuid'"
+    echo "  /home/dev/workspace/github-token-manager.sh store proxmox host 192.168.1.137"
+    echo "  /home/dev/workspace/github-token-manager.sh store proxmox user root@pam"
+    exit 1
+fi
 
-# Configuration validation removed - using real token
+export PROXMOX_PASSWORD="${PROXMOX_PASSWORD:-placeholder}"
 
 # Logging setup
 source /home/dev/workspace/mcp-logger.sh 2>/dev/null || {

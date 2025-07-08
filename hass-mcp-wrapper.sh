@@ -1,9 +1,15 @@
 #!/bin/bash
 cd /home/dev/workspace
 
-# Environment variables with defaults
-export HA_URL="${HA_URL:-http://192.168.1.155:8123}"
-export HA_TOKEN="${HA_TOKEN:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiOTJkNDM5Yjg2OTU0YWFmOTAwZmVhZmMyMmI1NjlhNCIsImlhdCI6MTc1MTQ5NjEyMiwiZXhwIjoyMDY2ODU2MTIyfQ.VnAswhqcZsIR4grBirx2IjdI3bvxCC2A0fKwVv4OXkQ}"
+# Load Home Assistant credentials from secure storage
+source /home/dev/workspace/github-token-manager.sh
+if ! load_credentials hass; then
+    echo "ERROR: Failed to load Home Assistant credentials"
+    echo "Please run:"
+    echo "  /home/dev/workspace/github-token-manager.sh store hass token <your_hass_token>"
+    echo "  /home/dev/workspace/github-token-manager.sh store hass url <your_hass_url>"
+    exit 1
+fi
 
 # Diagnostic mode - run connectivity test first
 echo "Running Home Assistant connectivity test..."
@@ -21,12 +27,7 @@ if ! ./hass-mcp-diagnostic.sh >/dev/null 2>&1; then
     echo "Continuing with limited functionality (API calls will fail)..."
 fi
 
-# Check if token is configured (allow test token for diagnostics)
-if [ "$HA_TOKEN" = "your_hass_token_here" ]; then
-    echo "ERROR: Home Assistant MCP server requires configuration. Please set HA_TOKEN environment variable."
-    echo "Example: export HA_TOKEN='your-home-assistant-long-lived-access-token'"
-    exit 1
-fi
+# Token validation is handled by the token manager above
 
 # Log startup attempt
 source /home/dev/workspace/mcp-logger.sh 2>/dev/null || true

@@ -1,12 +1,12 @@
 #!/bin/bash
 cd /home/dev/workspace
-export WIKIJS_URL="${WIKIJS_URL:-http://192.168.1.90:3000}"
-export WIKIJS_TOKEN="${WIKIJS_TOKEN:-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOjIsImdycCI6MSwiaWF0IjoxNzUwNjg5NzQ0LCJleHAiOjE3NTMyODE3NDQsImF1ZCI6InVybjp3aWtpLmpzIiwiaXNzIjoidXJuOndpa2kuanMifQ.rcGzUI_zmRmFhin90HM2BuB6n4CcCUYY2kHBL7aYg2C114U1GkAD_UHIEmo-6lH-qFESgh34MBTs_6-WUCxDQIg-Y2rPeKZqY8nnFrwrrFwXu6s3cyomHw4QclHWa1_OKs0BCausZWYWkgLagELx3WNw42Zs8YqH0yfjYqNQFy-Vh1jAphtoloFtKRZ0DIWSYE-oxwDywu3Qkh5XFIf0hZKOAu3XKD8da0G3WFpw4JB9v7ubHYNHJBdzp8RpLov-f6Xh5AYGuel1N4PCIbVRegpCKUVbHwZgYHrkTWwae-8D_9tphg1zAbGoQQ2bU-IPsFfcyFg8RDYViJiH2qaL0g}"
-
-# Check if tokens are configured (allow test tokens for diagnostics)
-if [ "$WIKIJS_URL" = "http://your-wikijs-instance" ] || [ "$WIKIJS_TOKEN" = "your_wikijs_token_here" ]; then
-    echo "ERROR: WikiJS MCP server requires configuration. Please set WIKIJS_URL and WIKIJS_TOKEN environment variables."
-    echo "Example: export WIKIJS_URL='https://wiki.example.com' && export WIKIJS_TOKEN='your-actual-token'"
+# Load WikiJS credentials from secure storage
+source /home/dev/workspace/github-token-manager.sh
+if ! load_credentials wikijs; then
+    echo "ERROR: Failed to load WikiJS credentials"
+    echo "Please run:"
+    echo "  /home/dev/workspace/github-token-manager.sh store wikijs token <your_wikijs_token>"
+    echo "  /home/dev/workspace/github-token-manager.sh store wikijs url <your_wikijs_url>"
     exit 1
 fi
 

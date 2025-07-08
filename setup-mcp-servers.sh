@@ -78,7 +78,7 @@ cat > ~/.config/claude-code/config.json << 'EOF'
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "your_github_token_here"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     }
   }
@@ -105,7 +105,10 @@ log "Creating MCP server wrapper scripts..."
 # GitHub MCP wrapper (for when token is configured)
 cat > ~/workspace/github-mcp-wrapper.sh << 'EOF'
 #!/bin/bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_TOKEN:-your_token_here}"
+if [ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]; then
+    echo "ERROR: GitHub MCP server requires configuration. Please set GITHUB_PERSONAL_ACCESS_TOKEN environment variable."
+    exit 1
+fi
 npx -y @modelcontextprotocol/server-github
 EOF
 chmod +x ~/workspace/github-mcp-wrapper.sh

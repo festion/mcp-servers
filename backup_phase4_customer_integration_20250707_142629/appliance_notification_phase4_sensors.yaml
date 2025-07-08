@@ -1,0 +1,526 @@
+# =============================================================================
+# PHASE 4: APPLIANCE NOTIFICATION SYSTEM - SENSORS & MONITORING
+# =============================================================================
+# Template sensors, counters, and monitoring entities for comprehensive testing
+# Date: July 7, 2025
+
+# =============================================================================
+# INPUT HELPERS FOR TRACKING & CONFIGURATION
+# =============================================================================
+
+input_text:
+  # Test Status Tracking
+  current_test_status:
+    name: "Current Test Status"
+    initial: "System ready for testing"
+    max: 255
+    icon: mdi:test-tube
+    
+  test_results_summary:
+    name: "Test Results Summary"
+    initial: "No tests run yet"
+    max: 255
+    icon: mdi:chart-line
+    
+  core_health_status:
+    name: "Core Health Status"
+    initial: "Core systems healthy"
+    max: 255
+    icon: mdi:heart-pulse
+    
+  # Deployment Status
+  deployment_status:
+    name: "Deployment Status"
+    initial: "Ready for deployment checks"
+    max: 255
+    icon: mdi:rocket
+    
+  monitoring_status:
+    name: "Monitoring Status"
+    initial: "Monitoring not started"
+    max: 255
+    icon: mdi:monitor
+    
+  # System Alerts
+  system_alert_status:
+    name: "System Alert Status"
+    initial: "No alerts"
+    max: 255
+    icon: mdi:alert-circle
+    
+  # Documentation & Backup
+  documentation_status:
+    name: "Documentation Status"
+    initial: "Documentation not generated"
+    max: 255
+    icon: mdi:book
+    
+  backup_status:
+    name: "Backup Status"
+    initial: "No backups created"
+    max: 255
+    icon: mdi:backup-restore
+
+input_number:
+  # Test Results Tracking
+  calculated_success_rate:
+    name: "Calculated Success Rate"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "%"
+    icon: mdi:percent
+    
+  last_test_latency:
+    name: "Last Test Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:timer
+    
+  multichannel_test_latency:
+    name: "Multi-channel Test Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:timer-multiple
+    
+  # Channel-specific Latencies
+  alexa_last_latency:
+    name: "Alexa Last Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:amazon-alexa
+    
+  mobile_last_latency:
+    name: "Mobile Last Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:cellphone
+    
+  email_last_latency:
+    name: "Email Last Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:email
+    
+  sms_last_latency:
+    name: "SMS Last Latency"
+    min: 0
+    max: 10
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "s"
+    icon: mdi:message-text
+    
+  # Context Routing
+  context_routing_accuracy:
+    name: "Context Routing Accuracy"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 95.0
+    unit_of_measurement: "%"
+    icon: mdi:bullseye
+    
+  # Active Channels Count
+  active_notification_channels:
+    name: "Active Notification Channels"
+    min: 0
+    max: 4
+    step: 1
+    initial: 1
+    unit_of_measurement: "channels"
+    icon: mdi:counter
+    
+  # Production Readiness
+  production_readiness_score:
+    name: "Production Readiness Score"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 0
+    unit_of_measurement: "%"
+    icon: mdi:rocket
+    
+  # System Health Metrics
+  system_health_score:
+    name: "System Health Score"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 100
+    unit_of_measurement: "%"
+    icon: mdi:heart-pulse
+    
+  system_cpu_usage:
+    name: "System CPU Usage"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 20
+    unit_of_measurement: "%"
+    icon: mdi:chip
+    
+  system_memory_usage:
+    name: "System Memory Usage"
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 50
+    unit_of_measurement: "%"
+    icon: mdi:memory
+    
+  system_response_time:
+    name: "System Response Time"
+    min: 0
+    max: 10
+    step: 0.01
+    initial: 1.0
+    unit_of_measurement: "s"
+    icon: mdi:timer
+    
+  system_error_count:
+    name: "System Error Count"
+    min: 0
+    max: 100
+    step: 1
+    initial: 0
+    unit_of_measurement: "errors"
+    icon: mdi:alert
+
+input_boolean:
+  # Channel Availability Status
+  alexa_notifications_available:
+    name: "Alexa Notifications Available"
+    initial: true
+    icon: mdi:amazon-alexa
+    
+  mobile_notifications_available:
+    name: "Mobile Notifications Available"
+    initial: false
+    icon: mdi:cellphone
+    
+  email_notifications_available:
+    name: "Email Notifications Available"
+    initial: false
+    icon: mdi:email
+    
+  sms_notifications_available:
+    name: "SMS Notifications Available"
+    initial: false
+    icon: mdi:message-text
+    
+  # System Test Status
+  appliance_core_tests_passed:
+    name: "Core System Tests Passed"
+    initial: false
+    icon: mdi:check-circle
+    
+  appliance_threshold_tests_passed:
+    name: "Threshold Tests Passed"
+    initial: false
+    icon: mdi:tune
+    
+  appliance_timing_tests_passed:
+    name: "Timing Tests Passed"
+    initial: false
+    icon: mdi:timer-check
+    
+  # Notification Channel Tests
+  alexa_tests_passed:
+    name: "Alexa Tests Passed"
+    initial: false
+    icon: mdi:amazon-alexa
+    
+  mobile_tests_passed:
+    name: "Mobile Tests Passed"
+    initial: false
+    icon: mdi:cellphone
+    
+  email_tests_passed:
+    name: "Email Tests Passed"
+    initial: false
+    icon: mdi:email
+    
+  sms_tests_passed:
+    name: "SMS Tests Passed"
+    initial: false
+    icon: mdi:message-text
+    
+  # Advanced Feature Tests
+  context_routing_tests_passed:
+    name: "Context Routing Tests Passed"
+    initial: false
+    icon: mdi:target
+    
+  self_healing_tests_passed:
+    name: "Self-healing Tests Passed"
+    initial: false
+    icon: mdi:auto-fix
+    
+  load_tests_passed:
+    name: "Load Tests Passed"
+    initial: false
+    icon: mdi:weight
+    
+  # Target Achievement Status
+  success_rate_target_met:
+    name: "Success Rate Target Met"
+    initial: false
+    icon: mdi:target
+    
+  latency_target_met:
+    name: "Latency Target Met"
+    initial: false
+    icon: mdi:timer-check
+    
+  reliability_target_met:
+    name: "Reliability Target Met"
+    initial: false
+    icon: mdi:shield-check
+    
+  # System Readiness
+  detection_system_ready:
+    name: "Detection System Ready"
+    initial: false
+    icon: mdi:radar
+    
+  notification_system_ready:
+    name: "Notification System Ready"
+    initial: false
+    icon: mdi:bell
+    
+  monitoring_system_ready:
+    name: "Monitoring System Ready"
+    initial: false
+    icon: mdi:monitor
+    
+  documentation_complete:
+    name: "Documentation Complete"
+    initial: false
+    icon: mdi:book-check
+    
+  # Production Controls
+  production_monitoring_enabled:
+    name: "Production Monitoring Enabled"
+    initial: false
+    icon: mdi:monitor-eye
+    
+  maintenance_mode:
+    name: "Maintenance Mode"
+    initial: false
+    icon: mdi:wrench
+
+input_datetime:
+  next_maintenance_window:
+    name: "Next Maintenance Window"
+    has_date: true
+    has_time: true
+    icon: mdi:calendar-clock
+
+# =============================================================================
+# COUNTERS FOR TEST TRACKING
+# =============================================================================
+
+counter:
+  total_tests_run:
+    name: "Total Tests Run"
+    initial: 0
+    step: 1
+    icon: mdi:counter
+    
+  test_successes:
+    name: "Test Successes"
+    initial: 0
+    step: 1
+    icon: mdi:check-circle
+    
+  test_failures:
+    name: "Test Failures"
+    initial: 0
+    step: 1
+    icon: mdi:close-circle
+    
+  test_latency_violations:
+    name: "Test Latency Violations"
+    initial: 0
+    step: 1
+    icon: mdi:timer-alert
+
+# =============================================================================
+# TEMPLATE SENSORS FOR CALCULATED METRICS
+# =============================================================================
+
+template:
+  - sensor:
+      # Primary Performance Metrics
+      - name: "Appliance Notification Test Success Rate"
+        unique_id: appliance_notification_test_success_rate
+        state: >
+          {% set total = states('counter.total_tests_run') | int(0) %}
+          {% set successes = states('counter.test_successes') | int(0) %}
+          {% if total > 0 %}
+            {{ ((successes / total) * 100) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "%"
+        icon: mdi:percent
+        attributes:
+          total_tests: "{{ states('counter.total_tests_run') }}"
+          successful_tests: "{{ states('counter.test_successes') }}"
+          failed_tests: "{{ states('counter.test_failures') }}"
+      
+      - name: "Appliance Notification Avg Latency"
+        unique_id: appliance_notification_avg_latency
+        state: >
+          {% set alexa = states('input_number.alexa_last_latency') | float(0) %}
+          {% set mobile = states('input_number.mobile_last_latency') | float(0) %}
+          {% set email = states('input_number.email_last_latency') | float(0) %}
+          {% set sms = states('input_number.sms_last_latency') | float(0) %}
+          {% set count = [alexa > 0, mobile > 0, email > 0, sms > 0] | select | list | length %}
+          {% if count > 0 %}
+            {{ ((alexa + mobile + email + sms) / count) | round(2) }}
+          {% else %}
+            {{ states('input_number.last_test_latency') | float(0) }}
+          {% endif %}
+        unit_of_measurement: "s"
+        icon: mdi:timer
+        
+      - name: "Appliance Notification Max Latency"
+        unique_id: appliance_notification_max_latency
+        state: >
+          {% set latencies = [
+            states('input_number.alexa_last_latency') | float(0),
+            states('input_number.mobile_last_latency') | float(0),
+            states('input_number.email_last_latency') | float(0),
+            states('input_number.sms_last_latency') | float(0)
+          ] %}
+          {{ latencies | max }}
+        unit_of_measurement: "s"
+        icon: mdi:timer-alert
+        
+      - name: "Appliance System Reliability"
+        unique_id: appliance_system_reliability
+        state: >
+          {% set health = states('input_number.system_health_score') | float(100) %}
+          {% set success_rate = states('sensor.appliance_notification_test_success_rate') | float(0) %}
+          {% set latency_ok = states('input_number.last_test_latency') | float(10) < 3 %}
+          {% set reliability = (health * 0.4 + success_rate * 0.4 + (100 if latency_ok else 0) * 0.2) %}
+          {{ reliability | round(1) }}
+        unit_of_measurement: "%"
+        icon: mdi:shield-check
+        
+      - name: "Appliance Notification Failed Tests"
+        unique_id: appliance_notification_failed_tests
+        state: "{{ states('counter.test_failures') }}"
+        unit_of_measurement: "tests"
+        icon: mdi:alert-circle
+        
+      - name: "Appliance Notification Throughput"
+        unique_id: appliance_notification_throughput
+        state: >
+          {% set total = states('counter.total_tests_run') | int(0) %}
+          {% set hours = 1 %}  {# Simplified - would calculate actual hours in production #}
+          {% if hours > 0 %}
+            {{ (total / hours) | round(1) }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "notifications/hour"
+        icon: mdi:speedometer
+        
+      # Channel Performance Metrics
+      - name: "Notification Channel Count"
+        unique_id: notification_channel_count
+        state: >
+          {{ [
+            states('input_boolean.alexa_notifications_available'),
+            states('input_boolean.mobile_notifications_available'),
+            states('input_boolean.email_notifications_available'),
+            states('input_boolean.sms_notifications_available')
+          ] | select('eq', 'on') | list | length }}
+        unit_of_measurement: "channels"
+        icon: mdi:counter
+        
+      - name: "Fastest Notification Channel"
+        unique_id: fastest_notification_channel
+        state: >
+          {% set channels = {
+            'alexa': states('input_number.alexa_last_latency') | float(10),
+            'mobile': states('input_number.mobile_last_latency') | float(10),
+            'email': states('input_number.email_last_latency') | float(10),
+            'sms': states('input_number.sms_last_latency') | float(10)
+          } %}
+          {% set min_channel = channels | dictsort(false, 'value') | first %}
+          {{ min_channel[0] | title if min_channel[1] > 0 else 'None' }}
+        icon: mdi:lightning-bolt
+        
+      # System Status Metrics
+      - name: "Appliance Last Test Timestamp"
+        unique_id: appliance_last_test_timestamp
+        state: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+        icon: mdi:clock
+        
+      - name: "Uptime Since Deployment"
+        unique_id: uptime_since_deployment
+        state: >
+          {% if is_state('input_select.deployment_stage', 'Production') %}
+            {% set deploy_time = as_timestamp(now()) - 3600 %}  {# Simplified - would track actual deployment time #}
+            {% set uptime_hours = ((as_timestamp(now()) - deploy_time) / 3600) | round(1) %}
+            {{ uptime_hours }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "hours"
+        icon: mdi:clock
+        
+      - name: "Maintenance Required"
+        unique_id: maintenance_required
+        state: >
+          {% set health = states('input_number.system_health_score') | float(100) %}
+          {% set errors = states('input_number.system_error_count') | int(0) %}
+          {% set uptime = states('sensor.uptime_since_deployment') | float(0) %}
+          {{ 'Yes' if (health < 90 or errors > 5 or uptime > 168) else 'No' }}
+        icon: mdi:wrench-alert
+
+  - binary_sensor:
+      # Overall System Health Indicators
+      - name: "Appliance System Healthy"
+        unique_id: appliance_system_healthy
+        state: >
+          {% set health = states('input_number.system_health_score') | float(0) %}
+          {% set success_rate = states('sensor.appliance_notification_test_success_rate') | float(0) %}
+          {% set latency = states('sensor.appliance_notification_avg_latency') | float(10) %}
+          {{ health > 90 and success_rate > 99 and latency < 3 }}
+        icon: mdi:heart-pulse
+        
+      - name: "Production Ready"
+        unique_id: production_ready
+        state: >
+          {% set readiness = states('input_number.production_readiness_score') | float(0) %}
+          {{ readiness >= 95 }}
+        icon: mdi:rocket-launch
+        
+      - name: "Performance Targets Met"
+        unique_id: performance_targets_met
+        state: >
+          {{ is_state('input_boolean.success_rate_target_met', 'on') and
+             is_state('input_boolean.latency_target_met', 'on') and
+             is_state('input_boolean.reliability_target_met', 'on') }}
+        icon: mdi:target-account

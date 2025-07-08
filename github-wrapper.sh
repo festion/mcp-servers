@@ -1,10 +1,9 @@
 #!/bin/bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_PERSONAL_ACCESS_TOKEN:-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}"
-
-# Check if token is configured (allow test token for diagnostics)
-if [ "$GITHUB_PERSONAL_ACCESS_TOKEN" = "your_github_token_here" ]; then
-    echo "ERROR: GitHub MCP server requires configuration. Please set GITHUB_PERSONAL_ACCESS_TOKEN environment variable."
-    echo "Example: export GITHUB_PERSONAL_ACCESS_TOKEN='ghp_your_actual_token'"
+# Load GitHub token from secure storage
+source /home/dev/workspace/github-token-manager.sh
+if ! load_token; then
+    echo "ERROR: Failed to load GitHub token"
+    echo "Please run: /home/dev/workspace/github-token-manager.sh store <your_token>"
     exit 1
 fi
 
@@ -14,5 +13,5 @@ mcp_info "GITHUB" "Starting GitHub MCP server with token: ${GITHUB_PERSONAL_ACCE
 
 exec docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_PERSONAL_ACCESS_TOKEN" \
-  ghcr.io/github/github-mcp-server \
-  stdio --toolsets context,repos,issues,pull_requests
+  local-github-mcp \
+  stdio --toolsets context,projects,repos,issues,pull_requests

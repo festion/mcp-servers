@@ -54,9 +54,11 @@
 
 ### 8. GitHub Server
 - **Command**: `bash /home/dev/workspace/github-wrapper.sh`
-- **Status**: ✅ Active (configured with test tokens)
+- **Status**: ✅ Active (production ready with secure token management)
 - **Config**:
-  - GITHUB_PERSONAL_ACCESS_TOKEN: ghp_test_token_for_diagnostic_purposes_only (set real token for production)
+  - Uses secure token manager: `/home/dev/workspace/github-token-manager.sh`
+  - Token stored securely in `/home/dev/.github_token` (600 permissions)
+  - Auto-validation and GitHub API testing
 - **Purpose**: GitHub repository management
 
 ## File Locations
@@ -102,13 +104,36 @@ claude mcp remove <name>
 /mcp
 ```
 
+## Secure Token Management
+
+### GitHub Token Manager
+- **Location**: `/home/dev/workspace/github-token-manager.sh`
+- **Features**:
+  - Secure token storage with 600 permissions
+  - Token format validation
+  - GitHub API verification
+  - Auto-load capability
+  - Backup functionality
+
+### Usage
+```bash
+# Store production token (one time)
+/home/dev/workspace/github-token-manager.sh store ghp_your_production_token
+
+# Setup auto-load in shell profile
+/home/dev/workspace/github-token-manager.sh setup
+
+# Verify token works
+/home/dev/workspace/github-token-manager.sh verify
+```
+
 ## TODO Items for Complete Setup
 
 1. **Configure Real Tokens**:
+   - ✅ GitHub token: Use secure token manager
    - Set real Home Assistant token in `hass-mcp-wrapper.sh`
    - Set real Proxmox token in `proxmox-mcp-wrapper.sh`  
    - Set real WikiJS URL and token in `wikijs-mcp-wrapper.sh`
-   - Set GitHub token in `github-wrapper.sh`
 
 2. **Replace Stub Implementations**:
    - Clone real Serena repository: `git clone https://github.com/PaulMcInnis/Serena.git serena`
@@ -116,6 +141,7 @@ claude mcp remove <name>
    - Update wrapper scripts to use real implementations
 
 3. **Test Individual Server Functionality**:
+   - ✅ GitHub server: Production ready with secure token management
    - Test each server with real credentials
    - Verify tool capabilities
    - Check error handling

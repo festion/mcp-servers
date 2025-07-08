@@ -1,5 +1,10 @@
 #!/bin/bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="${GITHUB_PERSONAL_ACCESS_TOKEN:-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}"
+# Check if token is configured
+if [ -z "$GITHUB_PERSONAL_ACCESS_TOKEN" ]; then
+    echo "ERROR: GitHub MCP server requires configuration. Please set GITHUB_PERSONAL_ACCESS_TOKEN environment variable."
+    echo "Example: export GITHUB_PERSONAL_ACCESS_TOKEN='ghp_your_actual_token'"
+    exit 1
+fi
 
 echo "Testing GitHub MCP server with projects toolset..."
 echo "Token: ${GITHUB_PERSONAL_ACCESS_TOKEN:0:15}..."

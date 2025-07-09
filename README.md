@@ -48,6 +48,123 @@ Comprehensive Proxmox VE datacenter management through Model Context Protocol wi
 
 **Key Tools**: System info, health assessment, VM/container management, snapshot operations, backup management, storage optimization, maintenance automation, audit reporting.
 
+### 📊 WikiJS MCP Server
+**Status**: ✅ Complete and Functional  
+**Location**: `wikijs-mcp-server/`
+
+WikiJS documentation management and markdown processing with automated content migration.
+
+**Features**:
+- 12 MCP tools for complete WikiJS documentation management
+- Markdown file discovery and analysis
+- Automated content migration to WikiJS
+- Document validation and metadata extraction
+- Search and retrieval capabilities
+- Bulk operations with progress tracking
+
+### 🗄️ TrueNAS MCP Server
+**Status**: ✅ Complete and Functional  
+**Location**: `truenas-mcp-server/`
+
+TrueNAS Core management through natural language commands with comprehensive storage operations.
+
+**Features**:
+- 15+ MCP tools for complete TrueNAS management
+- Storage pool and dataset management
+- User administration and permissions control
+- Snapshot and backup automation
+- SMB/NFS share management
+- iSCSI targets for Kubernetes integration
+- ZFS property management (compression, deduplication, quotas)
+- **Kubernetes Ready**: Export NFS shares and create iSCSI targets
+
+**Key Tools**: Storage pools, datasets, users, permissions, snapshots, shares, backups, system monitoring.
+
+### 🐙 GitHub MCP Server
+**Status**: ✅ Production Ready (Forked from GitHub Official)  
+**Location**: `github-mcp-server/`
+
+Official GitHub MCP Server providing comprehensive GitHub API integration for repository management, issues, pull requests, and project boards.
+
+**Features**:
+- Complete GitHub API access through MCP protocol
+- Repository management (create, update, delete, fork)
+- Issues and pull requests management
+- Project boards and labels administration
+- GitHub Actions workflow integration
+- OAuth and Personal Access Token authentication
+- Remote and local deployment options
+
+**Key Tools**: Repository operations, issue management, pull request workflows, project board management, GitHub Actions integration, user and organization management.
+
+## 🗺️ Development Roadmap
+
+### 🐙 GitHub MCP Server: Project Board Support Enhancement
+**Priority**: High | **Phase**: Phase 1 Development  
+**Target Completion**: Q1 2025
+
+Enhance the forked GitHub MCP Server with comprehensive project board management capabilities that are currently missing from the official implementation.
+
+#### Phase 1: Core Project Board Features (High Priority)
+1. **📋 Project Board Creation & Management**
+   - Create new project boards with customizable templates
+   - Configure board settings and automation rules
+   - Board deletion and archival operations
+   - Template-based board creation for standardized workflows
+
+2. **🎯 Column Management**
+   - Create, update, and delete project board columns
+   - Reorder columns and configure column automation
+   - Custom column types and field configurations
+   - Column limits and WIP (Work In Progress) constraints
+
+3. **🎴 Card Operations**
+   - Add issues and pull requests to project boards
+   - Move cards between columns programmatically
+   - Update card metadata and custom fields
+   - Bulk card operations and batch processing
+
+#### Phase 2: Advanced Automation (Medium Priority)
+4. **⚙️ Workflow Automation**
+   - Automated card movement based on issue/PR status
+   - Custom automation rules and triggers
+   - Integration with GitHub Actions workflows
+   - Event-driven card updates and notifications
+
+5. **📊 Cross-Repository Project Management**
+   - Multi-repository project board support
+   - Organization-level project management
+   - Repository linking and dependency tracking
+   - Unified project dashboard across repositories
+
+#### Phase 3: Template & Integration Features (Medium Priority)
+6. **📐 Project Templates**
+   - Standardized project board templates (Kanban, Scrum, Bug Triage)
+   - Template customization and sharing
+   - Quick project setup from templates
+   - Template versioning and updates
+
+7. **🔗 Advanced Integrations**
+   - Project progress reporting and analytics
+   - Integration with external project management tools
+   - Custom field types and validation
+   - Export/import functionality for project data
+
+#### Technical Implementation Plan
+- **New MCP Tools**: 15+ specialized tools for project board operations
+- **API Integration**: GitHub Projects API v2 GraphQL integration
+- **Authentication**: OAuth and PAT support with proper scoping
+- **Error Handling**: Comprehensive error handling with retry logic
+- **Performance**: Optimized queries and caching for large projects
+- **Testing**: Unit and integration tests for all project board operations
+
+#### Success Metrics
+- **Feature Parity**: Complete project board management capabilities
+- **Performance**: Sub-200ms response times for project operations
+- **Reliability**: 99.9% operation success rate
+- **Integration**: Seamless Claude Desktop integration with project workflows
+- **Adoption**: Enhanced project management capabilities for all MCP users
+
 ## Development Environment
 
 - **Primary Development**: `C:\git\mcp-servers\` (GitHub synchronized)
@@ -100,6 +217,13 @@ Add to your Claude Desktop configuration:
       "args": ["run", "path/to/proxmox-config.json"],
       "env": {
         "PROXMOX_PASSWORD": "your_password"
+      }
+    },
+    "github": {
+      "command": "path/to/github-mcp-server/github-mcp-server",
+      "args": [],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "your_github_token"
       }
     }
   }

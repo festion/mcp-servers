@@ -140,11 +140,25 @@ class GlobalMCPInstaller:
                 config_template={
                     "shares": {
                         "example": {
-                            "host": "\\\\server\\share",
+                            "host": "\\server\share",
                             "username": "user",
                             "password": "password"
                         }
                     }
+                }
+            ),
+            "truenas-mcp": MCPServerInfo(
+                name="truenas-mcp",
+                version="2.0.0",
+                description="TrueNAS Core MCP server for NAS management",
+                repository="https://github.com/vespo92/TrueNasCoreMCP.git",
+                command="python",
+                args=["truenas_mcp_server.py"],
+                config_template={
+                    "truenas_url": "https://your-truenas-ip",
+                    "api_key": "your-api-key",
+                    "verify_ssl": False,
+                    "timeout": 30
                 }
             )
         }

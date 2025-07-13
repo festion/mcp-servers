@@ -50,7 +50,7 @@ Your WikiJS MCP Server is **completely configured** and ready to connect to your
 ## 🔧 What You Can Do Right Now
 
 ### Document Discovery
-- **"Find all markdown files in /mnt/c/GIT"**
+- **"Find all markdown files in /home/dev/workspace"**
 - **"What documentation exists in my proxmox-agent project?"**
 - **"Scan my projects for README files"**
 
@@ -62,14 +62,14 @@ Your WikiJS MCP Server is **completely configured** and ready to connect to your
 ### Bulk Operations
 - **"Migrate all docs from my project to /wiki/projects"**
 - **"Upload all README files to /documentation/readmes"**
-- **"Find and upload all .md files from /mnt/c/GIT to appropriate wiki sections"**
+- **"Find and upload all .md files from /home/dev/workspace to appropriate wiki sections""
 
 ## 📂 Your Configuration
 
 ```json
 Wiki URL: https://wiki.internal.lakehouse.wtf
 API Key: ✅ Configured and ready
-Search Paths: /mnt/c/GIT, /mnt/c/Users, /home/user/*
+Search Paths: /home/dev/workspace, /home/dev/workspace/mcp-servers, /home/dev/workspace/infrastructure
 Security: ✅ Configured for safe operations
 ```
 

@@ -10,9 +10,12 @@
   },
   "document_discovery": {
     "search_paths": [
-      "/home/user/documents",
-      "/home/user/projects",
-      "/mnt/c/GIT"
+      "/home/dev/workspace",
+      "/home/dev/workspace/mcp-servers",
+      "/home/dev/workspace/infrastructure",
+      "/home/dev/workspace/ai-development",
+      "/home/dev/workspace/manufacturing",
+      "/home/dev/workspace/scripts"
     ],
     "include_patterns": ["*.md", "*.markdown", "README.md", "CHANGELOG.md"],
     "exclude_patterns": [
@@ -35,10 +38,12 @@
   },
   "security": {
     "allowed_paths": [
-      "/home/user/documents",
-      "/home/user/projects", 
-      "/mnt/c/GIT",
-      "/mnt/c/Users",
+      "/home/dev/workspace",
+      "/home/dev/workspace/mcp-servers",
+      "/home/dev/workspace/infrastructure",
+      "/home/dev/workspace/ai-development",
+      "/home/dev/workspace/manufacturing",
+      "/home/dev/workspace/scripts",
       "/tmp/wikijs-uploads"
     ],
     "forbidden_patterns": [

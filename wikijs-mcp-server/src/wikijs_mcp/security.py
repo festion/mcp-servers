@@ -251,7 +251,7 @@ class SecurityValidator:
         summary_lines.append(f"  Forbidden patterns: {len(self.config.forbidden_patterns)}")
         summary_lines.append(f"  Content filters: {len(self.config.content_filters)}")
         
-        return "\\n".join(summary_lines)
+        return "\n".join(summary_lines)
     
     def check_bulk_operation_security(
         self,
@@ -285,7 +285,7 @@ class SecurityValidator:
                 errors.append(f"{file_path}: {str(e)}")
         
         if errors:
-            raise SecurityError(f"Validation failed for {operation_type}:\\n" + "\\n".join(errors))
+            raise SecurityError(f"Validation failed for {operation_type}:\n" + "\n".join(errors))
         
         return validated_paths
     

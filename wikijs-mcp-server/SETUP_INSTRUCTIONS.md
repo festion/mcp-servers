@@ -22,7 +22,7 @@
 
 Edit the configuration file:
 ```bash
-nano /mnt/c/GIT/wikijs-mcp-server/config/wikijs_mcp_config.json
+nano /home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/config/wikijs_mcp_config.json
 ```
 
 Replace `PASTE_YOUR_API_KEY_HERE` with your actual API key:
@@ -39,7 +39,7 @@ Replace `PASTE_YOUR_API_KEY_HERE` with your actual API key:
 ### Step 3: Test the Connection
 
 ```bash
-cd /mnt/c/GIT/wikijs-mcp-server
+cd /home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server
 python -m wikijs_mcp.cli test-connection config/wikijs_mcp_config.json
 ```
 
@@ -69,11 +69,11 @@ Copy the pre-generated configuration to your Claude Desktop config:
     "wikijs-mcp-server": {
       "command": "python",
       "args": [
-        "/mnt/c/GIT/wikijs-mcp-server/run_server.py",
-        "/mnt/c/GIT/wikijs-mcp-server/config/wikijs_mcp_config.json"
+        "/home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/run_server.py",
+        "/home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/config/wikijs_mcp_config.json"
       ],
       "env": {
-        "PYTHONPATH": "/mnt/c/GIT/wikijs-mcp-server/src"
+        "PYTHONPATH": "/home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/src"
       }
     }
   }
@@ -84,15 +84,15 @@ Copy the pre-generated configuration to your Claude Desktop config:
 
 Copy the ready-made configuration:
 ```bash
-cp /mnt/c/GIT/wikijs-mcp-server/claude_desktop_config.json ~/.config/claude/claude_desktop_config.json
+cp /home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/claude_desktop_config.json ~/.config/claude/claude_desktop_config.json
 ```
 
 ## 🧪 Test Your Setup
 
 ### 1. Test Document Discovery
 ```bash
-cd /mnt/c/GIT/wikijs-mcp-server
-python -m wikijs_mcp.cli scan config/wikijs_mcp_config.json /mnt/c/GIT
+cd /home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server
+python -m wikijs_mcp.cli scan config/wikijs_mcp_config.json /home/dev/workspace
 ```
 
 ### 2. Test with Claude Desktop
@@ -113,10 +113,10 @@ Restart Claude Desktop, then try these commands:
 The system is pre-configured with secure defaults:
 
 ### Allowed Paths
-- `/mnt/c/GIT` - Your Git repositories
-- `/mnt/c/Users` - User directories
-- `/home/user/documents` - Documents folder
-- `/home/user/projects` - Projects folder
+- `/home/dev/workspace` - Main workspace directory
+- `/home/dev/workspace/mcp-servers` - MCP server implementations
+- `/home/dev/workspace/infrastructure` - Infrastructure projects
+- `/home/dev/workspace/manufacturing` - Manufacturing projects
 
 ### Forbidden Patterns
 - `*.private.*` - Private files
@@ -131,7 +131,7 @@ The system is pre-configured with secure defaults:
 ## 📁 Directory Structure
 
 ```
-/mnt/c/GIT/wikijs-mcp-server/
+/home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server/
 ├── config/
 │   └── wikijs_mcp_config.json     # ← Edit this file with your API key
 ├── src/wikijs_mcp/                # Source code
@@ -153,7 +153,7 @@ The system is pre-configured with secure defaults:
 **WikiJS Operations:**
 - "Upload this project's README to the wiki at /projects/wikijs-mcp"
 - "Create a wiki page from this markdown file at /documentation/setup"
-- "Migrate all docs from /mnt/c/GIT/project-name to /wiki/projects/project-name"
+- "Migrate all docs from /home/dev/workspace/project-name to /wiki/projects/project-name"
 
 **Bulk Operations:**
 - "Find all README files in my projects and upload them to /documentation/readmes"
@@ -167,7 +167,7 @@ The system is pre-configured with secure defaults:
 python -m wikijs_mcp.cli test-connection config/wikijs_mcp_config.json
 
 # Scan for documents
-python -m wikijs_mcp.cli scan config/wikijs_mcp_config.json /mnt/c/GIT/proxmox-agent
+python -m wikijs_mcp.cli scan config/wikijs_mcp_config.json /home/dev/workspace/proxmox-agent
 
 # Run server directly
 python run_server.py

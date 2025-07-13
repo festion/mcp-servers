@@ -60,6 +60,9 @@ class ProxmoxServerConfig(BaseModel):
     password: Optional[SecretStr] = Field(default=None, description="Proxmox password")
     realm: str = Field(default="pam", description="Authentication realm")
     
+    # API Token authentication (preferred for production)
+    token: Optional[SecretStr] = Field(default=None, description="Proxmox API token")
+    
     # Connection options
     verify_ssl: bool = Field(default=False, description="Verify SSL certificates")
     timeout: int = Field(default=30, ge=5, le=300, description="Request timeout in seconds")
@@ -68,13 +71,21 @@ class ProxmoxServerConfig(BaseModel):
     host_env_var: Optional[str] = Field(default=None, description="Environment variable for host")
     username_env_var: Optional[str] = Field(default=None, description="Environment variable for username")
     password_env_var: Optional[str] = Field(default=None, description="Environment variable for password")
+    token_env_var: Optional[str] = Field(default=None, description="Environment variable for API token")
     
     @validator('password_env_var', always=True)
     def validate_auth_config(cls, v, values):
-        """Validate that either password or password_env_var is provided."""
+        """Validate that either password/password_env_var or token/token_env_var is provided."""
         password = values.get('password')
-        if password is None and v is None:
-            raise ValueError("Either password or password_env_var must be provided")
+        token = values.get('token')
+        token_env_var = values.get('token_env_var')
+        
+        # Check if we have any authentication method
+        has_password = password is not None or v is not None
+        has_token = token is not None or token_env_var is not None
+        
+        if not has_password and not has_token:
+            raise ValueError("Either password/password_env_var or token/token_env_var must be provided")
         return v
     
     def get_connection_params(self) -> Dict[str, Union[str, int, bool]]:
@@ -88,7 +99,19 @@ class ProxmoxServerConfig(BaseModel):
             'timeout': self.timeout,
         }
         
-        # Handle password from environment or direct configuration
+        # Handle API token first (preferred method)
+        if self.token_env_var:
+            token = os.getenv(self.token_env_var)
+            if token:
+                params['token'] = token
+                params['auth_method'] = 'token'
+                return params
+        elif self.token:
+            params['token'] = self.token.get_secret_value()
+            params['auth_method'] = 'token'
+            return params
+        
+        # Fall back to password authentication
         if self.password_env_var:
             password = os.getenv(self.password_env_var)
             if not password:
@@ -97,8 +120,9 @@ class ProxmoxServerConfig(BaseModel):
         elif self.password:
             params['password'] = self.password.get_secret_value()
         else:
-            raise ProxmoxConfigurationError("No password configured")
-            
+            raise ProxmoxConfigurationError("No authentication configured")
+        
+        params['auth_method'] = 'password'
         return params
 
 

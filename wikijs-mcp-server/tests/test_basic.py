@@ -78,7 +78,7 @@ class TestConfig:
     def test_security_config(self):
         """Test security configuration."""
         config = SecurityConfig(
-            allowed_paths=["/home/user/docs", "/projects"]
+            allowed_paths=["/home/dev/workspace/docs", "/home/dev/workspace/projects"]
         )
         
         # Paths should be converted to absolute

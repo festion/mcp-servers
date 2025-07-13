@@ -296,13 +296,41 @@ class DocumentScanner:
         # Check file size
         try:
             file_size = os.path.getsize(file_path)
-            if file_size > self.config.max_file_size:
+            max_size_bytes = self._parse_size_string(self.config.max_file_size)
+            if file_size > max_size_bytes:
                 logger.warning(f"File too large: {file_path} ({file_size} bytes)")
                 return False
         except OSError:
             return False
         
         return True
+    
+    def _parse_size_string(self, size_str: str) -> int:
+        """Parse size string like '10MB' into bytes."""
+        import re
+        
+        # Handle direct integer strings
+        if size_str.isdigit():
+            return int(size_str)
+        
+        # Parse size with units
+        match = re.match(r'^(\d+(?:\.\d+)?)\s*([KMGT]?B)?$', size_str.upper().strip())
+        if not match:
+            # Fallback to 10MB if parsing fails
+            return 10 * 1024 * 1024
+        
+        size_value = float(match.group(1))
+        unit = match.group(2) or 'B'
+        
+        multipliers = {
+            'B': 1,
+            'KB': 1024,
+            'MB': 1024 ** 2,
+            'GB': 1024 ** 3,
+            'TB': 1024 ** 4
+        }
+        
+        return int(size_value * multipliers.get(unit, 1))
     
     def _analyze_document(self, file_path: str, base_path: str = None) -> DocumentMetadata:
         """Analyze a document and extract metadata."""
@@ -368,10 +396,10 @@ class DocumentScanner:
         """Extract YAML frontmatter from document content."""
         frontmatter = {}
         
-        if content.startswith('---\\n'):
+        if content.startswith('---\n'):
             try:
                 # Find the end of frontmatter
-                end_marker = content.find('\\n---\\n', 4)
+                end_marker = content.find('\n---\n', 4)
                 if end_marker > 0:
                     frontmatter_text = content[4:end_marker]
                     content = content[end_marker + 5:]  # Remove frontmatter and marker
@@ -386,22 +414,22 @@ class DocumentScanner:
     def _extract_links(self, content: str) -> List[str]:
         """Extract markdown links from content."""
         # Match markdown links: [text](url)
-        link_pattern = r'\\[([^\\]]+)\\]\\(([^\\)]+)\\)'
+        link_pattern = r'\[([^\]]+)\]\(([^\)]+)\)'
         links = re.findall(link_pattern, content)
         return [url for text, url in links]
     
     def _extract_images(self, content: str) -> List[str]:
         """Extract markdown images from content."""
         # Match markdown images: ![alt](src)
-        image_pattern = r'!\\[([^\\]]*)\\]\\(([^\\)]+)\\)'
+        image_pattern = r'!\[([^\]]*)\]\(([^\)]+)\)'
         images = re.findall(image_pattern, content)
         return [src for alt, src in images]
     
     def _create_content_preview(self, content: str, max_length: int = 200) -> str:
         """Create a preview of the content."""
         # Remove markdown formatting for preview
-        preview = re.sub(r'[#*`_\\[\\]()]', '', content)
-        preview = re.sub(r'\\n+', ' ', preview)
+        preview = re.sub(r'[#*`_\[\]()]', '', content)
+        preview = re.sub(r'\n+', ' ', preview)
         preview = preview.strip()
         
         if len(preview) > max_length:

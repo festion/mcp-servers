@@ -15,12 +15,10 @@ Classifier: Topic :: System :: Systems Administration
 Classifier: Topic :: System :: Monitoring
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
-Requires-Python: >=3.8
+Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 Requires-Dist: mcp>=1.0.0
 Requires-Dist: pydantic>=2.0.0
@@ -66,12 +64,24 @@ Comprehensive Proxmox VE management through Model Context Protocol, providing sy
 
 ```bash
 cd mcp-servers/proxmox-mcp-server
+./install.sh  # Creates virtual environment and installs all dependencies
+```
+
+### Manual Installation
+
+```bash
+cd mcp-servers/proxmox-mcp-server
 pip install -e .
 ```
 
 ### Verify Installation
 
 ```bash
+# If using virtual environment installation
+./venv/bin/proxmox-mcp-server --version
+./venv/bin/proxmox-mcp-server info
+
+# If using manual pip installation
 proxmox-mcp-server --version
 proxmox-mcp-server info
 ```
@@ -83,6 +93,10 @@ proxmox-mcp-server info
 Generate a sample configuration:
 
 ```bash
+# If using virtual environment installation
+./venv/bin/proxmox-mcp-server create-config --output my_config.json
+
+# If using manual pip installation
 proxmox-mcp-server create-config --output my_config.json
 ```
 

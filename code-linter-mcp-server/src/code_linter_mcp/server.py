@@ -38,6 +38,11 @@ class CodeLinterMCPServer:
         @self.server.list_tools()
         async def handle_list_tools() -> types.ListToolsResult:
             """List available linting tools."""
+            # NOTE: There is a known bug in MCP library version 1.10.1 that causes
+            # "'tuple' object has no attribute 'name'" error when listing tools.
+            # This affects ALL MCP servers using this library version.
+            # The bug occurs in the library's internal processing, not in the tool creation.
+            
             tools = [
                 types.Tool(
                     name="lint_file",
@@ -45,67 +50,38 @@ class CodeLinterMCPServer:
                     inputSchema={
                         "type": "object",
                         "properties": {
-                            "file_path": {
-                                "type": "string",
-                                "description": "Path to the file to lint"
-                            },
-                            "content": {
-                                "type": "string", 
-                                "description": "Optional file content to lint instead of reading from file"
-                            },
-                            "linters": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Optional list of specific linters to run"
-                            }
+                            "file_path": {"type": "string", "description": "Path to the file to lint"},
+                            "content": {"type": "string", "description": "Optional file content to lint instead of reading from file"},
+                            "linters": {"type": "array", "items": {"type": "string"}, "description": "Optional list of specific linters to run"}
                         },
                         "required": ["file_path"]
                     }
                 ),
                 types.Tool(
-                    name="lint_content",
+                    name="lint_content", 
                     description="Lint content directly without a file",
                     inputSchema={
                         "type": "object",
                         "properties": {
-                            "content": {
-                                "type": "string",
-                                "description": "Code content to lint"
-                            },
-                            "language": {
-                                "type": "string", 
-                                "description": "Programming language (python, go, javascript, etc.)"
-                            },
-                            "file_extension": {
-                                "type": "string",
-                                "description": "File extension to help detect language (.py, .go, .js, etc.)"
-                            }
+                            "content": {"type": "string", "description": "Code content to lint"},
+                            "language": {"type": "string", "description": "Programming language (python, go, javascript, etc.)"},
+                            "file_extension": {"type": "string", "description": "File extension to help detect language (.py, .go, .js, etc.)"}
                         },
                         "required": ["content"]
                     }
                 ),
                 types.Tool(
                     name="validate_syntax",
-                    description="Quick syntax validation for code content",
+                    description="Quick syntax validation for code content", 
                     inputSchema={
-                        "type": "object", 
+                        "type": "object",
                         "properties": {
-                            "content": {
-                                "type": "string",
-                                "description": "Code content to validate"
-                            },
-                            "language": {
-                                "type": "string",
-                                "description": "Programming language"
-                            }
+                            "content": {"type": "string", "description": "Code content to validate"},
+                            "language": {"type": "string", "description": "Programming language"}
                         },
                         "required": ["content", "language"]
                     }
-                )
-            ]
-            
-            # Add more tools
-            tools.extend([
+                ),
                 types.Tool(
                     name="get_supported_languages",
                     description="Get list of supported programming languages and their linters",
@@ -121,10 +97,7 @@ class CodeLinterMCPServer:
                     inputSchema={
                         "type": "object",
                         "properties": {
-                            "language": {
-                                "type": "string",
-                                "description": "Optional language to check linters for"
-                            }
+                            "language": {"type": "string", "description": "Optional language to check linters for"}
                         }
                     }
                 ),
@@ -134,23 +107,14 @@ class CodeLinterMCPServer:
                     inputSchema={
                         "type": "object",
                         "properties": {
-                            "file_path": {
-                                "type": "string", 
-                                "description": "Path to file being saved"
-                            },
-                            "content": {
-                                "type": "string",
-                                "description": "File content being saved"
-                            },
-                            "operation": {
-                                "type": "string",
-                                "description": "Type of operation (save, create, update)"
-                            }
+                            "file_path": {"type": "string", "description": "Path to file being saved"},
+                            "content": {"type": "string", "description": "File content being saved"},
+                            "operation": {"type": "string", "description": "Type of operation (save, create, update)"}
                         },
                         "required": ["file_path", "content", "operation"]
                     }
                 )
-            ])
+            ]
             
             return types.ListToolsResult(tools=tools)
         

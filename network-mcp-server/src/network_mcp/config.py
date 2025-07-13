@@ -4,6 +4,9 @@ from typing import Dict, List, Literal, Optional, Union
 from pydantic import BaseModel, Field
 
 
+import os
+from .exceptions import NetworkMCPError
+
 class SMBShareConfig(BaseModel):
     """Configuration for SMB/CIFS share."""
     
@@ -11,11 +14,41 @@ class SMBShareConfig(BaseModel):
     host: str = Field(..., description="SMB server hostname or IP address")
     share_name: str = Field(..., description="Name of the SMB share")
     username: str = Field(..., description="Username for authentication")
-    password: str = Field(..., description="Password for authentication")
+    password: Optional[str] = Field(default=None, description="Password for authentication")
     domain: str = Field(default="", description="Domain for authentication")
     port: int = Field(default=445, description="SMB port (usually 445)")
     use_ntlm_v2: bool = Field(default=True, description="Use NTLMv2 authentication")
     timeout: int = Field(default=30, description="Connection timeout in seconds")
+    
+    # Environment variable overrides
+    host_env_var: Optional[str] = Field(default=None, description="Environment variable for host")
+    username_env_var: Optional[str] = Field(default=None, description="Environment variable for username")
+    password_env_var: Optional[str] = Field(default=None, description="Environment variable for password")
+    
+    def get_connection_params(self) -> Dict[str, Union[str, int, bool]]:
+        """Get connection parameters with environment variable resolution."""
+        params = {
+            'host': os.getenv(self.host_env_var, self.host) if self.host_env_var else self.host,
+            'share_name': self.share_name,
+            'username': os.getenv(self.username_env_var, self.username) if self.username_env_var else self.username,
+            'domain': self.domain,
+            'port': self.port,
+            'use_ntlm_v2': self.use_ntlm_v2,
+            'timeout': self.timeout,
+        }
+        
+        # Handle password from environment or direct configuration
+        if self.password_env_var:
+            password = os.getenv(self.password_env_var)
+            if not password:
+                raise NetworkMCPError(f"Password environment variable {self.password_env_var} not set")
+            params['password'] = password
+        elif self.password:
+            params['password'] = self.password
+        else:
+            raise NetworkMCPError("No password configured - either set password or password_env_var")
+            
+        return params
 
 
 class NFSShareConfig(BaseModel):

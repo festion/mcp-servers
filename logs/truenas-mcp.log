@@ -23,3 +23,764 @@
 2025-07-09 10:41:00 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
 2025-07-09 10:41:00 [TrueNAS-MCP] TrueNAS MCP server started with PID: 220067
 2025-07-09 10:41:06 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-09 10:42:25 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 10:42:25 [TrueNAS-MCP] Configuration:
+2025-07-09 10:42:25 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 10:42:25 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 10:42:25 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 10:42:25 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 10:42:25 [TrueNAS-MCP] TrueNAS MCP server started with PID: 221021
+2025-07-09 10:42:36 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-09 10:44:17 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 10:44:17 [TrueNAS-MCP] Configuration:
+2025-07-09 10:44:17 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 10:44:18 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 10:44:18 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 10:44:18 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 10:44:18 [TrueNAS-MCP] TrueNAS MCP server started with PID: 221823
+2025-07-09 10:44:25 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-09 11:04:15 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 11:04:15 [TrueNAS-MCP] Configuration:
+2025-07-09 11:04:15 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 11:04:15 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 11:04:15 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 11:04:16 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 11:04:16 [TrueNAS-MCP] TrueNAS MCP server started with PID: 223413
+2025-07-09 11:04:27 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-09 13:01:39 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 13:01:39 [TrueNAS-MCP] Configuration:
+2025-07-09 13:01:39 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 13:01:39 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 13:01:39 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 13:01:39 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 13:01:39 [TrueNAS-MCP] TrueNAS MCP server started with PID: 228949
+2025-07-09 13:01:48 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 228949)
+2025-07-09 13:07:45 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 13:07:45 [TrueNAS-MCP] Configuration:
+2025-07-09 13:07:45 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 13:07:45 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 13:07:45 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 13:07:46 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 13:07:46 [TrueNAS-MCP] TrueNAS MCP server started with PID: 230434
+2025-07-09 13:21:53 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 13:21:53 [TrueNAS-MCP] Configuration:
+2025-07-09 13:21:53 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 13:21:53 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 13:21:54 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 13:21:54 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 13:21:54 [TrueNAS-MCP] TrueNAS MCP server started with PID: 1316
+2025-07-09 13:24:31 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 1316)
+2025-07-09 13:42:49 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 13:42:49 [TrueNAS-MCP] Configuration:
+2025-07-09 13:42:49 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 13:42:49 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 13:42:49 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 13:42:49 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 13:42:49 [TrueNAS-MCP] TrueNAS MCP server started with PID: 3549
+2025-07-09 13:42:58 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-09 13:42:58 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-09 13:42:58 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-09 13:42:58 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-09 13:43:58 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 2, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-09 14:23:54 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 14:23:54 [TrueNAS-MCP] Configuration:
+2025-07-09 14:23:54 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 14:23:54 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 14:23:54 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 14:23:54 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 14:23:55 [TrueNAS-MCP] TrueNAS MCP server started with PID: 5906
+2025-07-09 14:24:04 [TrueNAS-MCP] Processing request of type ListPromptsRequest
+2025-07-09 14:24:04 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"result":{"prompts":[]}}
+2025-07-09 16:58:32 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-09 16:58:32 [TrueNAS-MCP] Configuration:
+2025-07-09 16:58:32 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-09 16:58:32 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-09 16:58:32 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-09 16:58:32 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-09 16:58:32 [TrueNAS-MCP] TrueNAS MCP server started with PID: 13635
+2025-07-09 16:58:38 [TrueNAS-MCP] Processing request of type ListToolsRequest
+2025-07-09 16:58:38 [TrueNAS-MCP] Processing request of type ListResourcesRequest
+2025-07-09 16:58:38 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"debug_connection","description":"Debug connection settings and environment variables","inputSchema":{"properties":{},"title":"debug_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"debug_connectionOutput","type":"object"}},{"name":"reset_connection","description":"Reset the HTTP client to force re-initialization","inputSchema":{"properties":{},"title":"reset_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"reset_connectionOutput","type":"object"}},{"name":"list_users","description":"List all users in TrueNAS","inputSchema":{"properties":{},"title":"list_usersArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_usersOutput","type":"object"}},{"name":"get_user","description":"\n    Get detailed information about a specific user\n    \n    Args:\n        username: Username to look up\n    ","inputSchema":{"properties":{"username":{"title":"Username","type":"string"}},"required":["username"],"title":"get_userArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_userOutput","type":"object"}},{"name":"get_system_info","description":"Get TrueNAS system information","inputSchema":{"properties":{},"title":"get_system_infoArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_system_infoOutput","type":"object"}},{"name":"list_pools","description":"List all storage pools","inputSchema":{"properties":{},"title":"list_poolsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_poolsOutput","type":"object"}},{"name":"list_datasets","description":"List all datasets","inputSchema":{"properties":{},"title":"list_datasetsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_datasetsOutput","type":"object"}},{"name":"get_pool_status","description":"\n    Get detailed status of a specific pool\n    \n    Args:\n        pool_name: Name of the pool\n    ","inputSchema":{"properties":{"pool_name":{"title":"Pool Name","type":"string"}},"required":["pool_name"],"title":"get_pool_statusArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_pool_statusOutput","type":"object"}},{"name":"create_dataset","description":"\n    Create a new dataset\n    \n    Args:\n        pool: Pool name where dataset will be created\n        name: Dataset name\n        compression: Compression algorithm (default: lz4)\n        quota: Optional quota in bytes\n    ","inputSchema":{"properties":{"pool":{"title":"Pool","type":"string"},"name":{"title":"Name","type":"string"},"compression":{"default":"lz4","title":"Compression","type":"string"},"quota":{"anyOf":[{"type":"integer"},{"type":"null"}],"default":null,"title":"Quota"}},"required":["pool","name"],"title":"create_datasetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_datasetOutput","type":"object"}},{"name":"list_smb_shares","description":"List all SMB shares","inputSchema":{"properties":{},"title":"list_smb_sharesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_smb_sharesOutput","type":"object"}},{"name":"create_smb_share","description":"\n    Create a new SMB share\n    \n    Args:\n        path: Path to share\n        name: Share name\n        comment: Optional comment\n        read_only: Whether share is read-only\n    ","inputSchema":{"properties":{"path":{"title":"Path","type":"string"},"name":{"title":"Name","type":"string"},"comment":{"default":"","title":"Comment","type":"string"},"read_only":{"default":false,"title":"Read Only","type":"boolean"}},"required":["path","name"],"title":"create_smb_shareArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_smb_shareOutput","type":"object"}},{"name":"create_snapshot","description":"\n    Create a snapshot of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        name: Snapshot name\n        recursive: Whether to create recursive snapshots\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset","name"],"title":"create_snapshotArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshotOutput","type":"object"}},{"name":"modify_dataset_permissions","description":"\n    Modify dataset permissions (chmod/chown equivalent)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        mode: Unix permission mode (e.g., \"755\", \"644\")\n        owner: Owner username or UID\n        group: Group name or GID\n        recursive: Apply permissions recursively\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"mode":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Mode"},"owner":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Owner"},"group":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Group"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset"],"title":"modify_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_permissionsOutput","type":"object"}},{"name":"update_dataset_acl","description":"\n    Update dataset Access Control Lists (ACLs)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        acl_entries: List of ACL entries with permissions\n        recursive: Apply ACLs recursively\n        strip_acl: Remove all ACLs and revert to Unix permissions\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"acl_entries":{"items":{"additionalProperties":true,"type":"object"},"title":"Acl Entries","type":"array"},"recursive":{"default":false,"title":"Recursive","type":"boolean"},"strip_acl":{"default":false,"title":"Strip Acl","type":"boolean"}},"required":["dataset","acl_entries"],"title":"update_dataset_aclArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"update_dataset_aclOutput","type":"object"}},{"name":"get_dataset_permissions","description":"\n    Get current permissions and ACL information for a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_permissionsOutput","type":"object"}},{"name":"modify_dataset_properties","description":"\n    Modify ZFS dataset properties\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        properties: Dictionary of properties to update\n                   Examples: {\"compression\": \"lz4\", \"dedup\": \"on\", \"quota\": \"10G\"}\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"properties":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"}]},"title":"Properties"}},"required":["dataset","properties"],"title":"modify_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_propertiesOutput","type":"object"}},{"name":"get_dataset_properties","description":"\n    Get all properties of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_propertiesOutput","type":"object"}},{"name":"create_nfs_export","description":"\n    Create an NFS export for Kubernetes persistent volumes\n    \n    Args:\n        dataset: Dataset path to export (e.g., \"tank/k8s-volumes\")\n        allowed_networks: List of allowed networks (e.g., [\"10.0.0.0/24\"])\n        read_only: Whether the export is read-only\n        maproot_user: User to map root to\n        maproot_group: Group to map root to\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"allowed_networks":{"default":null,"items":{"type":"string"},"title":"Allowed Networks","type":"array"},"read_only":{"default":false,"title":"Read Only","type":"boolean"},"maproot_user":{"default":"root","title":"Maproot User","type":"string"},"maproot_group":{"default":"wheel","title":"Maproot Group","type":"string"}},"required":["dataset"],"title":"create_nfs_exportArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_nfs_exportOutput","type":"object"}},{"name":"create_iscsi_target","description":"\n    Create an iSCSI target for Kubernetes block storage\n    \n    Args:\n        name: Target name (e.g., \"k8s-block-01\")\n        dataset: Dataset for storing the iSCSI extent\n        size: Size of the iSCSI extent (e.g., \"100G\")\n        portal_id: iSCSI portal ID to use\n    ","inputSchema":{"properties":{"name":{"title":"Name","type":"string"},"dataset":{"title":"Dataset","type":"string"},"size":{"title":"Size","type":"string"},"portal_id":{"default":1,"title":"Portal Id","type":"integer"}},"required":["name","dataset","size"],"title":"create_iscsi_targetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_iscsi_targetOutput","type":"object"}},{"name":"create_snapshot_policy","description":"\n    Create an automated snapshot policy\n    \n    Args:\n        dataset: Dataset to snapshot\n        name: Policy name\n        schedule: Schedule configuration (cron-like)\n                 {\"minute\": \"0\", \"hour\": \"*/4\", \"dom\": \"*\", \"month\": \"*\", \"dow\": \"*\"}\n        retention: Retention settings {\"hourly\": 24, \"daily\": 7, \"weekly\": 4, \"monthly\": 12}\n        recursive: Include child datasets\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"schedule":{"additionalProperties":true,"title":"Schedule","type":"object"},"retention":{"additionalProperties":{"type":"integer"},"title":"Retention","type":"object"},"recursive":{"default":true,"title":"Recursive","type":"boolean"}},"required":["dataset","name","schedule","retention"],"title":"create_snapshot_policyArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshot_policyOutput","type":"object"}}]}}
+2025-07-09 16:58:38 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"result":{"resources":[]}}
+2025-07-10 08:21:18 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 08:21:18 [TrueNAS-MCP] Configuration:
+2025-07-10 08:21:18 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 08:21:18 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 08:21:18 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 08:21:18 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 08:21:18 [TrueNAS-MCP] TrueNAS MCP server started with PID: 52822
+2025-07-10 09:06:19 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 09:06:19 [TrueNAS-MCP] Configuration:
+2025-07-10 09:06:19 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 09:06:19 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 09:06:19 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 09:06:19 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 09:06:19 [TrueNAS-MCP] TrueNAS MCP server started with PID: 55471
+2025-07-10 09:06:26 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-10 09:06:26 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-10 09:06:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-10 09:06:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-10 09:07:26 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 2, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-10 09:07:26 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 3, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-10 10:03:24 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 10:03:24 [TrueNAS-MCP] Configuration:
+2025-07-10 10:03:24 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 10:03:24 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 10:03:24 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 10:03:24 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 10:03:25 [TrueNAS-MCP] TrueNAS MCP server started with PID: 58729
+2025-07-10 10:03:31 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 10:31:42 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 10:31:42 [TrueNAS-MCP] Configuration:
+2025-07-10 10:31:42 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 10:31:42 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 10:31:42 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 10:31:42 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 10:31:42 [TrueNAS-MCP] TrueNAS MCP server started with PID: 60747
+2025-07-10 10:50:47 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 10:50:47 [TrueNAS-MCP] Configuration:
+2025-07-10 10:50:47 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 10:50:47 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 10:50:47 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 10:50:47 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 10:50:47 [TrueNAS-MCP] TrueNAS MCP server started with PID: 62243
+2025-07-10 10:50:56 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 11:34:38 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 11:34:38 [TrueNAS-MCP] Configuration:
+2025-07-10 11:34:38 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 11:34:38 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 11:34:38 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 11:34:38 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 11:34:38 [TrueNAS-MCP] TrueNAS MCP server started with PID: 64702
+2025-07-10 11:49:57 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 64702)
+2025-07-10 11:52:28 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 11:52:28 [TrueNAS-MCP] Configuration:
+2025-07-10 11:52:28 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 11:52:28 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 11:52:28 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 11:52:28 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 11:52:28 [TrueNAS-MCP] TrueNAS MCP server started with PID: 66761
+2025-07-10 12:10:52 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 12:10:52 [TrueNAS-MCP] Configuration:
+2025-07-10 12:10:52 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 12:10:52 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 12:10:52 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 12:10:52 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 12:10:52 [TrueNAS-MCP] TrueNAS MCP server started with PID: 68435
+2025-07-10 12:36:48 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 12:36:48 [TrueNAS-MCP] Configuration:
+2025-07-10 12:36:48 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 12:36:48 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 12:36:48 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 12:36:48 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 12:36:48 [TrueNAS-MCP] TrueNAS MCP server started with PID: 70184
+2025-07-10 12:54:57 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 12:54:57 [TrueNAS-MCP] Configuration:
+2025-07-10 12:54:57 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 12:54:57 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 12:54:57 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 12:54:57 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 12:54:57 [TrueNAS-MCP] TrueNAS MCP server started with PID: 71874
+2025-07-10 12:55:04 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 13:09:17 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 13:09:18 [TrueNAS-MCP] Configuration:
+2025-07-10 13:09:18 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 13:09:18 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 13:09:18 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 13:09:18 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 13:09:18 [TrueNAS-MCP] TrueNAS MCP server started with PID: 73080
+2025-07-10 13:09:23 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 14:21:50 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 14:21:50 [TrueNAS-MCP] Configuration:
+2025-07-10 14:21:50 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 14:21:50 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 14:21:50 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 14:21:50 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 14:21:50 [TrueNAS-MCP] TrueNAS MCP server started with PID: 76940
+2025-07-10 14:21:53 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 15:07:31 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 15:07:31 [TrueNAS-MCP] Configuration:
+2025-07-10 15:07:31 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 15:07:31 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 15:07:31 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 15:07:31 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 15:07:31 [TrueNAS-MCP] TrueNAS MCP server started with PID: 79373
+2025-07-10 15:26:52 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 15:26:52 [TrueNAS-MCP] Configuration:
+2025-07-10 15:26:52 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 15:26:52 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 15:26:52 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 15:26:52 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 15:26:52 [TrueNAS-MCP] TrueNAS MCP server started with PID: 80785
+2025-07-10 15:44:19 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 15:44:19 [TrueNAS-MCP] Configuration:
+2025-07-10 15:44:19 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 15:44:19 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 15:44:19 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 15:44:19 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 15:44:19 [TrueNAS-MCP] TrueNAS MCP server started with PID: 82159
+2025-07-10 15:44:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 16:09:06 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 16:09:06 [TrueNAS-MCP] Configuration:
+2025-07-10 16:09:06 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 16:09:06 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 16:09:06 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 16:09:06 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 16:09:06 [TrueNAS-MCP] TrueNAS MCP server started with PID: 84109
+2025-07-10 16:09:10 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-10 16:29:51 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-10 16:29:51 [TrueNAS-MCP] Configuration:
+2025-07-10 16:29:51 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-10 16:29:51 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-10 16:29:51 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-10 16:29:51 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-10 16:29:51 [TrueNAS-MCP] TrueNAS MCP server started with PID: 86077
+2025-07-10 16:29:57 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 08:13:15 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 08:13:15 [TrueNAS-MCP] Configuration:
+2025-07-11 08:13:16 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 08:13:16 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 08:13:16 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 08:13:16 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 08:13:16 [TrueNAS-MCP] TrueNAS MCP server started with PID: 124597
+2025-07-11 08:22:34 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 124597)
+2025-07-11 08:48:56 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 124597)
+2025-07-11 09:20:40 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 124597)
+2025-07-11 10:00:27 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 10:00:27 [TrueNAS-MCP] Configuration:
+2025-07-11 10:00:27 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 10:00:28 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 10:00:28 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 10:00:28 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 10:00:28 [TrueNAS-MCP] TrueNAS MCP server started with PID: 135877
+2025-07-11 10:00:33 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 14:12:19 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 14:12:19 [TrueNAS-MCP] Configuration:
+2025-07-11 14:12:19 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 14:12:19 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 14:12:19 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 14:12:19 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 14:12:19 [TrueNAS-MCP] TrueNAS MCP server started with PID: 146811
+2025-07-11 14:12:26 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-11 14:12:26 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-11 14:12:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-11 14:12:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-11 14:13:26 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 3, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-11 14:19:34 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 146811)
+2025-07-11 14:52:46 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 14:52:46 [TrueNAS-MCP] Configuration:
+2025-07-11 14:52:46 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 14:52:46 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 14:52:46 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 14:52:46 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 14:52:46 [TrueNAS-MCP] TrueNAS MCP server started with PID: 152860
+2025-07-11 15:10:35 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 152860)
+2025-07-11 15:18:40 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 15:18:40 [TrueNAS-MCP] Configuration:
+2025-07-11 15:18:40 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 15:18:40 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 15:18:40 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 15:18:40 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 15:18:40 [TrueNAS-MCP] TrueNAS MCP server started with PID: 155816
+2025-07-11 15:30:29 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 15:30:29 [TrueNAS-MCP] Configuration:
+2025-07-11 15:30:29 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 15:30:29 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 15:30:29 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 15:30:29 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 15:30:29 [TrueNAS-MCP] TrueNAS MCP server started with PID: 158174
+2025-07-11 15:30:35 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 15:43:30 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 15:43:30 [TrueNAS-MCP] Configuration:
+2025-07-11 15:43:30 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 15:43:30 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 15:43:30 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 15:43:30 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 15:43:30 [TrueNAS-MCP] TrueNAS MCP server started with PID: 159425
+2025-07-11 15:59:39 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 15:59:39 [TrueNAS-MCP] Configuration:
+2025-07-11 15:59:39 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 15:59:39 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 15:59:39 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 15:59:39 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 15:59:39 [TrueNAS-MCP] TrueNAS MCP server started with PID: 160754
+2025-07-11 16:17:26 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 16:17:26 [TrueNAS-MCP] Configuration:
+2025-07-11 16:17:26 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 16:17:26 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 16:17:27 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 16:17:27 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 16:17:27 [TrueNAS-MCP] TrueNAS MCP server started with PID: 162231
+2025-07-11 16:17:31 [TrueNAS-MCP] Processing request of type ListToolsRequest
+2025-07-11 16:17:31 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"debug_connection","description":"Debug connection settings and environment variables","inputSchema":{"properties":{},"title":"debug_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"debug_connectionOutput","type":"object"}},{"name":"reset_connection","description":"Reset the HTTP client to force re-initialization","inputSchema":{"properties":{},"title":"reset_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"reset_connectionOutput","type":"object"}},{"name":"list_users","description":"List all users in TrueNAS","inputSchema":{"properties":{},"title":"list_usersArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_usersOutput","type":"object"}},{"name":"get_user","description":"\n    Get detailed information about a specific user\n    \n    Args:\n        username: Username to look up\n    ","inputSchema":{"properties":{"username":{"title":"Username","type":"string"}},"required":["username"],"title":"get_userArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_userOutput","type":"object"}},{"name":"get_system_info","description":"Get TrueNAS system information","inputSchema":{"properties":{},"title":"get_system_infoArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_system_infoOutput","type":"object"}},{"name":"list_pools","description":"List all storage pools","inputSchema":{"properties":{},"title":"list_poolsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_poolsOutput","type":"object"}},{"name":"list_datasets","description":"List all datasets","inputSchema":{"properties":{},"title":"list_datasetsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_datasetsOutput","type":"object"}},{"name":"get_pool_status","description":"\n    Get detailed status of a specific pool\n    \n    Args:\n        pool_name: Name of the pool\n    ","inputSchema":{"properties":{"pool_name":{"title":"Pool Name","type":"string"}},"required":["pool_name"],"title":"get_pool_statusArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_pool_statusOutput","type":"object"}},{"name":"create_dataset","description":"\n    Create a new dataset\n    \n    Args:\n        pool: Pool name where dataset will be created\n        name: Dataset name\n        compression: Compression algorithm (default: lz4)\n        quota: Optional quota in bytes\n    ","inputSchema":{"properties":{"pool":{"title":"Pool","type":"string"},"name":{"title":"Name","type":"string"},"compression":{"default":"lz4","title":"Compression","type":"string"},"quota":{"anyOf":[{"type":"integer"},{"type":"null"}],"default":null,"title":"Quota"}},"required":["pool","name"],"title":"create_datasetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_datasetOutput","type":"object"}},{"name":"list_smb_shares","description":"List all SMB shares","inputSchema":{"properties":{},"title":"list_smb_sharesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_smb_sharesOutput","type":"object"}},{"name":"create_smb_share","description":"\n    Create a new SMB share\n    \n    Args:\n        path: Path to share\n        name: Share name\n        comment: Optional comment\n        read_only: Whether share is read-only\n    ","inputSchema":{"properties":{"path":{"title":"Path","type":"string"},"name":{"title":"Name","type":"string"},"comment":{"default":"","title":"Comment","type":"string"},"read_only":{"default":false,"title":"Read Only","type":"boolean"}},"required":["path","name"],"title":"create_smb_shareArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_smb_shareOutput","type":"object"}},{"name":"create_snapshot","description":"\n    Create a snapshot of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        name: Snapshot name\n        recursive: Whether to create recursive snapshots\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset","name"],"title":"create_snapshotArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshotOutput","type":"object"}},{"name":"modify_dataset_permissions","description":"\n    Modify dataset permissions (chmod/chown equivalent)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        mode: Unix permission mode (e.g., \"755\", \"644\")\n        owner: Owner username or UID\n        group: Group name or GID\n        recursive: Apply permissions recursively\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"mode":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Mode"},"owner":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Owner"},"group":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Group"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset"],"title":"modify_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_permissionsOutput","type":"object"}},{"name":"update_dataset_acl","description":"\n    Update dataset Access Control Lists (ACLs)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        acl_entries: List of ACL entries with permissions\n        recursive: Apply ACLs recursively\n        strip_acl: Remove all ACLs and revert to Unix permissions\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"acl_entries":{"items":{"additionalProperties":true,"type":"object"},"title":"Acl Entries","type":"array"},"recursive":{"default":false,"title":"Recursive","type":"boolean"},"strip_acl":{"default":false,"title":"Strip Acl","type":"boolean"}},"required":["dataset","acl_entries"],"title":"update_dataset_aclArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"update_dataset_aclOutput","type":"object"}},{"name":"get_dataset_permissions","description":"\n    Get current permissions and ACL information for a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_permissionsOutput","type":"object"}},{"name":"modify_dataset_properties","description":"\n    Modify ZFS dataset properties\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        properties: Dictionary of properties to update\n                   Examples: {\"compression\": \"lz4\", \"dedup\": \"on\", \"quota\": \"10G\"}\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"properties":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"}]},"title":"Properties"}},"required":["dataset","properties"],"title":"modify_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_propertiesOutput","type":"object"}},{"name":"get_dataset_properties","description":"\n    Get all properties of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_propertiesOutput","type":"object"}},{"name":"create_nfs_export","description":"\n    Create an NFS export for Kubernetes persistent volumes\n    \n    Args:\n        dataset: Dataset path to export (e.g., \"tank/k8s-volumes\")\n        allowed_networks: List of allowed networks (e.g., [\"10.0.0.0/24\"])\n        read_only: Whether the export is read-only\n        maproot_user: User to map root to\n        maproot_group: Group to map root to\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"allowed_networks":{"default":null,"items":{"type":"string"},"title":"Allowed Networks","type":"array"},"read_only":{"default":false,"title":"Read Only","type":"boolean"},"maproot_user":{"default":"root","title":"Maproot User","type":"string"},"maproot_group":{"default":"wheel","title":"Maproot Group","type":"string"}},"required":["dataset"],"title":"create_nfs_exportArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_nfs_exportOutput","type":"object"}},{"name":"create_iscsi_target","description":"\n    Create an iSCSI target for Kubernetes block storage\n    \n    Args:\n        name: Target name (e.g., \"k8s-block-01\")\n        dataset: Dataset for storing the iSCSI extent\n        size: Size of the iSCSI extent (e.g., \"100G\")\n        portal_id: iSCSI portal ID to use\n    ","inputSchema":{"properties":{"name":{"title":"Name","type":"string"},"dataset":{"title":"Dataset","type":"string"},"size":{"title":"Size","type":"string"},"portal_id":{"default":1,"title":"Portal Id","type":"integer"}},"required":["name","dataset","size"],"title":"create_iscsi_targetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_iscsi_targetOutput","type":"object"}},{"name":"create_snapshot_policy","description":"\n    Create an automated snapshot policy\n    \n    Args:\n        dataset: Dataset to snapshot\n        name: Policy name\n        schedule: Schedule configuration (cron-like)\n                 {\"minute\": \"0\", \"hour\": \"*/4\", \"dom\": \"*\", \"month\": \"*\", \"dow\": \"*\"}\n        retention: Retention settings {\"hourly\": 24, \"daily\": 7, \"weekly\": 4, \"monthly\": 12}\n        recursive: Include child datasets\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"schedule":{"additionalProperties":true,"title":"Schedule","type":"object"},"retention":{"additionalProperties":{"type":"integer"},"title":"Retention","type":"object"},"recursive":{"default":true,"title":"Recursive","type":"boolean"}},"required":["dataset","name","schedule","retention"],"title":"create_snapshot_policyArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshot_policyOutput","type":"object"}}]}}
+2025-07-11 16:22:13 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 16:22:13 [TrueNAS-MCP] Configuration:
+2025-07-11 16:22:13 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 16:22:14 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 16:22:14 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 16:22:14 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 16:22:14 [TrueNAS-MCP] TrueNAS MCP server started with PID: 163034
+2025-07-11 16:22:18 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 16:34:31 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 16:34:31 [TrueNAS-MCP] Configuration:
+2025-07-11 16:34:31 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 16:34:31 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 16:34:31 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 16:34:31 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 16:34:31 [TrueNAS-MCP] TrueNAS MCP server started with PID: 164260
+2025-07-11 16:34:38 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 17:10:43 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 17:10:43 [TrueNAS-MCP] Configuration:
+2025-07-11 17:10:43 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 17:10:43 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 17:10:43 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 17:10:43 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 17:10:43 [TrueNAS-MCP] TrueNAS MCP server started with PID: 1358
+2025-07-11 17:12:25 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 1358)
+2025-07-11 17:23:32 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 1358)
+2025-07-11 17:35:27 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 1358)
+2025-07-11 17:39:19 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 17:39:19 [TrueNAS-MCP] Configuration:
+2025-07-11 17:39:19 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 17:39:19 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 17:39:19 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 17:39:19 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 17:39:19 [TrueNAS-MCP] TrueNAS MCP server started with PID: 5530
+2025-07-11 17:39:27 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 18:02:29 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 18:02:29 [TrueNAS-MCP] Configuration:
+2025-07-11 18:02:29 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 18:02:29 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 18:02:29 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 18:02:29 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 18:02:29 [TrueNAS-MCP] TrueNAS MCP server started with PID: 9097
+2025-07-11 18:02:33 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 18:03:23 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 18:03:23 [TrueNAS-MCP] Configuration:
+2025-07-11 18:03:23 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 18:03:23 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 18:03:23 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 18:03:23 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 18:03:23 [TrueNAS-MCP] TrueNAS MCP server started with PID: 9789
+2025-07-11 18:03:25 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 18:08:16 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 18:08:16 [TrueNAS-MCP] Configuration:
+2025-07-11 18:08:16 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 18:08:16 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 18:08:16 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 18:08:16 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 18:08:16 [TrueNAS-MCP] TrueNAS MCP server started with PID: 10791
+2025-07-11 18:08:26 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-11 18:08:26 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-11 18:09:26 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 2, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-11 18:20:56 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 18:20:56 [TrueNAS-MCP] Configuration:
+2025-07-11 18:20:56 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 18:20:56 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 18:20:56 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 18:20:56 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 18:20:56 [TrueNAS-MCP] TrueNAS MCP server started with PID: 12802
+2025-07-11 18:22:01 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 12802)
+2025-07-11 18:30:13 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 18:30:13 [TrueNAS-MCP] Configuration:
+2025-07-11 18:30:13 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 18:30:13 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 18:30:13 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 18:30:13 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 18:30:13 [TrueNAS-MCP] TrueNAS MCP server started with PID: 14490
+2025-07-11 18:30:21 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 19:01:30 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:01:30 [TrueNAS-MCP] Configuration:
+2025-07-11 19:01:30 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:01:30 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:01:30 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:01:30 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:01:30 [TrueNAS-MCP] TrueNAS MCP server started with PID: 16706
+2025-07-11 19:01:33 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 19:06:43 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:06:43 [TrueNAS-MCP] Configuration:
+2025-07-11 19:06:43 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:06:43 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:06:43 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:06:43 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:06:43 [TrueNAS-MCP] TrueNAS MCP server started with PID: 18071
+2025-07-11 19:11:44 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 18071)
+2025-07-11 19:17:06 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:17:07 [TrueNAS-MCP] Configuration:
+2025-07-11 19:17:07 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:17:07 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:17:07 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:17:07 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:17:07 [TrueNAS-MCP] TrueNAS MCP server started with PID: 19892
+2025-07-11 19:17:16 [TrueNAS-MCP] Processing request of type ListToolsRequest
+2025-07-11 19:17:16 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"debug_connection","description":"Debug connection settings and environment variables","inputSchema":{"properties":{},"title":"debug_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"debug_connectionOutput","type":"object"}},{"name":"reset_connection","description":"Reset the HTTP client to force re-initialization","inputSchema":{"properties":{},"title":"reset_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"reset_connectionOutput","type":"object"}},{"name":"list_users","description":"List all users in TrueNAS","inputSchema":{"properties":{},"title":"list_usersArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_usersOutput","type":"object"}},{"name":"get_user","description":"\n    Get detailed information about a specific user\n    \n    Args:\n        username: Username to look up\n    ","inputSchema":{"properties":{"username":{"title":"Username","type":"string"}},"required":["username"],"title":"get_userArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_userOutput","type":"object"}},{"name":"get_system_info","description":"Get TrueNAS system information","inputSchema":{"properties":{},"title":"get_system_infoArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_system_infoOutput","type":"object"}},{"name":"list_pools","description":"List all storage pools","inputSchema":{"properties":{},"title":"list_poolsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_poolsOutput","type":"object"}},{"name":"list_datasets","description":"List all datasets","inputSchema":{"properties":{},"title":"list_datasetsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_datasetsOutput","type":"object"}},{"name":"get_pool_status","description":"\n    Get detailed status of a specific pool\n    \n    Args:\n        pool_name: Name of the pool\n    ","inputSchema":{"properties":{"pool_name":{"title":"Pool Name","type":"string"}},"required":["pool_name"],"title":"get_pool_statusArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_pool_statusOutput","type":"object"}},{"name":"create_dataset","description":"\n    Create a new dataset\n    \n    Args:\n        pool: Pool name where dataset will be created\n        name: Dataset name\n        compression: Compression algorithm (default: lz4)\n        quota: Optional quota in bytes\n    ","inputSchema":{"properties":{"pool":{"title":"Pool","type":"string"},"name":{"title":"Name","type":"string"},"compression":{"default":"lz4","title":"Compression","type":"string"},"quota":{"anyOf":[{"type":"integer"},{"type":"null"}],"default":null,"title":"Quota"}},"required":["pool","name"],"title":"create_datasetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_datasetOutput","type":"object"}},{"name":"list_smb_shares","description":"List all SMB shares","inputSchema":{"properties":{},"title":"list_smb_sharesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_smb_sharesOutput","type":"object"}},{"name":"create_smb_share","description":"\n    Create a new SMB share\n    \n    Args:\n        path: Path to share\n        name: Share name\n        comment: Optional comment\n        read_only: Whether share is read-only\n    ","inputSchema":{"properties":{"path":{"title":"Path","type":"string"},"name":{"title":"Name","type":"string"},"comment":{"default":"","title":"Comment","type":"string"},"read_only":{"default":false,"title":"Read Only","type":"boolean"}},"required":["path","name"],"title":"create_smb_shareArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_smb_shareOutput","type":"object"}},{"name":"create_snapshot","description":"\n    Create a snapshot of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        name: Snapshot name\n        recursive: Whether to create recursive snapshots\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset","name"],"title":"create_snapshotArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshotOutput","type":"object"}},{"name":"modify_dataset_permissions","description":"\n    Modify dataset permissions (chmod/chown equivalent)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        mode: Unix permission mode (e.g., \"755\", \"644\")\n        owner: Owner username or UID\n        group: Group name or GID\n        recursive: Apply permissions recursively\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"mode":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Mode"},"owner":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Owner"},"group":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Group"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset"],"title":"modify_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_permissionsOutput","type":"object"}},{"name":"update_dataset_acl","description":"\n    Update dataset Access Control Lists (ACLs)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        acl_entries: List of ACL entries with permissions\n        recursive: Apply ACLs recursively\n        strip_acl: Remove all ACLs and revert to Unix permissions\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"acl_entries":{"items":{"additionalProperties":true,"type":"object"},"title":"Acl Entries","type":"array"},"recursive":{"default":false,"title":"Recursive","type":"boolean"},"strip_acl":{"default":false,"title":"Strip Acl","type":"boolean"}},"required":["dataset","acl_entries"],"title":"update_dataset_aclArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"update_dataset_aclOutput","type":"object"}},{"name":"get_dataset_permissions","description":"\n    Get current permissions and ACL information for a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_permissionsOutput","type":"object"}},{"name":"modify_dataset_properties","description":"\n    Modify ZFS dataset properties\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        properties: Dictionary of properties to update\n                   Examples: {\"compression\": \"lz4\", \"dedup\": \"on\", \"quota\": \"10G\"}\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"properties":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"}]},"title":"Properties"}},"required":["dataset","properties"],"title":"modify_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_propertiesOutput","type":"object"}},{"name":"get_dataset_properties","description":"\n    Get all properties of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_propertiesOutput","type":"object"}},{"name":"create_nfs_export","description":"\n    Create an NFS export for Kubernetes persistent volumes\n    \n    Args:\n        dataset: Dataset path to export (e.g., \"tank/k8s-volumes\")\n        allowed_networks: List of allowed networks (e.g., [\"10.0.0.0/24\"])\n        read_only: Whether the export is read-only\n        maproot_user: User to map root to\n        maproot_group: Group to map root to\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"allowed_networks":{"default":null,"items":{"type":"string"},"title":"Allowed Networks","type":"array"},"read_only":{"default":false,"title":"Read Only","type":"boolean"},"maproot_user":{"default":"root","title":"Maproot User","type":"string"},"maproot_group":{"default":"wheel","title":"Maproot Group","type":"string"}},"required":["dataset"],"title":"create_nfs_exportArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_nfs_exportOutput","type":"object"}},{"name":"create_iscsi_target","description":"\n    Create an iSCSI target for Kubernetes block storage\n    \n    Args:\n        name: Target name (e.g., \"k8s-block-01\")\n        dataset: Dataset for storing the iSCSI extent\n        size: Size of the iSCSI extent (e.g., \"100G\")\n        portal_id: iSCSI portal ID to use\n    ","inputSchema":{"properties":{"name":{"title":"Name","type":"string"},"dataset":{"title":"Dataset","type":"string"},"size":{"title":"Size","type":"string"},"portal_id":{"default":1,"title":"Portal Id","type":"integer"}},"required":["name","dataset","size"],"title":"create_iscsi_targetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_iscsi_targetOutput","type":"object"}},{"name":"create_snapshot_policy","description":"\n    Create an automated snapshot policy\n    \n    Args:\n        dataset: Dataset to snapshot\n        name: Policy name\n        schedule: Schedule configuration (cron-like)\n                 {\"minute\": \"0\", \"hour\": \"*/4\", \"dom\": \"*\", \"month\": \"*\", \"dow\": \"*\"}\n        retention: Retention settings {\"hourly\": 24, \"daily\": 7, \"weekly\": 4, \"monthly\": 12}\n        recursive: Include child datasets\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"schedule":{"additionalProperties":true,"title":"Schedule","type":"object"},"retention":{"additionalProperties":{"type":"integer"},"title":"Retention","type":"object"},"recursive":{"default":true,"title":"Recursive","type":"boolean"}},"required":["dataset","name","schedule","retention"],"title":"create_snapshot_policyArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshot_policyOutput","type":"object"}}]}}
+2025-07-11 19:17:16 [TrueNAS-MCP] Processing request of type ListPromptsRequest
+2025-07-11 19:17:16 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"result":{"prompts":[]}}
+2025-07-11 19:21:44 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 19892)
+2025-07-11 19:27:10 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:27:10 [TrueNAS-MCP] Configuration:
+2025-07-11 19:27:10 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:27:10 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:27:10 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:27:10 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:27:10 [TrueNAS-MCP] TrueNAS MCP server started with PID: 21591
+2025-07-11 19:30:26 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:30:26 [TrueNAS-MCP] Configuration:
+2025-07-11 19:30:26 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:30:26 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:30:26 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:30:26 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:30:26 [TrueNAS-MCP] TrueNAS MCP server started with PID: 22490
+2025-07-11 19:30:33 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 19:38:08 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:38:08 [TrueNAS-MCP] Configuration:
+2025-07-11 19:38:08 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:38:08 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:38:08 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:38:08 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:38:08 [TrueNAS-MCP] TrueNAS MCP server started with PID: 23632
+2025-07-11 19:38:15 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 19:42:27 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:42:27 [TrueNAS-MCP] Configuration:
+2025-07-11 19:42:27 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:42:27 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:42:27 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:42:27 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:42:27 [TrueNAS-MCP] TrueNAS MCP server started with PID: 24692
+2025-07-11 19:49:58 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 19:49:58 [TrueNAS-MCP] Configuration:
+2025-07-11 19:49:58 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 19:49:58 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 19:49:58 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 19:49:58 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 19:49:58 [TrueNAS-MCP] TrueNAS MCP server started with PID: 26150
+2025-07-11 19:50:02 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-11 21:06:55 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 21:06:55 [TrueNAS-MCP] Configuration:
+2025-07-11 21:06:55 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 21:06:55 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 21:06:55 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 21:06:55 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 21:06:56 [TrueNAS-MCP] TrueNAS MCP server started with PID: 32979
+2025-07-11 21:17:32 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-11 21:17:32 [TrueNAS-MCP] Configuration:
+2025-07-11 21:17:32 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-11 21:17:32 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-11 21:17:32 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-11 21:17:32 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-11 21:17:32 [TrueNAS-MCP] TrueNAS MCP server started with PID: 34114
+2025-07-12 07:38:49 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 07:38:49 [TrueNAS-MCP] Configuration:
+2025-07-12 07:38:49 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 07:38:49 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 07:38:49 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 07:38:49 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 07:38:49 [TrueNAS-MCP] TrueNAS MCP server started with PID: 65007
+2025-07-12 07:38:56 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-12 07:53:34 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 07:53:34 [TrueNAS-MCP] Configuration:
+2025-07-12 07:53:34 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 07:53:34 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 07:53:34 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 07:53:34 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 07:53:34 [TrueNAS-MCP] TrueNAS MCP server started with PID: 66217
+2025-07-12 07:53:39 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-12 08:34:19 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 08:34:19 [TrueNAS-MCP] Configuration:
+2025-07-12 08:34:19 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 08:34:19 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 08:34:19 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 08:34:19 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 08:34:19 [TrueNAS-MCP] TrueNAS MCP server started with PID: 74045
+2025-07-12 08:44:51 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 08:44:51 [TrueNAS-MCP] Configuration:
+2025-07-12 08:44:51 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 08:44:51 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 08:44:51 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 08:44:51 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 08:44:51 [TrueNAS-MCP] TrueNAS MCP server started with PID: 75523
+2025-07-12 08:44:58 [TrueNAS-MCP] Processing request of type ListPromptsRequest
+2025-07-12 08:44:58 [TrueNAS-MCP] Processing request of type ListResourcesRequest
+2025-07-12 08:44:58 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"result":{"prompts":[]}}
+2025-07-12 08:44:58 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"result":{"resources":[]}}
+2025-07-12 08:56:54 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 08:56:54 [TrueNAS-MCP] Configuration:
+2025-07-12 08:56:54 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 08:56:55 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 08:56:55 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 08:56:55 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 08:56:55 [TrueNAS-MCP] TrueNAS MCP server started with PID: 76681
+2025-07-12 08:57:02 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-12 08:57:02 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-12 08:58:02 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 1, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-12 09:10:10 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 09:10:10 [TrueNAS-MCP] Configuration:
+2025-07-12 09:10:10 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 09:10:10 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 09:10:10 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 09:10:10 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 09:10:10 [TrueNAS-MCP] TrueNAS MCP server started with PID: 77849
+2025-07-12 10:42:39 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 10:42:39 [TrueNAS-MCP] Configuration:
+2025-07-12 10:42:39 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 10:42:39 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 10:42:39 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 10:42:39 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 10:42:39 [TrueNAS-MCP] TrueNAS MCP server started with PID: 82181
+2025-07-12 10:42:43 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-12 13:53:01 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 13:53:01 [TrueNAS-MCP] Configuration:
+2025-07-12 13:53:01 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 13:53:01 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 13:53:01 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 13:53:01 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 13:53:01 [TrueNAS-MCP] TrueNAS MCP server started with PID: 90480
+2025-07-12 13:53:07 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-12 14:05:15 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 14:05:15 [TrueNAS-MCP] Configuration:
+2025-07-12 14:05:15 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 14:05:15 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 14:05:15 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 14:05:15 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 14:05:15 [TrueNAS-MCP] TrueNAS MCP server started with PID: 91780
+2025-07-12 17:05:42 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-12 17:05:42 [TrueNAS-MCP] Configuration:
+2025-07-12 17:05:42 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-12 17:05:42 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-12 17:05:42 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-12 17:05:42 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-12 17:05:42 [TrueNAS-MCP] TrueNAS MCP server started with PID: 100736
+2025-07-12 17:05:50 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-12 17:05:50 [TrueNAS-MCP] Failed to validate request: Received request before initialization was complete
+2025-07-12 17:05:50 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-12 17:05:50 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Invalid request parameters","data":""}}
+2025-07-12 17:06:50 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 2, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-12 17:06:50 [TrueNAS-MCP] Failed to validate notification: RequestResponder must be used as a context manager. Message was: method='notifications/cancelled' params={'requestId': 3, 'reason': 'McpError: MCP error -32001: Request timed out'} jsonrpc='2.0'
+2025-07-13 09:11:58 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 09:11:58 [TrueNAS-MCP] Configuration:
+2025-07-13 09:11:58 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 09:11:58 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 09:11:58 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 09:11:58 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 09:11:58 [TrueNAS-MCP] TrueNAS MCP server started with PID: 139409
+2025-07-13 09:12:04 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 09:14:08 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 09:14:08 [TrueNAS-MCP] Configuration:
+2025-07-13 09:14:08 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 09:14:08 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 09:14:08 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 09:14:08 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 09:14:08 [TrueNAS-MCP] TrueNAS MCP server started with PID: 140098
+2025-07-13 09:14:12 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 09:51:41 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 09:51:41 [TrueNAS-MCP] Configuration:
+2025-07-13 09:51:41 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 09:51:42 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 09:51:42 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 09:51:42 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 09:51:42 [TrueNAS-MCP] TrueNAS MCP server started with PID: 143309
+2025-07-13 09:51:50 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 09:52:23 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 09:52:23 [TrueNAS-MCP] Configuration:
+2025-07-13 09:52:23 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 09:52:23 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 09:52:23 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 09:52:23 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 09:52:23 [TrueNAS-MCP] TrueNAS MCP server started with PID: 143862
+2025-07-13 09:52:33 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 09:54:53 [TrueNAS-MCP] TrueNAS MCP server is not running
+2025-07-13 09:54:57 [TrueNAS-MCP] Testing TrueNAS MCP server connectivity...
+2025-07-13 09:55:50 [TrueNAS-MCP] Testing TrueNAS MCP server connectivity...
+2025-07-13 09:57:48 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 09:57:48 [TrueNAS-MCP] Configuration:
+2025-07-13 09:57:48 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 09:57:48 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 09:57:48 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 09:57:48 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 09:57:48 [TrueNAS-MCP] TrueNAS MCP server started with PID: 145056
+2025-07-13 10:11:41 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:11:41 [TrueNAS-MCP] Configuration:
+2025-07-13 10:11:41 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:11:41 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:11:41 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:11:41 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:11:41 [TrueNAS-MCP] TrueNAS MCP server started with PID: 146461
+2025-07-13 10:11:49 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 10:13:07 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:13:07 [TrueNAS-MCP] Configuration:
+2025-07-13 10:13:07 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:13:07 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:13:07 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:13:07 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:13:07 [TrueNAS-MCP] TrueNAS MCP server started with PID: 147130
+2025-07-13 10:13:12 [TrueNAS-MCP] Processing request of type ListToolsRequest
+2025-07-13 10:13:12 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"debug_connection","description":"Debug connection settings and environment variables","inputSchema":{"properties":{},"title":"debug_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"debug_connectionOutput","type":"object"}},{"name":"reset_connection","description":"Reset the HTTP client to force re-initialization","inputSchema":{"properties":{},"title":"reset_connectionArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"reset_connectionOutput","type":"object"}},{"name":"list_users","description":"List all users in TrueNAS","inputSchema":{"properties":{},"title":"list_usersArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_usersOutput","type":"object"}},{"name":"get_user","description":"\n    Get detailed information about a specific user\n    \n    Args:\n        username: Username to look up\n    ","inputSchema":{"properties":{"username":{"title":"Username","type":"string"}},"required":["username"],"title":"get_userArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_userOutput","type":"object"}},{"name":"get_system_info","description":"Get TrueNAS system information","inputSchema":{"properties":{},"title":"get_system_infoArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_system_infoOutput","type":"object"}},{"name":"list_pools","description":"List all storage pools","inputSchema":{"properties":{},"title":"list_poolsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_poolsOutput","type":"object"}},{"name":"list_datasets","description":"List all datasets","inputSchema":{"properties":{},"title":"list_datasetsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_datasetsOutput","type":"object"}},{"name":"get_pool_status","description":"\n    Get detailed status of a specific pool\n    \n    Args:\n        pool_name: Name of the pool\n    ","inputSchema":{"properties":{"pool_name":{"title":"Pool Name","type":"string"}},"required":["pool_name"],"title":"get_pool_statusArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_pool_statusOutput","type":"object"}},{"name":"create_dataset","description":"\n    Create a new dataset\n    \n    Args:\n        pool: Pool name where dataset will be created\n        name: Dataset name\n        compression: Compression algorithm (default: lz4)\n        quota: Optional quota in bytes\n    ","inputSchema":{"properties":{"pool":{"title":"Pool","type":"string"},"name":{"title":"Name","type":"string"},"compression":{"default":"lz4","title":"Compression","type":"string"},"quota":{"anyOf":[{"type":"integer"},{"type":"null"}],"default":null,"title":"Quota"}},"required":["pool","name"],"title":"create_datasetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_datasetOutput","type":"object"}},{"name":"list_smb_shares","description":"List all SMB shares","inputSchema":{"properties":{},"title":"list_smb_sharesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"list_smb_sharesOutput","type":"object"}},{"name":"create_smb_share","description":"\n    Create a new SMB share\n    \n    Args:\n        path: Path to share\n        name: Share name\n        comment: Optional comment\n        read_only: Whether share is read-only\n    ","inputSchema":{"properties":{"path":{"title":"Path","type":"string"},"name":{"title":"Name","type":"string"},"comment":{"default":"","title":"Comment","type":"string"},"read_only":{"default":false,"title":"Read Only","type":"boolean"}},"required":["path","name"],"title":"create_smb_shareArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_smb_shareOutput","type":"object"}},{"name":"create_snapshot","description":"\n    Create a snapshot of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        name: Snapshot name\n        recursive: Whether to create recursive snapshots\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset","name"],"title":"create_snapshotArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshotOutput","type":"object"}},{"name":"modify_dataset_permissions","description":"\n    Modify dataset permissions (chmod/chown equivalent)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        mode: Unix permission mode (e.g., \"755\", \"644\")\n        owner: Owner username or UID\n        group: Group name or GID\n        recursive: Apply permissions recursively\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"mode":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Mode"},"owner":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Owner"},"group":{"anyOf":[{"type":"string"},{"type":"null"}],"default":null,"title":"Group"},"recursive":{"default":false,"title":"Recursive","type":"boolean"}},"required":["dataset"],"title":"modify_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_permissionsOutput","type":"object"}},{"name":"update_dataset_acl","description":"\n    Update dataset Access Control Lists (ACLs)\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        acl_entries: List of ACL entries with permissions\n        recursive: Apply ACLs recursively\n        strip_acl: Remove all ACLs and revert to Unix permissions\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"acl_entries":{"items":{"additionalProperties":true,"type":"object"},"title":"Acl Entries","type":"array"},"recursive":{"default":false,"title":"Recursive","type":"boolean"},"strip_acl":{"default":false,"title":"Strip Acl","type":"boolean"}},"required":["dataset","acl_entries"],"title":"update_dataset_aclArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"update_dataset_aclOutput","type":"object"}},{"name":"get_dataset_permissions","description":"\n    Get current permissions and ACL information for a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_permissionsArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_permissionsOutput","type":"object"}},{"name":"modify_dataset_properties","description":"\n    Modify ZFS dataset properties\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n        properties: Dictionary of properties to update\n                   Examples: {\"compression\": \"lz4\", \"dedup\": \"on\", \"quota\": \"10G\"}\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"properties":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"}]},"title":"Properties"}},"required":["dataset","properties"],"title":"modify_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"modify_dataset_propertiesOutput","type":"object"}},{"name":"get_dataset_properties","description":"\n    Get all properties of a dataset\n    \n    Args:\n        dataset: Dataset path (e.g., \"tank/data\")\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"}},"required":["dataset"],"title":"get_dataset_propertiesArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"get_dataset_propertiesOutput","type":"object"}},{"name":"create_nfs_export","description":"\n    Create an NFS export for Kubernetes persistent volumes\n    \n    Args:\n        dataset: Dataset path to export (e.g., \"tank/k8s-volumes\")\n        allowed_networks: List of allowed networks (e.g., [\"10.0.0.0/24\"])\n        read_only: Whether the export is read-only\n        maproot_user: User to map root to\n        maproot_group: Group to map root to\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"allowed_networks":{"default":null,"items":{"type":"string"},"title":"Allowed Networks","type":"array"},"read_only":{"default":false,"title":"Read Only","type":"boolean"},"maproot_user":{"default":"root","title":"Maproot User","type":"string"},"maproot_group":{"default":"wheel","title":"Maproot Group","type":"string"}},"required":["dataset"],"title":"create_nfs_exportArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_nfs_exportOutput","type":"object"}},{"name":"create_iscsi_target","description":"\n    Create an iSCSI target for Kubernetes block storage\n    \n    Args:\n        name: Target name (e.g., \"k8s-block-01\")\n        dataset: Dataset for storing the iSCSI extent\n        size: Size of the iSCSI extent (e.g., \"100G\")\n        portal_id: iSCSI portal ID to use\n    ","inputSchema":{"properties":{"name":{"title":"Name","type":"string"},"dataset":{"title":"Dataset","type":"string"},"size":{"title":"Size","type":"string"},"portal_id":{"default":1,"title":"Portal Id","type":"integer"}},"required":["name","dataset","size"],"title":"create_iscsi_targetArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_iscsi_targetOutput","type":"object"}},{"name":"create_snapshot_policy","description":"\n    Create an automated snapshot policy\n    \n    Args:\n        dataset: Dataset to snapshot\n        name: Policy name\n        schedule: Schedule configuration (cron-like)\n                 {\"minute\": \"0\", \"hour\": \"*/4\", \"dom\": \"*\", \"month\": \"*\", \"dow\": \"*\"}\n        retention: Retention settings {\"hourly\": 24, \"daily\": 7, \"weekly\": 4, \"monthly\": 12}\n        recursive: Include child datasets\n    ","inputSchema":{"properties":{"dataset":{"title":"Dataset","type":"string"},"name":{"title":"Name","type":"string"},"schedule":{"additionalProperties":true,"title":"Schedule","type":"object"},"retention":{"additionalProperties":{"type":"integer"},"title":"Retention","type":"object"},"recursive":{"default":true,"title":"Recursive","type":"boolean"}},"required":["dataset","name","schedule","retention"],"title":"create_snapshot_policyArguments","type":"object"},"outputSchema":{"properties":{"result":{"additionalProperties":true,"title":"Result","type":"object"}},"required":["result"],"title":"create_snapshot_policyOutput","type":"object"}}]}}
+2025-07-13 10:13:13 [TrueNAS-MCP] Processing request of type ListPromptsRequest
+2025-07-13 10:13:13 [TrueNAS-MCP] Processing request of type ListResourcesRequest
+2025-07-13 10:13:13 [TrueNAS-MCP] {"jsonrpc":"2.0","id":2,"result":{"prompts":[]}}
+2025-07-13 10:13:13 [TrueNAS-MCP] {"jsonrpc":"2.0","id":3,"result":{"resources":[]}}
+2025-07-13 10:23:01 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:23:01 [TrueNAS-MCP] Configuration:
+2025-07-13 10:23:01 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:23:01 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:23:01 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:23:01 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:23:01 [TrueNAS-MCP] TrueNAS MCP server started with PID: 148329
+2025-07-13 10:32:34 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:32:34 [TrueNAS-MCP] Configuration:
+2025-07-13 10:32:34 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:32:34 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:32:34 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:32:34 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:32:34 [TrueNAS-MCP] TrueNAS MCP server started with PID: 149482
+2025-07-13 10:32:41 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 10:45:43 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:45:43 [TrueNAS-MCP] Configuration:
+2025-07-13 10:45:43 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:45:43 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:45:43 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:45:43 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:45:43 [TrueNAS-MCP] TrueNAS MCP server started with PID: 151066
+2025-07-13 10:45:48 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 10:47:02 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:47:02 [TrueNAS-MCP] Configuration:
+2025-07-13 10:47:02 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:47:02 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:47:02 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:47:02 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:47:02 [TrueNAS-MCP] TrueNAS MCP server started with PID: 151851
+2025-07-13 10:47:06 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"TrueNAS Core MCP Server","version":"1.10.1"}}}
+2025-07-13 10:48:30 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:48:30 [TrueNAS-MCP] Configuration:
+2025-07-13 10:48:30 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:48:30 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:48:30 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:48:30 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:48:30 [TrueNAS-MCP] TrueNAS MCP server started with PID: 152660
+2025-07-13 10:48:52 [TrueNAS-MCP] Testing TrueNAS MCP server connectivity...
+2025-07-13 10:49:11 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 152660)
+2025-07-13 10:49:20 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 152660)
+2025-07-13 10:49:28 [TrueNAS-MCP] Stopping TrueNAS MCP server (PID: 152660)...
+2025-07-13 10:49:38 [TrueNAS-MCP] Force killing TrueNAS MCP server...
+2025-07-13 10:49:38 [TrueNAS-MCP] TrueNAS MCP server force stopped
+2025-07-13 10:54:00 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:54:00 [TrueNAS-MCP] Configuration:
+2025-07-13 10:54:00 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:54:00 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:54:00 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:54:00 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:54:00 [TrueNAS-MCP] TrueNAS MCP server started with PID: 153558
+2025-07-13 10:54:32 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 10:54:32 [TrueNAS-MCP] Configuration:
+2025-07-13 10:54:32 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 10:54:32 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 10:54:32 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 10:54:32 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 10:54:32 [TrueNAS-MCP] TrueNAS MCP server started with PID: 153840
+2025-07-13 10:54:36 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}
+2025-07-13 11:02:01 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 11:02:01 [TrueNAS-MCP] Configuration:
+2025-07-13 11:02:01 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 11:02:01 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 11:02:01 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 11:02:01 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 11:02:01 [TrueNAS-MCP] TrueNAS MCP server started with PID: 154970
+2025-07-13 11:31:43 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 154970)
+2025-07-13 12:00:11 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 12:00:11 [TrueNAS-MCP] Configuration:
+2025-07-13 12:00:11 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 12:00:11 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 12:00:11 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 12:00:11 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 12:00:11 [TrueNAS-MCP] TrueNAS MCP server started with PID: 162259
+2025-07-13 12:00:17 [TrueNAS-MCP] {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"debug_connection","description":"Debug connection settings and environment variables","inputSchema":{"type":"object","properties":{}}},{"name":"reset_connection","description":"Reset the HTTP client to force re-initialization","inputSchema":{"type":"object","properties":{}}},{"name":"list_users","description":"List all users in TrueNAS","inputSchema":{"type":"object","properties":{}}},{"name":"get_user","description":"Get detailed information about a specific user","inputSchema":{"type":"object","properties":{"username":{"type":"string","description":"Username to look up"}},"required":["username"]}},{"name":"get_system_info","description":"Get TrueNAS system information","inputSchema":{"type":"object","properties":{}}},{"name":"list_pools","description":"List all storage pools","inputSchema":{"type":"object","properties":{}}},{"name":"list_datasets","description":"List all datasets","inputSchema":{"type":"object","properties":{}}},{"name":"get_pool_status","description":"Get detailed status of a specific pool","inputSchema":{"type":"object","properties":{"pool_name":{"type":"string","description":"Name of the pool"}},"required":["pool_name"]}},{"name":"create_dataset","description":"Create a new dataset","inputSchema":{"type":"object","properties":{"pool":{"type":"string","description":"Pool name where dataset will be created"},"name":{"type":"string","description":"Dataset name"},"compression":{"type":"string","description":"Compression algorithm","default":"lz4"},"quota":{"type":"integer","description":"Optional quota in bytes"}},"required":["pool","name"]}},{"name":"list_smb_shares","description":"List all SMB shares","inputSchema":{"type":"object","properties":{}}},{"name":"create_smb_share","description":"Create a new SMB share","inputSchema":{"type":"object","properties":{"path":{"type":"string","description":"Path to share"},"name":{"type":"string","description":"Share name"},"comment":{"type":"string","description":"Optional comment","default":""},"read_only":{"type":"boolean","description":"Whether share is read-only","default":false}},"required":["path","name"]}},{"name":"create_snapshot","description":"Create a snapshot of a dataset","inputSchema":{"type":"object","properties":{"dataset":{"type":"string","description":"Dataset path (e.g., 'tank/data')"},"name":{"type":"string","description":"Snapshot name"},"recursive":{"type":"boolean","description":"Whether to create recursive snapshots","default":false}},"required":["dataset","name"]}}]}}
+2025-07-13 12:35:59 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 12:35:59 [TrueNAS-MCP] Configuration:
+2025-07-13 12:35:59 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 12:35:59 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 12:35:59 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 12:35:59 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 12:35:59 [TrueNAS-MCP] TrueNAS MCP server started with PID: 163807
+2025-07-13 12:44:14 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 163807)
+2025-07-13 12:53:53 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 163807)
+2025-07-13 12:57:37 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 163807)
+2025-07-13 13:11:28 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 13:11:28 [TrueNAS-MCP] Configuration:
+2025-07-13 13:11:28 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 13:11:28 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 13:11:28 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 13:11:28 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 13:11:28 [TrueNAS-MCP] TrueNAS MCP server started with PID: 170617
+2025-07-13 13:16:58 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 170617)
+2025-07-13 13:17:41 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 13:17:41 [TrueNAS-MCP] Configuration:
+2025-07-13 13:17:41 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 13:17:41 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 13:17:41 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 13:17:41 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 13:17:41 [TrueNAS-MCP] TrueNAS MCP server started with PID: 172425
+2025-07-13 14:04:48 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 14:04:48 [TrueNAS-MCP] Configuration:
+2025-07-13 14:04:48 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 14:04:49 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 14:04:49 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 14:04:49 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 14:04:49 [TrueNAS-MCP] TrueNAS MCP server started with PID: 177232
+2025-07-13 14:04:55 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}
+2025-07-13 14:06:23 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 14:06:23 [TrueNAS-MCP] Configuration:
+2025-07-13 14:06:23 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 14:06:23 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 14:06:23 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 14:06:23 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 14:06:24 [TrueNAS-MCP] TrueNAS MCP server started with PID: 178045
+2025-07-13 14:16:03 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 178045)
+2025-07-13 14:19:08 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 14:19:08 [TrueNAS-MCP] Configuration:
+2025-07-13 14:19:08 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 14:19:08 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 14:19:08 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 14:19:08 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 14:19:08 [TrueNAS-MCP] TrueNAS MCP server started with PID: 181329
+2025-07-13 14:25:59 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 181329)
+2025-07-13 14:35:08 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 181329)
+2025-07-13 14:45:07 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 14:45:07 [TrueNAS-MCP] Configuration:
+2025-07-13 14:45:07 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 14:45:07 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 14:45:07 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 14:45:07 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 14:45:07 [TrueNAS-MCP] TrueNAS MCP server started with PID: 1379
+2025-07-13 14:45:11 [TrueNAS-MCP] TrueNAS MCP server is already running (PID: 1379)
+2025-07-13 14:45:22 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}
+2025-07-13 15:43:47 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 15:43:47 [TrueNAS-MCP] Configuration:
+2025-07-13 15:43:48 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 15:43:48 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 15:43:48 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 15:43:48 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 15:43:48 [TrueNAS-MCP] TrueNAS MCP server started with PID: 14156
+2025-07-13 15:49:02 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 15:49:02 [TrueNAS-MCP] Configuration:
+2025-07-13 15:49:02 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 15:49:02 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 15:49:02 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 15:49:02 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 15:49:02 [TrueNAS-MCP] TrueNAS MCP server started with PID: 15303
+2025-07-13 15:49:08 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}
+2025-07-13 15:50:06 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 15:50:06 [TrueNAS-MCP] Configuration:
+2025-07-13 15:50:06 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 15:50:06 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 15:50:06 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 15:50:06 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 15:50:06 [TrueNAS-MCP] TrueNAS MCP server started with PID: 16088
+2025-07-13 15:50:16 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}
+2025-07-13 15:51:35 [TrueNAS-MCP] Starting TrueNAS MCP server...
+2025-07-13 15:51:35 [TrueNAS-MCP] Configuration:
+2025-07-13 15:51:35 [TrueNAS-MCP]   TRUENAS_URL: http://truenas.internal.lakehouse.wtf
+2025-07-13 15:51:35 [TrueNAS-MCP]   TRUENAS_API_KEY: 1-FROvjtWKEp98m4xP8m...
+2025-07-13 15:51:35 [TrueNAS-MCP]   TRUENAS_VERIFY_SSL: false
+2025-07-13 15:51:35 [TrueNAS-MCP]   TRUENAS_TIMEOUT: 30
+2025-07-13 15:51:36 [TrueNAS-MCP] TrueNAS MCP server started with PID: 16736
+2025-07-13 15:51:47 [TrueNAS-MCP] {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"truenas-mcp-server","version":"1.0.0"}}}

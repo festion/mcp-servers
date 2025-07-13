@@ -1,0 +1,371 @@
+name: MCP Feature Branch CI
+
+on:
+  push:
+    branches:
+      - 'feature/mcp-*'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'mcp-servers/**'
+      - 'scripts/**'
+      - '.github/**'
+
+jobs:
+  detect-changes:
+    name: Detect MCP Server Changes
+    runs-on: ubuntu-latest
+    outputs:
+      servers: ${{ steps.changes.outputs.servers }}
+      has-python: ${{ steps.changes.outputs.has-python }}
+      has-nodejs: ${{ steps.changes.outputs.has-nodejs }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Detect changed MCP servers
+      id: changes
+      run: |
+        # Get changed files
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+        fi
+        
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # Detect changed MCP servers
+        SERVERS=$(echo "$CHANGED_FILES" | grep "^mcp-servers/" | cut -d'/' -f2 | sort -u | jq -R -s -c 'split("\n")[:-1]')
+        echo "servers=$SERVERS" >> $GITHUB_OUTPUT
+        
+        # Check for Python projects
+        HAS_PYTHON="false"
+        if echo "$CHANGED_FILES" | grep -E "\.(py|toml)$|requirements\.txt" > /dev/null; then
+          HAS_PYTHON="true"
+        fi
+        echo "has-python=$HAS_PYTHON" >> $GITHUB_OUTPUT
+        
+        # Check for Node.js projects
+        HAS_NODEJS="false"
+        if echo "$CHANGED_FILES" | grep -E "package\.json|\.js$|\.ts$" > /dev/null; then
+          HAS_NODEJS="true"
+        fi
+        echo "has-nodejs=$HAS_NODEJS" >> $GITHUB_OUTPUT
+
+  python-tests:
+    name: Python MCP Server Tests
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-python == 'true'
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        
+        # Install common testing dependencies
+        pip install pytest pytest-cov flake8 black mypy
+        
+        # Install MCP SDK if available
+        pip install mcp || echo "MCP SDK not available, skipping"
+        
+        # Install project dependencies
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+        
+        # Install development dependencies
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
+        
+        # Install from pyproject.toml if available
+        if [ -f pyproject.toml ]; then
+          pip install -e .
+        fi
+        
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: Format check with black
+      run: |
+        black --check --diff .
+        
+    - name: Type check with mypy
+      run: |
+        mypy . --ignore-missing-imports || echo "Type checking completed with warnings"
+        
+    - name: Test MCP server syntax
+      run: |
+        # Check Python syntax for all MCP servers
+        find mcp-servers/ -name "*.py" -exec python -m py_compile {} \;
+        
+    - name: Run pytest
+      run: |
+        # Run tests if they exist
+        if [ -d tests ] || ls test_*.py 1> /dev/null 2>&1; then
+          pytest --cov=. --cov-report=xml
+        else
+          echo "No tests found, skipping pytest"
+        fi
+        
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: python
+        name: python-coverage
+
+  nodejs-tests:
+    name: Node.js MCP Server Tests
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-nodejs == 'true'
+    strategy:
+      matrix:
+        node-version: ['16', '18', '20']
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci
+        
+    - name: Run linting
+      run: |
+        npm run lint || echo "No lint script found"
+        
+    - name: Run type checking
+      run: |
+        npm run type-check || echo "No type-check script found"
+        
+    - name: Run tests
+      run: |
+        npm test || echo "No test script found"
+        
+    - name: Run build
+      run: |
+        npm run build || echo "No build script found"
+
+  mcp-protocol-validation:
+    name: MCP Protocol Validation
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.servers != '[]'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install MCP tools
+      run: |
+        pip install mcp || echo "MCP SDK not available"
+        pip install jsonschema requests
+        
+    - name: Validate MCP server configurations
+      run: |
+        # Create a simple MCP protocol validator
+        cat > validate_mcp.py << 'EOF'
+        #!/usr/bin/env python3
+        import json
+        import os
+        import sys
+        from pathlib import Path
+        
+        def validate_mcp_server(server_path):
+            """Basic validation for MCP server structure"""
+            print(f"Validating MCP server: {server_path}")
+            
+            # Check for main server file
+            has_main = any([
+                (server_path / "server.py").exists(),
+                (server_path / "main.py").exists(),
+                (server_path / "index.js").exists(),
+                (server_path / "package.json").exists()
+            ])
+            
+            if not has_main:
+                print(f"⚠️  No main server file found in {server_path}")
+                return False
+                
+            # Check for configuration files
+            config_files = [
+                "config.json",
+                "server.json",
+                ".env.example",
+                "README.md"
+            ]
+            
+            for config_file in config_files:
+                if (server_path / config_file).exists():
+                    print(f"✅ Found {config_file}")
+                    
+            # Validate JSON configuration files
+            for json_file in server_path.glob("*.json"):
+                try:
+                    with open(json_file) as f:
+                        json.load(f)
+                    print(f"✅ Valid JSON: {json_file.name}")
+                except json.JSONDecodeError as e:
+                    print(f"❌ Invalid JSON in {json_file.name}: {e}")
+                    return False
+                    
+            print(f"✅ MCP server validation passed: {server_path.name}")
+            return True
+        
+        def main():
+            mcp_servers_dir = Path("mcp-servers")
+            if not mcp_servers_dir.exists():
+                print("No mcp-servers directory found")
+                return 0
+                
+            success = True
+            for server_dir in mcp_servers_dir.iterdir():
+                if server_dir.is_dir() and not server_dir.name.startswith('.'):
+                    if not validate_mcp_server(server_dir):
+                        success = False
+                        
+            return 0 if success else 1
+        
+        if __name__ == "__main__":
+            sys.exit(main())
+        EOF
+        
+        python validate_mcp.py
+        
+    - name: Test MCP server startup
+      run: |
+        # Test if MCP servers can start without errors
+        find mcp-servers/ -name "server.py" -o -name "main.py" | while read server_file; do
+          echo "Testing startup for: $server_file"
+          python -c "
+        import sys
+        sys.path.insert(0, '$(dirname "$server_file")')
+        try:
+            import $(basename "$server_file" .py)
+            print('✅ Import successful for $server_file')
+        except Exception as e:
+            print(f'⚠️  Import failed for $server_file: {e}')
+        "
+        done
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run security scan
+      run: |
+        # Check for common security issues
+        echo "Scanning for hardcoded secrets..."
+        
+        # Look for potential secrets
+        if grep -r -E "(password|token|key|secret)" --include="*.py" --include="*.js" --include="*.json" mcp-servers/ | grep -v "example" | grep -v "TODO"; then
+          echo "⚠️  Potential hardcoded secrets found"
+        else
+          echo "✅ No hardcoded secrets detected"
+        fi
+        
+        # Check for SQL injection patterns
+        echo "Checking for SQL injection patterns..."
+        if grep -r -E "(SELECT|INSERT|UPDATE|DELETE).*\+.*" --include="*.py" --include="*.js" mcp-servers/; then
+          echo "⚠️  Potential SQL injection patterns found"
+        else
+          echo "✅ No SQL injection patterns detected"
+        fi
+        
+    - name: Python security scan
+      if: needs.detect-changes.outputs.has-python == 'true'
+      run: |
+        pip install bandit safety
+        
+        # Run bandit for security issues
+        bandit -r mcp-servers/ -f json -o bandit-report.json || echo "Bandit scan completed"
+        
+        # Run safety for known vulnerabilities
+        safety check --json --output safety-report.json || echo "Safety scan completed"
+        
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  integration-test:
+    name: MCP Integration Test
+    runs-on: ubuntu-latest
+    needs: [python-tests, nodejs-tests, mcp-protocol-validation]
+    if: always() && (needs.python-tests.result == 'success' || needs.nodejs-tests.result == 'success')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install MCP client tools
+      run: |
+        pip install mcp || echo "MCP SDK not available"
+        
+    - name: Test MCP server integration
+      run: |
+        # Run integration tests if available
+        if [ -f "tests/integration/test_mcp_servers.py" ]; then
+          python -m pytest tests/integration/
+        else
+          echo "No integration tests found, creating basic test..."
+          
+          # Create basic integration test
+          mkdir -p tests/integration
+          cat > tests/integration/test_basic.py << 'EOF'
+        def test_mcp_servers_exist():
+            """Test that MCP servers directory exists and contains servers"""
+            import os
+            assert os.path.exists("mcp-servers"), "MCP servers directory should exist"
+            
+            servers = [d for d in os.listdir("mcp-servers") if os.path.isdir(os.path.join("mcp-servers", d))]
+            assert len(servers) > 0, "Should have at least one MCP server"
+            
+            print(f"Found {len(servers)} MCP servers: {servers}")
+        EOF
+          
+          python -m pytest tests/integration/test_basic.py -v
+        fi

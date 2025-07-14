@@ -47,6 +47,11 @@ start_server() {
 
     log "Starting TrueNAS MCP server..."
     
+    # Load .env file if it exists
+    if [ -f "$SERVER_DIR/.env" ]; then
+        export $(grep -v "^#" "$SERVER_DIR/.env" | xargs)
+    fi
+    
     # Set environment variables
     export TRUENAS_URL="${TRUENAS_URL:-$DEFAULT_TRUENAS_URL}"
     export TRUENAS_API_KEY="${TRUENAS_API_KEY:-$DEFAULT_API_KEY}"
@@ -149,6 +154,11 @@ test_server() {
         return 1
     }
     
+    # Load .env file if it exists
+    if [ -f "$SERVER_DIR/.env" ]; then
+        export $(grep -v "^#" "$SERVER_DIR/.env" | xargs)
+    fi
+    
     # Set environment variables
     export TRUENAS_URL="${TRUENAS_URL:-$DEFAULT_TRUENAS_URL}"
     export TRUENAS_API_KEY="${TRUENAS_API_KEY:-$DEFAULT_API_KEY}"
@@ -250,6 +260,11 @@ if [ $# -eq 0 ]; then
             log "ERROR: Cannot change to server directory: $SERVER_DIR"
             exit 1
         }
+        
+        # Load .env file if it exists
+        if [ -f "$SERVER_DIR/.env" ]; then
+            export $(grep -v "^#" "$SERVER_DIR/.env" | xargs)
+        fi
         
         # Set environment variables
         export TRUENAS_URL="${TRUENAS_URL:-$DEFAULT_TRUENAS_URL}"

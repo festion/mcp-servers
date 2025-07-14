@@ -1,0 +1,14 @@
+[Unit]
+Description=Session End Monitor for Auto-Reboot
+After=multi-user.target
+Wants=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'journalctl -f -u "user@*" -u "session-*" | while read line; do echo "$line" | grep -E "(session.*closed|user.*logged out)" && /home/dev/workspace/check-and-reboot.sh; done'
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

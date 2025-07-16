@@ -1,0 +1,141 @@
+# GitHub Actions Runner Security Policy Configuration
+# This file defines the security hardening policies for the runner deployment
+
+security:
+  container:
+    # Container security configuration
+    user:
+      uid: 1001
+      gid: 1001
+      name: "runner"
+      home: "/home/runner"
+    
+    # Security context
+    seccomp_profile: "runtime/default"
+    apparmor_profile: "docker-default"
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETGID
+        - SETUID
+    
+    # Resource limits
+    resources:
+      memory_limit: "2G"
+      cpu_limit: "2.0"
+      pid_limit: 1000
+      nofile_limit: 1024
+    
+    # Filesystem security
+    read_only_root: true
+    tmpfs_mounts:
+      - "/tmp:rw,noexec,nosuid,size=100m"
+      - "/var/tmp:rw,noexec,nosuid,size=100m"
+      - "/run:rw,noexec,nosuid,size=100m"
+
+  network:
+    # Network isolation
+    isolation_mode: "bridge"
+    custom_network: "github-runner-net"
+    subnet: "172.20.0.0/24"
+    
+    # Firewall rules
+    allowed_outbound_ports:
+      - 80    # HTTP
+      - 443   # HTTPS
+      - 22    # SSH (for git operations)
+      - 9418  # Git protocol
+    
+    blocked_inbound_ports:
+      - "all"  # Block all inbound connections by default
+    
+    # DNS configuration
+    dns_servers:
+      - "1.1.1.1"
+      - "8.8.8.8"
+    
+    # SSL/TLS configuration
+    tls:
+      min_version: "1.2"
+      cipher_suites:
+        - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+        - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+
+  access_control:
+    # Authentication requirements
+    github_token:
+      rotation_days: 30
+      min_permissions: "actions:read,contents:read,metadata:read"
+      encryption: "AES-256-GCM"
+    
+    # SSH key management
+    ssh_keys:
+      algorithm: "ed25519"
+      key_size: 256
+      rotation_days: 90
+      passphrase_required: true
+    
+    # File permissions
+    config_files_permission: "0600"
+    script_files_permission: "0700"
+    data_directory_permission: "0750"
+
+  secrets:
+    # Secret storage configuration
+    storage:
+      backend: "encrypted_file"
+      encryption_algorithm: "AES-256-GCM"
+      key_derivation: "scrypt"
+    
+    # Secret rotation
+    auto_rotation: true
+    rotation_schedule: "0 2 * * 0"  # Weekly on Sunday at 2 AM
+    
+    # Backup encryption
+    backup_encryption: true
+    backup_retention_days: 90
+
+  monitoring:
+    # Security event logging
+    audit_log_level: "info"
+    audit_log_format: "json"
+    audit_log_rotation: "daily"
+    audit_log_retention_days: 365
+    
+    # Security monitoring
+    vulnerability_scanning: true
+    intrusion_detection: true
+    file_integrity_monitoring: true
+    
+    # Compliance
+    compliance_frameworks:
+      - "CIS_Docker_Benchmark"
+      - "NIST_Cybersecurity_Framework"
+    
+    # Alerting
+    security_alerts:
+      enabled: true
+      webhook_url: "${SECURITY_WEBHOOK_URL}"
+      severity_threshold: "medium"
+
+  compliance:
+    # Regular security checks
+    daily_checks:
+      - container_vulnerability_scan
+      - file_permission_audit
+      - network_configuration_check
+    
+    weekly_checks:
+      - secret_rotation_status
+      - certificate_expiry_check
+      - access_log_analysis
+    
+    monthly_checks:
+      - full_security_audit
+      - compliance_report_generation
+      - penetration_testing

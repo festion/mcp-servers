@@ -1,0 +1,462 @@
+# GitHub Actions Runner Configuration
+# This file contains the main configuration for the GitHub Actions runner
+
+# =============================================================================
+# RUNNER IDENTITY AND REGISTRATION
+# =============================================================================
+
+runner:
+  # Basic Identity
+  name: "homelab-runner-01"
+  group: "default"
+  
+  # Labels for job targeting
+  labels:
+    - "self-hosted"
+    - "Linux"
+    - "X64"
+    - "homelab"
+    - "docker"
+    - "private-network"
+    - "ha-access"
+  
+  # Registration settings
+  registration:
+    url: ""  # Set via environment variable GITHUB_REPOSITORY_URL
+    token_file: "/run/secrets/github_runner_token"
+    scope: "repo"  # repo, org, enterprise
+    
+  # Behavior settings
+  behavior:
+    ephemeral: false
+    allow_runasroot: true
+    disable_automatic_deregistration: false
+    disable_runner_update: false
+    replace_existing: false
+    
+  # Working directory
+  work_directory: "/tmp/runner/work"
+  
+  # Runner capabilities
+  capabilities:
+    docker: true
+    docker_compose: true
+    private_network_access: true
+    home_assistant_access: true
+    ssh_access: true
+    
+# =============================================================================
+# RESOURCE MANAGEMENT
+# =============================================================================
+
+resources:
+  # CPU and Memory
+  limits:
+    cpu: "2.0"
+    memory: "4Gi"
+  
+  requests:
+    cpu: "0.5"
+    memory: "1Gi"
+  
+  # Job execution
+  job_execution:
+    max_concurrent_jobs: 1
+    job_timeout: 3600  # seconds
+    job_cleanup_timeout: 300  # seconds
+    
+  # Disk management
+  disk:
+    cleanup_enabled: true
+    cleanup_threshold: 80  # percentage
+    cleanup_interval: 3600  # seconds
+    max_usage: 10Gi
+    
+# =============================================================================
+# NETWORK CONFIGURATION
+# =============================================================================
+
+network:
+  # Private network access
+  private_network:
+    enabled: true
+    ip_ranges:
+      - "192.168.1.0/24"
+      - "10.0.0.0/8"
+      - "172.16.0.0/12"
+    
+  # Home Assistant specific
+  home_assistant:
+    enabled: true
+    host: "192.168.1.155"
+    port: 8123
+    protocol: "http"
+    verify_ssl: false
+    timeout: 30
+    
+  # Proxy settings
+  proxy:
+    enabled: false
+    http_proxy: ""
+    https_proxy: ""
+    no_proxy: "localhost,127.0.0.1,172.20.0.0/16,192.168.0.0/16"
+    
+  # DNS configuration
+  dns:
+    servers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+    search_domains:
+      - "local"
+    
+  # SSL/TLS settings
+  tls:
+    verify_ssl: true
+    cert_path: "/etc/ssl/certs"
+    key_path: "/etc/ssl/private"
+    ca_bundle_path: "/etc/ssl/certs/ca-certificates.crt"
+    
+# =============================================================================
+# SECURITY CONFIGURATION
+# =============================================================================
+
+security:
+  # General security settings
+  enabled: true
+  
+  # Token management
+  token_management:
+    rotation_enabled: true
+    rotation_interval: 86400  # seconds (24 hours)
+    validation_enabled: true
+    validation_interval: 3600  # seconds (1 hour)
+    
+  # Container security
+  container:
+    run_as_non_root: false  # GitHub runner requires root
+    read_only_root_filesystem: false
+    allow_privilege_escalation: false
+    capabilities:
+      drop:
+        - "ALL"
+      add:
+        - "SETUID"
+        - "SETGID"
+        - "SYS_ADMIN"
+    
+  # Network security
+  network_security:
+    ingress_restrictions:
+      - "172.20.0.0/16"  # Internal network
+      - "192.168.100.0/24"  # Host network
+    egress_restrictions:
+      enabled: false  # Allow outbound for GitHub API
+      
+  # Audit logging
+  audit:
+    enabled: true
+    log_file: "/var/log/runner/audit.log"
+    log_level: "INFO"
+    include_environment: false
+    include_secrets: false
+    
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+
+logging:
+  # Log levels: TRACE, DEBUG, INFO, WARN, ERROR
+  level: "INFO"
+  
+  # Log format: json, text
+  format: "json"
+  
+  # Log outputs
+  outputs:
+    - type: "file"
+      path: "/var/log/runner/runner.log"
+      max_size: "100MB"
+      max_files: 5
+      compress: true
+      
+    - type: "stdout"
+      enabled: true
+      
+  # Structured logging
+  structured:
+    enabled: true
+    include_caller: true
+    include_timestamp: true
+    include_level: true
+    
+  # Log rotation
+  rotation:
+    enabled: true
+    max_age: "7d"
+    max_size: "100MB"
+    max_backups: 10
+    
+# =============================================================================
+# MONITORING AND HEALTH
+# =============================================================================
+
+monitoring:
+  # Health checks
+  health_checks:
+    enabled: true
+    endpoint: "/health"
+    port: 8080
+    interval: 30  # seconds
+    timeout: 10  # seconds
+    retries: 3
+    
+  # Metrics
+  metrics:
+    enabled: true
+    endpoint: "/metrics"
+    port: 9090
+    retention: "200h"
+    
+    # Custom metrics
+    custom_metrics:
+      job_duration: true
+      job_success_rate: true
+      resource_usage: true
+      network_latency: true
+      
+  # Performance monitoring
+  performance:
+    enabled: true
+    sampling_interval: 60  # seconds
+    collect_system_metrics: true
+    collect_container_metrics: true
+    
+# =============================================================================
+# BACKUP AND RECOVERY
+# =============================================================================
+
+backup:
+  # Backup settings
+  enabled: true
+  interval: 3600  # seconds (1 hour)
+  retention_days: 7
+  compression: "gzip"
+  
+  # What to backup
+  include:
+    - "runner_data"
+    - "work_directory"
+    - "logs"
+    - "configuration"
+    
+  # Backup storage
+  storage:
+    type: "local"
+    path: "/backup/storage"
+    
+  # Encryption
+  encryption:
+    enabled: false
+    key_file: "/run/secrets/backup_key"
+    
+# =============================================================================
+# INTEGRATION SETTINGS
+# =============================================================================
+
+integrations:
+  # Home Assistant
+  home_assistant:
+    enabled: true
+    api_url: "http://192.168.1.155:8123/api"
+    token_file: "/run/secrets/ha_token"
+    verify_ssl: false
+    timeout: 30
+    
+    # Webhook notifications
+    webhooks:
+      job_started: true
+      job_completed: true
+      job_failed: true
+      
+  # External monitoring
+  external_monitoring:
+    enabled: false
+    prometheus_url: ""
+    grafana_url: ""
+    
+  # External logging
+  external_logging:
+    enabled: false
+    elasticsearch_url: ""
+    kibana_url: ""
+    
+  # Notifications
+  notifications:
+    enabled: true
+    
+    # Email notifications
+    email:
+      enabled: false
+      smtp_host: ""
+      smtp_port: 587
+      username: ""
+      password_file: "/run/secrets/email_password"
+      to: []
+      
+    # Slack notifications
+    slack:
+      enabled: false
+      webhook_url_file: "/run/secrets/slack_webhook"
+      channel: "#ci-cd"
+      
+    # Webhook notifications
+    webhook:
+      enabled: false
+      url: ""
+      headers: {}
+      
+# =============================================================================
+# WORKFLOW EXECUTION
+# =============================================================================
+
+workflow_execution:
+  # Job execution environment
+  environment:
+    # Environment variables available to all jobs
+    global_env:
+      RUNNER_ENVIRONMENT: "production"
+      PRIVATE_NETWORK_ACCESS: "true"
+      HOME_ASSISTANT_URL: "http://192.168.1.155:8123"
+      
+    # Path modifications
+    path_additions:
+      - "/opt/runner/bin"
+      - "/usr/local/bin"
+      
+  # Tool installations
+  tools:
+    # Pre-installed tools
+    preinstalled:
+      - "docker"
+      - "docker-compose"
+      - "git"
+      - "curl"
+      - "jq"
+      - "ssh"
+      - "rsync"
+      
+    # Tool caching
+    cache:
+      enabled: true
+      max_size: "1GB"
+      ttl: 3600  # seconds
+      
+  # Secrets management
+  secrets:
+    # Secret injection
+    injection:
+      enabled: true
+      mask_secrets: true
+      
+    # Secret storage
+    storage:
+      type: "file"
+      path: "/run/secrets"
+      
+# =============================================================================
+# TROUBLESHOOTING AND DEBUG
+# =============================================================================
+
+troubleshooting:
+  # Debug settings
+  debug:
+    enabled: false
+    log_requests: false
+    log_responses: false
+    trace_enabled: false
+    
+  # Diagnostics
+  diagnostics:
+    enabled: true
+    collect_system_info: true
+    collect_container_info: true
+    collect_network_info: true
+    
+  # Support bundle
+  support_bundle:
+    enabled: true
+    include_logs: true
+    include_configs: true
+    include_metrics: true
+    max_size: "100MB"
+    
+# =============================================================================
+# FEATURE FLAGS
+# =============================================================================
+
+features:
+  # Experimental features
+  experimental:
+    new_api: false
+    enhanced_logging: true
+    advanced_metrics: true
+    auto_scaling: false
+    
+  # Beta features
+  beta:
+    improved_caching: true
+    parallel_jobs: false
+    gpu_support: false
+    
+# =============================================================================
+# COMPLIANCE AND GOVERNANCE
+# =============================================================================
+
+compliance:
+  # Compliance mode
+  enabled: false
+  
+  # Audit settings
+  audit:
+    enabled: true
+    retention_days: 90
+    include_all_actions: true
+    
+  # Data protection
+  data_protection:
+    encryption_at_rest: false
+    encryption_in_transit: true
+    data_anonymization: false
+    
+  # Access control
+  access_control:
+    rbac_enabled: false
+    user_authentication: false
+    
+# =============================================================================
+# CUSTOM EXTENSIONS
+# =============================================================================
+
+extensions:
+  # Custom scripts
+  scripts:
+    enabled: false
+    path: "/opt/runner/scripts"
+    
+    # Lifecycle hooks
+    hooks:
+      pre_job: ""
+      post_job: ""
+      pre_step: ""
+      post_step: ""
+      
+  # Plugin system
+  plugins:
+    enabled: false
+    path: "/opt/runner/plugins"
+    
+    # Available plugins
+    available:
+      - "notification-plugin"
+      - "metrics-plugin"
+      - "security-plugin"

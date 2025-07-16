@@ -1,0 +1,53 @@
+health_checks:
+  - name: github-runner
+    endpoint: http://runner:8080/health
+    method: GET
+    timeout: 10
+    interval: 30
+    retries: 3
+    expected_status: 200
+    
+  - name: node-exporter
+    endpoint: http://health_monitor:9100/
+    method: GET
+    timeout: 5
+    interval: 30
+    retries: 3
+    expected_status: 200
+    
+  - name: prometheus
+    endpoint: http://metrics_collector:9090/-/healthy
+    method: GET
+    timeout: 10
+    interval: 30
+    retries: 3
+    expected_status: 200
+    
+  - name: fluent-bit
+    endpoint: http://log_aggregator:2020/
+    method: GET
+    timeout: 5
+    interval: 30
+    retries: 3
+    expected_status: 200
+    
+  - name: nginx
+    endpoint: http://nginx_proxy:8080/nginx_status
+    method: GET
+    timeout: 5
+    interval: 30
+    retries: 3
+    expected_status: 200
+
+thresholds:
+  cpu_usage: 80
+  memory_usage: 80
+  disk_usage: 85
+  disk_usage_critical: 95
+  network_error_rate: 0.01
+  restart_attempts: 3
+
+alerts:
+  webhook_url: ""
+  email: ""
+  slack_webhook: ""

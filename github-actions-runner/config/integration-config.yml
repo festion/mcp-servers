@@ -1,0 +1,565 @@
+# Integration Configuration for GitHub Actions Runner
+# This file defines all external service integrations and their settings
+
+# =============================================================================
+# HOME ASSISTANT INTEGRATION
+# =============================================================================
+
+home_assistant:
+  # Connection settings
+  connection:
+    enabled: true
+    url: "http://192.168.1.155:8123"
+    api_endpoint: "/api"
+    
+    # Authentication
+    authentication:
+      method: "token"
+      token_file: "/run/secrets/ha_token"
+      
+    # SSL/TLS settings
+    ssl:
+      verify: false
+      cert_file: ""
+      key_file: ""
+      ca_file: ""
+      
+    # Connection timeouts
+    timeouts:
+      connect: 30
+      read: 60
+      write: 30
+      
+    # Retry settings
+    retry:
+      enabled: true
+      max_attempts: 3
+      backoff_factor: 2
+      max_backoff: 60
+      
+  # Service integration
+  services:
+    # Notification service
+    notifications:
+      enabled: true
+      entity_id: "notify.github_runner"
+      
+      # Notification events
+      events:
+        runner_started: true
+        runner_stopped: true
+        job_started: true
+        job_completed: true
+        job_failed: true
+        health_check_failed: true
+        
+    # Sensor integration
+    sensors:
+      enabled: true
+      
+      # Runner status sensor
+      runner_status:
+        entity_id: "sensor.github_runner_status"
+        update_interval: 60
+        
+      # Job metrics sensors
+      job_metrics:
+        entity_id: "sensor.github_runner_jobs"
+        update_interval: 300
+        include_duration: true
+        include_success_rate: true
+        
+      # Resource usage sensors
+      resource_usage:
+        entity_id: "sensor.github_runner_resources"
+        update_interval: 30
+        include_cpu: true
+        include_memory: true
+        include_disk: true
+        
+  # Automation triggers
+  automations:
+    enabled: true
+    
+    # Job completion automation
+    job_completion:
+      enabled: true
+      webhook_url: "http://192.168.1.155:8123/api/webhook/github_runner_job"
+      
+    # Health monitoring automation
+    health_monitoring:
+      enabled: true
+      webhook_url: "http://192.168.1.155:8123/api/webhook/github_runner_health"
+      
+  # Dashboard integration
+  dashboard:
+    enabled: true
+    
+    # Lovelace cards
+    lovelace:
+      runner_card: true
+      metrics_card: true
+      logs_card: true
+      
+# =============================================================================
+# MONITORING SYSTEM INTEGRATION
+# =============================================================================
+
+monitoring:
+  # Prometheus integration
+  prometheus:
+    enabled: true
+    url: "http://metrics_collector:9090"
+    
+    # Metrics collection
+    metrics:
+      job_name: "github-runner"
+      scrape_interval: "30s"
+      scrape_timeout: "10s"
+      
+      # Custom metrics
+      custom_metrics:
+        - name: "github_runner_jobs_total"
+          help: "Total number of jobs executed"
+          type: "counter"
+          
+        - name: "github_runner_job_duration_seconds"
+          help: "Job execution duration in seconds"
+          type: "histogram"
+          
+        - name: "github_runner_queue_size"
+          help: "Number of jobs in queue"
+          type: "gauge"
+          
+    # Alerting rules
+    alerting:
+      enabled: true
+      rules_file: "/etc/prometheus/rules/runner-alerts.yml"
+      
+  # Grafana integration
+  grafana:
+    enabled: false
+    url: ""
+    
+    # Dashboard provisioning
+    dashboards:
+      enabled: false
+      path: "/etc/grafana/provisioning/dashboards"
+      
+    # Data source provisioning
+    datasources:
+      enabled: false
+      prometheus_url: "http://prometheus:9090"
+      
+  # External monitoring
+  external:
+    enabled: false
+    
+    # Datadog integration
+    datadog:
+      enabled: false
+      api_key_file: "/run/secrets/datadog_api_key"
+      
+    # New Relic integration
+    newrelic:
+      enabled: false
+      license_key_file: "/run/secrets/newrelic_license_key"
+      
+# =============================================================================
+# LOGGING SYSTEM INTEGRATION
+# =============================================================================
+
+logging:
+  # Fluent Bit integration
+  fluent_bit:
+    enabled: true
+    
+    # Log forwarding
+    forwarding:
+      enabled: true
+      
+      # Elasticsearch
+      elasticsearch:
+        enabled: false
+        host: ""
+        port: 9200
+        index: "github-runner-logs"
+        
+      # Logstash
+      logstash:
+        enabled: false
+        host: ""
+        port: 5044
+        
+      # Fluentd
+      fluentd:
+        enabled: false
+        host: ""
+        port: 24224
+        
+    # Log parsing
+    parsing:
+      enabled: true
+      
+      # Custom parsers
+      parsers:
+        - name: "github_runner"
+          format: "regex"
+          regex: '^\[(?<time>[^\]]*)\] (?<level>[A-Z]+): (?<message>.*)$'
+          
+        - name: "docker_container"
+          format: "json"
+          time_key: "time"
+          time_format: "%Y-%m-%dT%H:%M:%S.%L"
+          
+  # External logging
+  external:
+    enabled: false
+    
+    # Splunk integration
+    splunk:
+      enabled: false
+      host: ""
+      port: 8088
+      token_file: "/run/secrets/splunk_token"
+      
+    # Papertrail integration
+    papertrail:
+      enabled: false
+      host: ""
+      port: 514
+      
+# =============================================================================
+# NOTIFICATION SYSTEM INTEGRATION
+# =============================================================================
+
+notifications:
+  # Email notifications
+  email:
+    enabled: false
+    
+    # SMTP configuration
+    smtp:
+      host: ""
+      port: 587
+      username: ""
+      password_file: "/run/secrets/email_password"
+      tls: true
+      
+    # Email settings
+    settings:
+      from: "github-runner@homelab.local"
+      to: []
+      subject_prefix: "[GitHub Runner]"
+      
+    # Notification events
+    events:
+      runner_started: false
+      runner_stopped: false
+      job_failed: true
+      health_check_failed: true
+      
+  # Slack notifications
+  slack:
+    enabled: false
+    
+    # Webhook configuration
+    webhook:
+      url_file: "/run/secrets/slack_webhook_url"
+      channel: "#ci-cd"
+      username: "GitHub Runner"
+      icon_emoji: ":robot_face:"
+      
+    # Notification events
+    events:
+      runner_started: false
+      runner_stopped: false
+      job_started: false
+      job_completed: true
+      job_failed: true
+      health_check_failed: true
+      
+  # Discord notifications
+  discord:
+    enabled: false
+    
+    # Webhook configuration
+    webhook:
+      url_file: "/run/secrets/discord_webhook_url"
+      
+    # Notification events
+    events:
+      job_failed: true
+      health_check_failed: true
+      
+  # Microsoft Teams notifications
+  teams:
+    enabled: false
+    
+    # Webhook configuration
+    webhook:
+      url_file: "/run/secrets/teams_webhook_url"
+      
+    # Notification events
+    events:
+      job_failed: true
+      health_check_failed: true
+      
+  # PagerDuty integration
+  pagerduty:
+    enabled: false
+    
+    # API configuration
+    api:
+      key_file: "/run/secrets/pagerduty_api_key"
+      service_id: ""
+      
+    # Alert events
+    events:
+      runner_down: true
+      health_check_failed: true
+      
+# =============================================================================
+# BACKUP SYSTEM INTEGRATION
+# =============================================================================
+
+backup:
+  # Local backup
+  local:
+    enabled: true
+    path: "/backup/storage"
+    
+    # Backup schedule
+    schedule:
+      interval: 3600  # seconds
+      retention_days: 7
+      
+    # Backup verification
+    verification:
+      enabled: true
+      integrity_check: true
+      
+  # Remote backup
+  remote:
+    enabled: false
+    
+    # S3 compatible storage
+    s3:
+      enabled: false
+      endpoint: ""
+      bucket: ""
+      region: ""
+      access_key_file: "/run/secrets/s3_access_key"
+      secret_key_file: "/run/secrets/s3_secret_key"
+      
+    # SFTP backup
+    sftp:
+      enabled: false
+      host: ""
+      port: 22
+      username: ""
+      key_file: "/run/secrets/sftp_key"
+      remote_path: "/backups/github-runner"
+      
+    # Rsync backup
+    rsync:
+      enabled: false
+      host: ""
+      username: ""
+      key_file: "/run/secrets/rsync_key"
+      remote_path: "/backups/github-runner"
+      options: "-avz --delete"
+      
+# =============================================================================
+# SECURITY SYSTEM INTEGRATION
+# =============================================================================
+
+security:
+  # Vulnerability scanning
+  vulnerability_scanning:
+    enabled: false
+    
+    # Trivy integration
+    trivy:
+      enabled: false
+      
+    # Snyk integration
+    snyk:
+      enabled: false
+      token_file: "/run/secrets/snyk_token"
+      
+  # SIEM integration
+  siem:
+    enabled: false
+    
+    # Splunk SIEM
+    splunk:
+      enabled: false
+      host: ""
+      port: 8088
+      token_file: "/run/secrets/splunk_siem_token"
+      
+    # Elastic SIEM
+    elastic:
+      enabled: false
+      host: ""
+      port: 9200
+      username: ""
+      password_file: "/run/secrets/elastic_password"
+      
+  # Audit logging
+  audit:
+    enabled: true
+    
+    # Audit events
+    events:
+      authentication: true
+      authorization: true
+      configuration_changes: true
+      job_execution: true
+      
+    # Audit forwarding
+    forwarding:
+      enabled: false
+      syslog_host: ""
+      syslog_port: 514
+      
+# =============================================================================
+# CI/CD SYSTEM INTEGRATION
+# =============================================================================
+
+cicd:
+  # GitLab integration
+  gitlab:
+    enabled: false
+    url: ""
+    token_file: "/run/secrets/gitlab_token"
+    
+  # Jenkins integration
+  jenkins:
+    enabled: false
+    url: ""
+    username: ""
+    token_file: "/run/secrets/jenkins_token"
+    
+  # Azure DevOps integration
+  azure_devops:
+    enabled: false
+    organization: ""
+    project: ""
+    token_file: "/run/secrets/azure_devops_token"
+    
+# =============================================================================
+# COMMUNICATION INTEGRATION
+# =============================================================================
+
+communication:
+  # IRC integration
+  irc:
+    enabled: false
+    server: ""
+    port: 6667
+    channel: ""
+    nickname: "github-runner"
+    
+  # Matrix integration
+  matrix:
+    enabled: false
+    homeserver: ""
+    room: ""
+    token_file: "/run/secrets/matrix_token"
+    
+# =============================================================================
+# CUSTOM WEBHOOKS
+# =============================================================================
+
+webhooks:
+  # Custom webhook endpoints
+  custom:
+    enabled: false
+    
+    # Webhook definitions
+    endpoints:
+      - name: "job_webhook"
+        url: ""
+        method: "POST"
+        headers:
+          Content-Type: "application/json"
+        events:
+          - "job_started"
+          - "job_completed"
+          - "job_failed"
+          
+      - name: "health_webhook"
+        url: ""
+        method: "POST"
+        headers:
+          Content-Type: "application/json"
+        events:
+          - "health_check_failed"
+          - "runner_started"
+          - "runner_stopped"
+          
+# =============================================================================
+# API INTEGRATIONS
+# =============================================================================
+
+api:
+  # REST API
+  rest:
+    enabled: true
+    port: 8080
+    
+    # Authentication
+    authentication:
+      enabled: false
+      method: "token"  # token, basic, oauth
+      
+    # Rate limiting
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 60
+      
+    # CORS settings
+    cors:
+      enabled: true
+      allowed_origins: ["*"]
+      allowed_methods: ["GET", "POST"]
+      
+  # GraphQL API
+  graphql:
+    enabled: false
+    port: 8081
+    
+    # Schema
+    schema:
+      introspection: false
+      playground: false
+      
+# =============================================================================
+# DEVELOPMENT INTEGRATION
+# =============================================================================
+
+development:
+  # Development tools
+  tools:
+    enabled: false
+    
+    # Hot reload
+    hot_reload:
+      enabled: false
+      
+    # Debug mode
+    debug:
+      enabled: false
+      port: 9229
+      
+  # Testing integration
+  testing:
+    enabled: false
+    
+    # Test reporting
+    reporting:
+      enabled: false
+      format: "junit"
+      output_path: "/tmp/test-results"

@@ -1,0 +1,467 @@
+# Security Monitoring and Compliance Configuration
+# Defines security event monitoring, compliance checking, and incident response
+
+security_monitoring:
+  # Real-time monitoring configuration
+  real_time_monitoring:
+    enabled: true
+    check_interval: "30s"
+    alert_threshold: "medium"
+    
+    # Monitoring sources
+    sources:
+      - container_logs
+      - system_logs
+      - audit_logs
+      - network_logs
+      - application_logs
+    
+    # Security events to monitor
+    security_events:
+      authentication:
+        - failed_login_attempts
+        - successful_logins
+        - privilege_escalation
+        - unauthorized_access_attempts
+      
+      network:
+        - suspicious_connections
+        - port_scanning_attempts
+        - data_exfiltration_patterns
+        - unusual_traffic_volumes
+      
+      filesystem:
+        - unauthorized_file_access
+        - file_integrity_violations
+        - permission_changes
+        - suspicious_file_operations
+      
+      processes:
+        - malicious_process_execution
+        - resource_abuse
+        - unexpected_process_behavior
+        - system_command_execution
+      
+      container:
+        - container_escape_attempts
+        - privilege_escalation_in_container
+        - suspicious_container_behavior
+        - resource_limit_violations
+
+  # Log aggregation and analysis
+  log_management:
+    centralized_logging: true
+    log_format: "json"
+    log_retention_days: 365
+    
+    # Log sources
+    log_sources:
+      system_logs:
+        - "/var/log/syslog"
+        - "/var/log/auth.log"
+        - "/var/log/kern.log"
+      
+      security_logs:
+        - "/var/log/audit/audit.log"
+        - "/var/log/fail2ban.log"
+        - "/var/log/runner-security-alerts.log"
+      
+      application_logs:
+        - "/var/log/docker-runner-security.log"
+        - "/home/runner/actions-runner/_diag/*.log"
+      
+      container_logs:
+        - "docker logs github-runner"
+        - "docker logs monitoring-stack"
+    
+    # Log analysis rules
+    analysis_rules:
+      failed_authentication:
+        pattern: "authentication failure|failed password|invalid user"
+        severity: "medium"
+        threshold: 5
+        time_window: "5m"
+      
+      privilege_escalation:
+        pattern: "sudo|su |PRIV|privilege"
+        severity: "high"
+        threshold: 1
+        time_window: "1m"
+      
+      network_anomaly:
+        pattern: "connection refused|connection timeout|suspicious"
+        severity: "medium"
+        threshold: 10
+        time_window: "10m"
+      
+      malware_indicators:
+        pattern: "malware|virus|trojan|backdoor|rootkit"
+        severity: "critical"
+        threshold: 1
+        time_window: "1m"
+
+  # Vulnerability scanning
+  vulnerability_scanning:
+    enabled: true
+    scan_frequency: "daily"
+    scan_types:
+      - container_vulnerability_scan
+      - dependency_vulnerability_scan
+      - configuration_vulnerability_scan
+      - network_vulnerability_scan
+    
+    scanners:
+      container_scanner:
+        tool: "trivy"
+        severity_threshold: "medium"
+        scan_schedule: "0 2 * * *"  # Daily at 2 AM
+      
+      dependency_scanner:
+        tool: "npm audit"
+        severity_threshold: "high"
+        scan_schedule: "0 3 * * *"  # Daily at 3 AM
+      
+      network_scanner:
+        tool: "nmap"
+        scan_scope: "internal"
+        scan_schedule: "0 4 * * 0"  # Weekly on Sunday at 4 AM
+
+  # Intrusion detection
+  intrusion_detection:
+    enabled: true
+    detection_methods:
+      - signature_based
+      - anomaly_based
+      - behavior_based
+    
+    detection_rules:
+      port_scanning:
+        pattern: "multiple connection attempts to different ports"
+        action: "block_source_ip"
+        duration: "1h"
+      
+      brute_force:
+        pattern: "repeated failed authentication attempts"
+        action: "block_source_ip"
+        duration: "24h"
+      
+      data_exfiltration:
+        pattern: "large outbound data transfers"
+        action: "alert_and_monitor"
+        threshold: "100MB/hour"
+      
+      malicious_commands:
+        patterns:
+          - "wget.*|.*malware.*"
+          - "curl.*|.*exploit.*"
+          - "nc -l|netcat -l"
+        action: "terminate_process"
+
+compliance:
+  # Compliance frameworks
+  frameworks:
+    cis_docker_benchmark:
+      enabled: true
+      version: "1.6.0"
+      compliance_level: "Level 1"
+      
+      checks:
+        - docker_daemon_configuration
+        - docker_daemon_files
+        - container_images
+        - container_runtime
+        - docker_security_operations
+      
+      automated_remediation: false
+      manual_review_required: true
+    
+    nist_cybersecurity_framework:
+      enabled: true
+      implementation_tier: "Tier 2"
+      
+      functions:
+        identify:
+          - asset_management
+          - business_environment
+          - governance
+          - risk_assessment
+          - risk_management_strategy
+        
+        protect:
+          - identity_management_authentication
+          - awareness_training
+          - data_security
+          - information_protection_processes
+          - maintenance
+          - protective_technology
+        
+        detect:
+          - anomalies_events
+          - security_continuous_monitoring
+          - detection_processes
+        
+        respond:
+          - response_planning
+          - communications
+          - analysis
+          - mitigation
+          - improvements
+        
+        recover:
+          - recovery_planning
+          - improvements
+          - communications
+    
+    iso_27001:
+      enabled: false  # Enable for production if required
+      implementation_status: "planned"
+      
+    gdpr:
+      enabled: false  # Enable if processing EU personal data
+      data_protection_measures: []
+
+  # Compliance monitoring
+  compliance_monitoring:
+    enabled: true
+    check_frequency: "daily"
+    
+    # Automated compliance checks
+    automated_checks:
+      daily:
+        - container_security_configuration
+        - file_permission_audit
+        - network_configuration_check
+        - user_access_review
+        - log_integrity_verification
+      
+      weekly:
+        - vulnerability_assessment
+        - patch_management_status
+        - backup_verification
+        - incident_response_test
+        - policy_compliance_review
+      
+      monthly:
+        - full_security_audit
+        - compliance_gap_analysis
+        - risk_assessment_update
+        - training_compliance_check
+        - vendor_security_assessment
+    
+    # Compliance reporting
+    reporting:
+      enabled: true
+      report_formats: ["json", "pdf", "html"]
+      report_frequency: "weekly"
+      
+      reports:
+        - compliance_dashboard
+        - security_posture_assessment
+        - vulnerability_summary
+        - incident_summary
+        - audit_trail_report
+        - risk_register_update
+
+incident_response:
+  # Incident classification
+  incident_classification:
+    severity_levels:
+      critical:
+        description: "Immediate threat to system security"
+        response_time: "15 minutes"
+        escalation_required: true
+        examples:
+          - "Active security breach"
+          - "Malware detected"
+          - "Data exfiltration in progress"
+      
+      high:
+        description: "Significant security concern"
+        response_time: "1 hour"
+        escalation_required: true
+        examples:
+          - "Failed intrusion attempt"
+          - "Privilege escalation detected"
+          - "Suspicious network activity"
+      
+      medium:
+        description: "Security event requiring investigation"
+        response_time: "4 hours"
+        escalation_required: false
+        examples:
+          - "Multiple failed login attempts"
+          - "Configuration drift detected"
+          - "Policy violation"
+      
+      low:
+        description: "Informational security event"
+        response_time: "24 hours"
+        escalation_required: false
+        examples:
+          - "Routine security alert"
+          - "Maintenance activity"
+          - "User access request"
+  
+  # Response procedures
+  response_procedures:
+    immediate_response:
+      - isolate_affected_systems
+      - preserve_evidence
+      - assess_scope_and_impact
+      - notify_stakeholders
+      - activate_incident_team
+    
+    investigation:
+      - collect_forensic_evidence
+      - analyze_attack_vectors
+      - identify_root_cause
+      - assess_damage_extent
+      - document_findings
+    
+    containment:
+      - implement_containment_measures
+      - patch_vulnerabilities
+      - update_security_controls
+      - monitor_for_persistence
+      - verify_containment_effectiveness
+    
+    recovery:
+      - restore_affected_systems
+      - validate_system_integrity
+      - implement_additional_controls
+      - monitor_for_recurrence
+      - update_security_policies
+    
+    lessons_learned:
+      - conduct_post_incident_review
+      - update_response_procedures
+      - improve_detection_capabilities
+      - enhance_security_controls
+      - provide_security_training
+
+  # Notification and escalation
+  notification:
+    enabled: true
+    notification_channels:
+      - webhook
+      - email
+      - slack
+      - sms
+    
+    escalation_matrix:
+      critical:
+        immediate: ["security_team", "system_admin"]
+        15_minutes: ["manager", "ciso"]
+        30_minutes: ["executive_team"]
+      
+      high:
+        immediate: ["security_team"]
+        1_hour: ["system_admin", "manager"]
+        4_hours: ["ciso"]
+      
+      medium:
+        immediate: ["security_team"]
+        4_hours: ["system_admin"]
+      
+      low:
+        daily_summary: ["security_team"]
+
+alerting:
+  # Alert configuration
+  alert_configuration:
+    enabled: true
+    alert_formats: ["json", "text"]
+    
+    # Alert channels
+    channels:
+      webhook:
+        enabled: true
+        url: "${SECURITY_WEBHOOK_URL}"
+        timeout: "30s"
+        retry_attempts: 3
+      
+      email:
+        enabled: false  # Configure for production
+        smtp_server: ""
+        recipients: []
+      
+      slack:
+        enabled: false  # Configure for production
+        webhook_url: ""
+        channel: "#security-alerts"
+    
+    # Alert rules
+    rules:
+      high_severity_events:
+        condition: "severity >= high"
+        immediate_notification: true
+        escalation_time: "15m"
+      
+      repeated_events:
+        condition: "count > 5 in 10m"
+        notification_delay: "5m"
+        deduplication: true
+      
+      system_health:
+        condition: "system_status != healthy"
+        notification_delay: "1m"
+        escalation_time: "5m"
+
+  # Alert suppression and correlation
+  alert_management:
+    suppression:
+      enabled: true
+      suppression_rules:
+        - "duplicate events within 5 minutes"
+        - "maintenance window events"
+        - "known false positives"
+    
+    correlation:
+      enabled: true
+      correlation_rules:
+        - "multiple failed logins from same IP"
+        - "privilege escalation after successful login"
+        - "network scan followed by connection attempts"
+    
+    deduplication:
+      enabled: true
+      deduplication_window: "10m"
+      similarity_threshold: 0.8
+
+performance_monitoring:
+  # Security performance metrics
+  metrics:
+    detection_metrics:
+      - "mean_time_to_detection"
+      - "false_positive_rate"
+      - "alert_volume"
+      - "coverage_percentage"
+    
+    response_metrics:
+      - "mean_time_to_response"
+      - "incident_resolution_time"
+      - "escalation_rate"
+      - "automation_success_rate"
+    
+    compliance_metrics:
+      - "compliance_score"
+      - "control_effectiveness"
+      - "audit_findings"
+      - "remediation_time"
+  
+  # Performance targets
+  targets:
+    detection_time: "< 5 minutes"
+    response_time: "< 15 minutes"
+    false_positive_rate: "< 5%"
+    compliance_score: "> 95%"
+  
+  # Performance reporting
+  reporting:
+    enabled: true
+    frequency: "weekly"
+    dashboards:
+      - security_operations_dashboard
+      - compliance_status_dashboard
+      - incident_response_metrics
+      - vulnerability_management_dashboard

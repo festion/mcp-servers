@@ -1,0 +1,195 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "GitHub Actions Runner Dashboard",
+    "tags": ["github", "runner", "ci-cd"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Runner Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"github-runner\"}",
+            "legendFormat": "Runner Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "container_memory_usage_bytes{name=\"github-actions-runner\"}",
+            "legendFormat": "Memory Usage"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "bytes"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(container_cpu_usage_seconds_total{name=\"github-actions-runner\"}[5m])",
+            "legendFormat": "CPU Usage"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "percentunit"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Disk Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(node_filesystem_size_bytes{mountpoint=\"/\"} - node_filesystem_avail_bytes{mountpoint=\"/\"}) / node_filesystem_size_bytes{mountpoint=\"/\"}",
+            "legendFormat": "Disk Usage"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "percentunit"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Job Queue Length",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "github_runner_jobs_queued",
+            "legendFormat": "Queued Jobs"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 6,
+        "title": "Job Success Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(github_runner_jobs_completed_total[5m])",
+            "legendFormat": "Completed Jobs"
+          },
+          {
+            "expr": "rate(github_runner_jobs_failed_total[5m])",
+            "legendFormat": "Failed Jobs"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 7,
+        "title": "Network Connectivity",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "probe_success{job=\"github-connectivity\"}",
+            "legendFormat": "GitHub"
+          },
+          {
+            "expr": "probe_success{job=\"ha-connectivity\"}",
+            "legendFormat": "Home Assistant"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+groups:
+  - name: github-runner-alerts
+    rules:
+      - alert: RunnerDown
+        expr: up{job="github-runner"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GitHub Actions Runner is down"
+          description: "The GitHub Actions runner has been down for more than 2 minutes"
+          
+      - alert: RunnerHighMemoryUsage
+        expr: container_memory_usage_bytes{name="github-actions-runner"} / container_spec_memory_limit_bytes{name="github-actions-runner"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GitHub Actions Runner high memory usage"
+          description: "Memory usage is above 80% for more than 5 minutes"
+          
+      - alert: RunnerHighCpuUsage
+        expr: rate(container_cpu_usage_seconds_total{name="github-actions-runner"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GitHub Actions Runner high CPU usage"
+          description: "CPU usage is above 80% for more than 5 minutes"
+          
+      - alert: RunnerDiskSpaceHigh
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk space usage on runner host"
+          description: "Disk space usage is above 80% for more than 5 minutes"
+          
+      - alert: RunnerJobQueueHigh
+        expr: github_runner_jobs_queued > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of queued jobs"
+          description: "More than 10 jobs have been queued for more than 2 minutes"
+          
+      - alert: RunnerJobFailureRate
+        expr: rate(github_runner_jobs_failed_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High job failure rate"
+          description: "Job failure rate is above 10% for more than 5 minutes"
+          
+      - alert: RunnerNetworkConnectivityLoss
+        expr: probe_success{job="github-connectivity"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GitHub connectivity lost"
+          description: "Cannot reach GitHub API for more than 1 minute"
+          
+      - alert: HomeAssistantConnectivityLoss
+        expr: probe_success{job="ha-connectivity"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Home Assistant connectivity lost"
+          description: "Cannot reach Home Assistant for more than 1 minute"

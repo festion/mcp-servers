@@ -1,0 +1,56 @@
+name: Deploy MCP Wrapper Scripts
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '*-wrapper.sh'
+      - 'sync-wrappers.sh'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.repository == 'festion/mcp-servers'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup SSH for deployment
+      if: vars.DEPLOY_ENABLED == 'true'
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+        
+    - name: Deploy wrapper scripts to production
+      if: vars.DEPLOY_ENABLED == 'true'
+      run: |
+        # This is a template - customize for your deployment target
+        echo "🚀 Deploying wrapper scripts to production server..."
+        
+        # Example SSH deployment (uncomment and customize as needed):
+        # ssh -o StrictHostKeyChecking=no user@your-server << 'EOF'
+        #   cd /home/dev/workspace/mcp-servers
+        #   git pull origin main
+        #   ./sync-wrappers.sh
+        # EOF
+        
+        echo "✅ Deployment completed!"
+        
+    - name: Notify deployment status
+      if: always() && vars.DEPLOY_ENABLED == 'true'
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ MCP wrapper scripts deployed successfully"
+        else
+          echo "❌ Deployment failed"
+          exit 1
+        fi
+
+    - name: Local development notice
+      if: vars.DEPLOY_ENABLED != 'true'
+      run: |
+        echo "ℹ️  Automatic deployment is disabled"
+        echo "   To deploy manually, run: ./sync-wrappers.sh"
+        echo "   To enable auto-deployment, set repository variable DEPLOY_ENABLED=true"

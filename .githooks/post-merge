@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Git hook to automatically sync wrapper scripts after git pull/merge
+# This ensures the workspace directory always has the latest wrapper scripts
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo "🔄 Git post-merge hook: Syncing MCP wrapper scripts..."
+
+if [ -f "$SCRIPT_DIR/sync-wrappers.sh" ]; then
+    cd "$SCRIPT_DIR" && ./sync-wrappers.sh
+else
+    echo "❌ sync-wrappers.sh not found, skipping sync"
+fi

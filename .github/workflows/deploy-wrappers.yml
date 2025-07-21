@@ -10,47 +10,95 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.repository == 'festion/mcp-servers'
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Setup SSH for deployment
-      if: vars.DEPLOY_ENABLED == 'true'
-      uses: webfactory/ssh-agent@v0.8.0
       with:
-        ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+        clean: false  # Keep local changes and avoid conflicts
         
-    - name: Deploy wrapper scripts to production
-      if: vars.DEPLOY_ENABLED == 'true'
+    - name: Verify runner environment
       run: |
-        # This is a template - customize for your deployment target
-        echo "🚀 Deploying wrapper scripts to production server..."
+        echo "🔍 Verifying local runner environment..."
+        echo "Current directory: $(pwd)"
+        echo "Workspace directory exists: $(test -d /home/dev/workspace && echo 'YES' || echo 'NO')"
+        echo "MCP tokens directory exists: $(test -d /home/dev/.mcp_tokens && echo 'YES' || echo 'NO')"
+        echo "Git repository status:"
+        git status --porcelain || echo "Not a git repository or no changes"
         
-        # Example SSH deployment (uncomment and customize as needed):
-        # ssh -o StrictHostKeyChecking=no user@your-server << 'EOF'
-        #   cd /home/dev/workspace/mcp-servers
-        #   git pull origin main
-        #   ./sync-wrappers.sh
-        # EOF
-        
-        echo "✅ Deployment completed!"
-        
-    - name: Notify deployment status
-      if: always() && vars.DEPLOY_ENABLED == 'true'
+    - name: Deploy wrapper scripts locally
       run: |
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "✅ MCP wrapper scripts deployed successfully"
+        echo "🚀 Deploying wrapper scripts to local workspace..."
+        echo "Repository: $(pwd)"
+        echo "Target: /home/dev/workspace/"
+        
+        # Run the sync script directly (we're already in the right place)
+        if [ -f "./sync-wrappers.sh" ]; then
+          ./sync-wrappers.sh
+          echo "✅ Wrapper scripts synced successfully"
         else
-          echo "❌ Deployment failed"
+          echo "❌ sync-wrappers.sh not found"
           exit 1
         fi
-
-    - name: Local development notice
-      if: vars.DEPLOY_ENABLED != 'true'
+        
+    - name: Validate deployment
       run: |
-        echo "ℹ️  Automatic deployment is disabled"
-        echo "   To deploy manually, run: ./sync-wrappers.sh"
-        echo "   To enable auto-deployment, set repository variable DEPLOY_ENABLED=true"
+        echo "🔍 Validating deployment..."
+        
+        # Check that wrapper scripts exist in workspace
+        WRAPPER_SCRIPTS=(
+          "hass-mcp-wrapper.sh"
+          "proxmox-mcp-wrapper.sh"  
+          "wikijs-mcp-wrapper.sh"
+          "code-linter-wrapper.sh"
+          "github-wrapper.sh"
+        )
+        
+        FAILED=0
+        for script in "${WRAPPER_SCRIPTS[@]}"; do
+          if [ -x "/home/dev/workspace/$script" ]; then
+            echo "✅ $script deployed and executable"
+          else
+            echo "❌ $script missing or not executable"
+            FAILED=1
+          fi
+        done
+        
+        if [ $FAILED -eq 1 ]; then
+          echo "❌ Deployment validation failed"
+          exit 1
+        fi
+        
+        echo "✅ All wrapper scripts deployed successfully"
+        
+    - name: Test MCP server connectivity (optional)
+      continue-on-error: true
+      run: |
+        echo "🧪 Testing MCP server connectivity..."
+        
+        # Test a few servers with timeouts
+        echo "Testing GitHub MCP server..."
+        timeout 10 /home/dev/workspace/github-wrapper.sh < /dev/null > /dev/null 2>&1 && echo "✅ GitHub MCP server OK" || echo "⚠️ GitHub MCP server test failed"
+        
+        echo "Testing Proxmox MCP server..."  
+        timeout 10 /home/dev/workspace/proxmox-mcp-wrapper.sh < /dev/null > /dev/null 2>&1 && echo "✅ Proxmox MCP server OK" || echo "⚠️ Proxmox MCP server test failed"
+        
+        echo "🏁 MCP server testing completed (non-blocking)"
+        
+    - name: Cleanup and summary
+      if: always()
+      run: |
+        echo "📋 Deployment Summary:"
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Runner: $(hostname)"
+        echo "Timestamp: $(date)"
+        
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "🎉 MCP wrapper scripts deployment completed successfully!"
+        else
+          echo "💥 Deployment encountered issues"
+        fi

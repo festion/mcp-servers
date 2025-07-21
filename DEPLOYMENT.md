@@ -18,8 +18,9 @@ Automatically syncs wrapper scripts after every `git pull` or `git merge`.
 
 ### 3. CI/CD Pipeline (GitHub Actions)
 - **Workflow**: `.github/workflows/deploy-wrappers.yml`
+- **Runner**: Self-hosted local runner 
 - **Triggers**: Push to main branch with changes to `*-wrapper.sh` files
-- **Enable**: Set repository variable `DEPLOY_ENABLED=true`
+- **Features**: Direct local deployment, validation, and optional MCP server testing
 
 ## 📁 Managed Wrapper Scripts
 
@@ -76,6 +77,7 @@ ls -la /home/dev/.mcp_tokens/
 ```
 
 ### CI/CD Issues
-- Ensure `DEPLOY_ENABLED=true` repository variable is set
 - Check GitHub Actions logs for deployment failures
-- Verify SSH keys for production deployment (if configured)
+- Ensure local GitHub runner is active and healthy
+- Verify runner has access to `/home/dev/workspace/` and `/home/dev/.mcp_tokens/`
+- Use "workflow_dispatch" to manually trigger deployment from GitHub UI

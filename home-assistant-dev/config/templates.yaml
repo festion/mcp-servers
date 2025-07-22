@@ -1,0 +1,787 @@
+# Home Assistant Template Sensors - FINAL FIX: Complete Duplicate Elimination
+# Date: June 12, 2025 - COMPLETE DUPLICATE SENSOR REMOVAL
+# Purpose: Eliminate ALL duplicate template sensor unique_id conflicts
+# Solution: Keep ONLY non-conflicting sensors, authoritative versions remain in packages/health_monitoring.yaml
+
+- sensor:
+    # Core Health Dashboard (Non-conflicting)
+    - name: "Health Dashboard Instructions"
+      unique_id: health_dashboard_instructions
+      state: "Health monitoring active"
+      icon: "mdi:monitor-dashboard"
+      attributes:
+        system_health: "{{ states('sensor.integration_health_percentage') | default('Unknown') }}%"
+        critical_issues: "{{ states('sensor.failed_automations') | default('0') }} failed automations"
+        last_refresh: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+        status: >
+          {% set health = states('sensor.integration_health_percentage') | float(0) %}
+          {% if health >= 90 %}Excellent
+          {% elif health >= 75 %}Good
+          {% elif health >= 60 %}Fair
+          {% else %}Critical
+          {% endif %}
+
+    # System Status Core (Non-conflicting)
+    - name: "System Status Core"
+      unique_id: system_status_core_monitor
+      state: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% set failed_autos = states('sensor.failed_automations') | int(0) %}
+        {% if health >= 85 and failed_autos == 0 %}Optimal
+        {% elif health >= 75 and failed_autos <= 2 %}Good
+        {% elif health >= 60 and failed_autos <= 5 %}Fair
+        {% else %}Critical
+        {% endif %}
+      icon: >
+        {% set health = states('sensor.integration_health_percentage') | float(0) %}
+        {% if health >= 85 %}mdi:check-circle
+        {% elif health >= 75 %}mdi:check-circle-outline
+        {% elif health >= 60 %}mdi:alert-circle-outline
+        {% else %}mdi:alert-circle
+        {% endif %}
+
+    # Simple Ready Status (Non-conflicting)
+    - name: "System Ready Status"
+      unique_id: system_ready_status_simple
+      state: "Ready"
+      availability: true
+
+    # TEMPLATE LOOP FIX: Create intermediate sensor to break circular dependency
+    # This sensor calculates available entities WITHOUT exclusions to avoid self-reference
+    - name: "Available Entity Count Base"
+      unique_id: available_entity_count_base
+      state: >
+        {% set total = states | list | count %}
+        {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+        {{ total - unavailable }}
+      unit_of_measurement: "entities"
+      icon: "mdi:check-circle-outline"
+      attributes:
+        total_entities: "{{ states | list | count }}"
+        unavailable_entities: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    # ENHANCED UNAVAILABLE ENTITIES TEMPLATE - FOR SYSTEM HEALTH DASHBOARD
+    # NOTE: This is separate from the main "Unavailable Entities" sensor in health_monitoring.yaml
+    - name: "Unavailable Entities Details"
+      unique_id: unavailable_entities_details_list
+      state: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+      unit_of_measurement: "entities"
+      icon: "mdi:alert-circle-outline"
+      attributes:
+        entities_list: >-
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ unavailable | join(', ') }}
+        by_domain: >-
+          {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | groupby('domain') %}
+          {% set result = {} %}
+          {% for domain, entities in unavailable %}
+            {% set entity_list = entities | map(attribute='entity_id') | list %}
+            {% set result = dict(result, **{domain: entity_list}) %}
+          {% endfor %}
+          {{ result }}
+        pitboss_entities: >-
+          {% set pitboss = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pbm_') | map(attribute='entity_id') | list %}
+          {{ pitboss }}
+        phone_entities: >-
+          {% set phone = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pixel_') | map(attribute='entity_id') | list %}
+          {{ phone }}
+        bluetooth_entities: >-
+          {% set bluetooth = states | selectattr('state', 'eq', 'unavailable') | select('match', '.*_(temperature|humidity|battery|distance|estimated_distance)$') | map(attribute='entity_id') | list %}
+          {{ bluetooth }}
+        printer_entities: >-
+          {% set printer = states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'prusa_') | map(attribute='entity_id') | list %}
+          {{ printer }}
+        device_tracker_entities: >-
+          {% set trackers = states.device_tracker | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ trackers }}
+        climate_entities: >-
+          {% set climate = states.climate | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ climate }}
+        button_entities: >-
+          {% set buttons = states.button | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ buttons }}
+        light_entities: >-
+          {% set lights = states.light | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ lights }}
+        switch_entities: >-
+          {% set switches = states.switch | selectattr('state', 'eq', 'unavailable') | map(attribute='entity_id') | list %}
+          {{ switches }}
+        sensor_count: >-
+          {% set sensors = states.sensor | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ sensors }}
+        binary_sensor_count: >-
+          {% set binary_sensors = states.binary_sensor | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ binary_sensors }}
+        device_tracker_count: >-
+          {% set trackers = states.device_tracker | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ trackers }}
+        total_count: >-
+          {% set total = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {{ total }}
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+        troubleshooting_hints: >-
+          {% set pitboss_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pbm_') | list | count) %}
+          {% set phone_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'pixel_') | list | count) %}
+          {% set bluetooth_count = (states | selectattr('state', 'eq', 'unavailable') | select('match', '.*_(temperature|humidity|battery|distance|estimated_distance)$') | list | count) %}
+          {% set printer_count = (states | selectattr('state', 'eq', 'unavailable') | selectattr('entity_id', 'search', 'prusa_') | list | count) %}
+          {% set hints = [] %}
+          {% if pitboss_count > 0 %}
+            {% set hints = hints + [pitboss_count ~ " PitBoss Grill entities - Check device power/network"] %}
+          {% endif %}
+          {% if phone_count > 0 %}
+            {% set hints = hints + [phone_count ~ " Phone entities - Mobile app connectivity issue"] %}
+          {% endif %}
+          {% if bluetooth_count > 0 %}
+            {% set hints = hints + [bluetooth_count ~ " Bluetooth entities - BLE proxy or device range issues"] %}
+          {% endif %}
+          {% if printer_count > 0 %}
+            {% set hints = hints + [printer_count ~ " Printer entities - Check 3D printer power/network"] %}
+          {% endif %}
+          {{ hints | join('; ') if hints else 'No specific patterns detected' }}
+
+    # Dishwasher Door State Fixed - Template sensor to handle Z-Wave value mapping
+    - name: "Dishwasher Door Status"
+      unique_id: dishwasher_door_status_fixed
+      state: >
+        {% set raw_value = state_attr('sensor.dishwasher_door_access_control_door_state', 'value') | int(23) %}
+        {% if raw_value == 22 %}
+          Window/door is open
+        {% elif raw_value == 23 %}
+          Window/door is closed
+        {% else %}
+          Unknown ({{ raw_value }})
+        {% endif %}
+      icon: >
+        {% set raw_value = state_attr('sensor.dishwasher_door_access_control_door_state', 'value') | int(23) %}
+        {% if raw_value == 22 %}
+          mdi:door-open
+        {% else %}
+          mdi:door-closed
+        {% endif %}
+      attributes:
+        raw_value: "{{ state_attr('sensor.dishwasher_door_access_control_door_state', 'value') | int(23) }}"
+        is_open: "{{ state_attr('sensor.dishwasher_door_access_control_door_state', 'value') | int(23) == 22 }}"
+        is_closed: "{{ state_attr('sensor.dishwasher_door_access_control_door_state', 'value') | int(23) == 23 }}"
+        last_updated: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    # === CURATRON DRYING SYSTEM SENSORS - UTC CONVERTED ===
+    - name: "Curatron Drying Progress"
+      unique_id: curatron_drying_progress_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set start_timestamp = state_attr('input_datetime.curatron_drying_start_time', 'timestamp') | float(0) %}
+          {% if start_timestamp > 0 %}
+            {% set current_timestamp = utcnow().timestamp() %}
+            {% set hours_since = ((current_timestamp - start_timestamp) / 3600) | round(1) %}
+            {% set days_since = (hours_since / 24) | round(1) %}
+            {% set total_days = states('input_number.curatron_drying_total_days') | float(14) %}
+            {% set progress_pct = (days_since / total_days * 100) | round(1) %}
+            {{ [progress_pct, 100] | min }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+      unit_of_measurement: "%"
+      icon: "mdi:progress-clock"
+      attributes:
+        drying_active: "{{ is_state('input_boolean.curatron_drying_active_mode', 'on') }}"
+        utc_calculated: true
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    - name: "Curatron Drying Status"
+      unique_id: curatron_drying_status_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current_threshold = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set end_threshold = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% set start_threshold = states('input_number.curatron_drying_start_humidity') | float(80) %}
+          {% if current_threshold <= end_threshold %}
+            Steady State
+          {% else %}
+            {% set progress = ((start_threshold - current_threshold) / (start_threshold - end_threshold) * 100) | round(0) %}
+            Drying {{ progress }}%
+          {% endif %}
+        {% else %}
+          Normal Mode
+        {% endif %}
+      icon: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% if current <= target %}
+            mdi:check-circle
+          {% else %}
+            mdi:timer-sand
+          {% endif %}
+        {% else %}
+          mdi:home-thermometer
+        {% endif %}
+      attributes:
+        utc_calculated: true
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    # =============================================================================
+    # SMART APPLIANCE CYCLE PHASE DETECTION SYSTEM
+    # =============================================================================
+
+    # DISHWASHER CYCLE PHASE DETECTION
+    - name: "Dishwasher Cycle Phase"
+      unique_id: dishwasher_cycle_phase_smart
+      state: >
+        {% set power = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+        {% set idle = states('input_number.dishwasher_idle_threshold') | float(5) %}
+        {% set active = states('input_number.dishwasher_active_threshold') | float(50) %}
+        {% set peak = states('input_number.dishwasher_peak_threshold') | float(150) %}
+        {% if power <= idle %}
+          idle
+        {% elif power <= active %}
+          starting
+        {% elif power <= peak %}
+          washing
+        {% else %}
+          heating
+        {% endif %}
+      icon: >
+        {% set phase = this.state %}
+        {% if phase == 'idle' %}
+          mdi:dishwasher-off
+        {% elif phase == 'starting' %}
+          mdi:dishwasher-alert
+        {% elif phase == 'washing' %}
+          mdi:dishwasher
+        {% else %}
+          mdi:heat-wave
+        {% endif %}
+      attributes:
+        current_power: "{{ states('sensor.dishwasher_electric_consumption_w') | float(0) }}"
+        phase_duration: "{{ (utcnow() - states.sensor.dishwasher_cycle_phase.last_changed).total_seconds() | int if states.sensor.dishwasher_cycle_phase.last_changed else 0 }}"
+        idle_threshold: "{{ states('input_number.dishwasher_idle_threshold') | float(5) }}"
+        active_threshold: "{{ states('input_number.dishwasher_active_threshold') | float(50) }}"
+        peak_threshold: "{{ states('input_number.dishwasher_peak_threshold') | float(150) }}"
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    # WASHING MACHINE CYCLE PHASE DETECTION WITH PROPER CYCLE DURATION TRACKING
+    - name: "Washing Machine Cycle Phase"
+      unique_id: washing_machine_cycle_phase_smart
+      state: >
+        {% set power = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+        {% set idle = states('input_number.washing_machine_idle_threshold') | float(10) %}
+        {% set active = states('input_number.washing_machine_active_threshold') | float(100) %}
+        {% set peak = states('input_number.washing_machine_peak_threshold') | float(400) %}
+        {% if power <= idle %}
+          idle
+        {% elif power <= active %}
+          filling
+        {% elif power <= peak %}
+          washing
+        {% else %}
+          spinning
+        {% endif %}
+      icon: >
+        {% set phase = this.state %}
+        {% if phase == 'idle' %}
+          mdi:washing-machine-off
+        {% elif phase == 'filling' %}
+          mdi:water-plus
+        {% elif phase == 'washing' %}
+          mdi:washing-machine
+        {% else %}
+          mdi:sync
+        {% endif %}
+      attributes:
+        current_power: "{{ states('sensor.washing_machine_electric_consumption_w') | float(0) }}"
+        phase_duration: "{{ (utcnow() - states.sensor.washing_machine_cycle_phase.last_changed).total_seconds() | int if states.sensor.washing_machine_cycle_phase.last_changed else 0 }}"
+        cycle_duration: >
+          {% set cycle_start = state_attr('input_datetime.washing_machine_cycle_start', 'timestamp') %}
+          {% set current_phase = this.state %}
+          {% if cycle_start and current_phase == 'idle' %}
+            {{ (utcnow().timestamp() - cycle_start) | int(0) }}
+          {% else %}
+            0
+          {% endif %}
+        cycle_duration_minutes: >
+          {% set cycle_start = state_attr('input_datetime.washing_machine_cycle_start', 'timestamp') %}
+          {% set current_phase = this.state %}
+          {% if cycle_start and current_phase == 'idle' %}
+            {{ ((utcnow().timestamp() - cycle_start) / 60) | round(0) | int(0) }}
+          {% else %}
+            0
+          {% endif %}
+        idle_threshold: "{{ states('input_number.washing_machine_idle_threshold') | float(10) }}"
+        active_threshold: "{{ states('input_number.washing_machine_active_threshold') | float(100) }}"
+        peak_threshold: "{{ states('input_number.washing_machine_peak_threshold') | float(400) }}"
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    # =============================================================================
+    # 🌙 CUSTOM CIRCADIAN RHYTHM SENSORS - PHASE 3 ENHANCEMENT
+    # =============================================================================
+    # 
+    # Enhanced circadian rhythm calculations with user-configurable schedules
+    # as specified in the original adaptive lighting implementation document.
+    #
+    # Added: June 16, 2025
+    # Version: Phase 3 Custom Circadian Implementation
+    # =============================================================================
+
+    # COLOR TEMPERATURE CALCULATION SENSOR
+    - name: "Circadian Color Temperature"
+      unique_id: circadian_color_temperature_custom
+      state: >
+        {% set now_hour = now().hour + (now().minute / 60.0) %}
+        {% set sunrise_hour = as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H') | int %}
+        {% set sunset_hour = as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H') | int %}
+        {% set bedtime = states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) %}
+        {% set wake_time = states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) %}
+        {% set max_temp = states('input_number.adaptive_lighting_max_color_temp') | int(6500) %}
+        {% set min_temp = states('input_number.adaptive_lighting_min_color_temp') | int(2000) %}
+        {% set sunrise_offset = states('input_number.adaptive_lighting_sunrise_offset') | int(0) %}
+        {% set sunset_offset = states('input_number.adaptive_lighting_sunset_offset') | int(0) %}
+        
+        {% set adj_sunrise = sunrise_hour + (sunrise_offset / 60.0) %}
+        {% set adj_sunset = sunset_hour + (sunset_offset / 60.0) %}
+        
+        {% if wake_time <= now_hour < wake_time + 2 %}
+          {# Sunrise period - warm to neutral #}
+          {% set progress = (now_hour - wake_time) / 2 %}
+          {{ (min_temp + ((max_temp - min_temp) * 0.3 * progress)) | int }}
+        {% elif wake_time + 2 <= now_hour < 12 %}
+          {# Morning - neutral to cool #}
+          {% set progress = (now_hour - wake_time - 2) / (12 - wake_time - 2) %}
+          {{ (min_temp + ((max_temp - min_temp) * 0.3) + ((max_temp - min_temp) * 0.7 * progress)) | int }}
+        {% elif 12 <= now_hour < 15 %}
+          {# Midday - coolest #}
+          {{ max_temp }}
+        {% elif 15 <= now_hour < adj_sunset %}
+          {# Afternoon - cool to neutral #}
+          {% set progress = (now_hour - 15) / (adj_sunset - 15) %}
+          {{ (max_temp - ((max_temp - min_temp) * 0.4 * progress)) | int }}
+        {% elif adj_sunset <= now_hour < bedtime %}
+          {# Evening - neutral to warm #}
+          {% set progress = (now_hour - adj_sunset) / (bedtime - adj_sunset) %}
+          {{ ((max_temp * 0.6) - ((max_temp * 0.6 - min_temp) * progress)) | int }}
+        {% elif bedtime <= now_hour < 23 %}
+          {# Pre-sleep - warm #}
+          {% set progress = (now_hour - bedtime) / (23 - bedtime) %}
+          {{ (min_temp - (200 * progress)) | int }}
+        {% else %}
+          {# Night time - very warm #}
+          {{ (min_temp - 200) | int }}
+        {% endif %}
+      unit_of_measurement: "K"
+      icon: "mdi:thermometer"
+      attributes:
+        current_period: >
+          {% set now_hour = now().hour + (now().minute / 60.0) %}
+          {% set sunrise_hour = as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H') | int %}
+          {% set sunset_hour = as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H') | int %}
+          {% set bedtime = states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) %}
+          {% set wake_time = states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) %}
+          {% set sunrise_offset = states('input_number.adaptive_lighting_sunrise_offset') | int(0) %}
+          {% set sunset_offset = states('input_number.adaptive_lighting_sunset_offset') | int(0) %}
+          {% set adj_sunrise = sunrise_hour + (sunrise_offset / 60.0) %}
+          {% set adj_sunset = sunset_hour + (sunset_offset / 60.0) %}
+          
+          {% if wake_time <= now_hour < wake_time + 2 %}sunrise
+          {% elif wake_time + 2 <= now_hour < 12 %}morning
+          {% elif 12 <= now_hour < 15 %}midday
+          {% elif 15 <= now_hour < adj_sunset %}afternoon
+          {% elif adj_sunset <= now_hour < bedtime %}evening
+          {% elif bedtime <= now_hour < 23 %}bedtime
+          {% else %}night
+          {% endif %}
+        user_bedtime: "{{ states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) }}"
+        user_wake_time: "{{ states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) }}"
+        max_color_temp: "{{ states('input_number.adaptive_lighting_max_color_temp') | int(6500) }}"
+        min_color_temp: "{{ states('input_number.adaptive_lighting_min_color_temp') | int(2000) }}"
+        sunrise_offset: "{{ states('input_number.adaptive_lighting_sunrise_offset') | int(0) }}"
+        sunset_offset: "{{ states('input_number.adaptive_lighting_sunset_offset') | int(0) }}"
+
+    # BRIGHTNESS CALCULATION SENSOR  
+    - name: "Circadian Brightness"
+      unique_id: circadian_brightness_custom
+      state: >
+        {% set now_hour = now().hour + (now().minute / 60.0) %}
+        {% set sunrise_hour = as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H') | int %}
+        {% set sunset_hour = as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H') | int %}
+        {% set bedtime = states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) %}
+        {% set wake_time = states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) %}
+        {% set max_brightness = states('input_number.adaptive_lighting_max_brightness') | int(100) %}
+        {% set min_brightness = states('input_number.adaptive_lighting_min_brightness') | int(5) %}
+        {% set midday_boost = states('input_number.adaptive_lighting_midday_brightness_boost') | int(0) %}
+        {% set sunrise_offset = states('input_number.adaptive_lighting_sunrise_offset') | int(0) %}
+        {% set sunset_offset = states('input_number.adaptive_lighting_sunset_offset') | int(0) %}
+        
+        {% set adj_sunrise = sunrise_hour + (sunrise_offset / 60.0) %}
+        {% set adj_sunset = sunset_hour + (sunset_offset / 60.0) %}
+        
+        {% if wake_time <= now_hour < wake_time + 2 %}
+          {# Sunrise period - gentle increase #}
+          {% set progress = (now_hour - wake_time) / 2 %}
+          {{ ((min_brightness + 20) + ((max_brightness * 0.6 - min_brightness - 20) * progress)) | int }}
+        {% elif wake_time + 2 <= now_hour < 12 %}
+          {# Morning - continue increasing #}
+          {% set progress = (now_hour - wake_time - 2) / (12 - wake_time - 2) %}
+          {{ ((max_brightness * 0.8) + ((max_brightness * 0.2 + midday_boost) * progress)) | int }}
+        {% elif 12 <= now_hour < 15 %}
+          {# Midday - brightest with boost #}
+          {{ (max_brightness + midday_boost) | int }}
+        {% elif 15 <= now_hour < adj_sunset %}
+          {# Afternoon - gradual decrease #}
+          {% set progress = (now_hour - 15) / (adj_sunset - 15) %}
+          {{ ((max_brightness + midday_boost) - ((max_brightness * 0.2) * progress)) | int }}
+        {% elif adj_sunset <= now_hour < bedtime %}
+          {# Evening - wind down #}
+          {% set wind_down_minutes = states('input_number.adaptive_lighting_evening_wind_down') | int(60) %}
+          {% set wind_down_hours = wind_down_minutes / 60.0 %}
+          {% set progress = (now_hour - adj_sunset) / (bedtime - adj_sunset) %}
+          {{ ((max_brightness * 0.8) - ((max_brightness * 0.8 - max_brightness * 0.3) * progress)) | int }}
+        {% elif bedtime <= now_hour < 23 %}
+          {# Pre-sleep - dim #}
+          {% set progress = (now_hour - bedtime) / (23 - bedtime) %}
+          {{ ((max_brightness * 0.3) - ((max_brightness * 0.3 - min_brightness) * progress)) | int }}
+        {% else %}
+          {# Night time - minimal #}
+          {{ min_brightness }}
+        {% endif %}
+      unit_of_measurement: "%"
+      icon: "mdi:brightness-percent"
+      attributes:
+        current_period: >
+          {% set now_hour = now().hour + (now().minute / 60.0) %}
+          {% set sunrise_hour = as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H') | int %}
+          {% set sunset_hour = as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H') | int %}
+          {% set bedtime = states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) %}
+          {% set wake_time = states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) %}
+          {% set sunrise_offset = states('input_number.adaptive_lighting_sunrise_offset') | int(0) %}
+          {% set sunset_offset = states('input_number.adaptive_lighting_sunset_offset') | int(0) %}
+          {% set adj_sunrise = sunrise_hour + (sunrise_offset / 60.0) %}
+          {% set adj_sunset = sunset_hour + (sunset_offset / 60.0) %}
+          
+          {% if wake_time <= now_hour < wake_time + 2 %}sunrise
+          {% elif wake_time + 2 <= now_hour < 12 %}morning
+          {% elif 12 <= now_hour < 15 %}midday
+          {% elif 15 <= now_hour < adj_sunset %}afternoon
+          {% elif adj_sunset <= now_hour < bedtime %}evening
+          {% elif bedtime <= now_hour < 23 %}bedtime
+          {% else %}night
+          {% endif %}
+        user_bedtime: "{{ states('input_number.adaptive_lighting_bedtime_hour') | float(21.0) }}"
+        user_wake_time: "{{ states('input_number.adaptive_lighting_wake_time_hour') | float(7.0) }}"
+        max_brightness: "{{ states('input_number.adaptive_lighting_max_brightness') | int(100) }}"
+        min_brightness: "{{ states('input_number.adaptive_lighting_min_brightness') | int(5) }}"
+        midday_boost: "{{ states('input_number.adaptive_lighting_midday_brightness_boost') | int(0) }}"
+        evening_wind_down: "{{ states('input_number.adaptive_lighting_evening_wind_down') | int(60) }}"
+
+    # =============================================================================
+    # 🎯 ADAPTIVE LIGHTING INDIVIDUAL OPT-OUT & SMART RE-SYNC SENSORS
+    # =============================================================================
+    #
+    # Dashboard sensors for the Individual Opt-Out & Smart Re-Sync system
+    # providing real-time analytics and effectiveness monitoring.
+    #
+    # Added: June 17, 2025
+    # Version: Individual Control + Smart Re-Sync Implementation
+    # =============================================================================
+
+    # RE-SYNC EFFECTIVENESS SENSOR
+    - name: "Adaptive Lighting Re-Sync Effectiveness"
+      unique_id: adaptive_lighting_resync_effectiveness
+      state: >
+        {% set attempts = states('input_number.adaptive_lighting_resync_attempts') | int(0) %}
+        {% set successes = states('input_number.adaptive_lighting_resync_successes') | int(0) %}
+        {% if attempts > 0 %}
+          {{ (successes / attempts * 100) | round(1) }}
+        {% else %}
+          100
+        {% endif %}
+      unit_of_measurement: "%"
+      icon: >
+        {% set attempts = states('input_number.adaptive_lighting_resync_attempts') | int(0) %}
+        {% set successes = states('input_number.adaptive_lighting_resync_successes') | int(0) %}
+        {% set rate = (successes / attempts * 100) | round(1) if attempts > 0 else 100 %}
+        {% if rate >= 80 %}
+          mdi:check-circle
+        {% elif rate >= 60 %}
+          mdi:check-circle-outline
+        {% elif rate >= 40 %}
+          mdi:alert-circle-outline
+        {% else %}
+          mdi:alert-circle
+        {% endif %}
+      attributes:
+        total_attempts: "{{ states('input_number.adaptive_lighting_resync_attempts') | int(0) }}"
+        successful_attempts: "{{ states('input_number.adaptive_lighting_resync_successes') | int(0) }}"
+        rejected_attempts: "{{ states('input_number.adaptive_lighting_resync_rejections') | int(0) }}"
+        effectiveness_rating: >
+          {% set attempts = states('input_number.adaptive_lighting_resync_attempts') | int(0) %}
+          {% set successes = states('input_number.adaptive_lighting_resync_successes') | int(0) %}
+          {% set rate = (successes / attempts * 100) | round(1) if attempts > 0 else 100 %}
+          {% if rate >= 80 %}Excellent
+          {% elif rate >= 60 %}Good
+          {% elif rate >= 40 %}Fair
+          {% elif rate >= 20 %}Poor
+          {% else %}Very Poor
+          {% endif %}
+        last_updated: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    # OPTED-OUT LIGHTS COUNT SENSOR
+    - name: "Adaptive Lighting Opted Out Count"
+      unique_id: adaptive_lighting_opted_out_count
+      state: >
+        {% set override_entities = [
+          'input_boolean.adaptive_lighting_override_livingroom_lights',
+          'input_boolean.adaptive_lighting_override_kitchen_lights',
+          'input_boolean.adaptive_lighting_override_kitchen_led_strips',
+          'input_boolean.adaptive_lighting_override_bar_strip',
+          'input_boolean.adaptive_lighting_override_top_left',
+          'input_boolean.adaptive_lighting_override_top_right',
+          'input_boolean.adaptive_lighting_override_master_light',
+          'input_boolean.adaptive_lighting_override_master_lamp',
+          'input_boolean.adaptive_lighting_override_guest_light',
+          'input_boolean.adaptive_lighting_override_linda_light',
+          'input_boolean.adaptive_lighting_override_gavin_light',
+          'input_boolean.adaptive_lighting_override_dining_light',
+          'input_boolean.adaptive_lighting_override_hall_light',
+          'input_boolean.adaptive_lighting_override_nook_light',
+          'input_boolean.adaptive_lighting_override_hobby_light',
+          'input_boolean.adaptive_lighting_override_pantry_light',
+          'input_boolean.adaptive_lighting_override_porch_light'
+        ] %}
+        {% set count = 0 %}
+        {% for entity in override_entities %}
+          {% if states(entity) == 'on' %}
+            {% set count = count + 1 %}
+          {% endif %}
+        {% endfor %}
+        {{ count }}
+      unit_of_measurement: "lights"
+      icon: >
+        {% set count = this.state | int(0) if this.state not in ['unavailable', 'unknown'] else 0 %}
+        {% if count == 0 %}
+          mdi:lightbulb-group
+        {% elif count <= 3 %}
+          mdi:lightbulb-group-outline
+        {% elif count <= 8 %}
+          mdi:lightbulb-group-off-outline
+        {% else %}
+          mdi:lightbulb-group-off
+        {% endif %}
+      attributes:
+        total_lights: 17
+        percentage_opted_out: >
+          {% set count = this.state | int(0) if this.state not in ['unavailable', 'unknown'] else 0 %}
+          {{ (count / 17 * 100) | round(1) }}
+        opted_out_lights: >
+          {% set light_mappings = [
+            ['input_boolean.adaptive_lighting_override_livingroom_lights', 'Living Room Lights'],
+            ['input_boolean.adaptive_lighting_override_kitchen_lights', 'Kitchen Lights'],
+            ['input_boolean.adaptive_lighting_override_kitchen_led_strips', 'Kitchen LED Strips'],
+            ['input_boolean.adaptive_lighting_override_bar_strip', 'Bar Strip'],
+            ['input_boolean.adaptive_lighting_override_top_left', 'Top Left'],
+            ['input_boolean.adaptive_lighting_override_top_right', 'Top Right'],
+            ['input_boolean.adaptive_lighting_override_master_light', 'Master Light'],
+            ['input_boolean.adaptive_lighting_override_master_lamp', 'Master Lamp'],
+            ['input_boolean.adaptive_lighting_override_guest_light', 'Guest Light'],
+            ['input_boolean.adaptive_lighting_override_linda_light', 'Linda Light'],
+            ['input_boolean.adaptive_lighting_override_gavin_light', 'Gavin Light'],
+            ['input_boolean.adaptive_lighting_override_dining_light', 'Dining Light'],
+            ['input_boolean.adaptive_lighting_override_hall_light', 'Hall Light'],
+            ['input_boolean.adaptive_lighting_override_nook_light', 'Nook Light'],
+            ['input_boolean.adaptive_lighting_override_hobby_light', 'Hobby Light'],
+            ['input_boolean.adaptive_lighting_override_pantry_light', 'Pantry Light'],
+            ['input_boolean.adaptive_lighting_override_porch_light', 'Porch Light']
+          ] %}
+          {% set opted_out = [] %}
+          {% for mapping in light_mappings %}
+            {% set entity, friendly_name = mapping %}
+            {% if states(entity) == 'on' %}
+              {% set opted_out = opted_out + [friendly_name] %}
+            {% endif %}
+          {% endfor %}
+          {{ opted_out | join(', ') }}
+        last_updated: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    # RE-SYNC SYSTEM STATUS SENSOR
+    - name: "Adaptive Lighting Re-Sync Status"
+      unique_id: adaptive_lighting_resync_status
+      state: >
+        {% if states('input_boolean.adaptive_lighting_smart_resync_enable') == 'off' %}
+          Disabled
+        {% elif states('input_select.adaptive_lighting_resync_strategy') == 'Disabled' %}
+          Strategy Disabled
+        {% else %}
+          {% set strategy = states('input_select.adaptive_lighting_resync_strategy') %}
+          {% set aggressiveness = states('input_select.adaptive_lighting_resync_aggressiveness') %}
+          {% if 'Gentle Periodic' in strategy %}
+            Active ({{ aggressiveness.split(' ')[0] }})
+          {% elif 'Activity-Based' in strategy %}
+            Activity-Based
+          {% elif 'Daily Reset' in strategy %}
+            Daily Reset Only
+          {% else %}
+            Unknown
+          {% endif %}
+        {% endif %}
+      icon: >
+        {% if states('input_boolean.adaptive_lighting_smart_resync_enable') == 'off' %}
+          mdi:sync-off
+        {% elif states('input_select.adaptive_lighting_resync_strategy') == 'Disabled' %}
+          mdi:sync-off
+        {% else %}
+          mdi:sync-circle
+        {% endif %}
+      attributes:
+        resync_enabled: "{{ states('input_boolean.adaptive_lighting_smart_resync_enable') == 'on' }}"
+        aggressive_detection: "{{ states('input_boolean.adaptive_lighting_aggressive_override_detection') == 'on' }}"
+        strategy: "{{ states('input_select.adaptive_lighting_resync_strategy') }}"
+        aggressiveness: "{{ states('input_select.adaptive_lighting_resync_aggressiveness') }}"
+        interval_hours: "{{ states('input_number.adaptive_lighting_resync_interval_hours') | float(2) }}"
+        max_backoff_hours: "{{ states('input_number.adaptive_lighting_resync_max_backoff_hours') | float(24) }}"
+        next_check: >
+          {% set interval = states('input_number.adaptive_lighting_resync_interval_hours') | float(2) %}
+          {% set next_time = (now() + timedelta(minutes=(interval * 60))) %}
+          {{ next_time.strftime('%H:%M') }}
+        last_updated: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    # ===============================================================================
+    # DUPLICATE SENSORS COMPLETELY REMOVED - CONFLICT RESOLUTION
+    # ===============================================================================
+    # The following sensors were duplicated in both templates.yaml and packages/health_monitoring.yaml
+    # They have been COMPLETELY REMOVED from templates.yaml to eliminate unique_id conflicts.
+    # Authoritative versions remain ONLY in packages/health_monitoring.yaml:
+    #
+    # REMOVED SENSORS:
+    # - sensor.appliance_system_status (unique_id: appliance_system_status)
+    # - sensor.integration_health_percentage (unique_id: integration_health_percentage)
+    # - sensor.alexa_integration_health (unique_id: alexa_integration_health)
+    # - sensor.mobile_app_integration_health (unique_id: mobile_app_integration_health)
+    # - sensor.switch_integration_health (unique_id: switch_integration_health)
+    # - sensor.system_health (unique_id: system_health)
+    # - sensor.unavailable_entities (unique_id: unavailable_entities)
+    #
+    # These sensors will continue to function from packages/health_monitoring.yaml
+    # ===============================================================================
+
+- binary_sensor:
+    # Night Mode Status - CONSOLIDATED (Original Name)
+    - name: "Night Mode Active"
+      unique_id: night_mode_active_consolidated
+      state: >
+        {% set current_hour = now().hour %}
+        {{ current_hour >= 22 or current_hour < 6 }}
+      device_class: "occupancy"
+      icon: >
+        {% set current_hour = now().hour %}
+        {% set is_night = current_hour >= 22 or current_hour < 6 %}
+        {% if is_night %}
+          mdi:weather-night
+        {% else %}
+          mdi:weather-sunny
+        {% endif %}
+      attributes:
+        current_hour: "{{ now().hour }}"
+
+    # === CURATRON DRYING SYSTEM BINARY SENSORS - UTC CONVERTED ===
+    - name: "Curatron Drying Complete"
+      unique_id: curatron_drying_complete_sensor
+      state: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {{ current <= target }}
+        {% else %}
+          false
+        {% endif %}
+      device_class: "running"
+      icon: >
+        {% if is_state('input_boolean.curatron_drying_active_mode', 'on') %}
+          {% set current = states('input_number.curatron_drying_threshold_slider') | float(0) %}
+          {% set target = states('input_number.curatron_drying_end_humidity') | float(60) %}
+          {% if current <= target %}
+            mdi:check-circle
+          {% else %}
+            mdi:timer-sand
+          {% endif %}
+        {% else %}
+          mdi:stop-circle
+        {% endif %}
+      attributes:
+        utc_calculated: true
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    # =============================================================================
+    # SMART APPLIANCE BINARY SENSORS
+    # =============================================================================
+
+    - name: "Dishwasher Cycle Active"
+      unique_id: dishwasher_cycle_active_smart
+      state: >
+        {% set phase = states('sensor.dishwasher_cycle_phase') %}
+        {{ phase not in ['idle', 'unknown', 'unavailable'] }}
+      device_class: running
+      icon: >
+        {% set phase = states('sensor.dishwasher_cycle_phase') %}
+        {% if phase not in ['idle', 'unknown', 'unavailable'] %}
+          mdi:dishwasher
+        {% else %}
+          mdi:dishwasher-off
+        {% endif %}
+      attributes:
+        current_phase: "{{ states('sensor.dishwasher_cycle_phase') }}"
+        cycle_time: "{{ state_attr('sensor.dishwasher_cycle_phase', 'phase_duration') | int(0) // 60 }} minutes"
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    - name: "Washing Machine Cycle Active"
+      unique_id: washing_machine_cycle_active_smart
+      state: >
+        {% set phase = states('sensor.washing_machine_cycle_phase') %}
+        {{ phase not in ['idle', 'unknown', 'unavailable'] }}
+      device_class: running
+      icon: >
+        {% set phase = states('sensor.washing_machine_cycle_phase') %}
+        {% if phase not in ['idle', 'unknown', 'unavailable'] %}
+          mdi:washing-machine
+        {% else %}
+          mdi:washing-machine-off
+        {% endif %}
+      attributes:
+        current_phase: "{{ states('sensor.washing_machine_cycle_phase') }}"
+        cycle_time: "{{ state_attr('sensor.washing_machine_cycle_phase', 'phase_duration') | int(0) // 60 }} minutes"
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"
+
+    - name: "Smart Thresholds Configured"
+      unique_id: smart_thresholds_configured
+      state: >
+        {% set dishwasher_idle = states('input_number.dishwasher_idle_threshold') | float(0) %}
+        {% set dishwasher_active = states('input_number.dishwasher_active_threshold') | float(0) %}
+        {% set dishwasher_peak = states('input_number.dishwasher_peak_threshold') | float(0) %}
+        {% set washer_idle = states('input_number.washing_machine_idle_threshold') | float(0) %}
+        {% set washer_active = states('input_number.washing_machine_active_threshold') | float(0) %}
+        {% set washer_peak = states('input_number.washing_machine_peak_threshold') | float(0) %}
+        {{ dishwasher_idle < dishwasher_active < dishwasher_peak and washer_idle < washer_active < washer_peak }}
+      device_class: connectivity
+      icon: >
+        {% set dishwasher_idle = states('input_number.dishwasher_idle_threshold') | float(0) %}
+        {% set dishwasher_active = states('input_number.dishwasher_active_threshold') | float(0) %}
+        {% set dishwasher_peak = states('input_number.dishwasher_peak_threshold') | float(0) %}
+        {% set washer_idle = states('input_number.washing_machine_idle_threshold') | float(0) %}
+        {% set washer_active = states('input_number.washing_machine_active_threshold') | float(0) %}
+        {% set washer_peak = states('input_number.washing_machine_peak_threshold') | float(0) %}
+        {% if dishwasher_idle < dishwasher_active < dishwasher_peak and washer_idle < washer_active < washer_peak %}
+          mdi:check-circle
+        {% else %}
+          mdi:alert-circle
+        {% endif %}
+      attributes:
+        threshold_summary: >
+          {% set dishwasher_idle = states('input_number.dishwasher_idle_threshold') | float(0) %}
+          {% set dishwasher_active = states('input_number.dishwasher_active_threshold') | float(0) %}
+          {% set dishwasher_peak = states('input_number.dishwasher_peak_threshold') | float(0) %}
+          {% set washer_idle = states('input_number.washing_machine_idle_threshold') | float(0) %}
+          {% set washer_active = states('input_number.washing_machine_active_threshold') | float(0) %}
+          {% set washer_peak = states('input_number.washing_machine_peak_threshold') | float(0) %}
+          DW: {{ dishwasher_idle }}/{{ dishwasher_active }}/{{ dishwasher_peak }}W, WM: {{ washer_idle }}/{{ washer_active }}/{{ washer_peak }}W
+        last_updated_utc: "{{ utcnow().isoformat() }}Z"

@@ -1,0 +1,9 @@
+# BACKUP OF ORIGINAL TEMPLATES.YAML - June 2, 2025
+# This file contains the original templates.yaml content for rollback if needed
+
+# The original content had critical errors:
+# 1. Unit conflicts: sensor.integration_health_status had unit "issues" but returned text
+# 2. Template structure errors at lines 8 and 169
+# 3. Timestamp conversion errors in next_maintenance_due sensor
+
+# Original content backed up - see templates_FIXED.yaml for corrected version

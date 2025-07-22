@@ -1,0 +1,4 @@
+# DISABLED - RF Learning scripts removed June 12, 2025
+# These scripts were moved to archive because RF learning is complete
+# and these were causing 20+ unavailable entities in system health
+# Original file: outdoor_ceiling_fan_scripts_correct.yaml

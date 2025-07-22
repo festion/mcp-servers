@@ -1,0 +1,225 @@
+title: Hydroponics Management
+views:
+  - title: Overview
+    path: hydroponics
+    icon: mdi:sprout
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              # Hydroponics System
+            style:
+              .: |
+                ha-card {
+                  background: var(--primary-color);
+                  color: var(--text-primary-color);
+                  padding: 8px;
+                  border-radius: 10px;
+                  margin-bottom: 10px;
+                }
+              h1:
+                font-size: 24px
+                font-weight: 300
+          
+          - type: entities
+            title: System Status
+            entities:
+              - entity: sensor.wroommicrousb_water_level
+                name: Water Level
+                secondary_info: last-changed
+              - entity: sensor.wroommicrousb_reservoir_current_volume
+                name: Current Volume
+                secondary_info: last-changed
+              - entity: sensor.wroommicrousb_reservoir_water_temp
+                name: Water Temperature
+                secondary_info: last-changed
+              - entity: sensor.water_quality_monitor_ph
+                name: pH Level
+                secondary_info: last-changed
+              - entity: sensor.water_quality_monitor_electrical_conductivity
+                name: EC Level
+                secondary_info: last-changed
+              - entity: input_datetime.last_fertigation_timestamp
+                name: Last Fertigation
+              - entity: sensor.next_fertigation_time
+                name: Next Fertigation
+              - entity: sensor.fertigation_status
+                name: Fertigation Status
+              - type: divider
+              - entity: switch.tp_link_smart_plug_c82e_feed_pump
+                name: Feed Pump
+              - entity: switch.tp_link_smart_plug_c82e_waste_pump
+                name: Waste Pump
+              
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            name: Water Level
+            entities:
+              - entity: sensor.wroommicrousb_water_level
+                name: Water Level (cm)
+            hours_to_show: 24
+            points_per_hour: 2
+            line_color: "#3498db"
+            line_width: 2
+            hour24: true
+            decimals: 1
+            show:
+              labels: true
+              points: true
+              legend: false
+            
+          - type: custom:mini-graph-card
+            name: Water Temperature
+            entities:
+              - entity: sensor.wroommicrousb_reservoir_water_temp
+                name: Temp (°C)
+            hours_to_show: 24
+            points_per_hour: 2
+            line_color: "#e74c3c"
+            line_width: 2
+            hour24: true
+            decimals: 1
+            show:
+              labels: true
+              points: true
+              legend: false
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mini-graph-card
+            name: pH Level
+            entities:
+              - entity: sensor.water_quality_monitor_ph
+                name: pH
+            hours_to_show: 24
+            points_per_hour: 2
+            line_color: "#9b59b6"
+            line_width: 2
+            hour24: true
+            decimals: 2
+            show:
+              labels: true
+              points: true
+              legend: false
+            
+          - type: custom:mini-graph-card
+            name: Electrical Conductivity
+            entities:
+              - entity: sensor.water_quality_monitor_electrical_conductivity
+                name: EC
+            hours_to_show: 24
+            points_per_hour: 2
+            line_color: "#2ecc71"
+            line_width: 2
+            hour24: true
+            decimals: 2
+            show:
+              labels: true
+              points: true
+              legend: false
+
+      - type: entities
+        title: Controls
+        show_header_toggle: false
+        entities:
+          - entity: input_number.hydroponics_fertigation_interval_hours
+            name: Fertigation Interval
+          - entity: input_number.hydroponics_feed_pump_duration
+            name: Feed Pump Duration
+          - entity: input_select.hydroponics_waste_pump_schedule
+            name: Waste Pump Schedule
+          - entity: input_select.hydroponics_alert_level
+            name: Alert Level
+          - type: divider
+          - type: button
+            name: Run Fertigation Cycle
+            icon: mdi:water-pump
+            tap_action:
+              action: call-service
+              service: script.fertigation_cycle
+              service_data:
+                duration: >-
+                  {{ states('input_number.hydroponics_feed_pump_duration') | int }}
+                force: true
+          - type: button
+            name: Generate System Report
+            icon: mdi:file-document-outline
+            tap_action:
+              action: call-service
+              service: script.generate_hydro_report
+
+  - title: History
+    path: hydroponics-history
+    icon: mdi:chart-timeline
+    cards:
+      - type: history-graph
+        title: Water Level History
+        entities:
+          - entity: sensor.wroommicrousb_water_level
+            name: Water Level (cm)
+        hours_to_show: 48
+        refresh_interval: 0
+      
+      - type: history-graph
+        title: Temperature History
+        entities:
+          - entity: sensor.wroommicrousb_reservoir_water_temp
+            name: Water Temperature (°C)
+        hours_to_show: 48
+        refresh_interval: 0
+      
+      - type: history-graph
+        title: Water Quality History
+        entities:
+          - entity: sensor.water_quality_monitor_ph
+            name: pH Level
+          - entity: sensor.water_quality_monitor_electrical_conductivity
+            name: EC Level
+        hours_to_show: 48
+        refresh_interval: 0
+      
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Weekly Water Parameter Trends
+          show_states: true
+          colorize_states: true
+        graph_span: 7d
+        span:
+          start: day
+          offset: '-7d'
+        apex_config:
+          chart:
+            height: 300
+        series:
+          - entity: sensor.wroommicrousb_water_level
+            name: Water Level
+            type: line
+            stroke_width: 2
+          - entity: sensor.wroommicrousb_reservoir_water_temp
+            name: Water Temperature
+            type: line
+            stroke_width: 2
+            color: red
+            group_by:
+              func: avg
+              duration: 1h
+          - entity: sensor.water_quality_monitor_ph
+            name: pH Level
+            type: line
+            stroke_width: 2
+            color: purple
+            group_by:
+              func: avg
+              duration: 1h
+          - entity: sensor.water_quality_monitor_electrical_conductivity
+            name: EC Level
+            type: line
+            stroke_width: 2
+            color: green
+            group_by:
+              func: avg
+              duration: 1h

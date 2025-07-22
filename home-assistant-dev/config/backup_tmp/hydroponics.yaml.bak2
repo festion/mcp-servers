@@ -1,0 +1,144 @@
+hydroponics_management:
+  id: hydroponics_management
+  alias: Hydroponics Management System
+  description: Simplified management system for hydroponics with modular design for easy troubleshooting
+  mode: queued  # Queue actions for reliability
+  
+  # Triggers for all system events
+  trigger:
+    # Scheduled fertigations based on interval
+    - platform: time_pattern
+      hours: "/{{ states('input_number.hydroponics_fertigation_interval_hours') | int }}"
+      id: scheduled_fertigation
+    
+    # Waste pump schedule (morning on)  
+    - platform: time
+      at: "06:00:00"
+      id: waste_pump_on
+    
+    # Waste pump schedule (evening off)
+    - platform: time
+      at: "21:00:00"
+      id: waste_pump_off
+    
+    # Low water level detection
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_current_volume
+      below: 5
+      for:
+        minutes: 5
+      id: low_water
+    
+    # Temperature monitoring
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      above: 30
+      id: high_temp
+    
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      below: 5
+      id: low_temp
+      
+  # Actions for various triggers
+  action:
+    # Choose the appropriate action based on trigger
+    - choose:
+        # Scheduled fertigation
+        - conditions:
+            - condition: trigger
+              id: scheduled_fertigation
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.hydroponics_fertigation_pump
+            - delay:
+                minutes: "{{ states('input_number.hydroponics_fertigation_duration_min') | int }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.hydroponics_fertigation_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_time
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Scheduled fertigation completed at {{ now().strftime('%H:%M') }}"
+                title: "Hydroponics System"
+        
+        # Waste pump on schedule
+        - conditions: 
+            - condition: trigger
+              id: waste_pump_on
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.hydroponics_waste_pump
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Waste pump turned on for scheduled circulation"
+                title: "Hydroponics System"
+        
+        # Waste pump off schedule
+        - conditions:
+            - condition: trigger
+              id: waste_pump_off
+          sequence:
+            - service: switch.turn_off
+              target:
+                entity_id: switch.hydroponics_waste_pump
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Waste pump turned off for scheduled rest period"
+                title: "Hydroponics System"
+        
+        # Low water level alert
+        - conditions:
+            - condition: trigger
+              id: low_water
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water level is critically low ({{ states('sensor.wroommicrousb_reservoir_current_volume') }}%)! Add water immediately."
+                title: "Hydroponics Low Water Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_low_water
+            - service: switch.turn_off
+              target:
+                entity_id: switch.hydroponics_fertigation_pump
+            - service: persistent_notification.create
+              data:
+                title: "Hydroponics System Alert"
+                message: "Low water level detected at {{ now().strftime('%Y-%m-%d %H:%M') }}. Fertigation pump disabled for safety."
+                notification_id: "hydro_low_water"
+                
+        # High temperature alert
+        - conditions:
+            - condition: trigger
+              id: high_temp
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water temperature is too high ({{ states('sensor.wroommicrousb_reservoir_water_temp') }}°C)! Check cooling system."
+                title: "Hydroponics High Temp Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_high_temp
+                
+        # Low temperature alert
+        - conditions:
+            - condition: trigger
+              id: low_temp
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water temperature is too low ({{ states('sensor.wroommicrousb_reservoir_water_temp') }}°C)! Check heating system."
+                title: "Hydroponics Low Temp Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_low_temp

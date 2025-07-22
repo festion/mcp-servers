@@ -1,0 +1,507 @@
+# CRITICAL TEMPLATE FIX - System Health Package (CONTINUED)
+# File: packages/system_health_FIXED.yaml
+# Date: June 2, 2025 
+# Purpose: Fix template sensor unit conflicts and timestamp errors
+
+# =============================================================================
+# TEMPLATE SENSORS FOR SYSTEM HEALTH (CRITICAL ERRORS FIXED)
+# =============================================================================
+
+template:
+  - sensor:
+      - name: "Appliance System Status"
+        unique_id: appliance_system_status
+        state: >
+          {% set alexa_available = states('media_player.everywhere') not in ['unavailable', 'unknown'] %}
+          {% set mobile_available = states('device_tracker.pixel_9_pro_xl') == 'home' %}
+          {% set dishwasher_sensor = states('sensor.dishwasher_electric_consumption_w') not in ['unavailable', 'unknown'] %}
+          {% set washer_sensor = states('sensor.washing_machine_electric_consumption_w') not in ['unavailable', 'unknown'] %}
+          
+          {% if alexa_available and mobile_available and dishwasher_sensor and washer_sensor %}
+            System Ready
+          {% elif alexa_available and (dishwasher_sensor or washer_sensor) %}
+            Alexa Available
+          {% elif mobile_available and (dishwasher_sensor or washer_sensor) %}
+            Mobile Only
+          {% elif dishwasher_sensor or washer_sensor %}
+            Sensors Only
+          {% else %}
+            System Down
+          {% endif %}
+        icon: >
+          {% set status = this.state %}
+          {% if status == 'System Ready' %}
+            mdi:check-circle
+          {% elif status in ['Alexa Available', 'Mobile Only', 'Sensors Only'] %}
+            mdi:alert-circle
+          {% else %}
+            mdi:alert-octagon
+          {% endif %}
+        attributes:
+          alexa_status: "{{ states('media_player.everywhere') }}"
+          mobile_status: "{{ states('device_tracker.pixel_9_pro_xl') }}"
+          dishwasher_sensor: "{{ states('sensor.dishwasher_electric_consumption_w') }}"
+          washer_sensor: "{{ states('sensor.washing_machine_electric_consumption_w') }}"
+          last_updated: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+      # CRITICAL FIX: Text-based status sensor (NO UNIT)
+      - name: "Integration Health Status"
+        unique_id: integration_health_status_fixed
+        state: >
+          {% set unavailable_count = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+          {% set unknown_count = states | selectattr('state', 'eq', 'unknown') | list | count %}
+          {% set total_issues = unavailable_count + unknown_count %}
+          
+          {% if total_issues == 0 %}
+            Excellent
+          {% elif total_issues <= 10 %}
+            Good
+          {% elif total_issues <= 30 %}
+            Fair
+          {% elif total_issues <= 60 %}
+            Poor
+          {% else %}
+            Critical
+          {% endif %}
+        # REMOVED: unit_of_measurement (this was causing the critical error)
+        icon: >
+          {% set status = this.state %}
+          {% if status == 'Excellent' %}
+            mdi:check-circle
+          {% elif status in ['Good', 'Fair'] %}
+            mdi:alert-circle
+          {% else %}
+            mdi:alert-octagon
+          {% endif %}
+        attributes:
+          unavailable_entities: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+          unknown_entities: "{{ states | selectattr('state', 'eq', 'unknown') | list | count }}"
+          total_entities: "{{ states | list | count }}"
+          health_percentage: >
+            {% set total = states | list | count %}
+            {% set issues = (states | selectattr('state', 'eq', 'unavailable') | list | count) + (states | selectattr('state', 'eq', 'unknown') | list | count) %}
+            {% if total > 0 %}
+              {{ ((total - issues) / total * 100) | round(1) }}
+            {% else %}
+              100
+            {% endif %}
+
+      # CRITICAL FIX: Separate numeric sensor for automation triggers
+      - name: "Integration Health Percentage"
+        unique_id: integration_health_percentage_fixed
+        state: >
+          {% set total = states | list | count %}
+          {% set issues = (states | selectattr('state', 'eq', 'unavailable') | list | count) + (states | selectattr('state', 'eq', 'unknown') | list | count) %}
+          {% if total > 0 %}
+            {{ ((total - issues) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: "mdi:chart-line"
+        attributes:
+          unavailable_count: "{{ states | selectattr('state', 'eq', 'unavailable') | list | count }}"
+          unknown_count: "{{ states | selectattr('state', 'eq', 'unknown') | list | count }}"
+          total_entities: "{{ states | list | count }}"
+
+      # CRITICAL FIX: Alexa health as numeric percentage only
+      - name: "Alexa Integration Health Percentage"
+        unique_id: alexa_integration_health_percentage_fixed
+        state: >
+          {% set alexa_entities = states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health') | list %}
+          {% set total = alexa_entities | length %}
+          {% set unavailable = alexa_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: "mdi:amazon-alexa"
+        attributes:
+          total_alexa_entities: >
+            {{ states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health') | list | length }}
+          unavailable_alexa_entities: >
+            {{ states | selectattr('entity_id', 'search', 'alexa') | rejectattr('entity_id', 'search', 'health') | selectattr('state', 'eq', 'unavailable') | list | length }}
+          media_player_status: "{{ states('media_player.everywhere') }}"
+
+      # CRITICAL FIX: Mobile health as numeric percentage only  
+      - name: "Mobile App Integration Health Percentage"
+        unique_id: mobile_app_integration_health_percentage_fixed
+        state: >
+          {% set mobile_entities = states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health') | list %}
+          {% set total = mobile_entities | length %}
+          {% set unavailable = mobile_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: "mdi:cellphone"
+        attributes:
+          total_mobile_entities: >
+            {{ states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health') | list | length }}
+          unavailable_mobile_entities: >
+            {{ states | selectattr('entity_id', 'search', 'mobile_app|pixel_9') | rejectattr('entity_id', 'search', 'health') | selectattr('state', 'eq', 'unavailable') | list | length }}
+          device_tracker_status: "{{ states('device_tracker.pixel_9_pro_xl') }}"
+
+      # CRITICAL FIX: Switch health as numeric percentage only
+      - name: "Switch Integration Health Percentage"  
+        unique_id: switch_integration_health_percentage_fixed
+        state: >
+          {% set switch_entities = states.switch | rejectattr('entity_id', 'search', 'health') | list %}
+          {% set total = switch_entities | length %}
+          {% set unavailable = switch_entities | selectattr('state', 'eq', 'unavailable') | list | length %}
+          {% if total > 0 %}
+            {{ ((total - unavailable) / total * 100) | round(1) }}
+          {% else %}
+            100
+          {% endif %}
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: "mdi:toggle-switch"
+        attributes:
+          total_switches: "{{ states.switch | list | length }}"
+          unavailable_switches: "{{ states.switch | selectattr('state', 'eq', 'unavailable') | list | length }}"
+          online_switches: "{{ states.switch | selectattr('state', 'in', ['on', 'off']) | list | length }}"
+
+      - name: "Quiet Hours Active"
+        unique_id: quiet_hours_active
+        state: >
+          {% if states('input_boolean.appliance_quiet_hours_enabled') == 'on' %}
+            {% set start_time = states('input_datetime.appliance_quiet_start') %}
+            {% set end_time = states('input_datetime.appliance_quiet_end') %}
+            {% set current_time = now().strftime('%H:%M:%S') %}
+            
+            {% if start_time and end_time and start_time != 'unknown' and end_time != 'unknown' %}
+              {% if start_time > end_time %}
+                {% if current_time >= start_time or current_time <= end_time %}
+                  Active
+                {% else %}
+                  Inactive
+                {% endif %}
+              {% else %}
+                {% if current_time >= start_time and current_time <= end_time %}
+                  Active
+                {% else %}
+                  Inactive
+                {% endif %}
+              {% endif %}
+            {% else %}
+              Error
+            {% endif %}
+          {% else %}
+            Disabled
+          {% endif %}
+        attributes:
+          quiet_start: "{{ states('input_datetime.appliance_quiet_start') }}"
+          quiet_end: "{{ states('input_datetime.appliance_quiet_end') }}"
+          enabled: "{{ states('input_boolean.appliance_quiet_hours_enabled') }}"
+
+      # CRITICAL FIX: Fixed timestamp template logic
+      - name: "Next Maintenance Due"
+        unique_id: next_maintenance_due_fixed
+        state: >
+          {% set last_maintenance = state_attr('automation.appliance_monthly_maintenance_reminder', 'last_triggered') %}
+          {% if last_maintenance %}
+            {{ (as_timestamp(last_maintenance) + (30 * 24 * 3600)) | timestamp_custom('%Y-%m-%d') }}
+          {% else %}
+            {{ (now().timestamp() + (30 * 24 * 3600)) | timestamp_custom('%Y-%m-%d') }}
+          {% endif %}
+        icon: "mdi:calendar-clock"
+        attributes:
+          last_maintenance: "{{ state_attr('automation.appliance_monthly_maintenance_reminder', 'last_triggered') }}"
+          days_until_due: >
+            {% set last_maintenance = state_attr('automation.appliance_monthly_maintenance_reminder', 'last_triggered') %}
+            {% if last_maintenance %}
+              {% set next_timestamp = as_timestamp(last_maintenance) + (30 * 24 * 3600) %}
+              {% set days = ((next_timestamp - now().timestamp()) / 86400) | int %}
+              {{ days if days > 0 else 0 }}
+            {% else %}
+              30
+            {% endif %}
+
+      # CRITICAL FIX: Failed automations as proper numeric sensor
+      - name: "Failed Automations Count"
+        unique_id: failed_automations_count_fixed
+        state: >
+          {{ states.automation | selectattr('state', 'eq', 'unavailable') | list | count }}
+        unit_of_measurement: "automations"
+        state_class: measurement
+        icon: "mdi:robot-confused"
+        attributes:
+          total_automations: "{{ states.automation | list | count }}"
+          working_automations: "{{ states.automation | selectattr('state', 'eq', 'on') | list | count }}"
+          disabled_automations: "{{ states.automation | selectattr('state', 'eq', 'off') | list | count }}"
+          unavailable_automations: "{{ states.automation | selectattr('state', 'eq', 'unavailable') | list | count }}"
+
+      # Simple unavailable entities counter
+      - name: "Unavailable Entities Count"
+        unique_id: unavailable_entities_count_fixed  
+        state: >
+          {{ states | selectattr('state', 'eq', 'unavailable') | list | count }}
+        unit_of_measurement: "entities"
+        state_class: measurement
+        icon: "mdi:alert-circle"
+        attributes:
+          total_entities: "{{ states | list | count }}"
+          percentage: >
+            {% set total = states | list | count %}
+            {% set unavailable = states | selectattr('state', 'eq', 'unavailable') | list | count %}
+            {% if total > 0 %}
+              {{ (unavailable / total * 100) | round(2) }}
+            {% else %}
+              0
+            {% endif %}
+
+  - binary_sensor:
+      - name: "System Health OK"
+        unique_id: system_health_ok_fixed
+        state: >
+          {% set appliance_status = states('sensor.appliance_system_status') %}
+          {% set integration_health = states('sensor.integration_health_status_fixed') %}
+          {% set unavailable_count = states('sensor.unavailable_entities_count_fixed') | default(0) | int(0) %}
+          
+          {{ appliance_status in ['System Ready', 'Alexa Available', 'Mobile Only'] and 
+             integration_health in ['Excellent', 'Good', 'Fair'] and 
+             unavailable_count < 100 }}
+        device_class: connectivity
+        icon: >
+          {% if this.state %}
+            mdi:check-circle
+          {% else %}
+            mdi:alert-circle
+          {% endif %}
+        attributes:
+          appliance_status: "{{ states('sensor.appliance_system_status') }}"
+          integration_health: "{{ states('sensor.integration_health_status_fixed') }}"
+          unavailable_entities: "{{ states('sensor.unavailable_entities_count_fixed') | default(0) | int(0) }}"
+
+      - name: "Appliance Notifications Healthy"
+        unique_id: appliance_notifications_healthy_fixed
+        state: >
+          {% set alexa_ok = states('media_player.everywhere') not in ['unavailable', 'unknown'] %}
+          {% set mobile_ok = states('device_tracker.pixel_9_pro_xl') in ['home', 'not_home'] %}
+          {% set sensors_ok = states('sensor.dishwasher_electric_consumption_w') not in ['unavailable', 'unknown'] %}
+          
+          {{ alexa_ok or (mobile_ok and sensors_ok) }}
+        device_class: connectivity
+        icon: >
+          {% if this.state %}
+            mdi:bell-check
+          {% else %}
+            mdi:bell-off
+          {% endif %}
+        attributes:
+          alexa_available: "{{ states('media_player.everywhere') not in ['unavailable', 'unknown'] }}"
+          mobile_available: "{{ states('device_tracker.pixel_9_pro_xl') in ['home', 'not_home'] }}"
+          sensors_available: "{{ states('sensor.dishwasher_electric_consumption_w') not in ['unavailable', 'unknown'] }}"
+
+      - name: "Critical Integration Failures"
+        unique_id: critical_integration_failures_fixed
+        state: >
+          {% set critical_entities = [
+            'media_player.everywhere',
+            'device_tracker.pixel_9_pro_xl',
+            'sensor.dishwasher_electric_consumption_w',
+            'sensor.washing_machine_electric_consumption_w'
+          ] %}
+          {% set failed_count = 0 %}
+          {% for entity in critical_entities %}
+            {% if states(entity) == 'unavailable' %}
+              {% set failed_count = failed_count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ failed_count > 2 }}
+        device_class: problem
+        icon: >
+          {% if this.state %}
+            mdi:alert-octagon
+          {% else %}
+            mdi:check-circle
+          {% endif %}
+        attributes:
+          failed_entities: >
+            {% set critical_entities = [
+              'media_player.everywhere',
+              'device_tracker.pixel_9_pro_xl', 
+              'sensor.dishwasher_electric_consumption_w',
+              'sensor.washing_machine_electric_consumption_w'
+            ] %}
+            {% set failed_list = [] %}
+            {% for entity in critical_entities %}
+              {% if states(entity) == 'unavailable' %}
+                {% set failed_list = failed_list + [entity] %}
+              {% endif %}
+            {% endfor %}
+            {{ failed_list }}
+          total_critical: 4
+          failed_count: >
+            {% set critical_entities = [
+              'media_player.everywhere',
+              'device_tracker.pixel_9_pro_xl', 
+              'sensor.dishwasher_electric_consumption_w',
+              'sensor.washing_machine_electric_consumption_w'
+            ] %}
+            {% set failed_count = 0 %}
+            {% for entity in critical_entities %}
+              {% if states(entity) == 'unavailable' %}
+                {% set failed_count = failed_count + 1 %}
+              {% endif %}
+            {% endfor %}
+            {{ failed_count }}
+
+# =============================================================================
+# AUTOMATION HEALTH MONITORING (FIXED TO USE NUMERIC SENSORS)
+# =============================================================================
+
+automation:
+  - id: system_health_status_reporter_fixed
+    alias: "System Health - Status Reporter (Fixed)"
+    description: "Report system health status every hour using fixed sensors"
+    trigger:
+      - platform: time_pattern
+        minutes: 0
+    condition:
+      - condition: time
+        after: "08:00:00"
+        before: "22:00:00"
+    action:
+      - service: logbook.log
+        data:
+          name: "System Health Report"
+          message: >
+            System Status: {{ states('sensor.appliance_system_status') | default('Unknown') }}
+            Integration Health: {{ states('sensor.integration_health_status_fixed') | default('Unknown') }}
+            Health %: {{ states('sensor.integration_health_percentage_fixed') | default('Unknown') }}%
+            Unavailable: {{ states('sensor.unavailable_entities_count_fixed') | default('Unknown') }}
+            Alexa: {{ states('media_player.everywhere') | default('Unknown') }}
+
+  # CRITICAL FIX: Use numeric sensor for automation triggers
+  - id: health_monitor_critical_integration_health_drop_fixed
+    alias: "Health Monitor - Critical Integration Health Drop (Fixed)"
+    description: "Monitor for significant drops in integration health using numeric sensor"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.integration_health_percentage_fixed
+        below: 70
+        for:
+          minutes: 5
+    condition:
+      - condition: time
+        after: "08:00:00"
+        before: "22:00:00"
+    action:
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "⚠️ Integration Health Drop"
+          message: >
+            System health dropped to {{ states('sensor.integration_health_percentage_fixed') }}%.
+            Check {{ states('sensor.unavailable_entities_count_fixed') }} unavailable entities.
+          data:
+            priority: high
+
+  # CRITICAL FIX: Use numeric sensor for Alexa health
+  - id: health_monitor_alexa_integration_health_drop_fixed
+    alias: "Health Monitor - Alexa Integration Health Drop (Fixed)"
+    description: "Monitor Alexa integration health using numeric sensor"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.alexa_integration_health_percentage_fixed
+        below: 80
+        for:
+          minutes: 3
+    action:
+      - service: logbook.log
+        data:
+          name: "Alexa Health Alert"
+          message: >
+            Alexa integration health dropped to {{ states('sensor.alexa_integration_health_percentage_fixed') }}%
+
+  # CRITICAL FIX: Use numeric sensor for Mobile health
+  - id: health_monitor_mobile_app_integration_health_drop_fixed
+    alias: "Health Monitor - Mobile App Integration Health Drop (Fixed)"
+    description: "Monitor mobile app integration health using numeric sensor"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.mobile_app_integration_health_percentage_fixed
+        below: 70
+        for:
+          minutes: 5
+    action:
+      - service: logbook.log
+        data:
+          name: "Mobile App Health Alert"
+          message: >
+            Mobile app integration health dropped to {{ states('sensor.mobile_app_integration_health_percentage_fixed') }}%
+
+  - id: critical_system_failure_alert_fixed
+    alias: "System Health - Critical Failure Alert (Fixed)"
+    description: "Alert when critical systems fail"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.critical_integration_failures_fixed
+        to: 'on'
+        for:
+          minutes: 5
+    action:
+      # Emergency notification - bypasses quiet hours
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          title: "🚨 CRITICAL SYSTEM FAILURE"
+          message: >
+            Multiple critical integrations have failed.
+            Check Settings > Devices & Services immediately.
+          data:
+            priority: high
+            importance: max
+      
+      - service: logbook.log
+        data:
+          name: "CRITICAL FAILURE"
+          message: "Critical integration failures detected"
+
+  - id: notification_system_recovery_monitor_fixed
+    alias: "System Health - Notification Recovery Monitor (Fixed)"
+    description: "Monitor and attempt recovery of notification system"
+    trigger:
+      - platform: state
+        entity_id: sensor.appliance_system_status
+        to: 'System Down'
+        for:
+          minutes: 10
+    action:
+      # Attempt to reload Alexa Media integration
+      - service: homeassistant.reload_config_entry
+        continue_on_error: true
+        target:
+          entity_id: media_player.everywhere
+      
+      - delay:
+          seconds: 30
+      
+      # Log recovery attempt
+      - service: logbook.log
+        data:
+          name: "System Recovery"
+          message: "Attempted recovery of notification system"
+
+# =============================================================================
+# INPUT HELPERS FOR SYSTEM HEALTH
+# =============================================================================
+
+input_boolean:
+  system_recovery_in_progress:
+    name: "System Recovery In Progress"
+    icon: mdi:reload
+    initial: false
+
+input_text:
+  system_health_log:
+    name: "System Health Log"
+    max: 1000
+    initial: "System health monitoring initialized"

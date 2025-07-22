@@ -1,0 +1,137 @@
+# =============================================================================
+# EXISTING ENTITIES (PRESERVED)
+# =============================================================================
+
+# Hydroponics System Helpers
+hydroponics_waste_pump_schedule:
+  name: Waste Pump Schedule
+  options:
+    - "Off"
+    - "6AM-9PM"
+    - "Always On"
+    - "Custom"
+  initial: "6AM-9PM"
+  icon: mdi:water-pump
+
+hydroponics_alert_level:
+  name: Hydroponics Alert Level
+  options:
+    - "Critical Only" 
+    - "Standard"
+    - "Verbose"
+  initial: "Standard"
+  icon: mdi:alert-circle-outline
+
+# Z-Wave Switch LED Control
+zwave_switches_led_night_mode:
+  name: Z-Wave Switch LED Night Mode
+  options:
+    - "All LEDs On"
+    - "Selected Off"
+    - "All LEDs Off"
+  initial: "All LEDs On"
+  icon: mdi:led-off
+  
+#Appliance Dash Helpers
+appliance_announcement_volume:
+  name: "Announcement Volume Level"
+  options:
+    - "Low"
+    - "Medium"
+    - "High"
+  initial: "Medium"
+  icon: mdi:volume-high
+
+appliance_notification_priority:
+  name: "Notification Priority"
+  options:
+    - "Essential Only"
+    - "Standard"
+    - "All Notifications"
+  initial: "Standard"
+  icon: mdi:priority-high
+
+# =============================================================================
+# ADAPTIVE LIGHTING SYSTEM - CONFIGURATION OPTIONS
+# =============================================================================
+
+adaptive_lighting_override_reset_time:
+  name: "Override Reset Time"
+  options:
+    - "00:00"
+    - "06:00"
+    - "sunset"
+    - "manual"
+  initial: "06:00"
+  icon: mdi:clock-time-six
+
+adaptive_lighting_operation_mode:
+  name: "Operation Mode"
+  options:
+    - "Full Synchronization"
+    - "Zone Independent"
+    - "Color Only"
+    - "Brightness Only"
+    - "Maintenance Mode"
+  initial: "Full Synchronization"
+  icon: mdi:brightness-auto
+
+# =============================================================================
+# 🎯 SMART RE-SYNC SYSTEM CONFIGURATION - PHASE 3+ ENHANCEMENT
+# =============================================================================
+#
+# Strategy and aggressiveness configuration for intelligent re-sync system
+# with user-selectable approach to bringing opted-out lights back into sync.
+#
+# Added: June 17, 2025
+# Version: Individual Control + Smart Re-Sync Implementation
+# =============================================================================
+
+adaptive_lighting_resync_strategy:
+  name: "🎯 Re-sync Strategy"
+  options:
+    - "Gentle Periodic (Recommended)"
+    - "Activity-Based Only"
+    - "Daily Reset Only"
+    - "Disabled"
+  initial: "Gentle Periodic (Recommended)"
+  icon: mdi:strategy
+
+adaptive_lighting_resync_aggressiveness:
+  name: "⚡ Re-sync Aggressiveness"
+  options:
+    - "Very Conservative (6h+ wait)"
+    - "Conservative (3h+ wait)"
+    - "Balanced (2h+ wait)"
+    - "Responsive (1h+ wait)"
+    - "Aggressive (30min+ wait)"
+  initial: "Balanced (2h+ wait)"
+  icon: mdi:speedometer
+
+# =============================================================================
+# ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER INPUT SELECTS
+# =============================================================================
+
+# Master Override Mode
+adaptive_lighting_override_mode:
+  name: "Override Mode"
+  options:
+    - "Adaptive"
+    - "Manual Override"
+    - "Temporary (Auto-restore)"
+    - "Persistent"
+  initial: "Adaptive"
+  icon: mdi:tune-variant
+
+# Auto-restore Timer Presets
+adaptive_lighting_auto_restore:
+  name: "Auto-restore Timer"
+  options:
+    - "Disabled"
+    - "15 minutes"
+    - "1 hour"
+    - "3 hours"
+    - "Next Reset"
+    - "Custom"
+  initial: "1 hour"
+  icon: mdi:timer-outline

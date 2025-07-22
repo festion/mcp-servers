@@ -1,0 +1,14 @@
+# --- MQTT Configuration ---
+# MQTT Broker connection settings would go here if needed
+# discovery: true
+# discovery_prefix: homeassistant
+
+# MQTT sensors are defined under sensor integration
+
+sensor:  
+  name: "Curatron Humidity"
+  state_topic: "homeassistant/sensor/curatron/humidity"
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value_json.humidity | float | round(1) }}"

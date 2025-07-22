@@ -1,0 +1,24 @@
+# Test Appliance Notification Automation
+# This will test if notifications are working
+
+- alias: "Test Appliance Notification System"
+  description: "Test the appliance notification system"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      to: "on"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Appliance notification system test successful. The dishwasher cycle announcement system is now working."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Test notification - {{ now().strftime('%H:%M:%S') }}"
+    - delay: "00:00:02"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dishwasher_cycle_announced

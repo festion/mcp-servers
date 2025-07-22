@@ -1,0 +1,390 @@
+# =============================================================================
+# ADAPTIVE LIGHTING CONFIGURATION - PHASE 1 IMPLEMENTATION
+# Whole-Home Synchronized Adaptive Lighting with Manual Override Intelligence
+# =============================================================================
+# 
+# This configuration implements a comprehensive 14-zone adaptive lighting system
+# where all participating lights synchronize color temperature and brightness
+# throughout the day, with intelligent manual override detection and automatic
+# sync for new lights.
+#
+# Updated: June 14, 2025
+# Version: Phase 1 Foundation
+# =============================================================================
+
+# =============================================================================
+# PRIMARY COLOR-CAPABLE ZONES (High Priority)
+# =============================================================================
+
+# Zone 1: Living Room Main - Amico Recessed Lights 1-5
+- name: living_room_main
+  lights:
+    - light.livingroom_lights  # Group entity containing lights 1-5
+  min_brightness: 20
+  max_brightness: 100
+  min_color_temp: 2000  # Extended range for better circadian support
+  max_color_temp: 6500
+  sleep_brightness: 5   # Very dim for night lighting
+  sleep_color_temp: 2000
+  transition: 30        # Smooth transitions
+  initial_transition: 5
+  interval: 300         # 5-minute sync interval for master coordination
+  take_over_control: true
+  detect_non_ha_changes: false  # Managed by custom override detection
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 2: Kitchen Main - Amico Recessed Lights 6-11
+- name: kitchen_main
+  lights:
+    - light.kitchen_lights  # Group entity containing lights 6-11
+  min_brightness: 25    # Slightly brighter for work areas
+  max_brightness: 100
+  min_color_temp: 2000
+  max_color_temp: 6500
+  sleep_brightness: 10  # Kitchen may need slightly more night light
+  sleep_color_temp: 2000
+  transition: 30
+  initial_transition: 5
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 3: Kitchen Accent - LED Strips
+- name: kitchen_accent
+  lights:
+    - light.kitchen_led_strips
+  min_brightness: 20
+  max_brightness: 100
+  min_color_temp: 2000
+  max_color_temp: 6535  # LED strips have slightly higher max range
+  sleep_brightness: 5
+  sleep_color_temp: 2000
+  transition: 15        # Faster transitions for LED strips
+  initial_transition: 3
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 14: Accent Lighting - Bar Strip and Top Lights
+- name: accent_lighting
+  lights:
+    - light.bar_strip
+    - light.top_left
+    - light.top_right
+  min_brightness: 15    # Lower for accent lighting
+  max_brightness: 80    # Not as bright as main lighting
+  min_color_temp: 2000
+  max_color_temp: 6500
+  sleep_brightness: 3
+  sleep_color_temp: 2000
+  transition: 20
+  initial_transition: 3
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# =============================================================================
+# BEDROOM ZONES (Medium Priority)
+# =============================================================================
+
+# Zone 4: Master Bedroom
+- name: master_bedroom
+  lights:
+    - light.master_light
+    - light.master_lamp
+  min_brightness: 10    # Lower for bedroom environment
+  max_brightness: 80    # Not as bright as common areas
+  min_color_temp: 2000
+  max_color_temp: 5000  # Lower max for bedroom comfort
+  sleep_brightness: 3
+  sleep_color_temp: 2000
+  transition: 45        # Slower transitions for relaxation
+  initial_transition: 10
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:30:00"  # Later sunrise for bedrooms
+  sunset_time: "21:30:00"   # Earlier sunset for bedrooms
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 5: Guest Bedroom
+- name: guest_bedroom
+  lights:
+    - light.guest_light
+  min_brightness: 10
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5000
+  sleep_brightness: 3
+  sleep_color_temp: 2000
+  transition: 45
+  initial_transition: 10
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:30:00"
+  sunset_time: "21:30:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 6: Linda's Room
+- name: linda_room
+  lights:
+    - light.linda_light
+  min_brightness: 10
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5000
+  sleep_brightness: 3
+  sleep_color_temp: 2000
+  transition: 45
+  initial_transition: 10
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:30:00"
+  sunset_time: "21:30:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 7: Gavin's Room
+- name: gavin_room
+  lights:
+    - light.gavin_light
+  min_brightness: 10
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5000
+  sleep_brightness: 3
+  sleep_color_temp: 2000
+  transition: 45
+  initial_transition: 10
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:30:00"
+  sunset_time: "21:30:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# =============================================================================
+# COMMON AREA ZONES (Medium Priority)
+# =============================================================================
+
+# Zone 8: Dining Room
+- name: dining_room
+  lights:
+    - light.dining_light
+  min_brightness: 15
+  max_brightness: 90
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 5
+  sleep_color_temp: 2000
+  transition: 30
+  initial_transition: 5
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 9: Hallway
+- name: hallway
+  lights:
+    - light.hall_light
+  min_brightness: 15
+  max_brightness: 70    # Lower for pathway lighting
+  min_color_temp: 2000
+  max_color_temp: 4500  # Not as cool for transitional spaces
+  sleep_brightness: 5
+  sleep_color_temp: 2000
+  transition: 20
+  initial_transition: 3
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 10: Nook Area
+- name: nook_area
+  lights:
+    - light.nook_light
+  min_brightness: 15
+  max_brightness: 80
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 5
+  sleep_color_temp: 2000
+  transition: 30
+  initial_transition: 5
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# =============================================================================
+# UTILITY AND WORK ZONES (Lower Priority)
+# =============================================================================
+
+# Zone 11: Hobby Room
+- name: hobby_room
+  lights:
+    - light.hobby_light
+  min_brightness: 20
+  max_brightness: 100   # Full brightness for work areas
+  min_color_temp: 2000
+  max_color_temp: 6000  # Good range for detail work
+  sleep_brightness: 5
+  sleep_color_temp: 2000
+  transition: 20
+  initial_transition: 3
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# Zone 12: Pantry
+- name: pantry
+  lights:
+    - light.pantry_light
+  min_brightness: 20
+  max_brightness: 100   # Need good visibility for storage
+  min_color_temp: 2500  # Slightly warmer minimum for storage areas
+  max_color_temp: 5500
+  sleep_brightness: 10  # Pantry may be accessed at night
+  sleep_color_temp: 2000
+  transition: 15        # Quick transitions for utility areas
+  initial_transition: 2
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:00:00"
+  sunrise_offset: 0
+  sunset_offset: 0
+  only_once: false
+
+# =============================================================================
+# EXTERIOR ZONES (Lowest Priority)
+# =============================================================================
+
+# Zone 13: Exterior
+- name: exterior
+  lights:
+    - light.porch_light
+  min_brightness: 25    # Higher minimum for security
+  max_brightness: 100
+  min_color_temp: 2500  # Warmer for exterior comfort
+  max_color_temp: 4500  # Not too cool for outdoor areas
+  sleep_brightness: 15  # Security lighting at night
+  sleep_color_temp: 2500
+  transition: 60        # Slower transitions for exterior
+  initial_transition: 10
+  interval: 300
+  take_over_control: true
+  detect_non_ha_changes: false
+  prefer_rgb_color: false
+  separate_turn_on_commands: false
+  sunrise_time: "06:00:00"
+  sunset_time: "22:30:00"  # Later sunset for exterior security
+  sunrise_offset: -30      # Earlier activation for morning
+  sunset_offset: 30        # Later deactivation for evening
+  only_once: false
+
+# =============================================================================
+# NOTES AND DOCUMENTATION
+# =============================================================================
+#
+# Zone Configuration Summary:
+# - 14 total zones covering all participating lights
+# - Color-capable lights: Zones 1-3, 14 (primary targets)
+# - Brightness-only lights: Zones 4-13 (secondary targets)
+# - 5-minute interval synchronization for master coordination
+# - Custom brightness and color temperature ranges per zone type
+# - Sleep mode settings optimized per area function
+# - Transition speeds optimized per zone requirements
+#
+# Excluded Lights (Not Adaptive):
+# - light.water_quality_monitor_backlight (system indicator)
+# - light.smart_garage_door_2202145092509936103148e1e989a111_dnd (device status)
+#
+# Integration with Master Controller:
+# - All zones use 5-minute intervals for coordination
+# - Override detection handled by separate automation system
+# - Manual sync managed through input_boolean helpers
+# - Zone-specific brightness scaling through input_number helpers
+#
+# Next Phase Implementation:
+# - Master Coordinator automation (synchronization logic)
+# - Override Detection automation (manual change monitoring)  
+# - Auto-Sync automation (new light participation)
+# - Daily Reset automation (override cleanup)
+# - Dashboard controls and status display
+#
+# =============================================================================

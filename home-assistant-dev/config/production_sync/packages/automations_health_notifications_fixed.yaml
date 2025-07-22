@@ -1,0 +1,281 @@
+# ===============================================================================
+# HEALTH NOTIFICATIONS - SPAM REDUCTION FIX
+# Date: June 16, 2025
+# Issue: Too many critical health notifications triggering on every sensor update
+# Solution: Add debouncing, cooldown periods, and smarter conditions
+# ===============================================================================
+
+# ===============================================================================
+# ENHANCED HEALTH MONITORING (REDUCED FREQUENCY)
+# ===============================================================================
+
+- alias: "Maintenance - Enhanced Health Monitoring (Reduced Frequency)"
+  description: "Enhanced system health monitoring with reduced update frequency"
+  trigger:
+    - platform: time_pattern
+      minutes: "/30"  # Changed from 15 to 30 minutes - half the frequency
+  action:
+    - service: homeassistant.update_entity
+      target:
+        entity_id:
+          - sensor.duplicate_entities_scanner
+          - sensor.system_maintenance_status_enhanced
+          - binary_sensor.duplicate_cleanup_required
+          - sensor.integration_health_status
+          - sensor.unavailable_entities
+
+# ===============================================================================
+# CRITICAL SYSTEM STATUS ALERT (WITH DEBOUNCING)
+# ===============================================================================
+
+- alias: "Maintenance - Critical System Status Alert (Debounced)"
+  description: "Alert for critical maintenance issues - with spam protection"
+  trigger:
+    - platform: state
+      entity_id: sensor.system_maintenance_status_enhanced
+      to: "critical"
+      for:
+        minutes: 10  # Must stay critical for 10 minutes before alerting
+  condition:
+    # Only alert during reasonable hours
+    - condition: time
+      after: "07:00:00"
+      before: "22:00:00"
+    # Don't alert if we've sent a critical alert in the last 4 hours
+    - condition: template
+      value_template: >
+        {% set last_alert = state_attr('automation.maintenance_critical_system_status_alert_debounced', 'last_triggered') %}
+        {% if last_alert %}
+          {% set hours_since = (as_timestamp(now()) - as_timestamp(last_alert)) / 3600 %}
+          {{ hours_since > 4 }}
+        {% else %}
+          true
+        {% endif %}
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "🚨 Critical System Maintenance Required"
+        message: >
+          System Status: {{ states('sensor.system_maintenance_status_enhanced') }}
+          Maintenance Score: {{ state_attr('sensor.system_maintenance_status_enhanced', 'maintenance_score') }}%
+          
+          Issues: {{ state_attr('sensor.system_maintenance_status_enhanced', 'issues_summary') }}
+          
+          Next maintenance window: {{ state_attr('sensor.system_maintenance_status_enhanced', 'next_maintenance') }}
+        data:
+          priority: high
+    # Log the alert for cooldown tracking
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.last_critical_alert
+      data:
+        value: "Critical alert sent at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+# ===============================================================================
+# DUPLICATE ENTITY ALERT (WITH THRESHOLD AND COOLDOWN)
+# ===============================================================================
+
+- alias: "Maintenance - Duplicate Entity Alert (Smart Threshold)"
+  description: "Alert when duplicate entities exceed threshold - with spam protection"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.duplicate_entities_scanner
+      above: 5  # Increased threshold from 2 to 5
+      for:
+        minutes: 15  # Must stay above threshold for 15 minutes
+  condition:
+    # Only alert once per day maximum
+    - condition: template
+      value_template: >
+        {% set last_alert = state_attr('automation.maintenance_duplicate_entity_alert_smart_threshold', 'last_triggered') %}
+        {% if last_alert %}
+          {% set hours_since = (as_timestamp(now()) - as_timestamp(last_alert)) / 3600 %}
+          {{ hours_since > 24 }}
+        {% else %}
+          true
+        {% endif %}
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "🔄 Duplicate Entities Need Attention"
+        message: >
+          Found {{ states('sensor.duplicate_entities_scanner') }} duplicate entity groups.
+          
+          Details: {{ state_attr('sensor.duplicate_entities_scanner', 'duplicate_list') }}
+          
+          Maintenance Score: {{ state_attr('sensor.system_maintenance_status_enhanced', 'maintenance_score') }}%
+          
+          Urgency: {{ state_attr('sensor.duplicate_entities_scanner', 'cleanup_urgency') }}
+          
+          Manual cleanup recommended: Go to Developer Tools > States and disable numbered duplicates.
+        notification_id: duplicate_alert
+
+# ===============================================================================
+# INTEGRATION HEALTH DROP (SMARTER THRESHOLDS)
+# ===============================================================================
+
+- alias: "Health Monitor - Critical Integration Health Drop (Smart)"
+  description: "Monitor for significant drops in integration health - with better logic"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.integration_health_percentage
+      below: 85  # Changed from 90 to 85 - less sensitive
+      for:
+        minutes: 10  # Must stay below threshold for 10 minutes
+  condition:
+    # Only alert during waking hours
+    - condition: time
+      after: "08:00:00"
+      before: "22:00:00"
+    # Only alert if we have a significant number of unavailable entities
+    - condition: numeric_state
+      entity_id: sensor.unavailable_entities
+      above: 15  # Only alert if more than 15 entities unavailable
+    # Don't spam - only alert every 6 hours
+    - condition: template
+      value_template: >
+        {% set last_alert = state_attr('automation.health_monitor_critical_integration_health_drop_smart', 'last_triggered') %}
+        {% if last_alert %}
+          {% set hours_since = (as_timestamp(now()) - as_timestamp(last_alert)) / 3600 %}
+          {{ hours_since > 6 }}
+        {% else %}
+          true
+        {% endif %}
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "⚠️ Integration Health Drop"
+        message: >
+          System health dropped to {{ states('sensor.integration_health_percentage') }}%.
+          {{ states('sensor.unavailable_entities') }} entities unavailable.
+          This alert will not repeat for 6 hours.
+        data:
+          priority: normal  # Changed from high to normal
+
+# ===============================================================================
+# CRITICAL SYSTEM FAILURE (ENHANCED CONDITIONS)
+# ===============================================================================
+
+- alias: "System Health - Critical Failure Alert (Enhanced)"
+  description: "Alert when critical systems fail - with better conditions"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.system_health_ok
+      to: 'off'
+      for:
+        minutes: 15  # Must stay critical for 15 minutes
+  condition:
+    # Only alert for truly severe issues
+    - condition: numeric_state
+      entity_id: sensor.integration_health_percentage
+      below: 75  # Only if health drops below 75%
+    - condition: numeric_state
+      entity_id: sensor.unavailable_entities
+      above: 25  # Only if more than 25 entities unavailable
+    # Don't spam - maximum once per 12 hours
+    - condition: template
+      value_template: >
+        {% set last_alert = state_attr('automation.system_health_critical_failure_alert_enhanced', 'last_triggered') %}
+        {% if last_alert %}
+          {% set hours_since = (as_timestamp(now()) - as_timestamp(last_alert)) / 3600 %}
+          {{ hours_since > 12 }}
+        {% else %}
+          true
+        {% endif %}
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "🚨 CRITICAL SYSTEM FAILURE"
+        message: >
+          Multiple critical integrations have failed.
+          Health: {{ states('sensor.integration_health_percentage') }}%
+          Unavailable: {{ states('sensor.unavailable_entities') }} entities
+          Check Settings > Devices & Services immediately.
+          Next alert in 12+ hours.
+        data:
+          priority: high
+          importance: max
+    
+    - service: logbook.log
+      data:
+        name: "CRITICAL FAILURE"
+        message: "Critical integration failures detected - alert sent"
+
+# ===============================================================================
+# NEW: HEALTH SUMMARY NOTIFICATION (DAILY)
+# ===============================================================================
+
+- alias: "Health Monitor - Daily Summary"
+  description: "Send a daily health summary instead of constant alerts"
+  trigger:
+    - platform: time
+      at: "09:00:00"  # Daily at 9 AM
+  condition:
+    # Only send if there are any issues worth mentioning
+    - condition: or
+      conditions:
+        - condition: numeric_state
+          entity_id: sensor.integration_health_percentage
+          below: 95
+        - condition: numeric_state
+          entity_id: sensor.unavailable_entities
+          above: 10
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "📊 Daily System Health Summary"
+        message: >
+          System Health: {{ states('sensor.integration_health_percentage') }}%
+          Status: {{ states('sensor.integration_health_status') }}
+          Unavailable Entities: {{ states('sensor.unavailable_entities') }}
+          Appliance System: {{ states('sensor.appliance_system_status') }}
+          
+          {% set unavailable_count = states('sensor.unavailable_entities') | int(0) %}
+          {% if unavailable_count > 20 %}
+          ⚠️ Consider reviewing unavailable entities in Developer Tools > States
+          {% elif unavailable_count > 10 %}
+          ℹ️ Some entities unavailable - normal for powered-off devices
+          {% else %}
+          ✅ System running well
+          {% endif %}
+        data:
+          priority: normal
+
+# ===============================================================================
+# NEW: HEALTH RECOVERY NOTIFICATION
+# ===============================================================================
+
+- alias: "Health Monitor - System Recovery Notification"
+  description: "Notify when system health improves after being critical"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.integration_health_percentage
+      above: 90
+      for:
+        minutes: 5
+  condition:
+    # Only notify if health was previously below 85%
+    - condition: template
+      value_template: >
+        {% set previous_state = trigger.from_state.state | float(100) %}
+        {{ previous_state < 85 }}
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "✅ System Health Recovered"
+        message: >
+          System health improved to {{ states('sensor.integration_health_percentage') }}%
+          Status: {{ states('sensor.integration_health_status') }}
+          Recovery complete.
+        data:
+          priority: normal
+
+# ===============================================================================
+# REQUIRED INPUT HELPERS FOR COOLDOWN TRACKING
+# ===============================================================================
+
+input_text:
+  last_critical_alert:
+    name: "Last Critical Alert Time"
+    max: 100
+    initial: "Never"

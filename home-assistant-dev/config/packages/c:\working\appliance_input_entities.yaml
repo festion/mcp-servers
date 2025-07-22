@@ -1,0 +1,18 @@
+# Input Boolean Entities for Appliance Notifications
+# These are required for the appliance notification system
+
+input_boolean:
+  washing_machine_cycle_announced:
+    name: "Washing Machine Cycle Announced"
+    icon: mdi:washing-machine
+    
+  dryer_cycle_announced:
+    name: "Dryer Cycle Announced"
+    icon: mdi:tumble-dryer
+
+# Input text for tracking last announcement
+input_text:
+  appliance_last_announcement:
+    name: "Last Announcement Made"
+    max: 100
+    initial: "System Ready"

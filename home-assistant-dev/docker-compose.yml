@@ -1,0 +1,81 @@
+services:
+  homeassistant-dev:
+    container_name: hass-dev
+    image: homeassistant/home-assistant:latest
+    restart: unless-stopped
+    
+    # Network configuration
+    ports:
+      - "8124:8123"  # Development port to avoid conflict with production
+    
+    # Volume mounts
+    volumes:
+      - ./config:/config
+      - ./data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro  # For Bluetooth access if needed
+    
+    # Environment variables
+    environment:
+      - TZ=America/New_York  # Adjust to your timezone
+      - PYTHONPATH=/usr/src/homeassistant
+    
+    # Device access (comment out if not needed in dev)
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0  # Z-Wave stick
+    #   - /dev/ttyACM0:/dev/ttyACM0  # Zigbee stick
+    
+    # Privileged mode for hardware access (comment out if not needed)
+    # privileged: true
+    
+    # Network mode for device discovery (use host network)
+    network_mode: bridge
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Labels for organization
+    labels:
+      - "traefik.enable=false"
+      - "com.docker.compose.project=hass-dev"
+      - "description=Home Assistant Development Environment"
+
+# Optional: Add a database service for development
+  # mariadb-dev:
+  #   container_name: hass-dev-db
+  #   image: mariadb:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: dev-root-password
+  #     MYSQL_DATABASE: homeassistant_dev
+  #     MYSQL_USER: hass_dev
+  #     MYSQL_PASSWORD: dev-hass-password
+  #   volumes:
+  #     - mariadb-dev-data:/var/lib/mysql
+  #   ports:
+  #     - "3307:3306"  # Non-standard port for dev
+
+# Optional: Development tools container
+  # dev-tools:
+  #   container_name: hass-dev-tools
+  #   image: python:3.11-slim
+  #   volumes:
+  #     - ./config:/workspace
+  #   working_dir: /workspace
+  #   command: tail -f /dev/null  # Keep container running
+  #   profiles:
+  #     - tools
+
+volumes:
+  mariadb-dev-data:
+    driver: local
+
+networks:
+  default:
+    name: hass-dev-network
+    driver: bridge

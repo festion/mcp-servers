@@ -1,0 +1,201 @@
+title: Smart Appliance Thresholds
+views:
+  - title: Main Controls
+    path: main
+    icon: mdi:washing-machine
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ## Smart Appliance Threshold Controls
+              
+              Control and monitor power thresholds for your smart appliances.
+              Adjust thresholds to improve cycle detection accuracy.
+          
+          - type: entities
+            title: Dishwasher Thresholds
+            icon: mdi:dishwasher
+            entities:
+              - entity: input_number.dishwasher_idle_threshold
+                name: Idle Power (W)
+              - entity: input_number.dishwasher_active_threshold
+                name: Active Power (W)
+              - entity: input_number.dishwasher_peak_threshold
+                name: Peak Power (W)
+          
+          - type: entities
+            title: Washing Machine Thresholds
+            icon: mdi:washing-machine
+            entities:
+              - entity: input_number.washing_machine_idle_threshold
+                name: Idle Power (W)
+              - entity: input_number.washing_machine_active_threshold
+                name: Active Power (W)
+              - entity: input_number.washing_machine_peak_threshold
+                name: Peak Power (W)
+
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: Notification Settings
+            icon: mdi:bell
+            entities:
+              - entity: input_number.appliance_reminder_interval
+                name: Reminder Interval (min)
+              - entity: input_boolean.appliance_quiet_hours_enabled
+                name: Quiet Hours Enabled
+              - entity: input_boolean.appliance_completion_reminders
+                name: Completion Reminders
+          
+          - type: entities
+            title: Validation Status
+            icon: mdi:check-circle
+            entities:
+              - entity: binary_sensor.smart_thresholds_configured
+                name: Thresholds Properly Configured
+              - entity: binary_sensor.dishwasher_cycle_active
+                name: Dishwasher Cycle Active
+              - entity: binary_sensor.washing_machine_cycle_active
+                name: Washing Machine Cycle Active
+
+  - title: Monitoring
+    path: monitoring
+    icon: mdi:chart-line
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ## Appliance Status Monitoring
+              
+              Monitor the current state and power usage of your appliances.
+          
+          - type: entities
+            title: Dishwasher Status
+            icon: mdi:dishwasher
+            entities:
+              - entity: sensor.dishwasher_electric_consumption_w
+                name: Current Power
+                icon: mdi:flash
+              - entity: sensor.dishwasher_cycle_phase
+                name: Cycle Phase
+                icon: mdi:washing-machine
+              - entity: input_boolean.dishwasher_cycle_announced
+                name: Cycle Announced
+              - entity: input_boolean.dishwasher_reminders_stopped
+                name: Reminders Stopped
+          
+          - type: entities
+            title: Washing Machine Status
+            icon: mdi:washing-machine
+            entities:
+              - entity: sensor.washing_machine_electric_consumption_w
+                name: Current Power
+                icon: mdi:flash
+              - entity: sensor.washing_machine_cycle_phase
+                name: Cycle Phase
+                icon: mdi:washing-machine
+              - entity: input_boolean.washing_machine_cycle_announced
+                name: Cycle Announced
+              - entity: input_boolean.washing_machine_reminders_stopped
+                name: Reminders Stopped
+
+      - type: vertical-stack
+        cards:
+          - type: history-graph
+            title: Dishwasher Power History
+            hours_to_show: 12
+            entities:
+              - entity: sensor.dishwasher_electric_consumption_w
+                name: Dishwasher Power
+          
+          - type: history-graph
+            title: Washing Machine Power History
+            hours_to_show: 12
+            entities:
+              - entity: sensor.washing_machine_electric_consumption_w
+                name: Washing Machine Power
+
+  - title: Advanced
+    path: advanced
+    icon: mdi:tune
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ## Advanced Configuration
+              
+              Future learning system controls and legacy threshold settings.
+          
+          - type: entities
+            title: Learning System Controls
+            icon: mdi:brain
+            entities:
+              - entity: input_number.appliance_learning_sensitivity
+                name: Learning Sensitivity
+              - entity: input_number.appliance_threshold_adjustment_rate
+                name: Adjustment Rate
+      
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: Manual Reset Controls
+            icon: mdi:refresh
+            entities:
+              - entity: input_button.stop_dishwasher_reminders
+                name: Stop Dishwasher Reminders
+              - entity: input_button.stop_washing_machine_reminders
+                name: Stop Washing Machine Reminders
+              - entity: input_button.stop_dryer_reminders
+                name: Stop Dryer Reminders
+          
+          - type: entities
+            title: Legacy Threshold Controls
+            icon: mdi:history
+            entities:
+              - entity: input_number.appliance_power_threshold_dishwasher
+                name: Dishwasher Power Threshold (Legacy)
+              - entity: input_number.appliance_power_threshold_washer
+                name: Washing Machine Power Threshold (Legacy)
+
+  - title: Help
+    path: help
+    icon: mdi:help-circle
+    cards:
+      - type: markdown
+        content: >
+          # Smart Appliance Threshold System
+          
+          ## How the System Works
+          
+          This multi-threshold detection system intelligently monitors your appliances using three power thresholds:
+          
+          - **Idle Threshold**: Power level when appliance is plugged in but not running (typically 5-10W)
+          - **Active Threshold**: Power level when appliance is starting or in low-power phase (typically 50-100W)
+          - **Peak Threshold**: Power level when appliance is in high-power phase (typically 150-400W)
+          
+          ## Adjusting Thresholds
+          
+          1. Monitor your appliance power levels during different phases of operation
+          2. Adjust thresholds to match the observed power usage patterns
+          3. Ensure thresholds follow the pattern: Idle < Active < Peak
+          4. Test the system by running an appliance cycle
+          
+          ## Troubleshooting
+          
+          - **False Positives**: If you get notifications when an appliance isn't running, increase the Active threshold
+          - **Missed Cycles**: If cycles aren't detected, decrease the Active threshold
+          - **Wrong Phase Detection**: Adjust the Peak threshold to better match your appliance's behavior
+          
+          ## Phase Detection
+          
+          - **Dishwasher**: idle → starting → washing → heating → idle
+          - **Washing Machine**: idle → filling → washing → spinning → idle
+      
+      - type: entities
+        title: System Status
+        entities:
+          - entity: binary_sensor.smart_thresholds_configured
+            name: Thresholds Properly Configured

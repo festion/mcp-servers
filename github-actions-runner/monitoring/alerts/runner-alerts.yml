@@ -1,0 +1,237 @@
+# GitHub Actions Runner Alert Rules
+# Comprehensive alerting for runner infrastructure
+
+groups:
+  - name: github_runner_critical
+    rules:
+      # Runner connection status
+      - alert: GitHubRunnerDisconnected
+        expr: github_runner_connection_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: runner
+        annotations:
+          summary: "GitHub Actions runner is disconnected"
+          description: "The GitHub Actions runner has lost connection to GitHub for more than 2 minutes. Jobs cannot be processed."
+          runbook_url: "https://docs.github.com/en/actions/hosting-your-own-runners/troubleshooting-self-hosted-runners"
+
+      # Container failures
+      - alert: GitHubRunnerContainerDown
+        expr: github_runner_container_status == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: container
+        annotations:
+          summary: "GitHub Actions runner container is down"
+          description: "Container {{ $labels.container }} is not running for more than 1 minute."
+          runbook_url: "https://docs.docker.com/engine/reference/commandline/logs/"
+
+      # System resource critical thresholds
+      - alert: GitHubRunnerHighCPUUsage
+        expr: github_runner_system_cpu_usage > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "GitHub Actions runner CPU usage is critically high"
+          description: "CPU usage is {{ $value }}% for more than 5 minutes."
+
+      - alert: GitHubRunnerHighMemoryUsage
+        expr: github_runner_system_memory_usage > 90
+        for: 3m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "GitHub Actions runner memory usage is critically high"
+          description: "Memory usage is {{ $value }}% for more than 3 minutes."
+
+      - alert: GitHubRunnerHighDiskUsage
+        expr: github_runner_system_disk_usage > 95
+        for: 1m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "GitHub Actions runner disk usage is critically high"
+          description: "Disk usage is {{ $value }}% for more than 1 minute. System may become unstable."
+
+      # Network connectivity
+      - alert: GitHubAPIUnreachable
+        expr: github_runner_github_api_status == 0
+        for: 3m
+        labels:
+          severity: critical
+          component: network
+        annotations:
+          summary: "GitHub API is unreachable"
+          description: "Cannot reach GitHub API for more than 3 minutes. Runner may not receive jobs."
+
+      # Job execution failures
+      - alert: GitHubRunnerHighJobFailureRate
+        expr: |
+          (
+            rate(github_runner_jobs_total{status="failed"}[10m]) /
+            rate(github_runner_jobs_total{status="completed"}[10m])
+          ) * 100 > 50
+        for: 5m
+        labels:
+          severity: critical
+          component: jobs
+        annotations:
+          summary: "High job failure rate detected"
+          description: "Job failure rate is {{ $value }}% over the last 10 minutes."
+
+  - name: github_runner_warning
+    rules:
+      # Resource usage warnings
+      - alert: GitHubRunnerModerateResourceUsage
+        expr: |
+          github_runner_system_cpu_usage > 70 or
+          github_runner_system_memory_usage > 75 or
+          github_runner_system_disk_usage > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "GitHub Actions runner resource usage is elevated"
+          description: "System resources are under moderate stress. CPU: {{ $value }}%"
+
+      # Container restart frequency
+      - alert: GitHubRunnerFrequentContainerRestarts
+        expr: increase(github_runner_container_restarts_total[1h]) > 3
+        for: 0m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Frequent container restarts detected"
+          description: "Container {{ $labels.container }} has restarted {{ $value }} times in the last hour."
+
+      # Job execution patterns
+      - alert: GitHubRunnerNoRecentJobActivity
+        expr: |
+          time() - github_runner_last_job_timestamp > 3600
+        for: 0m
+        labels:
+          severity: warning
+          component: jobs
+        annotations:
+          summary: "No recent job activity"
+          description: "No jobs have completed in the last hour. Runner may be idle or experiencing issues."
+
+      # Network connectivity degradation
+      - alert: GitHubRunnerPartialNetworkConnectivity
+        expr: github_runner_homelab_connectivity_ratio < 0.5
+        for: 5m
+        labels:
+          severity: warning
+          component: network
+        annotations:
+          summary: "Partial homelab network connectivity"
+          description: "Only {{ $value | humanizePercentage }} of homelab endpoints are reachable."
+
+      # Performance degradation
+      - alert: GitHubRunnerLowHealthScore
+        expr: github_runner:health_score < 70
+        for: 15m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "GitHub Actions runner health score is low"
+          description: "Overall health score is {{ $value }}%. System performance may be degraded."
+
+  - name: github_runner_info
+    rules:
+      # Deployment and maintenance notifications
+      - alert: GitHubRunnerContainerUpdated
+        expr: increase(github_runner_container_restarts_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+          component: maintenance
+        annotations:
+          summary: "Container restarted"
+          description: "Container {{ $labels.container }} was restarted."
+
+      # Capacity planning
+      - alert: GitHubRunnerHighJobThroughput
+        expr: rate(github_runner_jobs_total{status="completed"}[1h]) > 10
+        for: 30m
+        labels:
+          severity: info
+          component: capacity
+        annotations:
+          summary: "High job throughput detected"
+          description: "Processing {{ $value }} jobs per hour. Consider scaling if sustained."
+
+  - name: github_runner_sla
+    rules:
+      # SLA monitoring
+      - alert: GitHubRunnerSLAViolation
+        expr: |
+          (
+            github_runner:container_availability < 99.5 or
+            github_runner:job_success_rate < 95
+          )
+        for: 1h
+        labels:
+          severity: warning
+          component: sla
+        annotations:
+          summary: "SLA violation detected"
+          description: "System availability or job success rate below SLA thresholds."
+
+      # Long-term trend monitoring
+      - alert: GitHubRunnerDegradingPerformance
+        expr: |
+          (
+            avg_over_time(github_runner:health_score[24h]) -
+            avg_over_time(github_runner:health_score[7d])
+          ) < -10
+        for: 4h
+        labels:
+          severity: warning
+          component: trends
+        annotations:
+          summary: "Performance degradation trend detected"
+          description: "System health has degraded by more than 10 points compared to the 7-day average."
+
+  - name: github_runner_security
+    rules:
+      # Security monitoring
+      - alert: GitHubRunnerUnexpectedNetworkActivity
+        expr: increase(github_runner_network_errors_total[1h]) > 100
+        for: 0m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Unusual network error activity"
+          description: "High number of network errors detected: {{ $value }} in the last hour."
+
+      # Monitoring system health
+      - alert: GitHubRunnerMonitoringDown
+        expr: up{job="github-runner-custom"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: monitoring
+        annotations:
+          summary: "GitHub Actions runner monitoring is down"
+          description: "Cannot scrape metrics from the custom metrics collector."
+
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: monitoring
+        annotations:
+          summary: "Prometheus target is down"
+          description: "Target {{ $labels.job }} on {{ $labels.instance }} is down for more than 5 minutes."

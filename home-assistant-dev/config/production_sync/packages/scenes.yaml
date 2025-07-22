@@ -1,0 +1,29 @@
+# FIXED: Home Assistant Scenes - Added Missing welcome_home Scene
+# Date: June 3, 2025 - Resolves scene.welcome_home unavailable reference
+
+- id: '1736974728744'
+  name: lights_out
+  entities: {}
+  metadata: {}
+  icon: mdi:lightbulb
+
+# NEW: Missing welcome_home scene that was referenced by wifi_presence automation
+- id: 'welcome_home_scene_2025'
+  name: welcome_home
+  entities:
+    # Turn on key lights when arriving home
+    light.porch_light:
+      state: 'on'
+      brightness_pct: 80
+    light.hall_light:
+      state: 'on'
+      brightness_pct: 70
+    light.kitchen_lights:
+      state: 'on'
+      brightness_pct: 75
+    # Turn on walkway plug
+    switch.tp_link_smart_plug_5e5b_walkway:
+      state: 'on'
+  metadata:
+    description: "Welcome home scene - activates key lights and walkway when arriving"
+  icon: mdi:home-variant

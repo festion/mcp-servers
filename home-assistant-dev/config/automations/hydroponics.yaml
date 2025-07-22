@@ -1,0 +1,356 @@
+- id: hydroponics_management
+  alias: Hydroponics Management System
+  description: Simplified management system for hydroponics with modular design for easy troubleshooting
+  mode: queued  # Queue actions for reliability
+  
+  # Triggers for all system events
+  trigger:
+    # Morning fertigation at start of active period
+    - platform: time
+      at: "09:30:00"
+      id: morning_fertigation
+    
+    # 3-hour interval fertigations during active hours
+    - platform: time
+      at: "12:30:00"
+      id: midday_fertigation
+      
+    - platform: time
+      at: "15:30:00" 
+      id: afternoon_fertigation
+      
+    - platform: time
+      at: "18:30:00"
+      id: evening_fertigation
+      
+    - platform: time
+      at: "21:30:00"
+      id: final_fertigation
+    
+    # Waste pump schedule (morning on)  
+    - platform: time
+      at: "06:00:00"
+      id: waste_pump_on
+    
+    # Waste pump schedule (evening off)
+    - platform: time
+      at: "21:00:00"
+      id: waste_pump_off
+    
+    # Low water level detection
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_current_volume
+      below: 5
+      for:
+        minutes: 5
+      id: low_water
+    
+    # Temperature monitoring
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      above: 30
+      id: high_temp
+    
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      below: 5
+      id: low_temp
+      
+  # Critical safety conditions only - don't stop fertigation for non-critical sensor issues
+  condition:
+    # Only require pump availability - sensors can fail without stopping fertigation
+    - condition: template
+      value_template: >
+        {{ states('switch.tp_link_smart_plug_c82e_feed_pump') not in ['unavailable', 'unknown', ''] }}
+    # Water level safety check (allow fertigation if sensor unavailable but warn)
+    - condition: template
+      value_template: >
+        {% set volume = states('sensor.wroommicrousb_reservoir_current_volume') %}
+        {{ volume == 'unavailable' or volume == 'unknown' or volume == '' or (volume | float(100)) >= 5 }}
+  
+  # Actions for various triggers with enhanced error handling
+  action:
+    # Set variables with fallback values for resilient operation
+    - variables:
+        current_volume: "{{ states('sensor.wroommicrousb_reservoir_current_volume') | float(50) }}"  # Default to safe level if sensor fails
+        current_temp: "{{ states('sensor.wroommicrousb_reservoir_water_temp') | float(20) }}"       # Default to room temp if sensor fails
+        feed_pump_duration: "{{ states('input_number.hydroponics_feed_pump_duration') | int(15) }}" # Default to conservative duration
+        volume_available: "{{ states('sensor.wroommicrousb_reservoir_current_volume') not in ['unavailable', 'unknown', ''] }}"
+        temp_available: "{{ states('sensor.wroommicrousb_reservoir_water_temp') not in ['unavailable', 'unknown', ''] }}"
+    
+    # Choose the appropriate action based on trigger
+    - choose:
+        # Morning fertigation (starts active period)
+        - conditions:
+            - condition: trigger
+              id: morning_fertigation
+          sequence:
+            # Continue fertigation even with low water - plants need water until reservoir is empty
+            # (original condition was checking volume in liters, not percentage)
+            - condition: template
+              value_template: "{{ true }}"  # Always proceed with fertigation, just alert when low
+            
+            # Log sensor status for diagnostics
+            - service: system_log.write
+              data:
+                message: >
+                  Hydroponics: Morning fertigation starting - 
+                  Water: {% if volume_available %}{{ current_volume }}L{% else %}sensor unavailable (proceeding){% endif %}, 
+                  Temp: {% if temp_available %}{{ current_temp }}°C{% else %}sensor unavailable{% endif %}
+                level: info
+                
+            # Alert if water is low but continue fertigation
+            - if:
+                - condition: template
+                  value_template: "{{ volume_available and current_volume < 10 }}"
+              then:
+                - service: notify.mobile_app_pixel_9_pro_xl
+                  data:
+                    title: "⚠️ Hydroponics Low Water"
+                    message: >
+                      Warning: Reservoir water level is low ({{ current_volume }}L).
+                      Fertigation will continue but please refill soon.
+                    data:
+                      channel: "hydroponics_alerts"
+                      tag: "hydro_low_water"
+            
+            # Warn if sensors are unavailable
+            - if:
+                - condition: template
+                  value_template: "{{ not volume_available or not temp_available }}"
+              then:
+                - service: persistent_notification.create
+                  data:
+                    title: "⚠️ Hydroponics Sensor Warning"
+                    message: >
+                      Fertigation proceeding with sensor issues:
+                      {% if not volume_available %}• Water level sensor unavailable{% endif %}
+                      {% if not temp_available %}• Temperature sensor unavailable{% endif %}
+                      
+                      Check sensor connectivity.
+                    notification_id: "hydro_sensor_warning"
+            
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - delay:
+                seconds: "{{ feed_pump_duration }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: >
+                  Morning fertigation completed at {{ now().strftime('%H:%M') }}
+                  {% if not volume_available or not temp_available %} (sensors offline){% endif %}
+                title: "Hydroponics System"
+                
+        # Midday fertigation (12:30 PM)
+        - conditions:
+            - condition: trigger
+              id: midday_fertigation
+          sequence:
+            # Continue fertigation even with low water - plants need water until reservoir is empty
+            # (original condition was checking volume in liters, not percentage)
+            - condition: template
+              value_template: "{{ true }}"  # Always proceed with fertigation, just alert when low
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: system_log.write
+              data:
+                message: >
+                  Hydroponics: Midday fertigation started ({{ feed_pump_duration }}s) - 
+                  Water: {% if volume_available %}{{ current_volume }}%{% else %}sensor unavailable{% endif %}
+                level: info
+            - delay:
+                seconds: "{{ feed_pump_duration }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: >
+                  Midday fertigation completed at {{ now().strftime('%H:%M') }}
+                  {% if not volume_available %} (water sensor offline){% endif %}
+                title: "Hydroponics System"
+                
+        # Afternoon fertigation (3:30 PM)
+        - conditions:
+            - condition: trigger
+              id: afternoon_fertigation
+          sequence:
+            # Continue fertigation even with low water - plants need water until reservoir is empty
+            # (original condition was checking volume in liters, not percentage)
+            - condition: template
+              value_template: "{{ true }}"  # Always proceed with fertigation, just alert when low
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: system_log.write
+              data:
+                message: "Hydroponics: Afternoon fertigation started ({{ feed_pump_duration }}s, water: {{ current_volume }}%)"
+                level: info
+            - delay:
+                seconds: "{{ feed_pump_duration }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Afternoon fertigation completed at {{ now().strftime('%H:%M') }}"
+                title: "Hydroponics System"
+                
+        # Evening fertigation (6:30 PM)
+        - conditions:
+            - condition: trigger
+              id: evening_fertigation
+          sequence:
+            # Continue fertigation even with low water - plants need water until reservoir is empty
+            # (original condition was checking volume in liters, not percentage)
+            - condition: template
+              value_template: "{{ true }}"  # Always proceed with fertigation, just alert when low
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: system_log.write
+              data:
+                message: "Hydroponics: Evening fertigation started ({{ feed_pump_duration }}s, water: {{ current_volume }}%)"
+                level: info
+            - delay:
+                seconds: "{{ feed_pump_duration }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Evening fertigation completed at {{ now().strftime('%H:%M') }}"
+                title: "Hydroponics System"
+                
+        # Final fertigation of day (9:30 PM) - extended duration
+        - conditions:
+            - condition: trigger
+              id: final_fertigation
+          sequence:
+            # Continue fertigation even with low water - plants need water until reservoir is empty
+            # (original condition was checking volume in liters, not percentage)
+            - condition: template
+              value_template: "{{ true }}"  # Always proceed with fertigation, just alert when low
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: system_log.write
+              data:
+                message: "Hydroponics: Final fertigation started ({{ feed_pump_duration + 5 }}s extended, water: {{ current_volume }}%)"
+                level: info
+            - delay:
+                seconds: "{{ feed_pump_duration + 5 }}"
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().isoformat() }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Final fertigation completed at {{ now().strftime('%H:%M') }} (extended duration)"
+                title: "Hydroponics System"
+        
+        # Waste pump on schedule
+        - conditions: 
+            - condition: trigger
+              id: waste_pump_on
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_waste_pump
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Waste pump turned on for scheduled circulation"
+                title: "Hydroponics System"
+        
+        # Waste pump off schedule
+        - conditions:
+            - condition: trigger
+              id: waste_pump_off
+          sequence:
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_waste_pump
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "Waste pump turned off for scheduled rest period"
+                title: "Hydroponics System"
+        
+        # Low water level alert
+        - conditions:
+            - condition: trigger
+              id: low_water
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water level is critically low ({{ states('sensor.wroommicrousb_reservoir_current_volume') }}%)! Add water immediately."
+                title: "Hydroponics Low Water Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_low_water
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: persistent_notification.create
+              data:
+                title: "Hydroponics System Alert"
+                message: "Low water level detected at {{ now().strftime('%Y-%m-%d %H:%M') }}. Fertigation pump disabled for safety."
+                notification_id: "hydro_low_water"
+                
+        # High temperature alert
+        - conditions:
+            - condition: trigger
+              id: high_temp
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water temperature is too high ({{ states('sensor.wroommicrousb_reservoir_water_temp') }}°C)! Check cooling system."
+                title: "Hydroponics High Temp Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_high_temp
+                
+        # Low temperature alert
+        - conditions:
+            - condition: trigger
+              id: low_temp
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                message: "WARNING: Reservoir water temperature is too low ({{ states('sensor.wroommicrousb_reservoir_water_temp') }}°C)! Check heating system."
+                title: "Hydroponics Low Temp Alert"
+                data:
+                  priority: high
+                  channel: "hydroponics_alerts"
+                  tag: hydro_low_temp
+      default: []

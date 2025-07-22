@@ -1,0 +1,186 @@
+# Appliance Notification Automations - FIXED
+# Created: June 3, 2025
+# Issue: Appliance notifications not working - using correct notify.alexa_media_everywhere format
+
+# =============================================================================
+# DISHWASHER CYCLE COMPLETION ANNOUNCEMENT
+# =============================================================================
+
+- alias: "Dishwasher - Cycle Completion Announcement (Fixed)"
+  description: "Announce when dishwasher cycle is complete"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The dishwasher cycle is complete and ready to be unloaded."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dishwasher complete - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# WASHING MACHINE CYCLE COMPLETION ANNOUNCEMENT  
+# =============================================================================
+
+- alias: "Washing Machine - Cycle Completion Announcement (Fixed)"
+  description: "Announce when washing machine cycle is complete"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.washing_machine_cycle_announced
+      from: "on" 
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The washing machine cycle is complete. Please move clothes to the dryer."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Washer complete - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# DRYER CYCLE COMPLETION ANNOUNCEMENT
+# =============================================================================
+
+- alias: "Dryer - Cycle Completion Announcement (Fixed)"
+  description: "Announce when dryer cycle is complete"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dryer_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:00:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "The dryer cycle is complete. Please remove clothes to prevent wrinkles."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dryer complete - {{ now().strftime('%H:%M') }}"
+
+# =============================================================================
+# APPLIANCE ERROR MONITORING
+# =============================================================================
+
+- alias: "Appliance - Error Monitoring (Fixed)"
+  description: "Monitor for appliance errors and announce"
+  trigger:
+    - platform: state
+      entity_id: 
+        - sensor.dishwasher_door_status
+        - sensor.washing_machine_status
+        - sensor.dryer_status
+      to: "error"
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Attention: {{ trigger.to_state.attributes.friendly_name }} is reporting an error. Please check the appliance."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🚨 Appliance Error"
+        message: "{{ trigger.to_state.attributes.friendly_name }} error at {{ now().strftime('%H:%M') }}"
+        notification_id: "appliance_error_{{ trigger.entity_id.split('.')[1] }}"
+
+# =============================================================================
+# MONTHLY MAINTENANCE REMINDERS
+# =============================================================================
+
+- alias: "Appliance - Monthly Maintenance Reminder (Fixed)"
+  description: "Monthly maintenance reminders for appliances"
+  trigger:
+    - platform: time
+      at: "09:00:00"
+  condition:
+    - condition: template
+      value_template: "{{ now().day == 1 }}"  # First day of month
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Monthly appliance maintenance reminder: Please clean the dishwasher filter, check washing machine hoses, and clean the dryer lint trap."
+        data:
+          type: announce
+    - service: persistent_notification.create
+      data:
+        title: "🔧 Monthly Appliance Maintenance"
+        message: |
+          Time for monthly appliance maintenance:
+          - Clean dishwasher filter
+          - Check washing machine hoses  
+          - Clean dryer lint trap
+          - Wipe down appliance exteriors
+        notification_id: monthly_maintenance
+
+# =============================================================================
+# OFF-PEAK ENERGY REMINDER
+# =============================================================================
+
+- alias: "Appliance - Off-Peak Energy Reminder (Fixed)"
+  description: "Remind to run appliances during off-peak hours"
+  trigger:
+    - platform: time
+      at: "21:00:00"  # 9 PM reminder for off-peak usage
+  condition:
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Reminder: Off-peak energy hours start at 10 PM. Consider running the dishwasher or washing machine after 10 PM to save on energy costs."
+        data:
+          type: announce
+
+# =============================================================================
+# APPLIANCE MAINTENANCE TRACKING
+# =============================================================================
+
+- alias: "Appliance - Maintenance Tracking (Fixed)"
+  description: "Track when maintenance tasks are completed"
+  trigger:
+    - platform: state
+      entity_id:
+        - input_datetime.dishwasher_last_filter_clean
+        - input_datetime.washing_machine_last_hose_check
+      to: ~
+  action:
+    - service: notify.alexa_media_everywhere
+      data:
+        message: "Thank you for completing the {{ trigger.to_state.attributes.friendly_name.replace('Last ', '').lower() }}. Maintenance has been logged."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Maintenance logged - {{ now().strftime('%H:%M') }}"

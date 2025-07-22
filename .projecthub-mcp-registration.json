@@ -1,0 +1,25 @@
+{
+        "name": "projecthub-mcp",
+        "type": "project-management",
+        "status": "active",
+        "endpoints": {
+            "frontend": "http://localhost:8080",
+            "backend": "http://localhost:3001/api",
+            "health": "http://localhost:8080/health"
+        },
+        "services": {
+            "postgres": "localhost:5432",
+            "redis": "localhost:6379"
+        },
+        "integration": {
+            "home_assistant": "http://192.168.1.155:8123",
+            "wikijs": "http://192.168.1.90:3000",
+            "proxmox": "http://192.168.1.137:8006"
+        },
+        "management": {
+            "wrapper": "/home/dev/workspace/project-management-wrapper.sh",
+            "health_monitor": "/home/dev/workspace/project-management/scripts/health-monitor.sh",
+            "backup": "/home/dev/workspace/project-management/scripts/backup.sh"
+        },
+        "registered_at": "2025-07-01T13:53:18-05:00"
+    }

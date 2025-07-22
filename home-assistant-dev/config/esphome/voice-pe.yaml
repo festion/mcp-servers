@@ -1,0 +1,32 @@
+esphome:
+  name: voice-pe
+  friendly_name: Voice PE
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "tVQyqlHVXx5HKxNW2W+Fbdc+1U6/8hh/21/fk8KIRAQ="
+
+ota:
+  - platform: esphome
+    password: "0784802a29e4bb092b7d09a0fbc1d735"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Voice-Pe Fallback Hotspot"
+    password: "pJt26EiHN8AJ"
+
+captive_portal:
+    

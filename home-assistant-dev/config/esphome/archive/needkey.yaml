@@ -1,0 +1,32 @@
+esphome:
+  name: needkey
+  friendly_name: needkey
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "nTUfA+22NtP8Pbf5oPT7AqOYc1JW6IDQ3SdgAlMQXCI="
+
+ota:
+  - platform: esphome
+    password: "c68d9bf3bcdff2d521e47a55bcefdde0"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Needkey Fallback Hotspot"
+    password: "EYdZ9YFDGKCR"
+
+captive_portal:
+    

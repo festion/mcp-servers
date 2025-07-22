@@ -1,0 +1,200 @@
+# LED Strip RF Remote Control Automations
+# Link input buttons to RF command scripts
+
+- id: led_strips_button_power_on
+  alias: "LED Strips Button - Power On"
+  description: "Activates LED strips via RF remote when power on button is pressed"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_power_on
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_power_on
+  mode: single
+
+- id: led_strips_button_power_off
+  alias: "LED Strips Button - Power Off"
+  description: "Deactivates LED strips via RF remote when power off button is pressed"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_power_off
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_power_off
+  mode: single
+
+- id: led_strips_button_brightness_up
+  alias: "LED Strips Button - Brightness Up"
+  description: "Increases LED strip brightness via RF remote and updates brightness tracking"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_brightness_up
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_brightness_up
+  mode: single
+
+- id: led_strips_button_brightness_down
+  alias: "LED Strips Button - Brightness Down"
+  description: "Decreases LED strip brightness via RF remote and updates brightness tracking"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_brightness_down
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_brightness_down
+  mode: single
+
+- id: led_strips_button_warmer
+  alias: "LED Strips Button - Warmer"
+  description: "Makes LED strips warmer color temperature via RF remote"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_warmer
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_warmer
+  mode: single
+
+- id: led_strips_button_cooler
+  alias: "LED Strips Button - Cooler"
+  description: "Makes LED strips cooler color temperature via RF remote"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_cooler
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_cooler
+  mode: single
+
+- id: led_strips_button_warm_white
+  alias: "LED Strips Button - Warm White"
+  description: "Sets LED strips to warm white preset color via RF remote"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_warm_white
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_warm_white
+  mode: single
+
+- id: led_strips_button_neutral_white
+  alias: "LED Strips Button - Neutral White"
+  description: "Sets LED strips to neutral white preset color via RF remote"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_neutral_white
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_neutral_white
+  mode: single
+
+- id: led_strips_button_cool_white
+  alias: "LED Strips Button - Cool White"
+  description: "Sets LED strips to cool white preset color via RF remote"
+  trigger:
+    - platform: state
+      entity_id: input_button.led_strips_cool_white
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_cool_white
+  mode: single
+
+# --- Adaptive Lighting Integration Automations ---
+
+- id: led_strips_morning_startup
+  alias: "LED Strips - Morning Startup"
+  description: "Automatically turn on LED strips every morning at 7 AM with adaptive lighting"
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  condition:
+    - condition: state
+      entity_id: remote.rm4_pro
+      state: 'on'
+  action:
+    - service: script.led_strips_rf_power_on
+    - delay: "00:00:02"  # Wait for RF command to process
+    - service: adaptive_lighting.set_manual_control
+      target:
+        entity_id: switch.adaptive_lighting_kitchen_led_strips
+      data:
+        manual_control: false  # Enable adaptive lighting control
+  mode: single
+
+- id: led_strips_sync_with_kitchen_lights
+  alias: "LED Strips - Sync with Kitchen Lights"
+  description: "When kitchen lights are turned on, ensure LED strips sync with adaptive lighting if both are active"
+  trigger:
+    - platform: state
+      entity_id: group.kitchen_lights
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: input_boolean.led_strips_power_status
+      state: 'on'
+    - condition: state
+      entity_id: switch.adaptive_lighting_kitchen_lights
+      state: 'on'
+  action:
+    - service: adaptive_lighting.set_manual_control
+      target:
+        entity_id: switch.adaptive_lighting_kitchen_led_strips
+      data:
+        manual_control: false  # Sync with adaptive lighting
+  mode: single
+
+- id: led_strips_manual_override_detection
+  alias: "LED Strips - Manual Override Detection"
+  description: "Detect when LED strips are manually controlled via RF remote and temporarily disable adaptive lighting"
+  trigger:
+    - platform: state
+      entity_id: 
+        - input_number.led_strips_brightness_level
+        - input_number.led_strips_color_temp
+  condition:
+    - condition: template
+      value_template: "{{ trigger.to_state.context.user_id is not none }}"  # Changed by user, not automation
+    - condition: state
+      entity_id: input_boolean.led_strips_power_status
+      state: 'on'
+  action:
+    - service: adaptive_lighting.set_manual_control
+      target:
+        entity_id: switch.adaptive_lighting_kitchen_led_strips
+      data:
+        manual_control: true  # Temporarily disable adaptive lighting
+    - delay: "00:05:00"  # Wait 5 minutes before re-enabling
+    - service: adaptive_lighting.set_manual_control
+      target:
+        entity_id: switch.adaptive_lighting_kitchen_led_strips
+      data:
+        manual_control: false  # Re-enable adaptive lighting
+  mode: restart

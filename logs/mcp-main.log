@@ -1,0 +1,972 @@
+[2025-06-30 11:28:11] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 11:28:11] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 11:28:13] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 11:28:13] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 11:28:15] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 11:28:51] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 11:28:51] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 11:29:00] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 11:29:00] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 11:29:12] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 11:29:25] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://test-wiki.example.com
+[2025-06-30 11:29:43] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 11:29:43] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 11:29:48] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 11:30:25] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 11:30:25] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 11:30:44] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 11:30:44] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 11:31:02] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 11:31:02] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 11:35:38] [INFO] [INTEGRATION] Testing filesystem server: node /home/dev/workspace/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js /home/dev/workspace
+[2025-06-30 11:35:40] [INFO] [INTEGRATION] filesystem server added successfully
+[2025-06-30 11:35:40] [INFO] [INTEGRATION] Testing network-fs server: bash /home/dev/workspace/network-mcp-wrapper.sh
+[2025-06-30 11:35:42] [INFO] [INTEGRATION] network-fs server added successfully
+[2025-06-30 11:35:42] [INFO] [INTEGRATION] Testing code-linter server: bash /home/dev/workspace/code-linter-wrapper.sh
+[2025-06-30 11:35:45] [INFO] [INTEGRATION] code-linter server added successfully
+[2025-06-30 11:35:45] [INFO] [INTEGRATION] Testing proxmox server: bash /home/dev/workspace/proxmox-mcp-wrapper.sh
+[2025-06-30 11:35:47] [INFO] [INTEGRATION] proxmox server added successfully
+[2025-06-30 11:35:47] [INFO] [INTEGRATION] Testing home-assistant server: bash /home/dev/workspace/hass-mcp-wrapper.sh
+[2025-06-30 11:35:50] [INFO] [INTEGRATION] home-assistant server added successfully
+[2025-06-30 11:35:50] [INFO] [INTEGRATION] Testing wikijs server: bash /home/dev/workspace/wikijs-mcp-wrapper.sh
+[2025-06-30 11:35:52] [INFO] [INTEGRATION] wikijs server added successfully
+[2025-06-30 11:35:52] [INFO] [INTEGRATION] Testing serena server: bash /home/dev/workspace/serena-mcp-wrapper.sh
+[2025-06-30 11:35:58] [INFO] [INTEGRATION] serena server added successfully
+[2025-06-30 11:35:58] [INFO] [INTEGRATION] Testing github server: bash /home/dev/workspace/github-wrapper.sh
+[2025-06-30 11:36:02] [INFO] [INTEGRATION] github server added successfully
+[2025-06-30 11:36:05] [INFO] [INTEGRATION] Integration test completed
+[2025-06-30 11:39:11] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 11:39:11] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 11:39:11] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 11:39:11] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 11:39:11] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 11:39:12] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 11:39:12] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://test-wiki.example.com
+[2025-06-30 11:39:12] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 11:39:12] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 11:39:12] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 12:07:32] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 12:07:32] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 12:07:32] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 12:07:32] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 12:07:32] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 12:07:32] [INFO] [PROXMOX] Starting Proxmox MCP server with token: root@pam!ClaudeDev=3...
+[2025-06-30 12:07:32] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: https://wiki.internal.lakehouse.wtf
+[2025-06-30 12:07:32] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 12:07:32] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 12:07:32] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 13:06:36] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 13:06:36] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 13:06:36] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 13:06:36] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 13:06:36] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 13:06:36] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 13:06:36] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 13:06:36] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 13:06:36] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 13:06:36] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 13:08:40] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 13:08:40] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 13:08:40] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 13:08:40] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 13:08:40] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 13:08:40] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 13:08:40] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 13:08:40] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 13:08:40] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 13:08:40] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 16:02:46] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 16:02:46] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 16:02:46] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 16:02:46] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 16:02:46] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 16:02:46] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 16:02:46] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 16:02:46] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 16:02:46] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 16:02:46] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 20:19:59] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 20:19:59] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 20:19:59] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 20:19:59] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 20:19:59] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 20:19:59] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 20:19:59] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 20:19:59] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 20:19:59] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 20:19:59] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 20:24:17] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 20:24:17] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 20:24:17] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 20:24:17] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 20:24:17] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 20:24:17] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 20:24:17] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 20:24:17] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 20:24:17] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 20:24:17] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 20:24:36] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 20:24:36] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 20:24:36] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 20:24:36] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 20:24:36] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 20:24:36] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 20:24:36] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 20:24:36] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 20:24:36] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 20:24:36] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 20:25:51] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 20:25:51] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 20:25:51] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 20:25:51] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 20:25:51] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 20:25:51] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 20:25:51] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 20:25:51] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 20:25:51] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 20:25:52] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 20:28:33] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 21:08:10] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 21:08:10] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 21:08:10] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 21:08:10] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 21:08:10] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 21:08:10] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 21:08:10] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 21:08:10] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 21:08:10] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 21:08:10] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-06-30 21:21:03] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-06-30 21:21:03] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-06-30 21:21:03] [INFO] [SERENA] Starting Serena MCP server
+[2025-06-30 21:21:03] [INFO] [SERENA] Using real Serena implementation
+[2025-06-30 21:21:03] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=test@pam...
+[2025-06-30 21:21:03] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-06-30 21:21:03] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-06-30 21:21:03] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-06-30 21:21:03] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-06-30 21:21:03] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 08:36:05] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 08:36:05] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 08:36:05] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 08:36:05] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 08:36:05] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-07-01 08:36:05] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=root@pam...
+[2025-07-01 08:36:05] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 08:36:05] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 08:36:05] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 08:36:05] [INFO] [GITHUB] Starting GitHub MCP server with token: ...
+[2025-07-01 08:36:59] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 08:36:59] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 08:36:59] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 08:36:59] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 08:36:59] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-07-01 08:36:59] [INFO] [PROXMOX] Starting Proxmox MCP server with token: PVEAPIToken=root@pam...
+[2025-07-01 08:36:59] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 08:36:59] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 08:36:59] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 08:36:59] [INFO] [GITHUB] Starting GitHub MCP server with token: ...
+[2025-07-01 08:39:40] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 08:40:56] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 08:41:16] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 08:45:05] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-01 08:47:32] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 08:47:32] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 08:47:32] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 08:47:32] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 08:47:32] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-07-01 08:47:32] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 08:47:32] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 08:47:32] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 08:47:32] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 08:47:32] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 08:56:38] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 08:56:38] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 08:56:38] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 08:56:38] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 08:56:38] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-07-01 08:56:38] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 08:56:38] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 08:56:38] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 08:56:38] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 08:56:38] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 08:56:54] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 08:56:54] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 08:56:54] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 08:56:54] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 08:56:54] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.175:8123
+[2025-07-01 08:56:54] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 08:56:54] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 08:56:54] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 08:56:54] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 08:56:54] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 09:16:54] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 09:16:54] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 09:16:54] [INFO] [SERENA] Starting Serena MCP server
+[2025-07-01 09:16:54] [INFO] [SERENA] Using real Serena implementation
+[2025-07-01 09:16:54] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 09:16:54] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 09:16:54] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 09:16:54] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 09:16:54] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 09:16:54] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 11:59:34] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 13:53:18] [INFO] [Running full MCP integration setup] 
+[2025-07-01 13:53:18] [INFO] [Registering ProjectHub with MCP infrastructure] 
+[2025-07-01 13:53:18] [INFO] [ProjectHub registration completed] 
+[2025-07-01 13:53:18] [INFO] [Checking MCP service dependencies] 
+[2025-07-01 13:53:18] [INFO] [✓ Home Assistant is available] 
+[2025-07-01 13:53:18] [INFO] [✓ WikiJS is available] 
+[2025-07-01 13:53:18] [INFO] [✓ Proxmox is available] 
+[2025-07-01 13:53:18] [INFO] [MCP service availability: 3/3 services available] 
+[2025-07-01 13:53:18] [INFO] [Setting up unified logging with MCP infrastructure] 
+[2025-07-01 13:53:18] [INFO] [Unified logging configuration created] 
+[2025-07-01 13:53:18] [INFO] [Creating MCP dashboard integration] 
+[2025-07-01 13:53:18] [INFO] [Dashboard integration configuration created] 
+[2025-07-01 13:53:18] [INFO] [Syncing ProjectHub projects with Home Assistant] 
+[2025-07-01 13:53:18] [INFO] [Home Assistant sync: Available for integration] 
+[2025-07-01 13:53:18] [INFO] [Syncing ProjectHub documentation with WikiJS] 
+[2025-07-01 13:53:18] [INFO] [WikiJS sync: Available for documentation integration] 
+[2025-07-01 13:53:18] [INFO] [Checking Proxmox integration for infrastructure monitoring] 
+[2025-07-01 13:53:18] [INFO] [Proxmox integration: Available for infrastructure monitoring] 
+[2025-07-01 13:53:18] [INFO] [Full MCP integration completed] 
+[2025-07-01 13:53:23] [INFO] [Checking MCP integration status] 
+[2025-07-01 13:53:23] [INFO] [Checking MCP service dependencies] 
+[2025-07-01 13:53:23] [INFO] [✓ Home Assistant is available] 
+[2025-07-01 13:53:23] [INFO] [✓ WikiJS is available] 
+[2025-07-01 13:53:23] [INFO] [✓ Proxmox is available] 
+[2025-07-01 13:53:23] [INFO] [MCP service availability: 3/3 services available] 
+[2025-07-01 13:53:42] [INFO] [DIRECTORY-POLLING] Starting Directory Polling MCP server
+[2025-07-01 13:53:42] [INFO] [DIRECTORY-POLLING] Copied directory polling system to MCP servers directory
+[2025-07-01 13:53:42] [INFO] [DIRECTORY-POLLING] Created default configuration file
+[2025-07-01 13:53:42] [INFO] [DIRECTORY-POLLING] Starting directory polling server with config: /home/dev/workspace/production-monitoring-config.json
+[2025-07-01 13:54:00] [INFO] [SERENA-ENHANCED] Starting Enhanced Serena MCP server with documentation tools
+[2025-07-01 13:54:00] [INFO] [SERENA-ENHANCED] Starting with Phase 3A documentation capabilities
+[2025-07-01 16:04:47] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 16:04:47] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 16:04:47] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 16:04:47] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 16:04:47] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 16:04:47] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 16:04:47] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 16:04:47] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 16:59:22] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 16:59:22] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 16:59:22] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 16:59:22] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 16:59:22] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 16:59:22] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 16:59:22] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 16:59:22] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 16:59:39] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 16:59:39] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 16:59:40] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 16:59:40] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 16:59:40] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 16:59:40] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 16:59:40] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 16:59:40] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 17:00:31] [INFO] [SERENA-ENHANCED] Starting Enhanced Serena MCP server with documentation tools
+[2025-07-01 17:00:31] [INFO] [SERENA-ENHANCED] Starting with Phase 3A documentation capabilities
+[2025-07-01 17:00:36] [INFO] [DIRECTORY-POLLING] Starting Directory Polling MCP server
+[2025-07-01 17:00:36] [INFO] [DIRECTORY-POLLING] Starting directory polling server with config: /home/dev/workspace/production-monitoring-config.json
+[2025-07-01 19:25:03] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-01 19:25:03] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-01 19:25:07] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 19:25:07] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 19:26:05] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 19:26:05] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 19:30:02] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 19:30:02] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 19:30:02] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 19:30:02] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 19:30:02] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 19:30:02] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 19:30:02] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 19:30:02] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 19:30:17] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 19:30:17] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 19:30:17] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 19:30:17] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 19:30:17] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 19:30:17] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 19:30:17] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 19:30:17] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 19:33:40] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 19:33:40] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 19:33:40] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 19:33:40] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 19:33:40] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 19:33:41] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 19:33:41] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 19:33:41] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-01 19:33:41] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-01 19:33:41] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 19:33:41] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 19:33:41] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 19:34:01] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 19:36:33] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 19:36:33] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 19:36:33] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 19:36:33] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 19:36:33] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 19:36:33] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 19:36:33] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 19:36:33] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-01 19:36:33] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-01 19:36:33] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 19:36:33] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 19:36:34] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 20:32:28] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 20:32:28] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 20:32:28] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 20:32:28] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 20:32:28] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 20:32:28] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 20:32:28] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 20:32:28] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-01 20:32:28] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-01 20:32:28] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 20:32:28] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 20:32:28] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-01 20:41:32] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-01 20:41:32] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-01 20:41:32] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-01 20:41:32] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-01 20:41:32] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-01 20:41:32] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-01 20:41:32] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-01 20:41:32] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-01 20:41:32] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-01 20:41:32] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-01 20:41:32] [INFO] [Starting directory polling MCP server] 
+[2025-07-01 20:41:32] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 08:09:30] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 08:09:30] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 08:09:30] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-02 08:09:30] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 08:09:30] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 08:09:30] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 08:09:30] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 08:09:30] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 08:09:30] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 08:09:30] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 08:09:30] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 08:09:30] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 11:15:08] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 11:15:08] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 11:15:08] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-02 11:15:08] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 11:15:08] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 11:15:08] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 11:15:08] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 11:15:08] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 11:15:08] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 11:15:08] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 11:15:08] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 11:15:09] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 11:16:05] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 11:16:05] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 11:16:05] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-02 11:16:05] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 11:16:05] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 11:16:05] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 11:16:05] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 11:16:05] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 11:16:05] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 11:16:05] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 11:16:05] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 11:16:05] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 11:16:46] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 11:16:46] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 11:16:46] [INFO] [PROXMOX] Starting Proxmox MCP server with host: 192.168.1.137...
+[2025-07-02 11:16:46] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 11:16:46] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 11:16:46] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 11:16:46] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 11:16:46] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 11:16:46] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 11:16:46] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 11:16:46] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 11:16:46] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 12:20:40] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 12:20:40] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 12:20:40] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 13:37:29] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 13:37:29] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 13:37:29] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 13:37:29] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 13:37:29] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 13:37:29] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 13:37:29] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 13:37:29] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 13:37:29] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 13:37:29] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 13:37:29] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 13:37:29] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 13:37:29] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 13:37:29] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 13:51:14] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 13:51:14] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 13:51:14] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 13:51:14] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 13:51:14] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 13:51:14] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 13:51:14] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 13:51:14] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_test_token_...
+[2025-07-02 13:51:14] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 13:51:14] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 13:51:14] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 13:51:14] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 13:51:14] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 13:51:14] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 13:53:41] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 13:53:41] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 14:23:09] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-02 14:23:09] [INFO] [Starting directory polling MCP server] 
+[2025-07-02 16:33:16] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 16:33:16] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 16:33:16] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 16:33:16] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 16:33:16] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 16:33:16] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 16:33:16] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 16:33:16] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 16:33:16] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 16:33:16] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 16:33:16] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 16:33:16] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 16:50:47] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 16:50:47] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 16:50:47] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 16:50:47] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 16:50:47] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 16:50:47] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 16:50:47] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 16:50:47] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 16:50:47] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 16:50:47] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 16:50:47] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 16:50:47] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 17:08:33] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 17:08:33] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 17:08:33] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 17:08:33] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 17:08:33] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 17:08:33] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 17:08:33] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 17:08:33] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 17:08:33] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 17:08:33] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 17:08:33] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 17:08:33] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 17:46:27] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 17:46:27] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 17:46:27] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 17:46:27] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 17:46:27] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 17:46:27] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 17:46:27] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 17:46:27] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 17:46:27] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 17:46:27] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 17:46:27] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 17:46:27] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 17:55:14] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 17:55:14] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 17:55:14] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 17:55:14] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 17:55:14] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 17:55:14] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 17:55:14] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 17:55:14] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 17:55:14] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 17:55:15] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 17:55:15] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 17:55:15] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 17:58:36] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 17:58:36] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 17:58:36] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 17:58:36] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 17:58:36] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 17:58:36] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 17:58:36] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 17:58:36] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 17:58:36] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 17:58:36] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 17:58:36] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 17:58:36] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 17:58:41] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 17:58:41] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 17:58:41] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 17:58:41] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 17:58:41] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 17:58:41] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 17:58:41] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 17:58:41] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 17:58:41] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 17:58:41] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 17:58:41] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 17:58:41] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 20:56:24] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 20:56:24] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 20:56:24] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 20:56:24] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 20:56:24] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 20:56:24] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 20:56:24] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 20:56:24] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 20:56:24] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 20:56:24] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 20:56:24] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 20:56:24] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 21:43:26] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-02 21:43:26] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-02 21:43:26] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-02 21:43:26] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 21:43:26] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 21:43:26] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-02 21:43:26] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-02 21:43:26] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 21:43:26] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-02 21:43:26] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-02 21:43:26] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-02 21:43:26] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-02 21:46:58] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 21:46:58] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 21:46:58] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 21:47:47] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 21:47:47] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 21:47:47] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 21:52:44] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 21:52:44] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 21:52:44] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-02 21:53:00] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-02 21:53:00] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-02 21:53:00] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-03 07:58:25] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-03 07:58:25] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-03 07:58:25] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-03 12:04:13] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-03 12:04:13] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-03 12:04:13] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-03 12:04:13] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-03 12:04:13] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-03 12:04:13] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-03 12:04:13] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-03 12:04:13] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-03 12:04:13] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-03 12:04:13] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-03 12:04:13] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-03 12:04:13] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-03 12:09:32] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-03 13:37:21] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-03 13:58:37] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-03 14:18:15] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-04 10:24:08] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 10:24:08] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 10:24:08] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a[2025-07-04 10:27:03] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 10:27:03] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 10:27:03] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-04 10:27:03] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-04 10:27:03] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-04 10:27:03] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-04 10:27:03] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 10:27:03] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 10:27:03] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-04 10:27:03] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-04 10:27:03] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 10:27:03] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-04 10:30:26] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 10:30:26] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 10:30:26] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 10:35:02] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 10:35:02] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 10:35:02] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 10:36:20] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 10:36:20] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 10:36:20] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 10:47:07] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 10:47:07] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 10:47:07] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 10:47:07] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 10:47:07] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-04 10:47:07] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-04 10:47:07] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-04 10:47:07] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 10:47:07] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-04 10:47:07] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-04 10:47:07] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-04 10:47:07] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-04 11:10:02] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 11:10:02] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 11:10:02] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-04 11:10:02] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 11:10:02] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 11:10:02] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 11:10:02] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-04 11:10:02] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-04 11:10:02] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-04 11:10:02] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-04 11:10:02] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-04 11:10:02] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-04 11:43:45] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 11:43:45] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 11:43:45] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 11:43:45] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 11:43:45] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-04 11:43:45] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-04 11:43:45] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-04 11:43:45] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-04 11:43:45] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 11:43:45] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-04 11:43:45] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-04 11:43:46] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-04 12:06:51] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-04 12:06:51] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-04 12:06:51] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-04 12:06:51] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-04 12:06:51] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-04 12:06:51] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-04 12:06:51] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-04 12:06:51] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-04 12:06:51] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-04 12:06:51] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-04 12:06:51] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-04 12:06:52] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-05 11:20:29] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-05 11:20:29] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-05 11:20:29] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-05 11:20:29] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-05 11:20:29] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-05 11:20:29] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-05 11:20:29] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-05 11:20:29] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-05 11:20:29] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-05 11:20:29] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-05 11:20:29] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-05 11:20:29] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-05 12:02:00] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-05 12:02:00] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-05 12:02:00] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-05 12:02:00] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-05 12:02:00] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-05 12:02:00] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-05 12:02:00] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-05 12:02:00] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-05 12:02:00] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-05 12:02:00] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-05 12:02:00] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-05 12:02:00] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-06 17:44:06] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-06 17:44:06] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-06 17:44:06] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-06 17:44:06] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-06 17:44:06] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-06 17:44:07] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-06 17:44:07] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-06 17:44:07] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-06 17:44:07] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-06 17:44:07] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-06 17:44:07] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-06 17:44:07] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-06 19:52:55] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-06 19:52:55] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-06 19:52:55] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-06 19:52:55] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-06 19:52:55] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-06 19:52:55] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-06 19:52:55] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-06 19:52:55] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-06 19:52:55] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-06 19:52:55] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-06 19:52:55] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-06 19:52:56] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 08:22:30] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 08:22:30] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 08:22:30] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 08:22:30] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 08:22:30] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 08:22:30] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 08:22:30] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 08:22:30] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 08:22:30] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 08:22:30] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 08:22:30] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 08:22:30] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 08:38:58] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 08:38:58] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 08:38:58] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 08:38:58] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 08:38:58] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 08:38:58] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 08:38:58] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 08:38:58] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 08:38:58] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 08:38:58] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 08:38:58] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 08:38:59] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 09:23:09] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 09:23:09] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 09:23:09] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 09:23:09] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 09:23:09] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 09:23:09] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 09:23:09] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 09:23:09] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:23:09] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 09:23:09] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 09:23:09] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 09:23:10] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 09:24:51] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:25:10] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:26:15] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:38:41] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:39:24] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 09:39:24] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 09:39:24] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 09:39:24] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 09:39:24] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 09:39:24] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 09:39:24] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 09:39:24] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 09:39:24] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 09:39:24] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 09:39:24] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 09:40:06] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 09:40:06] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 09:40:06] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 09:40:06] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 09:40:06] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 09:40:06] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 09:40:06] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 09:40:06] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 09:40:06] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 09:40:06] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 09:40:07] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 09:40:38] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 09:40:38] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 09:40:38] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 09:40:38] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 09:40:38] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 09:40:38] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 09:40:38] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 09:40:38] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 09:40:39] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 09:40:39] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 09:40:39] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 09:41:10] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 09:56:55] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 10:18:21] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 10:36:56] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:36:56] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:36:56] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:36:56] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:36:56] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:36:56] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:36:56] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:36:56] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:36:57] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:36:57] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:36:58] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:37:30] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:37:30] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:37:30] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:37:30] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:37:30] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:37:30] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:37:30] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:37:30] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:37:30] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:37:30] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:37:31] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:37:51] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:37:51] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:37:51] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:37:51] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:37:51] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:37:51] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:37:51] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:37:51] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:37:51] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:37:51] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:37:52] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:39:02] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:39:02] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:39:02] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:39:02] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:39:02] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:39:02] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:39:02] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:39:02] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:39:02] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:39:02] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:39:03] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:41:08] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 10:49:10] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:49:10] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:49:10] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:49:10] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:49:10] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:49:10] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:49:10] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:49:10] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:49:10] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:49:10] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:49:11] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:49:47] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:49:47] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:49:47] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:49:47] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:49:47] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:49:47] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:49:47] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:49:47] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:49:47] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:49:48] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:49:48] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:50:36] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:50:36] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:50:36] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:50:36] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:50:36] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:50:36] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:50:36] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:50:36] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:50:36] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:50:36] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:50:37] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 10:57:37] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 10:57:37] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 10:57:37] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 10:57:37] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 10:57:37] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 10:57:37] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 10:57:37] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 10:57:37] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 10:57:37] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 10:57:37] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 10:57:37] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 10:57:37] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 10:57:37] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 10:57:38] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 11:00:43] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 11:02:20] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 11:02:20] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 11:02:20] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 11:02:20] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 11:02:20] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 11:02:20] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 11:02:20] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 11:02:20] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 11:02:20] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 11:02:20] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 11:02:20] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 11:02:20] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 11:02:20] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 11:02:21] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 12:38:30] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 12:38:30] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 12:38:30] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 12:38:30] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 12:38:30] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 12:38:30] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 12:38:30] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 12:38:30] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 12:38:30] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 12:38:30] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 12:38:30] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 12:38:30] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 12:38:30] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 12:38:31] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 13:08:19] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 13:08:19] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 13:08:19] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 13:08:19] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 13:08:19] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 13:08:19] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 13:08:19] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 13:08:19] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 13:08:19] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 13:08:19] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 13:08:19] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 13:08:19] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 13:08:19] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 13:08:20] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 13:09:59] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 13:09:59] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 13:09:59] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 13:09:59] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 13:09:59] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 13:09:59] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 13:09:59] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 13:09:59] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 13:09:59] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 13:10:00] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 13:10:00] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 13:10:00] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 13:10:00] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 13:10:01] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123
+[2025-07-07 15:36:02] [INFO] [NETWORK_FS] Starting Network-FS MCP server
+[2025-07-07 15:36:02] [INFO] [NETWORK_FS] Found Network-FS server, starting with config
+[2025-07-07 15:36:02] [INFO] [PROXMOX] Starting Proxmox MCP server for session: not_a_tty
+unknown
+[2025-07-07 15:36:02] [INFO] [PROXMOX] Host: 192.168.1.137, User: root@pam
+[2025-07-07 15:36:02] [INFO] [WIKIJS] Starting WikiJS MCP server for URL: http://192.168.1.90:3000
+[2025-07-07 15:36:02] [INFO] [CODE_LINTER] Starting Code Linter MCP server
+[2025-07-07 15:36:02] [INFO] [CODE_LINTER] Found Code Linter server, starting with config
+[2025-07-07 15:36:02] [INFO] [PROXMOX] Starting Proxmox MCP server...
+[2025-07-07 15:36:02] [INFO] [Starting Directory Polling MCP server] 
+[2025-07-07 15:36:02] [INFO] [Starting Enhanced Serena MCP server] 
+[2025-07-07 15:36:02] [INFO] [Starting Serena MCP server with enhanced configuration] 
+[2025-07-07 15:36:02] [INFO] [Starting directory polling MCP server] 
+[2025-07-07 15:36:02] [INFO] [GITHUB] Starting GitHub MCP server with token: ghp_bpQHP56uDaV...
+[2025-07-07 15:36:03] [INFO] [HOME_ASSISTANT] Starting Home Assistant MCP server for URL: http://192.168.1.155:8123

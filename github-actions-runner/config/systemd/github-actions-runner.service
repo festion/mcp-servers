@@ -1,0 +1,47 @@
+[Unit]
+Description=GitHub Actions Self-Hosted Runner
+After=docker.service
+Requires=docker.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=dev
+Group=docker
+WorkingDirectory=/home/dev/workspace/github-actions-runner
+Environment=DOCKER_HOST=unix:///var/run/docker.sock
+Environment=COMPOSE_PROJECT_NAME=github-actions-runner
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/dev/workspace/github-actions-runner
+ReadWritePaths=/var/run/docker.sock
+
+# Resource limits
+MemoryLimit=4G
+TasksMax=4096
+
+# Startup
+ExecStartPre=/usr/bin/docker-compose -f /home/dev/workspace/github-actions-runner/docker-compose.yml pull
+ExecStart=/usr/bin/docker-compose -f /home/dev/workspace/github-actions-runner/docker-compose.yml up -d
+ExecStartPost=/bin/sleep 30
+ExecStartPost=/home/dev/workspace/github-actions-runner/scripts/health-check.sh
+
+# Shutdown
+ExecStop=/usr/bin/docker-compose -f /home/dev/workspace/github-actions-runner/docker-compose.yml down
+ExecStopPost=/bin/sleep 10
+
+# Health monitoring
+ExecReload=/usr/bin/docker-compose -f /home/dev/workspace/github-actions-runner/docker-compose.yml restart
+TimeoutStartSec=300
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

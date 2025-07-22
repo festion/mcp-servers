@@ -1,0 +1,200 @@
+- id: hydroponics_management
+  alias: Hydroponics Management System
+  description: Simplified management system for hydroponics with modular design for easy troubleshooting
+  mode: queued  # Queue actions for reliability
+  
+  # Triggers for all system events
+  trigger:
+    # Scheduled fertigations based on interval
+    - platform: time_pattern
+      hours: "/{{ states('input_number.hydroponics_fertigation_interval_hours') | int }}"
+      id: scheduled_fertigation
+    
+    # Waste pump schedule (morning on)  
+    - platform: time
+      at: "06:00:00"
+      id: waste_pump_on
+    
+    # Waste pump schedule (evening off)
+    - platform: time
+      at: "21:00:00"
+      id: waste_pump_off
+    
+    # Low water level detection
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_current_volume
+      below: 5
+      for:
+        minutes: 5
+      id: low_water
+    
+    # Temperature monitoring
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      above: 30
+      id: high_temp
+    
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_water_temp
+      below: 5
+      id: low_temp
+    
+    # Water quality monitoring
+    - platform: template
+      id: parameter_change
+      value_template: >
+        {{ states('sensor.reservoir_ph_change_last_24_hours') | float(0) > 0.4 or 
+           states('sensor.reservoir_ec_change_last_24_hours') | float(0) > 0.2 }}
+    
+    # Daily report generation
+    - platform: time
+      at: "08:00:00"
+      id: daily_report
+  
+  # Define variables used across all actions
+  variables:
+    # Status variables
+    current_time: "{{ now().strftime('%H:%M:%S') }}"
+    water_level: "{{ states('sensor.wroommicrousb_reservoir_water_level') }}"
+    water_volume: "{{ states('sensor.wroommicrousb_reservoir_current_volume') }}"
+    water_temp: "{{ states('sensor.wroommicrousb_reservoir_water_temp') }}"
+    ph_level: "{{ states('sensor.water_quality_monitor_ph') }}"
+    ec_level: "{{ states('sensor.water_quality_monitor_electrical_conductivity') }}"
+    
+    # Configuration settings
+    alert_level: "{{ states('input_select.hydroponics_alert_level') }}"
+    waste_pump_schedule: "{{ states('input_select.hydroponics_waste_pump_schedule') }}"
+    pump_duration: "{{ states('input_number.hydroponics_feed_pump_duration') | int }}"
+    
+    # Alert flags
+    is_daytime: "{{ now().hour >= 7 and now().hour < 22 }}"
+    send_notification: "{{ is_daytime or alert_level == 'Verbose' }}"
+  
+  # Main action sequence
+  action:
+    # First action: Branch based on trigger
+    - choose:
+        # FERTIGATION CYCLE
+        - conditions:
+            - condition: trigger
+              id: scheduled_fertigation
+          sequence:
+            - service: script.fertigation_cycle
+              data:
+                duration: "{{ pump_duration }}"
+                
+        # WASTE PUMP CONTROL - MORNING ON
+        - conditions:
+            - condition: trigger
+              id: waste_pump_on
+            - condition: template
+              value_template: "{{ waste_pump_schedule == '6AM-9PM' or waste_pump_schedule == 'Always On' }}"
+          sequence:
+            - service: script.waste_pump_control
+              data:
+                action: "on"
+            - service: system_log.write
+              data:
+                message: "Hydroponics: Waste pump turned on at {{ current_time }}"
+                level: info
+                
+        # WASTE PUMP CONTROL - EVENING OFF
+        - conditions:
+            - condition: trigger
+              id: waste_pump_off
+            - condition: template
+              value_template: "{{ waste_pump_schedule == '6AM-9PM' }}"
+          sequence:
+            - service: script.waste_pump_control
+              data:
+                action: "off"
+            - service: system_log.write
+              data:
+                message: "Hydroponics: Waste pump turned off at {{ current_time }}"
+                level: info
+                
+        # LOW WATER LEVEL ALERT
+        - conditions:
+            - condition: trigger
+              id: low_water
+            - condition: template
+              value_template: "{{ send_notification }}"
+          sequence:
+            - service: script.send_hydro_alert
+              data:
+                title: "Low Water Level"
+                message: >
+                  Reservoir water level is critically low at {{ water_level }} cm. 
+                  Current volume is {{ water_volume }} liters. 
+                  Please refill the reservoir.
+                priority: "high"
+                notification_id: "low_water_level"
+                tag: "hydroponics_water"
+                
+        # TEMPERATURE ALERTS
+        - conditions:
+            - condition: trigger
+              id: high_temp
+          sequence:
+            - service: script.send_hydro_alert
+              data:
+                title: "High Temperature Warning"
+                message: >
+                  Reservoir water temperature is {{ water_temp }}°C, which is above 
+                  the recommended maximum of 30°C.
+                priority: "high"
+                notification_id: "high_temp_alert"
+                tag: "hydroponics_temp"
+                
+        - conditions:
+            - condition: trigger
+              id: low_temp
+          sequence:
+            - service: script.send_hydro_alert
+              data:
+                title: "Low Temperature Warning"
+                message: >
+                  Reservoir water temperature is {{ water_temp }}°C, which is below
+                  the recommended minimum of 5°C.
+                priority: "high"
+                notification_id: "low_temp_alert"
+                tag: "hydroponics_temp"
+                
+        # WATER PARAMETER CHANGES
+        - conditions:
+            - condition: trigger
+              id: parameter_change
+            - condition: template
+              value_template: "{{ send_notification }}"
+          sequence:
+            - variables:
+                ph_change: "{{ states('sensor.reservoir_ph_change_last_24_hours') | float(0) }}"
+                ec_change: "{{ states('sensor.reservoir_ec_change_last_24_hours') | float(0) }}"
+                change_message: >
+                  {% if ph_change > 0.4 %}
+                    pH has changed by {{ ph_change | round(2) }} in the last 24 hours (Current: {{ ph_level }}).
+                  {% endif %}
+                  {% if ec_change > 0.2 %}
+                    EC has changed by {{ ec_change | round(2) }} in the last 24 hours (Current: {{ ec_level }}).
+                  {% endif %}
+            - service: script.send_hydro_alert
+              data:
+                title: "Water Parameter Change"
+                message: "{{ change_message }}"
+                priority: "normal"
+                notification_id: "water_parameter_change"
+                tag: "hydroponics_params"
+                
+        # DAILY REPORT
+        - conditions:
+            - condition: trigger
+              id: daily_report
+          sequence:
+            - service: script.generate_hydro_report
+      
+      # Default action if no conditions match
+      default:
+        - service: system_log.write
+          data:
+            message: "Hydroponics: Unhandled trigger event from {{ trigger.id }}"
+            level: warning

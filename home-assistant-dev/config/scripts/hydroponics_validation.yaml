@@ -1,0 +1,12 @@
+validate_hydroponics_sensors:
+  alias: "Validate Hydroponics Sensors"
+  description: "Runs a validation script to check hydroponics sensor states and automation conditions"
+  sequence:
+    - service: python_script.validate_hydroponics_sensors
+    - delay:
+        seconds: 2
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "Hydroponics Validation Complete"
+        message: "Sensor validation report created. Check notifications in Home Assistant."
+  icon: mdi:test-tube

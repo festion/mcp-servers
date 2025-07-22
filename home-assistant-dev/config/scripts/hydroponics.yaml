@@ -1,0 +1,183 @@
+###############################################################################
+#                             HYDROPONICS SCRIPTS                               #
+###############################################################################
+
+# Fertigation process script - runs the feed pump for a specified duration
+fertigation_cycle:
+  alias: Fertigation Cycle
+  description: Run a single fertigation cycle for the hydroponics system (with time checking)
+  mode: restart
+  fields:
+    duration:
+      name: Pump Duration
+      description: How long to run the feed pump in seconds
+      default: 15
+      selector:
+        number:
+          min: 5
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+    force:
+      name: Force Run
+      description: Run regardless of time of day
+      default: false
+      selector:
+        boolean:
+  sequence:
+    - choose:
+        - conditions:
+            # Run if either force is enabled or time is between midnight and 8 PM
+            - condition: or
+              conditions:
+                - condition: template
+                  value_template: "{{ force | default(false) }}"
+                - condition: time
+                  after: "00:00:00"
+                  before: "20:00:00"
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - delay:
+                seconds: >-
+                  {{ duration | int(15) }}
+            - service: switch.turn_off
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_feed_pump
+            - service: input_datetime.set_datetime
+              target:
+                entity_id: input_datetime.last_fertigation_timestamp
+              data:
+                datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+            - service: esphome.wroommicrousb_set_last_fertigation_time
+              data:
+                timestamp: "{{ as_timestamp(now()) | int }}"
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: Hydroponics Update
+                message: "Fertigation complete at {{ now().strftime('%H:%M') }}!"
+      default:
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            title: Hydroponics System
+            message: "Fertigation skipped - outside active hours (midnight-8PM). Use force option to override."
+
+# Script to manage the waste pump
+waste_pump_control:
+  alias: Waste Pump Control
+  description: Control the hydroponics waste water pump
+  mode: single
+  fields:
+    action:
+      name: Action
+      description: Turn the pump on or off
+      selector:
+        select:
+          options:
+            - "on"
+            - "off"
+  sequence:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ action == 'on' }}"
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.tp_link_smart_plug_c82e_waste_pump
+      default:
+        - service: switch.turn_off
+          target:
+            entity_id: switch.tp_link_smart_plug_c82e_waste_pump
+
+# Send alert notifications for the hydroponics system
+send_hydro_alert:
+  alias: Send Hydroponics Alert
+  description: Send notification alerts for hydroponics system events
+  mode: queued
+  fields:
+    title:
+      name: Title
+      description: Alert notification title
+      required: true
+      selector:
+        text:
+    message:
+      name: Message
+      description: Alert notification body
+      required: true
+      selector:
+        text:
+          multiline: true
+    priority:
+      name: Priority
+      description: Alert priority level
+      default: "normal"
+      selector:
+        select:
+          options:
+            - "low"
+            - "normal"
+            - "high"
+    notification_id:
+      name: Notification ID
+      description: Persistent notification ID
+      required: false
+      selector:
+        text:
+    tag:
+      name: Tag
+      description: Mobile notification tag
+      default: "hydroponics_alert"
+      selector:
+        text:
+  sequence:
+    - service: persistent_notification.create
+      data:
+        title: "{{ title }}"
+        message: "{{ message }}"
+        notification_id: "{{ notification_id | default('hydro_alert_' ~ now().strftime('%Y%m%d%H%M%S')) }}"
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "{{ title }}"
+        message: "{{ message }}"
+        data:
+          tag: "{{ tag }}"
+          ttl: 0
+          priority: "{{ priority }}"
+
+# Generate a daily report for the hydroponics system
+generate_hydro_report:
+  alias: Generate Hydroponics Report
+  description: Generate a comprehensive report of hydroponics system status
+  mode: single
+  sequence:
+    - variables:
+        water_level: "{{ states('sensor.wroommicrousb_water_level') }}"
+        volume: "{{ states('sensor.wroommicrousb_reservoir_current_volume') }}"
+        avg_volume: "{{ states('sensor.wroommicrousb_average_volume_since_last_fertigation') }}"
+        water_temp: "{{ states('sensor.wroommicrousb_reservoir_water_temp') }}"
+        ph_level: "{{ states('sensor.water_quality_monitor_ph') }}"
+        ec_level: "{{ states('sensor.water_quality_monitor_electrical_conductivity') }}"
+        last_fert: "{{ states('sensor.wroommicrousb_last_fertigation_time') }}"
+    - service: persistent_notification.create
+      data:
+        title: "Hydroponics System Report"
+        message: >
+          ## Hydroponics Status Report
+          Generated: {{ now().strftime('%Y-%m-%d %H:%M') }}
+
+          ### Reservoir Stats
+          - Water Level: {{ water_level }} cm
+          - Current Volume: {{ volume }} L
+          - Avg Volume Since Last Fertigation: {{ avg_volume }} L
+          - Water Temperature: {{ water_temp }}°C
+
+          ### Water Quality
+          - pH Level: {{ ph_level }}
+          - EC Level: {{ ec_level }}
+
+          ### System Status
+          - Last Fertigation: {{ last_fert }}
+        notification_id: "hydro_daily_report"

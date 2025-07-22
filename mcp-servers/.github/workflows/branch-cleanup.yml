@@ -1,0 +1,119 @@
+name: MCP Server Branch Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: '0 2 * * 0' # Weekly on Sunday at 2 AM
+
+jobs:
+  cleanup-merged-branches:
+    name: Clean up merged MCP feature branches
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+    - name: Clean up merged MCP feature branches
+      run: |
+        # Determine main branch
+        MAIN_BRANCH="main"
+        if ! git show-ref --verify --quiet refs/remotes/origin/main; then
+          MAIN_BRANCH="master"
+        fi
+        
+        echo "Using main branch: $MAIN_BRANCH"
+        
+        # Get list of merged branches
+        git branch -r --merged origin/$MAIN_BRANCH | \
+          grep -E 'origin/feature/mcp-' | \
+          grep -v "origin/$MAIN_BRANCH" | \
+          sed 's/origin\///' | \
+          while read branch; do
+            echo "Deleting merged MCP feature branch: $branch"
+            git push origin --delete "$branch" || echo "Failed to delete $branch"
+          done
+          
+    - name: Clean up stale MCP feature branches
+      run: |
+        # Find branches older than 30 days with no recent activity
+        CUTOFF_DATE=$(date -d '30 days ago' --iso-8601)
+        
+        git for-each-ref --format='%(refname:short) %(committerdate:iso8601)' refs/remotes/origin/feature/mcp-* | \
+          while read branch date; do
+            if [[ "$date" < "$CUTOFF_DATE" ]]; then
+              echo "MCP feature branch $branch is older than 30 days (last commit: $date)"
+              # Check if branch has open PR
+              BRANCH_NAME=$(echo "$branch" | sed 's/origin\///')
+              PR_COUNT=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq length)
+              
+              if [[ "$PR_COUNT" -eq 0 ]]; then
+                echo "No open PR found, marking for deletion: $BRANCH_NAME"
+                git push origin --delete "$BRANCH_NAME" || echo "Failed to delete $BRANCH_NAME"
+              else
+                echo "Open PR exists, keeping branch: $BRANCH_NAME"
+              fi
+            fi
+          done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Archive old feature documentation
+      run: |
+        # Archive feature documentation for cleaned up branches
+        if [[ -d "docs/features" ]]; then
+          mkdir -p "docs/features/archived"
+          
+          # Find orphaned feature docs (no corresponding branch)
+          for doc in docs/features/*.md; do
+            if [[ -f "$doc" ]]; then
+              feature_name=$(basename "$doc" .md)
+              branch_name="feature/mcp-$feature_name"
+              
+              # Check if branch still exists
+              if ! git show-ref --verify --quiet refs/remotes/origin/"$branch_name"; then
+                echo "Archiving documentation for $feature_name (no corresponding branch)"
+                mv "$doc" "docs/features/archived/"
+              fi
+            fi
+          done
+          
+          # Commit changes if any files were moved
+          if [[ -n "$(git status --porcelain docs/features/archived/)" ]]; then
+            git add docs/features/archived/
+            git commit -m "docs: archive feature documentation for cleaned up branches"
+            git push origin main || git push origin master
+          fi
+        fi
+        
+    - name: Generate cleanup report
+      run: |
+        echo "# MCP Server Branch Cleanup Report" > cleanup-report.md
+        echo "Generated on: $(date)" >> cleanup-report.md
+        echo "" >> cleanup-report.md
+        echo "## Active MCP Feature Branches" >> cleanup-report.md
+        git branch -r | grep 'origin/feature/mcp-' | wc -l | \
+          xargs echo "Total active MCP feature branches:" >> cleanup-report.md
+        echo "" >> cleanup-report.md
+        echo "## Recent Cleanup Actions" >> cleanup-report.md
+        echo "- Merged MCP feature branches cleaned up" >> cleanup-report.md
+        echo "- Stale MCP feature branches removed (older than 30 days)" >> cleanup-report.md
+        echo "- Feature documentation archived for removed branches" >> cleanup-report.md
+        echo "" >> cleanup-report.md
+        echo "## Current MCP Feature Branches" >> cleanup-report.md
+        git branch -r | grep 'origin/feature/mcp-' | sed 's/origin\///' >> cleanup-report.md
+        
+    - name: Upload cleanup report
+      uses: actions/upload-artifact@v3
+      with:
+        name: mcp-branch-cleanup-report
+        path: cleanup-report.md

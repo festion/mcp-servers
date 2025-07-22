@@ -1,0 +1,239 @@
+---
+# =============================================================================
+# RELIABLE APPLIANCE NOTIFICATIONS - CUSTOMER INTEGRATION PACKAGE
+# =============================================================================
+# Production-ready customer integration package for reliable appliance
+# notification system with comprehensive testing and monitoring capabilities
+#
+# Customer Integration Features:
+# - Plug-and-play installation
+# - Configurable notification channels
+# - Built-in testing and validation
+# - Production monitoring and alerts
+# - Customer-specific customization options
+#
+# Pipeline: Development → QA → Production
+# Version: 1.0.0
+# Date: July 7, 2025
+# =============================================================================
+
+# =============================================================================
+# CUSTOMER CONFIGURATION
+# =============================================================================
+
+input_text:
+  # Customer Information
+  customer_name:
+    name: "Customer Name"
+    initial: "Customer Integration"
+    max: 100
+    icon: mdi:account-group
+
+  customer_environment:
+    name: "Customer Environment"
+    initial: "Production Ready"
+    max: 100
+    icon: mdi:domain
+
+  integration_version:
+    name: "Integration Version"
+    initial: "1.0.0"
+    max: 50
+    icon: mdi:tag
+
+# Customer-specific settings
+input_boolean:
+  # Enable/Disable Features
+  customer_alexa_enabled:
+    name: "Enable Alexa Notifications"
+    initial: true
+    icon: mdi:amazon-alexa
+
+  customer_mobile_enabled:
+    name: "Enable Mobile Notifications"
+    initial: false
+    icon: mdi:cellphone
+
+  customer_email_enabled:
+    name: "Enable Email Notifications"
+    initial: false
+    icon: mdi:email
+
+  customer_sms_enabled:
+    name: "Enable SMS Notifications"
+    initial: false
+    icon: mdi:message-text
+
+  customer_testing_mode:
+    name: "Enable Testing Mode"
+    initial: true
+    icon: mdi:test-tube
+
+  customer_monitoring_enabled:
+    name: "Enable Monitoring"
+    initial: true
+    icon: mdi:monitor
+
+input_select:
+  # Customer notification preferences
+  customer_notification_priority:
+    name: "Notification Priority Level"
+    options:
+      - "Essential Only"
+      - "Standard"
+      - "Comprehensive"
+    initial: "Standard"
+    icon: mdi:priority-high
+
+  customer_quiet_hours_mode:
+    name: "Quiet Hours Mode"
+    options:
+      - "Disabled"
+      - "Reduced Volume"
+      - "Mobile Only"
+      - "Silent"
+    initial: "Reduced Volume"
+    icon: mdi:volume-low
+
+input_number:
+  # Customer-configurable thresholds
+  customer_success_rate_threshold:
+    name: "Required Success Rate"
+    min: 95
+    max: 100
+    step: 0.1
+    initial: 99.0
+    unit_of_measurement: "%"
+    icon: mdi:target
+
+  customer_latency_threshold:
+    name: "Max Acceptable Latency"
+    min: 1
+    max: 10
+    step: 0.1
+    initial: 3.0
+    unit_of_measurement: "s"
+    icon: mdi:timer
+
+  customer_reliability_threshold:
+    name: "Required Reliability"
+    min: 95
+    max: 100
+    step: 0.1
+    initial: 99.5
+    unit_of_measurement: "%"
+    icon: mdi:shield-check
+
+# =============================================================================
+# CUSTOMER INTEGRATION SENSORS
+# =============================================================================
+
+template:
+  - sensor:
+      # Customer Integration Status
+      - name: "Customer Integration Status"
+        unique_id: customer_integration_status
+        state: >
+          {% set channels = [
+            states('input_boolean.customer_alexa_enabled'),
+            states('input_boolean.customer_mobile_enabled'),
+            states('input_boolean.customer_email_enabled'),
+            states('input_boolean.customer_sms_enabled')
+          ] | select('eq', 'on') | list | length %}
+          {% set monitoring = is_state(
+            'input_boolean.customer_monitoring_enabled', 'on') %}
+          {% set testing = is_state(
+            'input_boolean.customer_testing_mode', 'on') %}
+          {% if channels > 0 and monitoring %}
+            {{ "Fully Integrated" if channels >= 2 else "Basic Integration" }}
+          {% else %}
+            "Configuration Required"
+          {% endif %}
+        icon: mdi:integration
+        attributes:
+          active_channels: >
+            {{ [
+              states('input_boolean.customer_alexa_enabled'),
+              states('input_boolean.customer_mobile_enabled'),
+              states('input_boolean.customer_email_enabled'),
+              states('input_boolean.customer_sms_enabled')
+            ] | select('eq', 'on') | list | length }}
+          monitoring_enabled: >
+            {{ states('input_boolean.customer_monitoring_enabled') }}
+          testing_enabled: >
+            {{ states('input_boolean.customer_testing_mode') }}
+
+      # Customer Compliance Score
+      - name: "Customer Compliance Score"
+        unique_id: customer_compliance_score
+        state: >
+          {% set success_ok = states(
+            'sensor.appliance_notification_test_success_rate'
+          ) | float(0) >= states(
+            'input_number.customer_success_rate_threshold'
+          ) | float(99) %}
+          {% set latency_ok = states(
+            'sensor.appliance_notification_avg_latency'
+          ) | float(10) <= states(
+            'input_number.customer_latency_threshold'
+          ) | float(3) %}
+          {% set reliability_ok = states(
+            'sensor.appliance_system_reliability'
+          ) | float(0) >= states(
+            'input_number.customer_reliability_threshold'
+          ) | float(99.5) %}
+          {% set monitoring_ok = is_state(
+            'input_boolean.customer_monitoring_enabled', 'on') %}
+
+          {% set score = [success_ok, latency_ok, reliability_ok,
+                         monitoring_ok] | select | list | length %}
+          {{ (score / 4 * 100) | round(1) }}
+        unit_of_measurement: "%"
+        icon: mdi:check-circle
+        attributes:
+          success_rate_compliant: >
+            {{ states('sensor.appliance_notification_test_success_rate')
+               | float(0) >= states(
+                 'input_number.customer_success_rate_threshold')
+               | float(99) }}
+          latency_compliant: >
+            {{ states('sensor.appliance_notification_avg_latency')
+               | float(10) <= states(
+                 'input_number.customer_latency_threshold')
+               | float(3) }}
+          reliability_compliant: >
+            {{ states('sensor.appliance_system_reliability')
+               | float(0) >= states(
+                 'input_number.customer_reliability_threshold')
+               | float(99.5) }}
+          monitoring_compliant: >
+            {{ states('input_boolean.customer_monitoring_enabled') }}
+
+  - binary_sensor:
+      # Customer Integration Health
+      - name: "Customer Integration Healthy"
+        unique_id: customer_integration_healthy
+        state: >
+          {% set compliance = states('sensor.customer_compliance_score')
+                              | float(0) %}
+          {% set channels = states(
+            'sensor.customer_integration_status.active_channels')
+                           | int(0) %}
+          {{ compliance >= 80 and channels >= 1 }}
+        icon: mdi:heart-pulse
+        attributes:
+          compliance_score: >
+            {{ states('sensor.customer_compliance_score') }}%
+          active_channels: >
+            {{ states('sensor.customer_integration_status.active_channels') }}
+
+      # Production Ready Status
+      - name: "Customer Production Ready"
+        unique_id: customer_production_ready
+        state: >
+          {% set compliance = states('sensor.customer_compliance_score')
+                              | float(0) %}
+          {% set integration_status = states(
+            'sensor.customer_integration_status') %}
+          {{ compliance >= 95 and integration_status == "Fully Integrated" }}
+        icon: mdi:rocket-launch

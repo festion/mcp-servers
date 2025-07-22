@@ -1,0 +1,432 @@
+# Critical Missing Automations - Restored
+# These automations were identified as unavailable and restored with proper entity references
+
+# Low Reservoir Level Alert (standalone)
+- id: low_reservior_level_alert
+  alias: "Low Reservior Level Alert"
+  description: "Standalone alert for low reservoir levels with multiple notification channels"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.wroommicrousb_reservoir_current_volume
+      below: 3  # Critical level in liters
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: sensor.wroommicrousb_reservoir_current_volume
+      state: 
+        - "unknown"
+        - "unavailable"
+      not: true
+  action:
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        title: "🚨 Critical: Low Reservoir"
+        message: "Reservoir critically low: {{ states('sensor.wroommicrousb_reservoir_current_volume') }}L. Immediate attention required!"
+        data:
+          priority: high
+          channel: "critical_alerts"
+          tag: "critical_reservoir"
+    - service: tts.speak
+      target:
+        entity_id: media_player.everywhere
+      data:
+        message: "Critical alert: Hydroponics reservoir water level is dangerously low at {{ states('sensor.wroommicrousb_reservoir_current_volume') }} liters. Please refill immediately."
+    - service: persistent_notification.create
+      data:
+        title: "🚨 Critical Reservoir Alert"
+        message: "Water level: {{ states('sensor.wroommicrousb_reservoir_current_volume') }}L - Refill immediately!"
+        notification_id: "critical_reservoir_alert"
+  mode: single
+
+# RO Filter Safety Controls
+- id: ro_filter_safety
+  alias: "RO Filter Safety Controls"
+  description: "Safety monitoring and controls for reverse osmosis filter system"
+  trigger:
+    # Check every hour during active hours
+    - platform: time_pattern
+      hours: "/1"
+      id: routine_check
+    
+    # Emergency check if valve has been open too long
+    - platform: state
+      entity_id: valve.dual_water_timer_valve_1
+      to: "open"
+      for:
+        hours: 2  # Emergency shutoff after 2 hours
+      id: emergency_shutoff
+    
+    # Monitor water quality changes
+    - platform: numeric_state
+      entity_id: sensor.water_quality_monitor_total_dissolved_solids
+      above: 800  # High TDS indicates filter needs replacement
+      id: filter_replacement_needed
+      
+  action:
+    - choose:
+        # Routine safety check
+        - conditions:
+            - condition: trigger
+              id: routine_check
+          sequence:
+            - if:
+                # Check if valve has been open too long
+                - condition: and
+                  conditions:
+                    - condition: state
+                      entity_id: valve.dual_water_timer_valve_1
+                      state: "open"
+                    - condition: template
+                      value_template: >
+                        {% set opened_time = states('input_datetime.ro_valve_opened_timestamp') %}
+                        {% if opened_time not in ['unknown', 'unavailable', ''] %}
+                          {{ (now().timestamp() - as_datetime(opened_time).timestamp()) > 5400 }}
+                        {% else %}
+                          false
+                        {% endif %}
+              then:
+                - service: persistent_notification.create
+                  data:
+                    title: "⚠️ RO Filter Warning"
+                    message: "RO valve has been open for over 90 minutes. Check system status."
+                    notification_id: "ro_filter_warning"
+        
+        # Emergency shutoff
+        - conditions:
+            - condition: trigger
+              id: emergency_shutoff
+          sequence:
+            - service: valve.close_valve
+              target:
+                entity_id: valve.dual_water_timer_valve_1
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: "🚨 RO Safety Shutoff"
+                message: "RO valve was open for 2+ hours and has been automatically closed for safety."
+                data:
+                  priority: high
+                  channel: "safety_alerts"
+            - service: persistent_notification.create
+              data:
+                title: "🚨 RO Emergency Shutoff"
+                message: "Valve automatically closed after 2 hours. Check for leaks or system issues."
+                notification_id: "ro_emergency_shutoff"
+        
+        # Filter replacement needed
+        - conditions:
+            - condition: trigger
+              id: filter_replacement_needed
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: "🔧 RO Filter Maintenance"
+                message: "RO filter may need replacement. TDS: {{ states('sensor.water_quality_monitor_total_dissolved_solids') }} ppm"
+                data:
+                  channel: "maintenance_alerts"
+  mode: parallel
+
+# Device Health Monitoring System
+- id: device_health_monitor
+  alias: "Integrated Device Health Monitoring System"
+  description: "Comprehensive device health monitoring with integration status tracking"
+  trigger:
+    # Run health checks every 15 minutes
+    - platform: time_pattern
+      minutes: "/15"
+      id: health_check
+    
+    # Check when Home Assistant starts
+    - platform: homeassistant
+      event: start
+      id: startup_check
+      
+    # Monitor critical device state changes
+    - platform: state
+      entity_id:
+        - binary_sensor.slzb_06_zigbee_connected
+        - sensor.integration_health_status
+      id: critical_device_change
+      
+  action:
+    - choose:
+        # Startup health check
+        - conditions:
+            - condition: trigger
+              id: startup_check
+          sequence:
+            - delay:
+                minutes: 5  # Allow system to stabilize
+            - service: system_log.write
+              data:
+                message: "Device Health Monitor: Starting comprehensive health check"
+                level: info
+            - service: script.generate_inactive_devices_report
+            
+        # Regular health monitoring
+        - conditions:
+            - condition: trigger
+              id: health_check
+          sequence:
+            - variables:
+                integration_health: "{{ states('sensor.integration_health_status') | float(0) }}"
+                zigbee_health: "{{ states('binary_sensor.slzb_06_zigbee_connected') }}"
+                unavailable_entities: >
+                  {% set domains = ['light', 'switch', 'sensor', 'binary_sensor'] %}
+                  {% set unavailable = namespace(count=0, entities=[]) %}
+                  {% for domain in domains %}
+                    {% for entity in states[domain] %}
+                      {% if entity.state in ['unavailable', 'unknown'] %}
+                        {% set unavailable.count = unavailable.count + 1 %}
+                        {% set unavailable.entities = unavailable.entities + [entity.entity_id] %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                  {{ unavailable.count }}
+            
+            # Alert if health drops significantly
+            - if:
+                - condition: template
+                  value_template: "{{ integration_health < 85 }}"
+              then:
+                - service: notify.mobile_app_pixel_9_pro_xl
+                  data:
+                    title: "⚠️ System Health Alert"
+                    message: "Integration health dropped to {{ integration_health }}%. {{ unavailable_entities }} entities unavailable."
+                    data:
+                      channel: "system_health"
+                      tag: "health_alert"
+            
+            # Alert if Zigbee coordinator offline
+            - if:
+                - condition: template
+                  value_template: "{{ zigbee_health == 'off' }}"
+              then:
+                - service: persistent_notification.create
+                  data:
+                    title: "🚨 Zigbee Coordinator Offline"
+                    message: "Zigbee coordinator is not connected. Many devices may be unavailable."
+                    notification_id: "zigbee_offline"
+                    
+        # Critical device state changes
+        - conditions:
+            - condition: trigger
+              id: critical_device_change
+          sequence:
+            - service: system_log.write
+              data:
+                message: >
+                  Device Health Monitor: Critical device state change detected - 
+                  {{ trigger.entity_id }} changed to {{ trigger.to_state.state }}
+                level: warning
+  mode: parallel
+
+# Home Security and Safety System
+- id: home_security
+  alias: "Home Security and Safety"
+  description: "Integrated security and safety monitoring system"
+  trigger:
+    # Monitor door/window sensors
+    - platform: state
+      entity_id: lock.front_door
+      to: "unlocked"
+      id: door_unlocked
+      
+    # Monitor for unusual activity when away
+    - platform: state
+      entity_id: binary_sensor.motion_sensor
+      to: "on"
+      id: motion_detected
+      for:
+        seconds: 30
+        
+    # Water leak detection
+    - platform: state
+      entity_id: binary_sensor.dishwasher_door_window_door_is_open
+      to: "on"
+      for:
+        hours: 6
+      id: dishwasher_door_open_long
+      
+    # Monitor critical system components
+    - platform: state
+      entity_id: 
+        - binary_sensor.slzb_06_zigbee_connected
+      to: "off"
+      for:
+        minutes: 10
+      id: critical_system_offline
+      
+  condition:
+    # Only run when people are home or security is needed
+    - condition: template
+      value_template: true  # Always monitor for safety
+      
+  action:
+    - choose:
+        # Door unlocked notification
+        - conditions:
+            - condition: trigger
+              id: door_unlocked
+          sequence:
+            - if:
+                # Alert if door unlocked when nobody home
+                - condition: state
+                  entity_id: zone.home
+                  state: "0"
+              then:
+                - service: notify.mobile_app_pixel_9_pro_xl
+                  data:
+                    title: "🚨 Security Alert"
+                    message: "Front door unlocked while nobody is home!"
+                    data:
+                      priority: high
+                      channel: "security_alerts"
+                      
+        # Motion detection when away
+        - conditions:
+            - condition: trigger
+              id: motion_detected
+          sequence:
+            - if:
+                - condition: state
+                  entity_id: zone.home
+                  state: "0"
+              then:
+                - service: notify.mobile_app_pixel_9_pro_xl
+                  data:
+                    title: "🚨 Motion Alert"
+                    message: "Motion detected at home while nobody is present!"
+                    data:
+                      priority: high
+                      channel: "security_alerts"
+                      
+        # Dishwasher door safety
+        - conditions:
+            - condition: trigger
+              id: dishwasher_door_open_long
+          sequence:
+            - service: tts.speak
+              target:
+                entity_id: media_player.kitchen_tablet
+              data:
+                message: "Safety reminder: The dishwasher door has been open for over 6 hours."
+                
+        # Critical system offline
+        - conditions:
+            - condition: trigger
+              id: critical_system_offline
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: "🚨 System Critical"
+                message: "Critical system component offline: {{ trigger.entity_id }}"
+                data:
+                  priority: high
+                  channel: "system_alerts"
+  mode: parallel
+
+# Appliance Status Notifications
+- id: appliance_notifications
+  alias: "Appliance Status Notifications"
+  description: "Comprehensive appliance status monitoring and notifications"
+  trigger:
+    # Dishwasher status changes
+    - platform: state
+      entity_id: sensor.dishwasher_machine_state
+      id: dishwasher_change
+      
+    # Dryer status changes  
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      to: "finished"
+      id: dryer_finished
+      
+    # Washing machine completion
+    - platform: numeric_state
+      entity_id: sensor.washing_machine_electric_consumption_w
+      below: 5
+      for:
+        minutes: 3
+      id: washing_machine_finished
+      
+    # Water quality alerts
+    - platform: numeric_state
+      entity_id: sensor.water_quality_monitor_ph
+      below: 5.5
+      id: ph_too_low
+      
+    - platform: numeric_state
+      entity_id: sensor.water_quality_monitor_ph
+      above: 8.5
+      id: ph_too_high
+      
+  action:
+    - choose:
+        # Dishwasher notifications
+        - conditions:
+            - condition: trigger
+              id: dishwasher_change
+          sequence:
+            - if:
+                - condition: template
+                  value_template: "{{ trigger.to_state.state == 'run' }}"
+              then:
+                - service: tts.speak
+                  target:
+                    entity_id: media_player.kitchen_tablet
+                  data:
+                    message: "Dishwasher cycle has started."
+            - if:
+                - condition: template
+                  value_template: "{{ trigger.to_state.state == 'stop' }}"
+              then:
+                - service: tts.speak
+                  target:
+                    entity_id: media_player.kitchen_tablet
+                  data:
+                    message: "Dishwasher cycle is complete."
+                    
+        # Dryer finished
+        - conditions:
+            - condition: trigger
+              id: dryer_finished
+          sequence:
+            - service: tts.speak
+              target:
+                entity_id: 
+                  - media_player.master_echo_dot
+                  - media_player.everywhere
+              data:
+                message: "Dryer cycle is complete! Please remove your clothes to prevent wrinkles."
+                
+        # Washing machine finished
+        - conditions:
+            - condition: trigger
+              id: washing_machine_finished
+          sequence:
+            - service: tts.speak
+              target:
+                entity_id: media_player.master_echo_dot
+              data:
+                message: "Washing machine cycle is complete! Time to move clothes to the dryer."
+                
+        # Water quality alerts
+        - conditions:
+            - condition: trigger
+              id: 
+                - ph_too_low
+                - ph_too_high
+          sequence:
+            - service: notify.mobile_app_pixel_9_pro_xl
+              data:
+                title: "⚠️ Water Quality Alert"
+                message: >
+                  {% if trigger.id == 'ph_too_low' %}
+                    pH too low: {{ states('sensor.water_quality_monitor_ph') }}
+                  {% else %}
+                    pH too high: {{ states('sensor.water_quality_monitor_ph') }}
+                  {% endif %}
+                data:
+                  channel: "water_quality"
+  mode: parallel

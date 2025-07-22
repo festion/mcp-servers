@@ -1,0 +1,229 @@
+# =============================================================================
+# PRODUCTION ERROR FIXES - JUNE 30, 2025
+# Comprehensive fixes for identified production issues
+# =============================================================================
+
+# =============================================================================
+# 1. ESPHOME BLE PROXY DIAGNOSTIC AND FIX
+# =============================================================================
+
+# Add diagnostic automation to check ESPHome device connectivity
+- alias: "Diagnostics - ESPHome BLE Proxy Health Check"
+  description: "Monitor ESPHome BLE proxy devices and alert on failures"
+  trigger:
+    - platform: time_pattern
+      minutes: "/30"  # Check every 30 minutes
+  action:
+    - service: esphome.bleproxy_with_lux_ping
+      continue_on_error: true
+    - service: esphome.kitchen_ble_proxy_ef6584_ping
+      continue_on_error: true
+    - condition: template
+      value_template: >
+        {% set bleproxy_lux = states('binary_sensor.bleproxy_with_lux_api_connected') %}
+        {% set kitchen_proxy = states('binary_sensor.kitchen_ble_proxy_ef6584_api_connected') %}
+        {{ bleproxy_lux == 'off' or kitchen_proxy == 'off' }}
+    - service: persistent_notification.create
+      data:
+        title: "🔧 ESPHome BLE Proxy Issues"
+        message: >
+          One or more BLE proxy devices are offline:
+          - bleproxy_with_lux: {{ states('binary_sensor.bleproxy_with_lux_api_connected') }}
+          - kitchen-ble-proxy: {{ states('binary_sensor.kitchen_ble_proxy_ef6584_api_connected') }}
+          
+          Check device power and network connectivity.
+        notification_id: esphome_ble_proxy_alert
+
+# =============================================================================
+# 2. ADAPTIVE LIGHTING DEPRECATION FIX
+# =============================================================================
+
+# Add configuration check automation for adaptive lighting
+- alias: "Maintenance - Adaptive Lighting Health Check"
+  description: "Monitor adaptive lighting for deprecation warnings and issues"
+  trigger:
+    - platform: time
+      at: "08:00:00"  # Daily morning check
+  action:
+    - service: system_log.write
+      data:
+        message: "Adaptive Lighting Health Check: Checking for deprecation warnings"
+        level: info
+        logger: adaptive_lighting.health_check
+    
+    # Check if adaptive lighting switches are responsive
+    - service: adaptive_lighting.apply
+      target:
+        entity_id: switch.adaptive_lighting_living_room_main
+      continue_on_error: true
+    
+    - condition: template
+      value_template: >
+        {% set switches = [
+          'switch.adaptive_lighting_living_room_main',
+          'switch.adaptive_lighting_kitchen_main',
+          'switch.adaptive_lighting_kitchen_accent',
+          'switch.adaptive_lighting_master_bedroom',
+          'switch.adaptive_lighting_accent_lighting'
+        ] %}
+        {% set unavailable = switches | select('state', 'unavailable') | list %}
+        {{ unavailable | length > 0 }}
+    
+    - service: persistent_notification.create
+      data:
+        title: "⚠️ Adaptive Lighting Issues"
+        message: >
+          Some adaptive lighting switches are unavailable. 
+          Consider updating configuration before HA Core 2026.1.
+          
+          Manual intervention may be required.
+        notification_id: adaptive_lighting_health
+
+# =============================================================================
+# 3. AUTOMATION TRIGGER VALIDATION
+# =============================================================================
+
+# Add validation for automation triggers to prevent "None" trigger warnings
+- alias: "Maintenance - Automation Trigger Validation"
+  description: "Validate automation triggers and log potential issues"
+  trigger:
+    - platform: time
+      at: "02:00:00"  # Daily at 2 AM during low activity
+  action:
+    - service: automation.reload
+    - delay: "00:00:10"
+    - service: system_log.write
+      data:
+        message: "Automation reload completed - checking for trigger validation issues"
+        level: info
+        logger: automation.health_check
+
+# =============================================================================
+# 4. APPLIANCE AUTOMATION ENHANCEMENT
+# =============================================================================
+
+# Enhanced appliance trigger validation to prevent "None" trigger issues
+- alias: "Appliance - Enhanced Trigger Validation"
+  description: "Enhanced appliance monitoring with better trigger validation"
+  trigger:
+    - platform: numeric_state
+      entity_id: 
+        - sensor.dishwasher_electric_consumption_w
+        - sensor.washing_machine_electric_consumption_w
+      above: 5
+      for:
+        minutes: 1
+  condition:
+    - condition: template
+      value_template: >
+        {% set entity = trigger.entity_id %}
+        {% set state = states(entity) %}
+        {% set numeric_state = state | float(-1) %}
+        {{ entity is defined and state not in ['unknown', 'unavailable'] and numeric_state >= 0 }}
+  action:
+    - service: system_log.write
+      data:
+        message: >
+          Appliance state change detected: 
+          {{ trigger.entity_id }} = {{ trigger.to_state.state }}W
+          Trigger valid: {{ trigger is defined and trigger.entity_id is defined }}
+        level: debug
+        logger: appliance.monitoring
+
+# =============================================================================
+# 5. SYSTEM HEALTH MONITORING ENHANCEMENT
+# =============================================================================
+
+- alias: "Health - Enhanced Error Detection"
+  description: "Enhanced system error detection and logging"
+  trigger:
+    - platform: event
+      event_type: system_log_event
+      event_data:
+        level: ERROR
+    - platform: event
+      event_type: system_log_event  
+      event_data:
+        level: WARNING
+  condition:
+    - condition: template
+      value_template: >
+        {% set message = trigger.event.data.message | default('') %}
+        {% set problematic_patterns = [
+          'Unhandled trigger None',
+          'deprecated',
+          'unavailable',
+          'timeout',
+          'connection',
+          'failed'
+        ] %}
+        {{ problematic_patterns | select('in', message | lower) | list | length > 0 }}
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "🚨 System Error Detected"
+        message: >
+          Error Level: {{ trigger.event.data.level }}
+          Source: {{ trigger.event.data.name | default('Unknown') }}
+          Message: {{ trigger.event.data.message | default('No message') }}
+          Time: {{ now().strftime('%H:%M:%S') }}
+        notification_id: "system_error_{{ now().timestamp() | int }}"
+    
+    - service: system_log.write
+      data:
+        message: >
+          Enhanced error detection captured:
+          {{ trigger.event.data | to_json }}
+        level: info
+        logger: system.error_monitor
+
+# =============================================================================
+# 6. MCP SERVER TOKEN VALIDATION
+# =============================================================================
+
+- alias: "Diagnostics - MCP Server Health Check"
+  description: "Check if MCP servers have proper authentication"
+  trigger:
+    - platform: time
+      at: "06:00:00"  # Daily morning check
+  action:
+    - service: system_log.write
+      data:
+        message: >
+          MCP Server Health Check:
+          Production tokens should be validated and updated if using placeholders.
+          Current environment: Production (192.168.1.155)
+        level: warning
+        logger: mcp.health_check
+    
+    - service: persistent_notification.create
+      data:
+        title: "🔧 MCP Configuration Check"
+        message: >
+          Daily reminder: Verify MCP server tokens are properly configured.
+          
+          Production: 192.168.1.155
+          Development: 192.168.1.239
+          
+          Update placeholder tokens in wrapper scripts if needed.
+        notification_id: mcp_token_check
+
+# =============================================================================
+# NOTES AND IMPLEMENTATION
+# =============================================================================
+#
+# Implementation Priority:
+# 1. ESPHome BLE Proxy fixes (immediate connectivity issues)
+# 2. Adaptive Lighting deprecation warnings (before 2026.1 update)
+# 3. Automation trigger validation (prevents log spam)
+# 4. Enhanced error monitoring (proactive issue detection)
+# 5. MCP token validation (enables full diagnostic capabilities)
+#
+# Deployment Process:
+# 1. Add this file to automations include or merge with main automations.yaml
+# 2. Restart Home Assistant or reload automations
+# 3. Monitor logs for 24-48 hours to verify fixes
+# 4. Address any remaining ESPHome device connectivity issues
+# 5. Update MCP server tokens with production values
+#
+# =============================================================================

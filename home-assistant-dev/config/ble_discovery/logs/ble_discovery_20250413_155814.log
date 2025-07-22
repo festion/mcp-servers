@@ -1,0 +1,48 @@
+2025-04-13 15:58:14,523 - BLE Discovery - INFO - [ble_discovery.py:79] - Logging initialized with level info to /config/ble_discovery/logs/ble_discovery_20250413_155814.log
+2025-04-13 15:58:14,524 - BLE Discovery - INFO - [ble_discovery.py:1500] - Enhanced BLE Discovery Add-on started. Base scanning interval: 60 seconds.
+2025-04-13 15:58:14,524 - BLE Discovery - INFO - [ble_discovery.py:1501] - Using gateway topic: BTLE
+2025-04-13 15:58:14,529 - BLE Discovery - INFO - [ble_discovery.py:1417] - Diagnostics saved to /config/ble_discovery/diagnostics/diagnostics_20250413_155814.json
+2025-04-13 15:58:14,529 - BLE Discovery - INFO - [ble_discovery.py:1505] - System diagnostics: Python 3.10.14, Bluetooth adapters: 30
+2025-04-13 15:58:14,543 - BLE Discovery - INFO - [ble_discovery.py:414] - Registering button.bluetooth_scan
+2025-04-13 15:58:14,548 - BLE Discovery - INFO - [ble_discovery.py:433] - Service call failed, trying direct state update
+2025-04-13 15:58:14,555 - BLE Discovery - INFO - [ble_discovery.py:450] - Bluetooth scan button registered via state update
+2025-04-13 15:58:14,576 - BLE Discovery - INFO - [ble_discovery.py:1350] - Creating missing dashboard entity: input_text.new_ble_device_name
+2025-04-13 15:58:14,581 - BLE Discovery - ERROR - [ble_discovery.py:1359] - Failed to create input_text.new_ble_device_name: 400 - 400: Bad Request
+2025-04-13 15:58:14,586 - BLE Discovery - INFO - [ble_discovery.py:1350] - Creating missing dashboard entity: input_text.new_ble_device_mac
+2025-04-13 15:58:14,593 - BLE Discovery - ERROR - [ble_discovery.py:1359] - Failed to create input_text.new_ble_device_mac: 400 - 400: Bad Request
+2025-04-13 15:58:14,598 - BLE Discovery - INFO - [ble_discovery.py:1350] - Creating missing dashboard entity: input_text.new_ble_device_category
+2025-04-13 15:58:14,603 - BLE Discovery - ERROR - [ble_discovery.py:1359] - Failed to create input_text.new_ble_device_category: 400 - 400: Bad Request
+2025-04-13 15:58:14,627 - BLE Discovery - INFO - [ble_discovery.py:1545] - Found relevant sensor entities: ['sensor.ble_gateway_raw_data', 'sensor.ble_uuid_71b2f81728754835a94ef9b6c31a5a24', 'sensor.ble_minor_71b2f81728754835a94ef9b6c31a5a24', 'sensor.ble_uuid_712b1a4d7dd85e2891ff494c74d888c2', 'sensor.ble_minor_e6da24195a85e588f96d94ecdfdbf232', 'sensor.ble_minor_e2c56db5dffb48d2b060d0f5a71096e0']
+2025-04-13 15:58:14,628 - BLE Discovery - INFO - [ble_discovery.py:1546] - Found MQTT entities: ['binary_sensor.ring_mqtt_with_video_streaming_running', 'update.ring_mqtt_with_video_streaming_update', 'sensor.ring_mqtt_with_video_streaming_version', 'sensor.ring_mqtt_with_video_streaming_newest_version', 'sensor.ring_mqtt_with_video_streaming_cpu_percent', 'sensor.ring_mqtt_with_video_streaming_memory_percent', 'binary_sensor.zigbee2mqtt_bridge_connection_state', 'button.zigbee2mqtt_bridge_restart', 'select.zigbee2mqtt_bridge_log_level', 'sensor.zigbee2mqtt_bridge_version']
+2025-04-13 15:58:14,628 - BLE Discovery - INFO - [ble_discovery.py:1571] - No sensors with JSON device data found
+2025-04-13 15:58:14,628 - BLE Discovery - INFO - [ble_discovery.py:1576] - Found ble_gateway_raw_data sensor with state: online
+2025-04-13 15:58:14,628 - BLE Discovery - INFO - [ble_discovery.py:1577] - Attributes: dict_keys(['friendly_name', 'icon', 'devices', 'gateway_id', 'gateway_status', 'last_scan'])
+2025-04-13 15:58:14,628 - BLE Discovery - INFO - [ble_discovery.py:1579] - Device count: 0
+2025-04-13 15:58:14,633 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 15:58:14,641 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 15:59:14,702 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 15:59:14,721 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:00:14,767 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:00:14,780 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:01:14,856 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:01:14,869 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:02:14,940 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:02:14,949 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:03:15,024 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:03:15,035 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:04:15,103 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:04:15,115 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:05:15,190 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:05:15,203 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:06:15,274 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:06:15,287 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:07:15,362 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:07:15,376 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:08:15,452 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:08:15,461 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:09:15,521 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:09:15,531 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:10:15,577 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:10:15,588 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:11:15,643 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:11:15,655 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0

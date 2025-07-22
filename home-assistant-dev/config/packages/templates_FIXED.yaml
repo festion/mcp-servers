@@ -1,0 +1,80 @@
+# FIXED TEMPLATES.YAML - June 2, 2025
+# This file fixes the critical template structure and unit conflicts
+
+template:
+  - sensor:
+      # Basic health monitoring dashboard text 
+      - name: "Health Dashboard Instructions"
+        unique_id: health_dashboard_instructions_fixed
+        state: "Health monitoring active"
+        icon: "mdi:monitor-dashboard"
+        attributes:
+          instructions: >
+            ## Next Steps to Improve System Health:
+
+            ### 1. **Alexa Integration** ({{ states('sensor.alexa_integration_health_percentage_fixed') | default('Unknown') }}% healthy)
+            {% set alexa_failures = state_attr('sensor.alexa_integration_health_percentage_fixed', 'unavailable_alexa_entities') | default(0) %}
+            {% if alexa_failures | int(0) > 0 %}
+            - **{{ alexa_failures }} Alexa entities need attention**
+            - **Action:** Go to Settings > Devices & Services > Alexa Media Player
+            - **Focus:** Jeremy's Alexa App for PC entities
+            {% else %}
+            - ✅ **All Alexa entities working properly**
+            {% endif %}
+
+            ### 2. **Mobile App Integration** ({{ states('sensor.mobile_app_integration_health_percentage_fixed') | default('Unknown') }}% healthy)
+            {% set mobile_failures = state_attr('sensor.mobile_app_integration_health_percentage_fixed', 'unavailable_mobile_entities') | default(0) %}
+            {% if mobile_failures | int(0) > 0 %}
+            - **{{ mobile_failures }} Mobile app entities need attention**
+            - **Action:** Check Home Assistant app permissions
+            - **Focus:** Car sensors and alarm permissions
+            {% else %}
+            - ✅ **All mobile app entities working properly**
+            {% endif %}
+
+            ### 3. **Switch Integration** ({{ states('sensor.switch_integration_health_percentage_fixed') | default('Unknown') }}% healthy)
+            {% set switch_failures = state_attr('sensor.switch_integration_health_percentage_fixed', 'unavailable_switches') | default(0) %}
+            {% if switch_failures | int(0) > 0 %}
+            - **{{ switch_failures }} switch entities need attention**
+            - **Action:** Check device connectivity and integrations
+            - **Focus:** Smart light switches and Alexa-controlled devices
+            {% else %}
+            - ✅ **All switch entities working properly**
+            {% endif %}
+
+            ### 4. **Failed Automations** ({{ states('sensor.failed_automations_count_fixed') | default('0') }} failed)
+            {% if states('sensor.failed_automations_count_fixed') | int(0) > 0 %}
+            - **{{ states('sensor.failed_automations_count_fixed') }} automations need configuration fixes**
+            - **Action:** Go to Settings > Automations & Scenes
+            - **Focus:** Check YAML syntax and entity dependencies
+            {% else %}
+            - ✅ **All automations working properly**
+            {% endif %}
+
+            ---
+
+            **Last Updated:** {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+
+  - binary_sensor:
+      # Simple night mode sensor (fixed from original error)
+      - name: "Night Mode Active"
+        unique_id: night_mode_active_fixed
+        state: >
+          {% set current_hour = now().hour %}
+          {{ current_hour >= 22 or current_hour < 6 }}
+        device_class: "occupancy"
+        icon: >
+          {% if this.state %}
+            mdi:weather-night
+          {% else %}
+            mdi:weather-sunny
+          {% endif %}
+        attributes:
+          current_hour: "{{ now().hour }}"
+          next_change: >
+            {% set current_hour = now().hour %}
+            {% if current_hour >= 22 or current_hour < 6 %}
+              {{ (now().replace(hour=6, minute=0, second=0) + timedelta(days=1 if current_hour >= 22 else 0)).strftime('%H:%M') }}
+            {% else %}
+              {{ now().replace(hour=22, minute=0, second=0).strftime('%H:%M') }}
+            {% endif %}

@@ -1,0 +1,199 @@
+# Z-Wave LED Night Mode Package
+# Optimized module for managing LED indicators during night hours
+# Part of Home Assistant Z-Wave LED Control System
+
+# Template Entities
+template:
+  - binary_sensor:
+      - name: "Night Mode Active"
+        unique_id: night_mode_active
+        device_class: motion
+        state: >
+          {% set current_time = now().time() %}
+          {% set night_start = strptime('22:00:00', '%H:%M:%S').time() %}
+          {% set night_end = strptime('07:00:00', '%H:%M:%S').time() %}
+          {{ current_time >= night_start or current_time < night_end }}
+        icon: >
+          {% set current_time = now().time() %}
+          {% set night_start = strptime('22:00:00', '%H:%M:%S').time() %}
+          {% set night_end = strptime('07:00:00', '%H:%M:%S').time() %}
+          {% if current_time >= night_start or current_time < night_end %}
+            mdi:weather-night
+          {% else %}
+            mdi:weather-sunny
+          {% endif %}
+
+  - sensor:
+      - name: "Z-Wave LED Off Count"
+        unique_id: zwave_led_off_count
+        state: >
+          {% set light_switches = [
+            'input_boolean.zwave_led_darken_hobby_light',
+            'input_boolean.zwave_led_darken_gavin_light',
+            'input_boolean.zwave_led_darken_pantry_light',
+            'input_boolean.zwave_led_darken_master_light',
+            'input_boolean.zwave_led_darken_nook_light',
+            'input_boolean.zwave_led_darken_guest_light',
+            'input_boolean.zwave_led_darken_porch_light',
+            'input_boolean.zwave_led_darken_hall_light',
+            'input_boolean.zwave_led_darken_dining_light',
+            'input_boolean.zwave_led_darken_linda_light'
+          ] %}
+          {% set fan_switches = [
+            'input_boolean.zwave_led_darken_hobby_fan',
+            'input_boolean.zwave_led_darken_master_fan',
+            'input_boolean.zwave_led_darken_linda_fan',
+            'input_boolean.zwave_led_darken_guest_fan',
+            'input_boolean.zwave_led_darken_gavin_fan'
+          ] %}
+          {% set all_switches = light_switches + fan_switches %}
+          {{ all_switches | select('is_state', 'on') | list | count }}
+        unit_of_measurement: "switches"
+        state_class: measurement
+
+      - name: "Z-Wave LED Bedroom Count"
+        unique_id: zwave_led_bedroom_count
+        state: >
+          {% set bedroom_switches = [
+            'input_boolean.zwave_led_darken_master_light',
+            'input_boolean.zwave_led_darken_master_fan',
+            'input_boolean.zwave_led_darken_gavin_light',
+            'input_boolean.zwave_led_darken_gavin_fan',
+            'input_boolean.zwave_led_darken_linda_light',
+            'input_boolean.zwave_led_darken_linda_fan',
+            'input_boolean.zwave_led_darken_guest_light',
+            'input_boolean.zwave_led_darken_guest_fan'
+          ] %}
+          {{ bedroom_switches | select('is_state', 'on') | list | count }}
+        unit_of_measurement: "switches"
+        state_class: measurement
+
+# Input Select for Night Mode Configuration
+input_select:
+  zwave_led_night_mode_preset:
+    name: "LED Night Mode Preset"
+    options:
+      - "All LEDs On"
+      - "Bedroom LEDs Off"
+      - "All LEDs Off"
+      - "Custom Selection"
+    initial: "Custom Selection"
+    icon: mdi:led-variant-outline
+
+# Automation for Preset Management
+automation:
+  - id: zwave_led_preset_handler
+    alias: "Z-Wave LED - Preset Handler"
+    description: "Applies LED presets when input_select changes"
+    trigger:
+      - platform: state
+        entity_id: input_select.zwave_led_night_mode_preset
+    action:
+      - variables:
+          all_light_entities:
+            - input_boolean.zwave_led_darken_hobby_light
+            - input_boolean.zwave_led_darken_gavin_light
+            - input_boolean.zwave_led_darken_pantry_light
+            - input_boolean.zwave_led_darken_master_light
+            - input_boolean.zwave_led_darken_nook_light
+            - input_boolean.zwave_led_darken_guest_light
+            - input_boolean.zwave_led_darken_porch_light
+            - input_boolean.zwave_led_darken_hall_light
+            - input_boolean.zwave_led_darken_dining_light
+            - input_boolean.zwave_led_darken_linda_light
+          all_fan_entities:
+            - input_boolean.zwave_led_darken_hobby_fan
+            - input_boolean.zwave_led_darken_master_fan
+            - input_boolean.zwave_led_darken_linda_fan
+            - input_boolean.zwave_led_darken_guest_fan
+            - input_boolean.zwave_led_darken_gavin_fan
+          bedroom_entities:
+            - input_boolean.zwave_led_darken_master_light
+            - input_boolean.zwave_led_darken_master_fan
+            - input_boolean.zwave_led_darken_gavin_light
+            - input_boolean.zwave_led_darken_gavin_fan
+            - input_boolean.zwave_led_darken_linda_light
+            - input_boolean.zwave_led_darken_linda_fan
+            - input_boolean.zwave_led_darken_guest_light
+            - input_boolean.zwave_led_darken_guest_fan
+          common_area_entities:
+            - input_boolean.zwave_led_darken_hall_light
+            - input_boolean.zwave_led_darken_porch_light
+            - input_boolean.zwave_led_darken_dining_light
+            - input_boolean.zwave_led_darken_pantry_light
+            - input_boolean.zwave_led_darken_nook_light
+            - input_boolean.zwave_led_darken_hobby_light
+            - input_boolean.zwave_led_darken_hobby_fan
+      - choose:
+          # All LEDs On Preset
+          - conditions:
+              - condition: state
+                entity_id: input_select.zwave_led_night_mode_preset
+                state: "All LEDs On"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: "{{ all_light_entities + all_fan_entities }}"
+
+          # Bedroom LEDs Off Preset
+          - conditions:
+              - condition: state
+                entity_id: input_select.zwave_led_night_mode_preset
+                state: "Bedroom LEDs Off"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: "{{ bedroom_entities }}"
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: "{{ common_area_entities }}"
+
+          # All LEDs Off Preset
+          - conditions:
+              - condition: state
+                entity_id: input_select.zwave_led_night_mode_preset
+                state: "All LEDs Off"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: "{{ all_light_entities + all_fan_entities }}"
+
+  # Night Mode Status Change Notifications
+  - id: zwave_led_night_mode_notifications
+    alias: "Z-Wave LED - Night Mode Notifications"
+    description: "Provides notifications when night mode begins/ends"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.night_mode_active
+    condition:
+      - condition: template
+        value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
+    action:
+      - choose:
+          # Night Mode Started
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.night_mode_active
+                state: "on"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Z-Wave LED Night Mode"
+                  message: "Night mode is now active (10 PM - 7 AM). Selected LED indicators will be turned off."
+                  notification_id: "zwave_led_night_mode"
+          
+          # Night Mode Ended
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.night_mode_active
+                state: "off"
+            sequence:
+              - service: persistent_notification.create
+                data:
+                  title: "Z-Wave LED Day Mode"
+                  message: "Day mode is now active. All LED indicators have been restored to normal operation."
+                  notification_id: "zwave_led_day_mode"
+              - delay: "00:05:00"  # Clear notification after 5 minutes
+              - service: persistent_notification.dismiss
+                data:
+                  notification_id: "zwave_led_day_mode"

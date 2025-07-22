@@ -1,0 +1,341 @@
+# --- Main Configuration - UTC STANDARDIZED ---
+
+# --- Frontend (Themes & Lovelace) ---
+frontend:
+  themes: !include_dir_merge_named themes
+
+# --- Lovelace Configuration - FIXED JS CONFLICTS ---
+lovelace:
+  mode: yaml
+  resources:
+    # Core cards (load first)
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
+    
+    # Mushroom cards (FIXED: removed conflict between local and better-sliders)
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /local/mushroom-strategy.js
+      type: module
+    
+    # Layout and container cards
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    - url: /hacsfiles/stack-in-card/stack-in-card.js
+      type: module
+    - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+      type: module
+    - url: /hacsfiles/tabbed-card/tabbed-card.js
+      type: module
+    
+    # Data visualization cards
+    - url: /hacsfiles/bar-card/bar-card.js
+      type: module  
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module
+    - url: /hacsfiles/room-summary-card/room-summary-card.js
+      type: module
+    
+    # Utility cards
+    - url: /hacsfiles/hassio-trash-card/trashcard.js
+      type: module
+    
+    # NOTE: Removed conflicting /hacsfiles/lovelace-mushroom-better-sliders/mushroom.js
+    # to prevent JavaScript module conflicts with main Mushroom integration
+    
+  dashboards:
+    adaptive-lighting:
+      mode: yaml
+      filename: dashboards/adaptive_lighting_dashboard.yaml
+      title: Adaptive Lighting
+      icon: mdi:brightness-auto
+      show_in_sidebar: true
+    hydro-ponics:
+      mode: yaml
+      filename: dashboards/hydroponics_dashboard.yaml
+      title: Hydroponics
+      icon: mdi:sprout
+      show_in_sidebar: true
+    led-strips:
+      mode: yaml
+      filename: dashboards/led_strips_dashboard.yaml
+      title: LED Strips
+      icon: mdi:led-strip-variant
+      show_in_sidebar: true
+    zwave-led-control:
+      mode: yaml
+      filename: dashboards/zwave_led_control_dashboard.yaml
+      title: Z-Wave LED Control
+      icon: mdi:led-variant-on
+      show_in_sidebar: true
+    system-health-monitor:
+      mode: yaml
+      filename: dashboards/system_health_dashboard.yaml
+      title: System Health Monitor
+      icon: mdi:heart-pulse
+      show_in_sidebar: true
+    smart-appliance-thresholds:
+      mode: yaml
+      filename: dashboards/smart_appliance_thresholds.yaml
+      title: Smart Appliance Thresholds
+      icon: mdi:home-lightning-bolt
+      show_in_sidebar: true
+    outdoor-ceiling-fan:
+      mode: yaml
+      filename: dashboards/outdoor_ceiling_fan_dashboard.yaml
+      title: Outdoor Ceiling Fan
+      icon: mdi:fan
+      show_in_sidebar: true
+      
+prometheus:
+  namespace: homeassistant
+  include:
+    domains:
+      - sensor
+      - binary_sensor
+      - switch
+      - climate
+      - light
+
+# --- Core Home Assistant Configuration ---
+homeassistant:
+  packages: !include_dir_named packages/
+
+# --- Default Integrations ---
+# Note: default_config automatically tries to load automations.yaml
+# We've renamed automations.yaml to prevent duplicates
+default_config:
+
+
+# All of my yaml automations go here in this directory
+automation: !include_dir_merge_list automations/
+script:
+  - !include scripts.yaml
+  - !include_dir_merge_named scripts/
+scene: !include scenes.yaml
+sensor: !include sensors.yaml
+template: !include templates.yaml
+light: !include lights.yaml
+mqtt: !include mqtt.yaml
+#notify: !include notify.yaml
+group: !include groups.yaml
+
+# Packages configuration moved to homeassistant section
+
+# input_text: !include input_text.yaml - removed as part of notification system cleanup
+input_select: !include input_select.yaml
+input_number: !include input_number.yaml
+input_datetime: !include input_datetime.yaml
+input_boolean: !include input_boolean.yaml
+input_button: !include input_button.yaml
+shell_command: !include shell_command.yaml
+
+# === UTC STANDARDIZED INPUT TEXT ENTITIES ===
+input_text:
+  appliance_last_announcement:
+    name: "Last Announcement Made"
+    max: 255
+    initial: "System Ready"
+    icon: mdi:message-text
+  
+  # === CURATRON DRYING SYSTEM (UTC STANDARDIZED) ===
+  curatron_drying_log:
+    name: "Curatron Drying Log"
+    max: 1000
+    initial: "Drying system ready - UTC standardized"
+    icon: mdi:file-document-outline
+    
+  curatron_completion_date:
+    name: "Expected Completion Date"
+    max: 255
+    initial: "Not currently drying"
+    icon: mdi:calendar-clock
+    
+  curatron_progress_display:
+    name: "Drying Progress Display"
+    max: 500
+    initial: "Ready to start drying process"
+    icon: mdi:progress-clock
+
+  # =============================================================================
+  # 🖱️ DOUBLE-CLICK CONTROL TRACKING - PHASE 3 ENHANCEMENT
+  # =============================================================================
+  # 
+  # Double-click tracking entity for universal adaptive lighting control
+  # as specified in the original implementation document.
+  #
+  # Added: June 16, 2025
+  # Version: Phase 3 Double-Click Implementation
+  # =============================================================================
+
+  last_double_click_entity:
+    name: "🖱️ Last Double-Click Entity"
+    max: 100
+    initial: "none"
+    icon: mdi:gesture-double-tap
+
+# --- HTTP Configuration ---
+webhook:
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+    
+# --- DNS Configuration ---
+# Note: network configuration removed as it's not supported
+# DNS settings should be configured at the OS level instead
+# --- Custom Panel ---
+panel_custom:
+  - name: ha_system
+    sidebar_title: System Info
+    sidebar_icon: mdi:information-variant
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "hassio/system/info"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+      
+
+python_script:
+# Enable Python scripts
+
+
+timer:
+  valve_timer:
+    duration: '01:00:00'
+
+# --- OPTIMIZED LOGGING CONFIGURATION (Post-troubleshooting) ---
+logger:
+  default: warning
+  logs:
+    # === CRITICAL SYSTEM COMPONENTS (Keep at info) ===
+    homeassistant.core: info
+    homeassistant.setup: warning  # Reduced from info
+    homeassistant.config_entries: warning  # Reduced from info
+    
+    # === ESSENTIAL INTEGRATIONS ===
+    # Z-Wave (core functionality)
+    zwave_js_server.server: warning  # Reduced from info
+    zwave_js_server.zwave_client: warning  # Reduced from info
+    zwave_js: warning  # Reduced from info
+    
+    # Automation system (keep for debugging)
+    homeassistant.components.automation: info
+    homeassistant.helpers.template: warning  # Reduced from info
+    homeassistant.helpers.script: warning  # Reduced from info
+    
+    # === DATABASE & PERFORMANCE ===
+    homeassistant.components.recorder: warning  # Reduced from info
+    homeassistant.helpers.entity_registry: error  # Reduced from info
+    homeassistant.helpers.device_registry: error  # Reduced from info
+    homeassistant.helpers.area_registry: error  # Reduced from info
+    
+    # === NETWORK & CONNECTIVITY (Essential only) ===
+    homeassistant.components.network: warning  # Reduced from info
+    homeassistant.util.network: warning  # Reduced from info
+    homeassistant.components.http: warning  # Reduced from info
+    homeassistant.components.http.ban: error  # Keep security issues
+    
+    # Frontend error logging (add to monitor JS issues)
+    homeassistant.components.frontend: warning
+    
+    # === INTEGRATION HEALTH MONITORING ===
+    # Mobile app (reduce noise, already working well)
+    homeassistant.components.mobile_app: warning  # Reduced from info
+    
+    # Cloud services (essential notifications only)
+    homeassistant.components.cloud: warning  # Reduced from info
+    homeassistant.components.nabu_casa: warning  # Reduced from info
+    
+    # Alexa integration (reduce noise)
+    homeassistant.components.alexa: warning  # Reduced from info
+    homeassistant.components.alexa.smart_home: warning  # Reduced from info
+    hass_nabucasa.iot: warning  # Reduced from info
+    
+    # === DISCOVERY & SETUP (Minimal logging) ===
+    homeassistant.components.upnp: error  # Reduced from info
+    homeassistant.components.ssdp: error  # Reduced from info  
+    homeassistant.components.zeroconf: error  # Reduced from info
+    
+    # === SPECIFIC INTEGRATIONS ===
+    # Tuya integration
+    homeassistant.components.tuya: warning
+    
+    # SwitchBot integration
+    homeassistant.components.switchbot: warning  # Reduced from info
+    
+    # Supervisor
+    supervisor.api.ingress: warning  # Reduced from info
+    
+    # Blueprint system
+    homeassistant.components.blueprint: warning  # Reduced from info
+    homeassistant.loader: warning  # Reduced from info
+    
+    # Network utilities
+    urllib3.connectionpool: error  # Reduced from warning
+    
+    # === BROADLINK INTEGRATION (for ceiling fan debugging) ===
+    homeassistant.components.broadlink: info
+    broadlink: info
+    
+    # === PREVIOUSLY PROBLEMATIC INTEGRATIONS (Monitor) ===
+    # 3D Printing integration (now expected offline)
+    homeassistant.components.octoprint: error  # Reduced to error only
+    
+    # Printer integration
+    homeassistant.components.ipp: error  # Reduced to error only
+
+# --- OPTIMIZED SYSTEM LOG CONFIGURATION ---
+system_log:
+  fire_event: true
+  max_entries: 50  # Reduced from 100 for more manageable size
+  
+# --- OPTIMIZED RECORDER CONFIGURATION ---
+recorder:
+  db_url: mysql://homeassistant:Skyw4lk3rH4z3!@core-mariadb/homeassistant
+  # Optimized database settings for manageable size
+  purge_keep_days: 5  # Reduced from 7 days
+  auto_purge: true
+  auto_repack: true
+  # Exclude noisy domains from long-term storage
+  exclude:
+    domains:
+      - sun  # Changes twice daily, not needed in history
+    entity_globs:
+      - sensor.*_uptime  # Uptime sensors create noise
+      - sensor.*_last_boot  # Boot time sensors
+      - sensor.*_cpu_*  # Detailed CPU metrics
+      - sensor.*_memory_*  # Detailed memory metrics
+    entities:
+      - sensor.date  # Changes daily
+      - sensor.time  # Changes every minute
+      - sensor.uptime  # Constantly changing
+  # Include critical entities for troubleshooting
+  include:
+    entities:
+      - sensor.integration_health_percentage  # Our new health monitoring
+      - sensor.unavailable_entities  # Problem tracking
+      - sensor.pitboss_grill_status  # Equipment status
+      - sensor.prusa_mini_printer_status  # Equipment status
+      - binary_sensor.system_health_ok  # System status
+      # UTC Standardized Curatron entities
+      - input_text.curatron_completion_date  # Completion tracking
+      - input_datetime.curatron_drying_start_time  # UTC start time
+      # Outdoor ceiling fan entities
+      - input_select.outdoor_ceiling_fan_speed  # Fan speed control
+      - input_boolean.outdoor_ceiling_fan_light_switch  # Fan light control
+      # Adaptive Lighting Performance Tracking
+      - input_number.adaptive_lighting_sync_count
+      - input_number.adaptive_lighting_override_count
+      - input_number.adaptive_lighting_auto_sync_count
+      # PHASE 3 ADAPTIVE LIGHTING TRACKING
+      - input_text.last_double_click_entity
+      - input_datetime.last_double_click_time
+      - sensor.circadian_color_temperature
+      - sensor.circadian_brightness
+  
+# --- Adaptive Lighting Configuration ---
+adaptive_lighting: !include adaptive_lighting.yaml

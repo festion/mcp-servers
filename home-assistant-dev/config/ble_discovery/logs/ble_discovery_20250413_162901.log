@@ -1,0 +1,18 @@
+2025-04-13 16:29:01,557 - BLE Discovery - INFO - [ble_discovery.py:79] - Logging initialized with level info to /config/ble_discovery/logs/ble_discovery_20250413_162901.log
+2025-04-13 16:29:01,558 - BLE Discovery - INFO - [ble_discovery.py:1500] - Enhanced BLE Discovery Add-on started. Base scanning interval: 60 seconds.
+2025-04-13 16:29:01,558 - BLE Discovery - INFO - [ble_discovery.py:1501] - Using gateway topic: xbg
+2025-04-13 16:29:01,565 - BLE Discovery - INFO - [ble_discovery.py:1417] - Diagnostics saved to /config/ble_discovery/diagnostics/diagnostics_20250413_162901.json
+2025-04-13 16:29:01,565 - BLE Discovery - INFO - [ble_discovery.py:1505] - System diagnostics: Python 3.10.14, Bluetooth adapters: 30
+2025-04-13 16:29:01,576 - BLE Discovery - INFO - [ble_discovery.py:458] - button.bluetooth_scan already exists
+2025-04-13 16:29:01,608 - BLE Discovery - ERROR - [ble_discovery.py:125] - Error creating notification: 502 - 502: Bad Gateway
+2025-04-13 16:29:01,620 - BLE Discovery - ERROR - [ble_discovery.py:180] - Error getting states: 502 - 502: Bad Gateway
+2025-04-13 16:29:01,626 - BLE Discovery - ERROR - [ble_discovery.py:1128] - Error updating input_text: 502 - 502: Bad Gateway
+2025-04-13 16:29:01,627 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:30:01,697 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:30:01,708 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:31:01,781 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:31:01,795 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:32:01,870 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:32:01,881 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0
+2025-04-13 16:33:01,894 - BLE Discovery - INFO - [ble_discovery.py:157] - Found 0 devices in ble_gateway_raw_data
+2025-04-13 16:33:01,907 - BLE Discovery - INFO - [ble_discovery.py:1601] - Regular scan complete. Total discovered devices: 0

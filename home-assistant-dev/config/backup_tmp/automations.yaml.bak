@@ -1,0 +1,1078 @@
+- id: '1742000000001'
+  alias: Update Map Entities Sensor
+  description: Forces the map entities sensor to refresh when presence changes
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.hide_home_icon
+  action:
+  - delay:
+      seconds: 1
+  - service: homeassistant.update_entity
+    target:
+      entity_id: sensor.map_entities
+    data: {}
+  mode: single
+- id: '1746995466029'
+  alias: Easy Customizable Controller Automation Blueprint for Hue Dimmer Switch in Zigbee2MQTT
+  description: ''
+  use_blueprint:
+    path: patpac9/Hue_Dimmer_Switch_Easy_Custom_Buttons.yaml
+    input:
+      controller: Mobile_Dimmer
+      off_released:
+      - type: turn_off
+        device_id: f2eabd628f7af84baf9166c2cb585ba8
+        entity_id: c266f2ce66c448d082768d58c3918198
+        domain: light
+      - type: turn_off
+        device_id: 12b2ce4aaa516b5956e01e35a7d6a85e
+        entity_id: 29a38fd05ecb0277041bf6cb5963760e
+        domain: light
+      - type: turn_off
+        device_id: 2cd3478e7aee66febba5996b8ffa16eb
+        entity_id: 899d97dd70614392b92e7afc51e2780f
+        domain: light
+      - type: turn_off
+        device_id: 7bab56968afa964df42d77c88b555654
+        entity_id: 14804983ed35358a89f3ffa90ae627a1
+        domain: light
+      - type: turn_off
+        device_id: 43986b4871c50eb93bfdf1ad82de3c2a
+        entity_id: b97fc30cc0f066c1ce6a20f8f42e4e03
+        domain: light
+      - type: turn_off
+        device_id: c5c4dacaeb807b93993b511d4fa7f4eb
+        entity_id: 65661f954eaa6e6449ce0fd3ead0f2a3
+        domain: light
+      off_hold_released:
+      - type: turn_off
+        device_id: b95cef0baa9e73db764fad506bb9d247
+        entity_id: b58384c504edd705dc280332896ed012
+        domain: light
+      - type: turn_off
+        device_id: eb37d97c9e843e78038f5432672c8f99
+        entity_id: c4a49eefaf4f01b569db97a155295f6b
+        domain: light
+      - type: turn_off
+        device_id: 37e4369486e8039d1c05e723101c4a2f
+        entity_id: f057792c6e778f751549c24835f6c943
+        domain: light
+      - type: turn_off
+        device_id: b99de5eebe6e2c2b43ee754b0f982583
+        entity_id: 111dd4cf87319bc17ad5b438b9ab8b56
+        domain: light
+      - type: turn_off
+        device_id: 6fc63569b9eecda1c836432cdf9770f4
+        entity_id: 4007f8e403a5631ea68ebee258c27075
+        domain: light
+      on_released:
+      - type: turn_on
+        device_id: f2eabd628f7af84baf9166c2cb585ba8
+        entity_id: c266f2ce66c448d082768d58c3918198
+        domain: light
+      - type: turn_on
+        device_id: 12b2ce4aaa516b5956e01e35a7d6a85e
+        entity_id: 29a38fd05ecb0277041bf6cb5963760e
+        domain: light
+      - type: turn_on
+        device_id: 2cd3478e7aee66febba5996b8ffa16eb
+        entity_id: 899d97dd70614392b92e7afc51e2780f
+        domain: light
+      - type: turn_on
+        device_id: 7bab56968afa964df42d77c88b555654
+        entity_id: 14804983ed35358a89f3ffa90ae627a1
+        domain: light
+      - type: turn_on
+        device_id: 43986b4871c50eb93bfdf1ad82de3c2a
+        entity_id: b97fc30cc0f066c1ce6a20f8f42e4e03
+        domain: light
+      - type: turn_on
+        device_id: c5c4dacaeb807b93993b511d4fa7f4eb
+        entity_id: 65661f954eaa6e6449ce0fd3ead0f2a3
+        domain: light
+      on_hold_released:
+      - type: turn_on
+        device_id: b95cef0baa9e73db764fad506bb9d247
+        entity_id: b58384c504edd705dc280332896ed012
+        domain: light
+      - type: turn_on
+        device_id: eb37d97c9e843e78038f5432672c8f99
+        entity_id: c4a49eefaf4f01b569db97a155295f6b
+        domain: light
+      - type: turn_on
+        device_id: 37e4369486e8039d1c05e723101c4a2f
+        entity_id: f057792c6e778f751549c24835f6c943
+        domain: light
+      - type: turn_on
+        device_id: b99de5eebe6e2c2b43ee754b0f982583
+        entity_id: 111dd4cf87319bc17ad5b438b9ab8b56
+        domain: light
+      - type: turn_on
+        device_id: 6fc63569b9eecda1c836432cdf9770f4
+        entity_id: 4007f8e403a5631ea68ebee258c27075
+        domain: light
+      up_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 12b2ce4aaa516b5956e01e35a7d6a85e
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: f2eabd628f7af84baf9166c2cb585ba8
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: c5c4dacaeb807b93993b511d4fa7f4eb
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 43986b4871c50eb93bfdf1ad82de3c2a
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 7bab56968afa964df42d77c88b555654
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 2cd3478e7aee66febba5996b8ffa16eb
+      on_press: []
+      down_pressed: []
+      down_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: 12b2ce4aaa516b5956e01e35a7d6a85e
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: f2eabd628f7af84baf9166c2cb585ba8
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: c5c4dacaeb807b93993b511d4fa7f4eb
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: 43986b4871c50eb93bfdf1ad82de3c2a
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: 7bab56968afa964df42d77c88b555654
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: 2cd3478e7aee66febba5996b8ffa16eb
+      down_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: b95cef0baa9e73db764fad506bb9d247
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          device_id: eb37d97c9e843e78038f5432672c8f99
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: 37e4369486e8039d1c05e723101c4a2f
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          device_id: b99de5eebe6e2c2b43ee754b0f982583
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 0.1
+        target:
+          device_id: 6fc63569b9eecda1c836432cdf9770f4
+      up_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: b95cef0baa9e73db764fad506bb9d247
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: eb37d97c9e843e78038f5432672c8f99
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 37e4369486e8039d1c05e723101c4a2f
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: b99de5eebe6e2c2b43ee754b0f982583
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          device_id: 6fc63569b9eecda1c836432cdf9770f4
+- id: scheduled_lights
+  alias: Scheduled Light Control
+  description: Controls all scheduled lights (grow lights, morning lights, etc.) based on time
+  trigger:
+  - at: 07:00:00
+    id: morning
+    platform: time
+  - at: '19:00:00'
+    id: evening
+    platform: time
+  - at: '23:00:00'
+    id: night
+    platform: time
+  - event: sunset
+    id: sunset
+    platform: sun
+  - event: sunrise
+    id: sunrise
+    offset: +00:15:00
+    platform: sun
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: morning
+      sequence:
+      - target:
+          area_id: morning_lights
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          area_id: grow_lights
+        service: switch.turn_on
+      - service: persistent_notification.create
+        data:
+          title: Good Morning
+          message: All morning lights activated at {{ now().strftime('%H:%M') }}.
+          notification_id: morning_lights
+    - conditions:
+      - condition: trigger
+        id: evening
+      sequence:
+      - target:
+          area_id: grow_lights
+        service: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: night
+      sequence:
+      - target:
+          area_id: night_lights
+        service: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: sunset
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+      - target:
+          entity_id: light.hall_light
+        data:
+          brightness_pct: 70
+        service: light.turn_on
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_on
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - target:
+          entity_id: light.porch_light
+        service: light.turn_off
+      - target:
+          entity_id: light.hall_light
+        service: light.turn_off
+      - target:
+          entity_id: switch.tp_link_smart_plug_5e5b_walkway
+        service: switch.turn_off
+    default: []
+  - service: system_log.write
+    data:
+      message: Light schedule triggered at {{ now().strftime('%Y-%m-%d %H:%M:%S') }} by {{ trigger.id }}
+      level: info
+  mode: single
+- id: motion_activated_lights
+  alias: Motion Activated Lights
+  description: Controls lights based on motion sensors
+  trigger:
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'on'
+    id: motion_detected
+    platform: state
+  - entity_id:
+    - binary_sensor.eye_of_sauron_motion_detection
+    - binary_sensor.pantry_motion
+    - binary_sensor.garage_motion
+    to: 'off'
+    for:
+      minutes: 2
+    id: motion_cleared
+    platform: state
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      sequence:
+      - target:
+          device_id: f973418ec638992abe6d7ba0689bf2ed
+        data:
+          brightness_pct: 90
+        service: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: motion_detected
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        data:
+          brightness_pct: 80
+        service: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.eye_of_sauron_motion_detection'' }}'
+      sequence:
+      - target:
+          device_id: f973418ec638992abe6d7ba0689bf2ed
+        service: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: motion_cleared
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''binary_sensor.pantry_motion'' }}'
+      sequence:
+      - target:
+          entity_id: light.pantry_light
+        service: light.turn_off
+    default: []
+  mode: restart
+- id: adaptive_lighting
+  alias: Adaptive Lighting
+  description: Adjusts light brightness and color temperature based on time of day
+  trigger:
+  - hours: /1
+    platform: time_pattern
+  condition:
+  - condition: time
+    after: 07:00:00
+    before: '23:00:00'
+  action:
+  - variables:
+      current_hour: '{{ now().hour }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ current_hour >= 7 and current_hour < 10 }}'
+      sequence:
+      - target:
+          area_id: adaptive_lights
+        data:
+          brightness_pct: 90
+          color_temp: 240
+        service: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ current_hour >= 10 and current_hour < 17 }}'
+      sequence:
+      - target:
+          area_id: adaptive_lights
+        data:
+          brightness_pct: 100
+          color_temp: 300
+        service: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ current_hour >= 17 and current_hour < 20 }}'
+      sequence:
+      - target:
+          area_id: adaptive_lights
+        data:
+          brightness_pct: 80
+          color_temp: 380
+        service: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ current_hour >= 20 and current_hour < 23 }}'
+      sequence:
+      - target:
+          area_id: adaptive_lights
+        data:
+          brightness_pct: 60
+          color_temp: 450
+        service: light.turn_on
+    default: []
+  mode: single
+- id: device_health_monitor
+  alias: Integrated Device Health Monitoring System
+  description: Comprehensive monitoring of device health and map entities
+  trigger:
+  - at: 07:30:00
+    id: morning_report
+    platform: time
+  - hours: /1
+    id: hourly_check
+    platform: time_pattern
+  - event_type: state_changed
+    id: state_changed
+    platform: event
+  - at: 02:00:00
+    id: weekly_scan
+    platform: time
+  - entity_id: binary_sensor.hide_home_icon
+    id: map_update
+    platform: state
+  condition:
+  - condition: or
+    conditions:
+    - condition: trigger
+      id: map_update
+    - condition: trigger
+      id: morning_report
+    - condition: trigger
+      id: weekly_scan
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: hourly_check
+      - condition: template
+        value_template: >
+          {% set unavailable_count = 0 %}
+          {% for state in states %}
+            {% if state.entity_id != 'sensor.unavailable_entities' and 
+              state.entity_id != 'sensor.unknown_state_entities' and 
+              state.entity_id != 'sensor.low_battery_devices' and 
+              state.state == 'unavailable' %}
+              {% set unavailable_count = unavailable_count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ unavailable_count > 0 }}
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: state_changed
+      - condition: template
+        value_template: >
+          {% set result = false %}
+          {% if trigger.event.data.new_state is defined and 
+            trigger.event.data.new_state.state == 'unavailable' and
+            trigger.event.data.old_state is defined and
+            trigger.event.data.old_state.state != 'unavailable' %}
+            {% set result = true %}
+          {% endif %}
+          {{ result }}
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: map_update
+      sequence:
+      - delay:
+          seconds: 1
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.map_entities
+        data: {}
+    default: []
+  - if:
+    - condition: template
+      value_template: '{{ should_alert }}'
+    then:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ newly_unavailable != '''' }}'
+        sequence:
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            title: Device Went Offline
+            message: >
+              {{ state_attr(newly_unavailable, 'friendly_name') | default(newly_unavailable) }}
+              has become unavailable.
+            data:
+              tag: device_health
+              ttl: 0
+              priority: high
+      - conditions:
+        - condition: trigger
+          id: morning_report
+        sequence:
+        - service: persistent_notification.create
+          data:
+            title: Daily Device Health Report
+            message: >
+              ## Device Health Summary
+              Generated: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+              * **Unavailable entities**: {{ unavailable_count.count }}
+              * **Unknown entities**: {{ unknown_count.count }}
+              * **Low battery devices**: {{ low_battery_count.count }}
+              {% if unavailable_count.count > 0 %}
+              ## Unavailable Devices
+              {% for entity_id in unavailable_count.list[:10]|sort %}
+                {% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+                * {{ entity_id }} {% if friendly_name %} ({{ friendly_name }}){% endif %}
+              {% endfor %}
+              {% if unavailable_count.list|count > 10 %}
+                ... and {{ unavailable_count.list|count - 10 }} more
+              {% endif %}
+              {% endif %}
+              {% if low_battery_count.count > 0 %}
+              ## Low Battery Devices
+              {% for device in low_battery_count.list|sort %}
+                * {{ device }}
+              {% endfor %}
+              {% endif %}
+            notification_id: daily_device_health
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            title: Device Health Report
+            message: >
+              Daily device health report: {{ unavailable_count.count }} unavailable,
+              {{ unknown_count.count }} unknown, and {{ low_battery_count.count }}
+              low battery devices.
+            data:
+              tag: device_health_daily
+      - conditions:
+        - condition: trigger
+          id: weekly_scan
+        - condition: template
+          value_template: '{{ day_of_week == ''Sunday'' }}'
+        sequence:
+        - service: persistent_notification.create
+          data:
+            title: Weekly Device Health Deep Scan
+            message: >
+              ## Comprehensive Device Health Report
+              Generated: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+              * **Total unavailable entities**: {{ unavailable_count.count }}
+              * **Total unknown entities**: {{ unknown_count.count }}
+              * **Low battery devices**: {{ low_battery_count.count }}
+              {% if unavailable_count.count > 0 %}
+              ## All Unavailable Devices
+              {% for entity_id in unavailable_count.list|sort %}
+                {% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+                * {{ entity_id }} {% if friendly_name %}({{ friendly_name }}){% endif %}
+              {% endfor %}
+              {% endif %}
+              {% if unknown_count.count > 0 %}
+              ## All Unknown State Devices
+              {% for entity_id in unknown_count.list|sort %}
+                {% set friendly_name = state_attr(entity_id, 'friendly_name') %}
+                * {{ entity_id }} {% if friendly_name %}({{ friendly_name }}){% endif %}
+              {% endfor %}
+              {% endif %}
+              {% if long_disconnected|count > 0 %}
+              ## Long Disconnected Devices (>7 days)
+              {% for device in long_disconnected|sort %}
+                * {{ device }}
+              {% endfor %}
+              {% endif %}
+              {% if low_battery_count.count > 0 %}
+              ## Low Battery Devices
+              {% for device in low_battery_count.list|sort %}
+                * {{ device }}
+              {% endfor %}
+              {% endif %}
+            notification_id: weekly_device_health
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            title: Weekly Device Health Report
+            message: >
+              Weekly deep scan complete: Found {{ unavailable_count.count }} unavailable,
+              {{ unknown_count.count }} unknown, and {{ low_battery_count.count }}
+              low battery devices. {{ long_disconnected|count }} devices disconnected
+              for over a week.
+            data:
+              tag: device_health_weekly
+      - conditions:
+        - condition: trigger
+          id: hourly_check
+        sequence:
+        - service: persistent_notification.create
+          data:
+            title: Device Health Update
+            message: >
+              ## Current Device Health
+              Updated: {{ now().strftime('%H:%M') }}
+              * Unavailable: {{ unavailable_count.count }}
+              * Low battery: {{ low_battery_count.count }}
+              {% if unavailable_count.count > 0 %}
+              ### Recent Unavailable Devices:
+              {% for entity_id in unavailable_count.list[:5]|sort %}
+                * {{ entity_id }}
+              {% endfor %}
+              {% if unavailable_count.list|count > 5 %}
+                ... and {{ unavailable_count.list|count - 5 }} more
+              {% endif %}
+              {% endif %}
+            notification_id: hourly_device_health
+      default: []
+  - if:
+    - condition: template
+      value_template: '{{ is_weekly }}'
+    then:
+    - service: system_log.write
+      data:
+        message: Performing weekly system health maintenance
+        level: info
+  variables:
+    unavailable_count: >
+      {% set count = 0 %}
+      {% set list = [] %}
+      {% for state in states %}
+        {% if state.entity_id != 'sensor.unavailable_entities' and 
+          state.entity_id != 'sensor.unknown_state_entities' and 
+          state.entity_id != 'sensor.low_battery_devices' and 
+          state.state == 'unavailable' %}
+          {% set count = count + 1 %}
+          {% set list = list + [state.entity_id] %}
+        {% endif %}
+      {% endfor %}
+      {{ {'count': count, 'list': list} }}
+    unknown_count: >
+      {% set count = 0 %}
+      {% set list = [] %}
+      {% for state in states %}
+        {% if state.entity_id != 'sensor.unavailable_entities' and 
+          state.entity_id != 'sensor.unknown_state_entities' and 
+          state.entity_id != 'sensor.low_battery_devices' and 
+          state.state == 'unknown' %}
+          {% set count = count + 1 %}
+          {% set list = list + [state.entity_id] %}
+        {% endif %}
+      {% endfor %}
+      {{ {'count': count, 'list': list} }}
+    low_battery_count: >
+      {% set count = 0 %}
+      {% set list = [] %}
+      {% for entity in states %}
+        {% if entity.entity_id.startswith('sensor.') and 
+          entity.attributes.device_class is defined and 
+          entity.attributes.device_class == 'battery' and 
+          entity.state|int(-1) > 0 and entity.state|int(-1) < 20 %}
+          {% set count = count + 1 %}
+          {% set list = list + [entity.entity_id ~ ' (' ~ entity.state ~ '%)'] %}
+        {% endif %}
+      {% endfor %}
+      {{ {'count': count, 'list': list} }}
+    long_disconnected: >
+      {% set list = [] %}
+      {% for entity in states %}
+        {% if entity.state == 'unavailable' and 
+          entity.entity_id != 'sensor.unavailable_entities' and 
+          entity.entity_id != 'sensor.unknown_state_entities' and 
+          entity.entity_id != 'sensor.low_battery_devices' %}
+          {% if entity.last_updated is defined and ((now() - entity.last_updated).total_seconds() / 86400) > 7 %}
+            {% set days = ((now() - entity.last_updated).total_seconds() / 86400) | round(1) %}
+            {% set list = list + [entity.entity_id ~ ' (' ~ days ~ ' days)'] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {{ list }}
+    newly_unavailable: >
+      {% if trigger.id == 'state_changed' and trigger.event.data.new_state.state == 'unavailable' %}
+        {{ trigger.event.data.entity_id }}
+      {% else %}
+        {{ '' }}
+      {% endif %}
+    should_alert: >
+      {% set needs_alert = false %}
+      {% if unavailable_count.count > 0 or low_battery_count.count > 0 %}
+        {% set needs_alert = true %}
+      {% endif %}
+      {% if trigger.id == 'state_changed' and newly_unavailable != '' %}
+        {% set needs_alert = true %}
+      {% endif %}
+      {{ needs_alert }}
+    is_weekly: '{{ trigger.id == ''weekly_scan'' }}'
+    day_of_week: '{{ now().strftime(''%A'') }}'
+  mode: single
+- id: ro_filter_safety
+  alias: RO Filter Safety Controls
+  description: Manages safe operation of reverse osmosis system
+  trigger:
+  - entity_id: valve.dual_water_timer_valve_1
+    to: open
+    id: valve_opened
+    platform: state
+  - event_type: timer.finished
+    event_data:
+      entity_id: timer.valve_timer
+    id: timer_finished
+    platform: event
+  condition:
+  - condition: or
+    conditions:
+    - condition: trigger
+      id: valve_opened
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: timer_finished
+      - condition: state
+        entity_id: valve.dual_water_timer_valve_1
+        state: open
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: valve_opened
+      sequence:
+      - service: timer.start
+        target:
+          entity_id: timer.valve_timer
+        data: {}
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Reverse osmosis filtration started. Will run for 60 minutes.
+          title: RO Filter Started
+    - conditions:
+      - condition: trigger
+        id: timer_finished
+      sequence:
+      - service: valve.close_valve
+        target:
+          entity_id: valve.dual_water_timer_valve_1
+        data: {}
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Reverse osmosis filtration completed after 60 minutes.
+          title: RO Filter Finished
+    default: []
+  mode: restart
+- id: curatron_system
+  alias: Curatron System Management
+  description: Manages all Curatron operations including humidity control and drying cycles
+  trigger:
+  - entity_id: sensor.curatron_humidity
+    id: humidity_change
+    platform: state
+  - entity_id: input_number.curatron_drying_threshold
+    id: threshold_change
+    platform: state
+  - entity_id: input_boolean.curatron_drying_active
+    to: 'on'
+    id: start_drying
+    platform: state
+  - entity_id: input_boolean.curatron_drying_active
+    to: 'off'
+    id: stop_drying
+    platform: state
+  - at: 03:00:00
+    id: daily_threshold_update
+    platform: time
+  - entity_id: input_number.curatron_drying_threshold
+    below: 61
+    id: finish_drying
+    platform: numeric_state
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: and
+          conditions:
+          - condition: trigger
+            id: humidity_change
+          - condition: state
+            entity_id: input_boolean.curatron_drying_active
+            state: 'on'
+        - condition: trigger
+          id: threshold_change
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ states(''sensor.curatron_humidity'') | float(0) > states(''input_number.curatron_drying_threshold'') | float(0) }}'
+          sequence:
+          - service: switch.turn_on
+            target:
+              entity_id: switch.curatron_plug
+        - conditions:
+          - condition: template
+            value_template: '{{ states(''sensor.curatron_humidity'') | float(0) <= states(''input_number.curatron_drying_threshold'') | float(0) }}'
+          sequence:
+          - service: switch.turn_off
+            target:
+              entity_id: switch.curatron_plug
+        default: []
+    - conditions:
+      - condition: trigger
+        id: humidity_change
+      - condition: state
+        entity_id: input_boolean.curatron_drying_active
+        state: 'off'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.curatron_humidity
+            above: 60
+          sequence:
+          - service: switch.turn_on
+            target:
+              entity_id: switch.curatron_plug
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.curatron_humidity
+            below: 61
+          sequence:
+          - service: switch.turn_off
+            target:
+              entity_id: switch.curatron_plug
+        default: []
+    - conditions:
+      - condition: trigger
+        id: start_drying
+      sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.curatron_drying_threshold
+        data:
+          value: 80
+      - service: automation.turn_off
+        target:
+          entity_id: automation.curatron_humidity_control
+        data:
+          stop_actions: true
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Curatron drying process started with initial threshold of 80%
+          title: Drying Process Started
+    - conditions:
+      - condition: trigger
+        id: daily_threshold_update
+      - condition: state
+        entity_id: input_boolean.curatron_drying_active
+        state: 'on'
+      - condition: numeric_state
+        entity_id: input_number.curatron_drying_threshold
+        above: 60
+      sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.curatron_drying_threshold
+        data:
+          value: '{{ states(''input_number.curatron_drying_threshold'') | float(60) - 1 }}'
+      - service: system_log.write
+        data:
+          level: info
+          message: 'Curatron Drying: Threshold automatically decreased to {{ states(''input_number.curatron_drying_threshold'') }}%.'
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Curatron drying threshold decreased to {{ states('input_number.curatron_drying_threshold') }}%
+          title: Drying Progress Update
+    - conditions:
+      - condition: trigger
+        id: finish_drying
+      - condition: state
+        entity_id: input_boolean.curatron_drying_active
+        state: 'on'
+      sequence:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.curatron_drying_active
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Curatron drying process completed successfully!
+          title: Drying Process Complete
+    - conditions:
+      - condition: trigger
+        id: stop_drying
+      sequence:
+      - service: automation.turn_on
+        target:
+          entity_id: automation.curatron_humidity_control
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Curatron drying process stopped. Returning to normal humidity control.
+          title: Drying Process Stopped
+    default: []
+  mode: queued
+- id: appliance_notifications
+  alias: Appliance Status Notifications
+  description: Unified notifications for all household appliances
+  trigger:
+  - entity_id: sensor.dishwasher_electric_consumption_w
+    below: 2
+    for:
+      minutes: 5
+    id: dishwasher_finished
+    platform: numeric_state
+  - entity_id: sensor.washing_machine_electric_consumption_w
+    below: 2
+    for:
+      minutes: 1
+    id: washing_machine_finished
+    platform: numeric_state
+  - entity_id: sensor.dryer_job_state
+    from: unknown
+    to: finished
+    id: dryer_finished
+    platform: state
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: dishwasher_finished
+      - condition: state
+        entity_id: binary_sensor.dishwasher_door_window_door_is_open
+        state: 'off'
+    - condition: trigger
+      id: washing_machine_finished
+    - condition: trigger
+      id: dryer_finished
+  action:
+  - if:
+    - condition: template
+      value_template: '{{ appliance_type == ''dishwasher'' }}'
+    then:
+    - repeat:
+        while:
+        - condition: state
+          entity_id: binary_sensor.dishwasher_door_window_door_is_open
+          state: 'off'
+        sequence:
+        - service: notify.alexa_media
+          data:
+            message: Please unload the dishwasher.
+            title: Unload dishwasher
+            target: media_player.everywhere
+            data:
+              type: announce
+        - delay:
+            minutes: 30
+    else:
+    - service: notify.alexa_media_jeremy_s_echo_show_8_2nd_gen
+      data:
+        message: The {{ appliance_type }} is finished!
+    - service: notify.alexa_media_master_echo_dot
+      data:
+        message: The {{ appliance_type }} is finished!
+    - service: notify.alexa_media_office_echo_dot
+      data:
+        message: The {{ appliance_type }} is finished!
+    - service: notify.mobile_app_pixel_9_pro_xl
+      data:
+        message: The {{ appliance_type }} has finished its cycle.
+        title: Appliance Notification
+        data:
+          tag: appliance_{{ appliance_type }}
+  variables:
+    appliance_type: >
+      {% if trigger.id == 'dishwasher_finished' %}
+        dishwasher
+      {% elif trigger.id == 'washing_machine_finished' %}
+        washing machine
+      {% elif trigger.id == 'dryer_finished' %}
+        dryer
+      {% else %}
+        appliance
+      {% endif %}
+  mode: restart
+- id: home_security
+  alias: Home Security and Safety
+  description: Manages door locks, security alerts, and safety features
+  trigger:
+  - entity_id: lock.front_door_lock
+    from: locked
+    to: unlocked
+    for:
+      seconds: 30
+    id: door_unlocked_timeout
+    platform: state
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: door_unlocked_timeout
+      - condition: state
+        entity_id: binary_sensor.front_door_lock_current_status_of_the_door
+        state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: door_unlocked_timeout
+      sequence:
+      - service: lock.lock
+        target:
+          device_id: 7549d9536a0df1258fc38e7bd3b2ae45
+      - service: notify.mobile_app_pixel_9_pro_xl
+        data:
+          message: Front door automatically locked after being unlocked for 30 seconds.
+          title: Door Auto-Locked
+          data:
+            tag: security
+    default: []
+  mode: single
+- id: '1747405262215'
+  alias: Zone Leave Notification
+  description: ''
+  use_blueprint:
+    path: homeassistant/notify_leaving_zone.yaml
+    input:
+      person_entity: person.jeremy
+      zone_entity: zone.home
+      notify_device: 34824b4d416c28be0881d09be2deddfa

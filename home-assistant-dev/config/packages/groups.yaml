@@ -1,0 +1,46 @@
+# Light Groups Configuration
+
+# Basic light groups
+# group.strips removed - LED strips now controlled via RF remote with virtual entity
+
+group.livingroom_lights:
+  name: Living Room Lights
+  entities:
+    - light.amico_smart_recessed_light_1
+    - light.amico_smart_recessed_light_2
+    - light.amico_smart_recessed_light_3
+    - light.amico_smart_recessed_light_4
+    - light.amico_smart_recessed_light_5
+
+group.kitchen_lights:
+  name: Kitchen Lights
+  entities:
+    - light.amico_smart_recessed_light_6
+    - light.amico_smart_recessed_light_7
+    - light.amico_smart_recessed_light_8
+    - light.amico_smart_recessed_light_9
+    - light.amico_smart_recessed_light_10
+    - light.amico_smart_recessed_light_11
+
+# Color bulbs helper for adaptive lighting
+group.color_bulbs:
+  name: All Color Capable Lights
+  entities:
+    - light.kitchen_led_strips  # Virtual entity for RF-controlled LED strips
+    - group.kitchen_lights
+    - group.livingroom_lights
+
+# Nested groups
+group.kitchen_color:
+  name: Kitchen Color Lights
+  entities:
+    - light.kitchen_led_strips
+    - group.kitchen_lights
+
+# Top-level group containing all color lights
+group.all_color:
+  name: All Color Lights
+  entities:
+    - light.kitchen_led_strips
+    - group.kitchen_lights
+    - group.livingroom_lights

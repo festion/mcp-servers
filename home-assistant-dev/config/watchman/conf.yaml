@@ -1,0 +1,62 @@
+---
+# Watchman configuration
+# See documentation at https://github.com/dummylabs/thewatchman
+
+# List of entity or action patterns to ignore
+ignored_entities:
+  # Non-BLE related entities
+  - device_tracker.rav4
+  
+  # Motion sensors that might be temporarily unavailable
+  - binary_sensor.pantry_motion
+  - binary_sensor.garage_motion
+  - binary_sensor.dryer_running
+  
+  # Old notification system entities
+  - input_select.notify*
+  - input_text.notify*
+  - input_datetime.last_fertigation_timestampstamp
+  
+  # Curatron entities with renamed counterparts
+  - input_number.curatron_drying_threshold
+  - input_boolean.curatron_drying_active
+  - input_datetime.last_fertigation_time
+  
+  # Group entities (handled by changed naming)
+  - group.*
+  - light.amico_smart_recessed_light*
+  
+  # Scene entities
+  - light.lamp_2
+  - light.master_light_*
+  - cover.left_curtain
+  - cover.right_curtain
+  
+  # BLE scripts that have been removed
+  - script.scan_bluetooth_devices
+  - script.ble_gateway_reconnect
+  - script.ble_gateway_health_check
+  
+  # Dashboards and entities
+  - switch.water_quality_monitor_warning_buzzer
+  - media_player.kitchen_echo
+  - person.gavin
+  
+  # Deprecated reservoir sensor names
+  - sensor.reserviorsensor_reservior_depth
+  - sensor.reserviorsensor_reservoir_depth
+
+# Actions to ignore
+ignored_actions: []
+
+# Configure report parameters
+report_path: /config/watchman_report.txt
+# Generate a report that can be accessed in the web UI
+persistent_notification: true
+
+# Check frequency
+check_every:
+  minutes: 30
+
+# Run a check at Home Assistant startup
+startup_check: true

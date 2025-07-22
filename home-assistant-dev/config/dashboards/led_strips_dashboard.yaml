@@ -1,0 +1,197 @@
+# Kitchen LED Strips RF Remote Control Dashboard
+title: Kitchen LED Strips Control
+icon: mdi:led-strip-variant
+
+views:
+  - title: LED Strips
+    icon: mdi:led-strip
+    cards:
+      - type: vertical-stack
+        cards:
+          # Main Power Controls
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: input_button.led_strips_power_on
+                name: "Power On"
+                icon: mdi:lightbulb-on
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_power_on
+                theme: 
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+                      color: white;
+                    }
+              
+              - type: button
+                entity: input_button.led_strips_power_off
+                name: "Power Off"
+                icon: mdi:lightbulb-off
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_power_off
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #f44336, #ef5350);
+                      color: white;
+                    }
+
+          # Status Display
+          - type: entities
+            title: "LED Strip Status"
+            entities:
+              - entity: input_boolean.led_strips_power_status
+                name: "Power Status"
+              - entity: input_number.led_strips_brightness_level
+                name: "Brightness Level"
+              - entity: input_number.led_strips_color_temp
+                name: "Color Temperature"
+                secondary_info: >
+                  {% set temp = states('input_number.led_strips_color_temp') | int %}
+                  {% if temp == 1 %}Cool White
+                  {% elif temp == 2 %}Neutral White
+                  {% elif temp == 3 %}Warm White
+                  {% else %}Unknown{% endif %}
+
+          # Brightness Controls
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: input_button.led_strips_brightness_down
+                name: "Dimmer"
+                icon: mdi:brightness-4
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_brightness_down
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #FF9800, #FFB74D);
+                      color: white;
+                    }
+              
+              - type: button
+                entity: input_button.led_strips_brightness_up
+                name: "Brighter"
+                icon: mdi:brightness-6
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_brightness_up
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #FFC107, #FFCA28);
+                      color: white;
+                    }
+
+          # Color Temperature Controls
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: input_button.led_strips_cooler
+                name: "Cooler"
+                icon: mdi:thermometer-minus
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_cooler
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #2196F3, #42A5F5);
+                      color: white;
+                    }
+              
+              - type: button
+                entity: input_button.led_strips_warmer
+                name: "Warmer"
+                icon: mdi:thermometer-plus
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_warmer
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #FF5722, #FF7043);
+                      color: white;
+                    }
+
+          # Color Presets
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: input_button.led_strips_cool_white
+                name: "Cool White"
+                icon: mdi:lightbulb
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_cool_white
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+                      color: #1976D2;
+                    }
+              
+              - type: button
+                entity: input_button.led_strips_neutral_white
+                name: "Neutral"
+                icon: mdi:lightbulb-variant-outline
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_neutral_white
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #F5F5F5, #E0E0E0);
+                      color: #424242;
+                    }
+              
+              - type: button
+                entity: input_button.led_strips_warm_white
+                name: "Warm White"
+                icon: mdi:lightbulb-variant
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  service_data:
+                    entity_id: input_button.led_strips_warm_white
+                theme:
+                  card-mod-card: |
+                    ha-card {
+                      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+                      color: #E65100;
+                    }
+
+          # Quick Actions
+          - type: entities
+            title: "Quick Actions"
+            entities:
+              - type: call-service
+                name: "All On - Warm White"
+                icon: mdi:lightbulb-group
+                service: script.led_strips_rf_warm_white
+                action_name: "Execute"
+              - type: call-service
+                name: "All Off"
+                icon: mdi:lightbulb-group-off
+                service: script.led_strips_rf_power_off
+                action_name: "Execute"

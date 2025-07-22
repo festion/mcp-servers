@@ -1,0 +1,35 @@
+# SYSTEM DIAGNOSTIC AND REPAIR SCRIPT
+# Created: June 8, 2025 - Post 5:25 YAML Refresh  
+# Purpose: Diagnose and repair persistent entity reference issues
+
+cleanup_missing_entity_references:
+  alias: "Cleanup Missing Entity References"
+  description: "Comprehensive cleanup of missing entity references causing errors"
+  mode: single
+  sequence:
+    - service: system_log.write
+      data:
+        level: info
+        message: "Starting entity reference cleanup for sensor.unavailable_entities_2"
+    - service: template.reload
+    - delay:
+        seconds: 2
+    - service: automation.reload
+    - delay:
+        seconds: 2
+    - service: homeassistant.reload_core_config
+    - delay:
+        seconds: 5
+    - service: homeassistant.update_entity
+      data:
+        entity_id:
+          - sensor.integration_health_percentage
+          - sensor.system_health
+          - sensor.unavailable_entities
+          - sensor.failed_automations
+          - binary_sensor.system_health_ok
+    - service: persistent_notification.create
+      data:
+        title: "Entity Cleanup Complete"
+        message: "All health monitoring entities have been reloaded and updated"
+        notification_id: "entity_cleanup_results"

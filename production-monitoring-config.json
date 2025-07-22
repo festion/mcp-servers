@@ -1,0 +1,43 @@
+{
+  "monitoring_profile": "production",
+  "watch_directories": [
+    {
+      "path": "/home/dev/workspace/homelab-gitops-auditor",
+      "recursive": true,
+      "priority": "high",
+      "patterns": ["*.md", "*.js", "*.py", "*.json", "*.yaml"]
+    },
+    {
+      "path": "/home/dev/workspace/mcp-servers",
+      "recursive": true, 
+      "priority": "medium",
+      "patterns": ["*.md", "*.py", "*.js"]
+    },
+    {
+      "path": "/home/dev/workspace/serena",
+      "recursive": true,
+      "priority": "medium", 
+      "patterns": ["*.md", "*.py"]
+    }
+  ],
+  "processing_rules": {
+    "batch_size": 15,
+    "processing_interval": 20,
+    "max_queue_size": 100,
+    "duplicate_detection": true,
+    "content_classification": true,
+    "auto_tagging": true,
+    "wiki_upload": true
+  },
+  "filters": {
+    "exclude_patterns": [
+      "node_modules/**",
+      ".git/**",
+      "__pycache__/**",
+      "*.log",
+      "*.tmp"
+    ],
+    "min_file_size": 50,
+    "max_file_size": 1048576
+  }
+}

@@ -1,0 +1,106 @@
+# ------------------------------------------------------------------
+# This is a self-contained Bermuda Proxy configuration.
+# It merges the contents of 'bermuda-proxy-esp32-orig-full.yaml'
+# and 'bermuda-proxy-include-common.yaml' to avoid using 'packages:'.
+# ------------------------------------------------------------------
+
+substitutions:
+  # --- Device Specific Values (TO BE PROVIDED BY THE INCLUDING FILE) ---
+  devicename_base: "proxy"
+  device_friendly_name: "Proxy"
+  device_comment: "ESPHome proxy tuned for Bermuda"
+  
+  # --- Common Settings (can be overridden by the including file) ---
+  baud_rate: "115200"  # Set to "115200" for serial debugging
+  ble_interval: 320ms
+  ble_window: 300ms
+  proxy_active_scan: "True"  # Set to false to avoid requesting scan info for device names etc
+  proxy_enable_outbound: "True" # Allow HA to make outbound connections via this device
+
+# Main device configuration
+esphome:
+  name: ${devicename_base}
+  friendly_name: ${device_friendly_name}
+  comment: ${device_comment}
+  name_add_mac_suffix: "True"
+
+# Merged ESP32 settings from both files
+esp32:
+  board: esp32dev # Or your specific board
+  framework:
+    type: esp-idf  # This is important for performance
+    sdkconfig_options:
+      # These options can result in better responsiveness
+      CONFIG_BT_BLE_42_FEATURES_SUPPORTED: y
+      # Extend the watchdog timeout to 10 seconds
+      CONFIG_ESP_TASK_WDT_TIMEOUT_S: "10"
+
+logger:
+  # 0 Enables logging, but disables serial-port logging
+  baud_rate: ${baud_rate}
+
+api:
+  # This ensures BLE scanning only happens after connection to Home Assistant
+  on_client_connected:
+     - esp32_ble_tracker.start_scan:
+        continuous: true
+  # This disables BLE tracking when there are no active API connections
+  on_client_disconnected:
+    if:
+      condition:
+        not:
+          api.connected:
+      then:
+        - esp32_ble_tracker.stop_scan:
+
+# BLE tracker configuration
+esp32_ble_tracker:
+  scan_parameters:
+    # Scanning is controlled by the `api` section above, not started automatically
+    continuous: True
+    active: ${proxy_active_scan} # Sends scan-request packets to gather more device info
+    interval: ${ble_interval} # How long to spend on each advertisement channel
+    window:   ${ble_window} # How long to "listen" in each interval
+
+# Bluetooth proxy configuration
+bluetooth_proxy:
+  active: ${proxy_enable_outbound} # Allows outbound connections from HA to devices
+
+# OTA Update configuration
+ota:
+  platform: esphome
+
+# WiFi configuration (uses substitutions from your secrets file)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Note: Add manual_ip settings here if needed, using substitutions
+
+# Failsafe and recovery components
+safe_mode:
+
+button:
+  - platform: restart
+    name: "Restart"
+    entity_category: config
+
+  - platform: factory_reset
+    name: "Factory Reset"
+    id: Reset
+    entity_category: config
+
+  - platform: safe_mode
+    name: "Safe Mode"
+    entity_category: config
+
+sensor:
+  - platform: uptime
+    name: "Uptime"
+    id: uptime_sensor
+    entity_category: diagnostic
+
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"

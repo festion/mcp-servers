@@ -1,0 +1,218 @@
+version: '3.8'
+
+services:
+  github-runner-1:
+    image: github-runner:${DEPLOY_VERSION}
+    container_name: github-runner-1
+    hostname: github-runner-1
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - RUNNER_NAME=runner-1
+      - RUNNER_LABELS=${GITHUB_RUNNER_LABELS}
+      - RUNNER_WORK_DIR=/home/runner/work
+    volumes:
+      - runner1-data:/home/runner/work
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${LOG_DIR}:/var/log/github-runner
+    ports:
+      - "${GITHUB_RUNNER_PORT}:8080"
+    networks:
+      - github-runner-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    labels:
+      - "github-runner=true"
+      - "environment=${DEPLOY_ENV}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  github-runner-2:
+    image: github-runner:${DEPLOY_VERSION}
+    container_name: github-runner-2
+    hostname: github-runner-2
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - RUNNER_NAME=runner-2
+      - RUNNER_LABELS=${GITHUB_RUNNER_LABELS}
+      - RUNNER_WORK_DIR=/home/runner/work
+    volumes:
+      - runner2-data:/home/runner/work
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${LOG_DIR}:/var/log/github-runner
+    ports:
+      - "${GITHUB_RUNNER_PORT}1:8080"
+    networks:
+      - github-runner-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    labels:
+      - "github-runner=true"
+      - "environment=${DEPLOY_ENV}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  github-runner-3:
+    image: github-runner:${DEPLOY_VERSION}
+    container_name: github-runner-3
+    hostname: github-runner-3
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG}
+      - GITHUB_REPO=${GITHUB_REPO}
+      - RUNNER_NAME=runner-3
+      - RUNNER_LABELS=${GITHUB_RUNNER_LABELS}
+      - RUNNER_WORK_DIR=/home/runner/work
+    volumes:
+      - runner3-data:/home/runner/work
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${LOG_DIR}:/var/log/github-runner
+    ports:
+      - "${GITHUB_RUNNER_PORT}2:8080"
+    networks:
+      - github-runner-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    labels:
+      - "github-runner=true"
+      - "environment=${DEPLOY_ENV}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  load-balancer:
+    image: nginx:alpine
+    container_name: github-runner-lb
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - github-runner-network
+    depends_on:
+      - github-runner-1
+      - github-runner-2
+      - github-runner-3
+    restart: unless-stopped
+    labels:
+      - "service=load-balancer"
+      - "environment=${DEPLOY_ENV}"
+
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: github-runner-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "${MONITORING_PORT}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - github-runner-network
+    restart: unless-stopped
+    labels:
+      - "service=monitoring"
+      - "environment=${DEPLOY_ENV}"
+
+  metrics-exporter:
+    image: monitoring:${DEPLOY_VERSION}
+    container_name: github-runner-metrics
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG}
+      - METRICS_PORT=${METRICS_PORT}
+    ports:
+      - "${METRICS_PORT}:${METRICS_PORT}"
+    networks:
+      - github-runner-network
+    restart: unless-stopped
+    labels:
+      - "service=metrics"
+      - "environment=${DEPLOY_ENV}"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: github-runner-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - github-runner-network
+    depends_on:
+      - monitoring
+    restart: unless-stopped
+    labels:
+      - "service=grafana"
+      - "environment=${DEPLOY_ENV}"
+
+  redis:
+    image: redis:alpine
+    container_name: github-runner-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis-data:/data
+    networks:
+      - github-runner-network
+    restart: unless-stopped
+    labels:
+      - "service=redis"
+      - "environment=${DEPLOY_ENV}"
+
+networks:
+  github-runner-network:
+    driver: bridge
+    name: github-runner-network
+
+volumes:
+  runner1-data:
+    driver: local
+  runner2-data:
+    driver: local
+  runner3-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  redis-data:
+    driver: local

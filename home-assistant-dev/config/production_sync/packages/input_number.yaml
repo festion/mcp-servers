@@ -1,0 +1,785 @@
+# =============================================================================
+# EXISTING ENTITIES (PRESERVED)
+# =============================================================================
+
+# Smart Appliance Power Threshold System - Enhanced Input Numbers
+# Multiple threshold levels for intelligent cycle phase detection
+
+hydroponics_fertigation_interval_hours:
+  name: Fertigation Interval
+  initial: 3
+  min: 0
+  max: 12
+  step: 1
+  mode: slider
+  unit_of_measurement: hours
+  icon: mdi:timer-outline
+
+hydroponics_feed_pump_duration:
+  name: Feed Pump Duration
+  initial: 15
+  min: 5
+  max: 60
+  step: 1
+  mode: slider
+  unit_of_measurement: seconds
+  icon: mdi:pump
+
+curatron_drying_threshold_slider:
+  name: Curatron Dry Threshold
+  initial: 60
+  min: 20
+  max: 90
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:water-percent
+  
+curatron_humidity_high_threshold:
+  name: Curatron High Humidity
+  initial: 65
+  min: 20
+  max: 90
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:water-percent-alert
+  
+curatron_humidity_low_threshold:
+  name: Curatron Low Humidity
+  initial: 55
+  min: 20
+  max: 90
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:water-percent-alert
+
+curatron_drying_start_humidity:
+  name: "Drying Start Humidity"
+  initial: 80
+  min: 50
+  max: 95
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:water-percent
+  
+curatron_drying_end_humidity:
+  name: "Drying End Humidity"
+  initial: 60
+  min: 30
+  max: 80
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:water-percent
+  
+curatron_drying_total_days:
+  name: "Drying Total Days"
+  initial: 14
+  min: 3
+  max: 30
+  step: 1
+  mode: slider
+  unit_of_measurement: "days"
+  icon: mdi:calendar-range
+  
+curatron_drying_step_days:
+  name: "Days Per Step"
+  initial: 2
+  min: 1
+  max: 7
+  step: 1
+  mode: slider
+  unit_of_measurement: "days"
+  icon: mdi:calendar-clock
+
+curatron_drying_hysteresis:
+  name: "Drying Hysteresis"
+  initial: 3
+  min: 1
+  max: 10
+  step: 1
+  mode: slider
+  unit_of_measurement: "%"
+  icon: mdi:delta
+
+led_strips_brightness_level:
+  name: "LED Strips Brightness"
+  icon: mdi:brightness-5
+  min: 0
+  max: 100
+  step: 10
+  initial: 50
+  unit_of_measurement: "%"
+  mode: slider
+  
+led_strips_color_temp:
+  name: "LED Strips Color Temp"
+  icon: mdi:palette
+  min: 1
+  max: 3
+  step: 1
+  initial: 2
+  mode: slider
+
+# =============================================================================
+# SMART APPLIANCE POWER THRESHOLD SYSTEM
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# DISHWASHER MULTI-THRESHOLD CONTROLS
+# -----------------------------------------------------------------------------
+
+dishwasher_idle_threshold:
+  name: "Dishwasher Idle Threshold"
+  min: 0
+  max: 50
+  initial: 5
+  step: 1
+  unit_of_measurement: "W"
+  icon: mdi:dishwasher-off
+  mode: slider
+    
+dishwasher_active_threshold:
+  name: "Dishwasher Active Threshold" 
+  min: 0
+  max: 200
+  initial: 50
+  step: 5
+  unit_of_measurement: "W"
+  icon: mdi:dishwasher-alert
+  mode: slider
+    
+dishwasher_peak_threshold:
+  name: "Dishwasher Peak Threshold"
+  min: 0
+  max: 500
+  initial: 150
+  step: 10
+  unit_of_measurement: "W"
+  icon: mdi:heat-wave
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# WASHING MACHINE MULTI-THRESHOLD CONTROLS
+# -----------------------------------------------------------------------------
+
+washing_machine_idle_threshold:
+  name: "Washing Machine Idle Threshold"
+  min: 0
+  max: 50
+  initial: 10
+  step: 1
+  unit_of_measurement: "W"
+  icon: mdi:washing-machine-off
+  mode: slider
+    
+washing_machine_active_threshold:
+  name: "Washing Machine Active Threshold"
+  min: 0
+  max: 300
+  initial: 100
+  step: 5
+  unit_of_measurement: "W"
+  icon: mdi:washing-machine-alert
+  mode: slider
+    
+washing_machine_peak_threshold:
+  name: "Washing Machine Peak Threshold"
+  min: 0
+  max: 800
+  initial: 400
+  step: 10
+  unit_of_measurement: "W"
+  icon: mdi:wave
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# LEGACY APPLIANCE CONTROLS (PRESERVED FOR BACKWARD COMPATIBILITY)
+# -----------------------------------------------------------------------------
+
+appliance_reminder_interval:
+  name: "Reminder Interval (minutes)"
+  min: 5
+  max: 60
+  step: 5
+  initial: 15
+  unit_of_measurement: "min"
+  icon: mdi:timer
+
+# Legacy thresholds - now replaced by multi-threshold system above
+# Kept for backward compatibility with existing automations
+appliance_power_threshold_dishwasher:
+  name: "Dishwasher Active Power Threshold (Legacy)"
+  min: 0
+  max: 200
+  step: 5
+  initial: 50
+  unit_of_measurement: "W"
+  icon: mdi:flash
+
+appliance_power_threshold_washer:
+  name: "Washing Machine Active Power Threshold (Legacy)"
+  min: 0
+  max: 500
+  step: 10
+  initial: 100
+  unit_of_measurement: "W"
+  icon: mdi:flash
+
+# -----------------------------------------------------------------------------
+# FUTURE LEARNING SYSTEM CONTROLS (FRAMEWORK)
+# -----------------------------------------------------------------------------
+
+appliance_learning_sensitivity:
+  name: "Learning Sensitivity"
+  min: 1
+  max: 10
+  initial: 5
+  step: 1
+  unit_of_measurement: "level"
+  icon: mdi:brain
+  mode: slider
+
+appliance_threshold_adjustment_rate:
+  name: "Auto-Adjustment Rate"
+  min: 0.1
+  max: 2.0
+  initial: 1.0
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:tune
+  mode: slider
+
+# =============================================================================
+# ADAPTIVE LIGHTING SYSTEM - ZONE BRIGHTNESS SCALING
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# ZONE BRIGHTNESS SCALING CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_brightness_scale_living_room:
+  name: "🛋️ Living Room Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 1.0
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+adaptive_lighting_brightness_scale_kitchen:
+  name: "🍳 Kitchen Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 1.0
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+adaptive_lighting_brightness_scale_bedrooms:
+  name: "🛋️ Bedrooms Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 0.8
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+adaptive_lighting_brightness_scale_accent:
+  name: "✨ Accent Lights Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 0.7
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+adaptive_lighting_brightness_scale_utility:
+  name: "🔧 Utility Areas Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 0.9
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+adaptive_lighting_brightness_scale_exterior:
+  name: "🏡 Exterior Brightness Scale"
+  min: 0.1
+  max: 2.0
+  initial: 1.2
+  step: 0.1
+  unit_of_measurement: "factor"
+  icon: mdi:brightness-percent
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# ADAPTIVE LIGHTING FINE-TUNING CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_override_sensitivity:
+  name: "Override Detection Sensitivity"
+  min: 1
+  max: 10
+  initial: 5
+  step: 1
+  unit_of_measurement: "level"
+  icon: mdi:motion-sensor
+  mode: slider
+
+adaptive_lighting_sync_delay:
+  name: "Auto-Sync Delay"
+  min: 10
+  max: 120
+  initial: 30
+  step: 5
+  unit_of_measurement: "seconds"
+  icon: mdi:timer-sync
+  mode: slider
+
+adaptive_lighting_transition_speed:
+  name: "Color Transition Speed"
+  min: 5
+  max: 120
+  initial: 30
+  step: 5
+  unit_of_measurement: "seconds"
+  icon: mdi:transition
+  mode: slider
+
+# =============================================================================
+# ADAPTIVE LIGHTING PERFORMANCE COUNTERS - PHASE 2
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# DAILY PERFORMANCE TRACKING
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_sync_count:
+  name: "📊 Daily Sync Count"
+  min: 0
+  max: 10000
+  initial: 0
+  step: 1
+  unit_of_measurement: "syncs"
+  icon: mdi:counter
+  mode: box
+
+adaptive_lighting_override_count:
+  name: "🔍 Daily Override Count"
+  min: 0
+  max: 1000
+  initial: 0
+  step: 1
+  unit_of_measurement: "overrides"
+  icon: mdi:counter
+  mode: box
+
+adaptive_lighting_auto_sync_count:
+  name: "🔄 Daily Auto-Sync Count"
+  min: 0
+  max: 1000
+  initial: 0
+  step: 1
+  unit_of_measurement: "auto-syncs"
+  icon: mdi:counter
+  mode: box
+
+# -----------------------------------------------------------------------------
+# SYSTEM PERFORMANCE METRICS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_efficiency_percentage:
+  name: "⚡ System Efficiency"
+  min: 0
+  max: 100
+  initial: 100
+  step: 0.1
+  unit_of_measurement: "%"
+  icon: mdi:speedometer
+  mode: box
+
+adaptive_lighting_avg_response_time:
+  name: "⚡ Average Response Time"
+  min: 0
+  max: 60
+  initial: 5
+  step: 0.1
+  unit_of_measurement: "seconds"
+  icon: mdi:timer-outline
+  mode: box
+
+adaptive_lighting_zones_active:
+  name: "📍 Active Zones Count"
+  min: 0
+  max: 14
+  initial: 14
+  step: 1
+  unit_of_measurement: "zones"
+  icon: mdi:map-marker-multiple
+  mode: box
+
+# =============================================================================
+# 🌙 CUSTOM CIRCADIAN RHYTHM CONFIGURATION - PHASE 3 ENHANCEMENT
+# =============================================================================
+# 
+# Enhanced circadian configuration for user-customizable schedules
+# and precise color temperature/brightness control as specified in the
+# original adaptive lighting implementation document.
+#
+# Added: June 16, 2025
+# Version: Phase 3 Custom Circadian Implementation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# USER-CONFIGURABLE CIRCADIAN SCHEDULE
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_bedtime_hour:
+  name: "🌙 Bedtime Hour"
+  min: 19
+  max: 23
+  step: 0.5
+  initial: 21.0
+  unit_of_measurement: "hours"
+  icon: mdi:sleep
+  mode: slider
+
+adaptive_lighting_wake_time_hour:
+  name: "🌅 Wake Time Hour" 
+  min: 5
+  max: 10
+  step: 0.5
+  initial: 7.0
+  unit_of_measurement: "hours"
+  icon: mdi:weather-sunset-up
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# BRIGHTNESS CONFIGURATION LIMITS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_max_brightness:
+  name: "☀️ Maximum Brightness"
+  min: 50
+  max: 100
+  step: 5
+  initial: 100
+  unit_of_measurement: "%"
+  icon: mdi:brightness-7
+  mode: slider
+
+adaptive_lighting_min_brightness:
+  name: "🌙 Minimum Brightness"
+  min: 1
+  max: 30
+  step: 1
+  initial: 5
+  unit_of_measurement: "%"
+  icon: mdi:brightness-2
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# COLOR TEMPERATURE RANGE CONFIGURATION
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_max_color_temp:
+  name: "❄️ Maximum Color Temperature"
+  min: 5000
+  max: 6500
+  step: 100
+  initial: 6500
+  unit_of_measurement: "K"
+  icon: mdi:thermometer-high
+  mode: slider
+
+adaptive_lighting_min_color_temp:
+  name: "🔥 Minimum Color Temperature"
+  min: 1800
+  max: 3000
+  step: 100
+  initial: 2000
+  unit_of_measurement: "K"
+  icon: mdi:thermometer-low
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# ADVANCED CIRCADIAN FINE-TUNING
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_sunrise_offset:
+  name: "🌅 Sunrise Offset"
+  min: -60
+  max: 60
+  step: 5
+  initial: 0
+  unit_of_measurement: "minutes"
+  icon: mdi:clock-time-one
+  mode: slider
+
+adaptive_lighting_sunset_offset:
+  name: "🌇 Sunset Offset"
+  min: -60
+  max: 60
+  step: 5
+  initial: 0
+  unit_of_measurement: "minutes"
+  icon: mdi:clock-time-seven
+  mode: slider
+
+adaptive_lighting_midday_brightness_boost:
+  name: "☀️ Midday Brightness Boost"
+  min: 0
+  max: 30
+  step: 5
+  initial: 0
+  unit_of_measurement: "%"
+  icon: mdi:brightness-6
+  mode: slider
+
+adaptive_lighting_evening_wind_down:
+  name: "🌆 Evening Wind-Down Period"
+  min: 30
+  max: 180
+  step: 15
+  initial: 60
+  unit_of_measurement: "minutes"
+  icon: mdi:timer-minus
+  mode: slider
+
+# =============================================================================
+# 🎯 SMART RE-SYNC SYSTEM CONFIGURATION - PHASE 3+ ENHANCEMENT
+# =============================================================================
+#
+# Intelligent re-sync system controls for gradual re-integration of opted-out
+# lights with exponential backoff and effectiveness tracking.
+#
+# Added: June 17, 2025
+# Version: Individual Control + Smart Re-Sync Implementation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# RE-SYNC TIMING CONTROLS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_resync_interval_hours:
+  name: "🔄 Re-sync Attempt Interval (hours)"
+  min: 0.5
+  max: 24
+  step: 0.5
+  initial: 2
+  unit_of_measurement: "hours"
+  icon: mdi:timer-outline
+  mode: slider
+
+adaptive_lighting_resync_max_backoff_hours:
+  name: "⏰ Maximum Backoff Period (hours)"
+  min: 6
+  max: 168
+  step: 2
+  initial: 24
+  unit_of_measurement: "hours"
+  icon: mdi:timer-off-outline
+  mode: slider
+
+# -----------------------------------------------------------------------------
+# RE-SYNC ANALYTICS COUNTERS
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_resync_attempts:
+  name: "📊 Total Re-sync Attempts"
+  min: 0
+  max: 9999
+  step: 1
+  initial: 0
+  icon: mdi:counter
+  mode: box
+
+adaptive_lighting_resync_successes:
+  name: "✅ Successful Re-syncs"
+  min: 0
+  max: 9999
+  step: 1
+  initial: 0
+  icon: mdi:check-circle
+  mode: box
+
+adaptive_lighting_resync_rejections:
+  name: "❌ Rejected Re-syncs"
+  min: 0
+  max: 9999
+  step: 1
+  initial: 0
+  icon: mdi:close-circle
+  mode: box
+
+# =============================================================================
+# 🎛️ ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER INPUT NUMBERS
+# =============================================================================
+# Master controls for centralized temperature and brightness management
+# across all 14 adaptive lighting zones with override mode management
+#
+# Added: June 25, 2025 - Phase 4 Master Control Center Deployment
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# MASTER CONTROL SLIDERS
+# -----------------------------------------------------------------------------
+
+# Master Temperature Control (2000K-6500K)
+adaptive_lighting_master_color_temp:
+  name: "Master Color Temperature"
+  min: 2000
+  max: 6500
+  step: 100
+  initial: 4000
+  unit_of_measurement: "K"
+  icon: mdi:thermometer
+  
+# Master Brightness Control (0-100%)
+adaptive_lighting_master_brightness:
+  name: "Master Brightness"
+  min: 0
+  max: 100
+  step: 5
+  initial: 80
+  unit_of_measurement: "%"
+  icon: mdi:brightness-6
+
+# -----------------------------------------------------------------------------
+# INDIVIDUAL ZONE SCALING FACTORS (0.5x to 2.0x)
+# -----------------------------------------------------------------------------
+
+adaptive_lighting_zone_living_room_scale:
+  name: "Living Room Brightness Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_kitchen_main_scale:
+  name: "Kitchen Main Lights Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_kitchen_accent_scale:
+  name: "Kitchen LED Strips Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 0.8
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_master_bedroom_scale:
+  name: "Master Bedroom Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 0.9
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_guest_bedroom_scale:
+  name: "Guest Bedroom Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_linda_room_scale:
+  name: "Linda's Room Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_gavin_room_scale:
+  name: "Gavin's Room Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_dining_room_scale:
+  name: "Dining Room Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.1
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_hallway_scale:
+  name: "Hallway Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 0.7
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_nook_scale:
+  name: "Nook Area Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 0.8
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_hobby_room_scale:
+  name: "Hobby Room Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.2
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_pantry_scale:
+  name: "Pantry Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_exterior_scale:
+  name: "Exterior Porch Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 1.0
+  icon: mdi:multiplication
+
+adaptive_lighting_zone_accent_scale:
+  name: "Accent Lighting Scale"
+  min: 0.5
+  max: 2.0
+  step: 0.1
+  initial: 0.9
+  icon: mdi:multiplication
+
+# -----------------------------------------------------------------------------
+# AUTO-RESTORE TIMER CONTROLS
+# -----------------------------------------------------------------------------
+
+# Auto-restore timer countdown
+adaptive_lighting_auto_restore_minutes:
+  name: "Auto-restore Timer (Minutes)"
+  min: 0
+  max: 180
+  step: 15
+  initial: 60
+  unit_of_measurement: "min"
+  icon: mdi:timer

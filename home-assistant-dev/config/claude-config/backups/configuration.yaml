@@ -1,0 +1,128 @@
+# --- Main Configuration ---
+
+# --- Frontend (Themes & Lovelace) ---
+frontend:
+  themes: !include_dir_merge_named themes
+
+# --- Lovelace Configuration ---
+lovelace:
+  mode: yaml
+  resources:
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
+    - url: /local/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /local/mushroom-strategy.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
+    - url: /hacsfiles/room-summary-card/room-summary-card.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom-better-sliders/mushroom.js
+      type: module
+    - url: /hacsfiles/hassio-trash-card/trashcard.js
+      type: module
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    - url: /hacsfiles/stack-in-card/stack-in-card.js
+      type: module
+    - url: /hacsfiles/bar-card/bar-card.js
+      type: module  
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module  
+    - url: /hacsfiles/tabbed-card/tabbed-card.js
+      type: module
+  dashboards:
+    hydro-ponics:
+      mode: yaml
+      filename: dashboards/hydroponics_dashboard.yaml
+      title: Hydroponics
+      icon: mdi:sprout
+      show_in_sidebar: true
+      
+prometheus:
+  namespace: homeassistant
+  include:
+    domains:
+      - sensor
+      - binary_sensor
+      - switch
+      - climate
+      - light
+
+# --- Default Integrations ---
+# Note: default_config automatically tries to load automations.yaml
+# We've renamed automations.yaml to prevent duplicates
+default_config:
+
+# only used for GUI automations
+automation: !include automations.yaml
+
+# All of my yaml automations go here in this directory
+automation yaml: !include_dir_merge_list automations/
+script:
+  - !include scripts.yaml
+  - !include_dir_merge_named scripts/
+scene: !include scenes.yaml
+sensor: !include sensors.yaml
+template: !include templates.yaml
+mqtt: !include mqtt.yaml
+#notify: !include notify.yaml
+#recorder: !include recorder.yaml
+
+# Removed packages configuration to avoid conflicts
+
+input_text: !include input_text.yaml
+input_select: !include input_select.yaml
+input_number: !include input_number.yaml
+input_datetime: !include input_datetime.yaml
+input_boolean: !include input_boolean.yaml
+shell_command: !include shell_command.yaml
+
+# --- HTTP Configuration ---
+webhook:
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+    
+# --- DNS Configuration ---
+# Note: network configuration removed as it's not supported
+# DNS settings should be configured at the OS level instead
+# --- Custom Panel ---
+panel_custom:
+  - name: ha_system
+    sidebar_title: System Info
+    sidebar_icon: mdi:information-variant
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "hassio/system/info"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+      
+
+python_script:
+# Enable Python scripts
+
+
+timer:
+  valve_timer:
+    duration: '01:00:00'
+
+
+logger:
+  default: info
+  logs:
+    custom_components.ab_gateway: info
+    zwave_js_server.server: info
+    zwave_js_server.zwave_client: info
+    zwave_js: info
+    supervisor.api.ingress: info
+    homeassistant.components.tuya: info
+
+recorder:
+  db_url: mysql://homeassistant:Skyw4lk3rH4z3!@core-mariadb/homeassistant
+  
+# --- Adaptive Lighting Configuration ---
+adaptive_lighting: !include adaptive_lighting.yaml

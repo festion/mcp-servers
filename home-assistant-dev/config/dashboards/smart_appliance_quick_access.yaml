@@ -1,0 +1,38 @@
+# Quick Access Card for Smart Appliance Thresholds
+# Add this to any dashboard for easy access to threshold controls
+
+type: entities
+title: "🏠 Smart Appliance Control"
+show_header_toggle: false
+entities:
+  - type: section
+    label: "Current Status"
+  - entity: sensor.dishwasher_cycle_phase
+    name: "Dishwasher Phase"
+    secondary_info: last-changed
+  - entity: sensor.washing_machine_cycle_phase
+    name: "Washing Machine Phase"
+    secondary_info: last-changed
+  - entity: binary_sensor.smart_thresholds_configured
+    name: "Smart Thresholds"
+  - type: section
+    label: "Quick Threshold Adjustments"
+  - entity: input_number.dishwasher_active_threshold
+    name: "Dishwasher Active (W)"
+  - entity: input_number.washing_machine_active_threshold
+    name: "Washer Active (W)"
+  - type: section
+    label: "Current Power Usage"
+  - entity: sensor.dishwasher_electric_consumption_w
+    name: "Dishwasher Power"
+  - entity: sensor.washing_machine_electric_consumption_w
+    name: "Washer Power"
+  - type: section
+    label: "Actions"
+  - entity: input_button.stop_dishwasher_reminders
+    name: "Stop DW Reminders"
+  - entity: input_button.stop_washing_machine_reminders
+    name: "Stop WM Reminders"
+
+# Navigation Tip
+# For full threshold control, visit: Dashboards > Smart Appliance Thresholds

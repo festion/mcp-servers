@@ -1,0 +1,53 @@
+last_double_click_entity:
+  name: "🎯 Last Double-Click Entity"
+  initial: "none"
+  icon: mdi:gesture-double-tap
+  max: 100
+
+appliance_last_announcement:
+  name: "Last Announcement Made"
+  initial: "System Ready"
+  icon: mdi:bullhorn
+  max: 255
+
+curatron_drying_log:
+  name: "Curatron Drying Log"
+  initial: "Drying system ready - UTC standardized"
+  icon: mdi:text-box
+  max: 500
+
+curatron_completion_date:
+  name: "Expected Completion Date"
+  initial: "Not currently drying"
+  icon: mdi:calendar-clock
+  max: 100
+
+curatron_drying_quality:
+  name: "Drying Quality Status"
+  initial: "Ready to start drying process"
+  icon: mdi:quality-high
+  max: 200
+
+system_health_status:
+  name: "System Health Status"
+  initial: "System health monitoring initialized"
+  icon: mdi:heart-pulse
+  max: 255
+
+# =============================================================================
+# ADAPTIVE LIGHTING PHASE 4: MASTER CONTROL CENTER INPUT TEXTS
+# =============================================================================
+
+# System Status Display
+adaptive_lighting_system_status:
+  name: "System Status"
+  initial: "Adaptive Mode Active - All zones synchronized"
+  max: 255
+  icon: mdi:information-outline
+
+# Last sync timestamp
+adaptive_lighting_last_sync:
+  name: "Last Sync Timestamp"
+  initial: "Never"
+  max: 100
+  icon: mdi:clock-outline

@@ -1,0 +1,24 @@
+# Health Dashboard Auto-Refresh - FIXED Entity References  
+# Updated: June 8, 2025 - Corrected to use consolidated sensor entities
+# Issue RESOLVED: Using sensor.unavailable_entities (consolidated, no versioning)
+
+- id: health_dashboard_refresh
+  alias: "Health Dashboard Auto-Refresh"
+  description: "Updates dashboard health sensors every 5 minutes - Using consolidated entities"
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"  # Every 5 minutes - aligned with main health monitor
+  action:
+    # Update all health sensors used by the dashboard - CONSOLIDATED REFERENCES
+    - service: homeassistant.update_entity
+      data:
+        entity_id:
+          # CONSOLIDATED ENTITIES - No versioned references
+          - sensor.integration_health_percentage   # Dashboard main gauge (WORKING)
+          - sensor.alexa_integration_health        # Dashboard Alexa status (WORKING)
+          - sensor.mobile_app_integration_health   # Dashboard mobile status (WORKING)  
+          - sensor.switch_integration_health       # Dashboard switch status (WORKING)
+          - sensor.system_health                   # System health percentage (WORKING)
+          - sensor.unavailable_entities            # FIXED: Use consolidated version (no _2)
+          - sensor.failed_automations              # Automation status for health (WORKING)
+          - binary_sensor.system_health_ok         # Dashboard overall health indicator (WORKING)

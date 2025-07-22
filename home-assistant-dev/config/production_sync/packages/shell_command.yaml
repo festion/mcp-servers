@@ -1,0 +1,5 @@
+# Z-Wave JS connectivity check and autorecovery
+check_zwave_js: "bash /config/zwave_js_check.sh"
+
+# Database maintenance (USE WITH CAUTION - HA must be stopped)
+db_maintenance: "bash /config/ha_db_maintenance.sh"

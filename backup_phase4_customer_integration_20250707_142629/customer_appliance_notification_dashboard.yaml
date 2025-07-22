@@ -1,0 +1,395 @@
+# =============================================================================
+# RELIABLE APPLIANCE NOTIFICATIONS - CUSTOMER DASHBOARD
+# =============================================================================
+# Customer-facing dashboard for appliance notification system
+# Designed for customer integration and production monitoring
+# Customer Integration Package
+# Pipeline: Development → QA → Production
+# Version: 1.0.0
+# =============================================================================
+
+title: 🏠 Reliable Appliance Notifications
+views:
+  # =============================================================================
+  # TAB 1: CUSTOMER OVERVIEW & STATUS
+  # =============================================================================
+  - title: 📊 System Overview
+    path: overview
+    icon: mdi:view-dashboard
+    badges:
+      - entity: sensor.customer_integration_status
+        name: Integration Status
+      - entity: sensor.customer_compliance_score
+        name: Compliance
+      - entity: input_select.deployment_environment
+        name: Environment
+    cards:
+      # Customer Integration Summary
+      - type: markdown
+        content: |
+          ## 🏠 {{ states('input_text.customer_name') }}
+          **Reliable Appliance Notification System**
+
+          **Integration Status**: {{ states('sensor.customer_integration_status') }}
+          **Compliance Score**: {{ states('sensor.customer_compliance_score') }}%
+          **Environment**: {{ states('input_select.deployment_environment') }}
+          **Version**: {{ states('input_text.integration_version') }}
+
+          ### 📈 Current Performance
+          - **Success Rate**: {{ states('sensor.appliance_notification_test_success_rate') }}%
+          - **Response Time**: {{ states('sensor.appliance_notification_avg_latency') }}s
+          - **System Health**: {{ states('sensor.appliance_system_reliability') }}%
+
+      # System Health Overview
+      - type: entities
+        title: "💗 System Health"
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.customer_integration_healthy
+            name: "Integration Health"
+            icon: mdi:heart-pulse
+          - entity: binary_sensor.customer_production_ready
+            name: "Production Ready"
+            icon: mdi:rocket-launch
+          - entity: sensor.appliance_system_reliability
+            name: "System Reliability"
+            icon: mdi:shield-check
+          - entity: sensor.notification_channel_count
+            name: "Active Channels"
+            icon: mdi:bullhorn
+
+      # Notification Channels Status
+      - type: entities
+        title: "📢 Notification Channels"
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.customer_alexa_enabled
+            name: "🔊 Alexa Notifications"
+          - entity: input_boolean.customer_mobile_enabled
+            name: "📱 Mobile Notifications"
+          - entity: input_boolean.customer_email_enabled
+            name: "📧 Email Notifications"
+          - entity: input_boolean.customer_sms_enabled
+            name: "💬 SMS Notifications"
+          - type: divider
+          - entity: input_select.customer_notification_priority
+            name: "Notification Priority"
+          - entity: input_select.customer_quiet_hours_mode
+            name: "Quiet Hours Mode"
+
+      # Performance Metrics
+      - type: history-graph
+        title: "📈 Performance Trends (24 Hours)"
+        entities:
+          - sensor.appliance_notification_test_success_rate
+          - sensor.appliance_notification_avg_latency
+          - sensor.appliance_system_reliability
+        hours_to_show: 24
+        refresh_interval: 300
+
+  # =============================================================================
+  # TAB 2: APPLIANCE MONITORING
+  # =============================================================================
+  - title: 🏠 Appliance Status
+    path: appliances
+    icon: mdi:home-automation
+    cards:
+      # Appliance Status Overview
+      - type: entities
+        title: "🍽️ Dishwasher"
+        show_header_toggle: false
+        entities:
+          - entity: sensor.dishwasher_electric_consumption_w
+            name: "Power Consumption"
+            icon: mdi:flash
+          - entity: binary_sensor.dishwasher_reminders_stopped
+            name: "Reminders Active"
+            icon: mdi:bell
+          - entity: input_button.test_dishwasher_notifications
+            name: "Test Notifications"
+            icon: mdi:test-tube
+
+      - type: entities
+        title: "👕 Washing Machine"
+        show_header_toggle: false
+        entities:
+          - entity: sensor.washing_machine_electric_consumption_w
+            name: "Power Consumption"
+            icon: mdi:flash
+          - entity: binary_sensor.washing_machine_reminders_stopped
+            name: "Reminders Active"
+            icon: mdi:bell
+          - entity: input_button.test_washing_machine_notifications
+            name: "Test Notifications"
+            icon: mdi:test-tube
+
+      - type: entities
+        title: "🌪️ Dryer"
+        show_header_toggle: false
+        entities:
+          - entity: sensor.dryer_electric_consumption_w
+            name: "Power Consumption"
+            icon: mdi:flash
+          - entity: binary_sensor.dryer_reminders_stopped
+            name: "Reminders Active"
+            icon: mdi:bell
+          - entity: input_button.test_dryer_notifications
+            name: "Test Notifications"
+            icon: mdi:test-tube
+
+      # Quick Actions
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: input_button.stop_dishwasher_reminders
+            name: "Stop Dishwasher"
+            icon: mdi:dishwasher-off
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.stop_dishwasher_reminders
+
+          - type: button
+            entity: input_button.stop_washing_machine_reminders
+            name: "Stop Washing"
+            icon: mdi:washing-machine-off
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.stop_washing_machine_reminders
+
+          - type: button
+            entity: input_button.stop_dryer_reminders
+            name: "Stop Dryer"
+            icon: mdi:tumble-dryer-off
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.stop_dryer_reminders
+
+  # =============================================================================
+  # TAB 3: CUSTOMER CONFIGURATION
+  # =============================================================================
+  - title: ⚙️ Configuration
+    path: configuration
+    icon: mdi:cog
+    cards:
+      # Customer Information
+      - type: entities
+        title: "🏢 Customer Information"
+        show_header_toggle: false
+        entities:
+          - entity: input_text.customer_name
+            name: "Customer Name"
+          - entity: input_text.customer_environment
+            name: "Environment Description"
+          - entity: input_select.deployment_environment
+            name: "Deployment Environment"
+          - entity: input_select.integration_mode
+            name: "Integration Mode"
+
+      # Performance Thresholds
+      - type: entities
+        title: "🎯 Performance Requirements"
+        show_header_toggle: false
+        entities:
+          - entity: input_number.customer_success_rate_threshold
+            name: "Required Success Rate"
+          - entity: input_number.customer_latency_threshold
+            name: "Max Acceptable Latency"
+          - entity: input_number.customer_reliability_threshold
+            name: "Required Reliability"
+          - type: divider
+          - entity: sensor.customer_compliance_score
+            name: "Current Compliance Score"
+            icon: mdi:check-circle
+
+      # System Controls
+      - type: entities
+        title: "🔧 System Controls"
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.customer_testing_mode
+            name: "Enable Testing Mode"
+          - entity: input_boolean.customer_monitoring_enabled
+            name: "Enable Monitoring"
+          - type: divider
+          - entity: input_button.run_comprehensive_appliance_test
+            name: "🧪 Run System Test"
+            icon: mdi:play-circle
+
+  # =============================================================================
+  # TAB 4: SYSTEM TESTING (CONDITIONAL)
+  # =============================================================================
+  - title: 🧪 Testing & Validation
+    path: testing
+    icon: mdi:test-tube
+    cards:
+      # Testing Overview
+      - type: conditional
+        conditions:
+          - entity: input_boolean.customer_testing_mode
+            state: "on"
+        card:
+          type: markdown
+          content: |
+            ## 🧪 Customer Testing Suite
+
+            **Testing Mode**: {{ "Enabled" if is_state('input_boolean.customer_testing_mode', 'on') else "Disabled" }}
+            **Environment**: {{ states('input_select.deployment_environment') }}
+
+            ### Current Test Results
+            - **Success Rate**: {{ states('sensor.appliance_notification_test_success_rate') }}% (Target: {{ states('input_number.customer_success_rate_threshold') }}%)
+            - **Latency**: {{ states('sensor.appliance_notification_avg_latency') }}s (Target: ≤{{ states('input_number.customer_latency_threshold') }}s)
+            - **Reliability**: {{ states('sensor.appliance_system_reliability') }}% (Target: ≥{{ states('input_number.customer_reliability_threshold') }}%)
+
+      # Test Controls (only shown if testing enabled)
+      - type: conditional
+        conditions:
+          - entity: input_boolean.customer_testing_mode
+            state: "on"
+        card:
+          type: entities
+          title: "🔬 Test Controls"
+          show_header_toggle: false
+          entities:
+            - entity: input_button.run_comprehensive_appliance_test
+              name: "🎯 Run Complete Test Suite"
+            - entity: input_number.test_cycles_count
+              name: "Test Cycles"
+            - type: divider
+            - entity: input_button.test_dishwasher_notifications
+              name: "Test Dishwasher"
+            - entity: input_button.test_washing_machine_notifications
+              name: "Test Washing Machine"
+            - entity: input_button.test_dryer_notifications
+              name: "Test Dryer"
+
+      # Channel Testing (only shown if testing enabled)
+      - type: conditional
+        conditions:
+          - entity: input_boolean.customer_testing_mode
+            state: "on"
+        card:
+          type: entities
+          title: "📢 Channel Testing"
+          show_header_toggle: false
+          entities:
+            - entity: input_button.test_alexa_notification
+              name: "🔊 Test Alexa"
+            - entity: input_button.test_mobile_notification
+              name: "📱 Test Mobile"
+            - entity: input_button.test_email_notification
+              name: "📧 Test Email"
+            - entity: input_button.test_sms_notification
+              name: "💬 Test SMS"
+            - type: divider
+            - entity: input_button.test_all_channels
+              name: "📢 Test All Channels"
+
+      # Test Results History
+      - type: conditional
+        conditions:
+          - entity: input_boolean.customer_testing_mode
+            state: "on"
+        card:
+          type: history-graph
+          title: "📊 Test Results History"
+          entities:
+            - counter.test_successes
+            - counter.test_failures
+            - sensor.appliance_notification_avg_latency
+          hours_to_show: 24
+          refresh_interval: 60
+
+      # Testing Disabled Message
+      - type: conditional
+        conditions:
+          - entity: input_boolean.customer_testing_mode
+            state: "off"
+        card:
+          type: markdown
+          content: |
+            ## Testing Mode Disabled
+
+            Enable testing mode in the Configuration tab to access:
+            - Comprehensive test suite
+            - Individual appliance testing
+            - Multi-channel notification testing
+            - Performance validation
+
+            Testing mode is recommended for:
+            - Initial setup validation
+            - Troubleshooting issues
+            - Performance verification
+            - Regular system health checks
+
+  # =============================================================================
+  # TAB 5: SUPPORT & DOCUMENTATION
+  # =============================================================================
+  - title: 📚 Support
+    path: support
+    icon: mdi:help-circle
+    cards:
+      # System Information
+      - type: entities
+        title: "ℹ️ System Information"
+        show_header_toggle: false
+        entities:
+          - entity: input_text.integration_version
+            name: "Integration Version"
+          - entity: sensor.customer_integration_status
+            name: "Integration Status"
+          - entity: sensor.uptime_since_deployment
+            name: "System Uptime"
+          - entity: input_text.current_test_status
+            name: "Current Status"
+
+      # Support Actions
+      - type: entities
+        title: "🛠️ Support Tools"
+        show_header_toggle: false
+        entities:
+          - entity: input_button.export_diagnostic_data
+            name: "📋 Export Diagnostics"
+          - entity: input_button.create_backup
+            name: "💾 Create Backup"
+          - entity: input_button.generate_user_guide
+            name: "📖 Generate User Guide"
+          - entity: input_button.clear_error_log
+            name: "🧹 Clear Error Log"
+
+      # Quick Reference
+      - type: markdown
+        content: |
+          ## 📖 Quick Reference
+
+          ### Notification Priority Levels
+          - **Essential Only**: Critical alerts only
+          - **Standard**: Important completion notifications
+          - **Comprehensive**: All appliance status updates
+
+          ### Quiet Hours Modes
+          - **Disabled**: Normal notifications 24/7
+          - **Reduced Volume**: Lower volume during set hours
+          - **Mobile Only**: Silent push notifications only
+          - **Silent**: No audio notifications
+
+          ### Performance Targets
+          - **Success Rate**: ≥99% notification delivery
+          - **Response Time**: ≤3 seconds average latency
+          - **Reliability**: ≥99.5% system uptime
+
+          ### Troubleshooting
+          1. Check appliance power sensors are available
+          2. Verify notification channels are configured
+          3. Run system test suite for validation
+          4. Export diagnostics if issues persist
+
+          ### Support
+          - Documentation: Built-in user guide generation
+          - Diagnostics: Automated system data export
+          - Backup: Configuration backup and restore

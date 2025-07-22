@@ -1,0 +1,95 @@
+# HTTP Connection Pool Optimization for Cloud Integrations
+# Consolidated package combining monitoring and restart functionality
+# Addresses Tuya connection pool exhaustion warnings and provides recovery utilities
+
+# Package-level automation for monitoring Tuya connection health
+automation:
+  - id: tuya_connection_monitor
+    alias: "Monitor Tuya Connection Health"
+    description: "Monitor Tuya device connectivity and log health status"
+    trigger:
+      - platform: time_pattern
+        minutes: "/30"  # Check every 30 minutes
+    condition:
+      - condition: template
+        value_template: "{{ states.sensor | selectattr('entity_id', 'search', 'tuya') | list | length > 0 }}"
+    action:
+      - service: system_log.write
+        data:
+          message: "Tuya devices: {{ states.sensor | selectattr('entity_id', 'search', 'tuya') | selectattr('state', 'ne', 'unavailable') | list | length }} online"
+          level: info
+
+# Template sensors for monitoring HTTP connection health
+template:
+  - sensor:
+      - name: "HTTP Connection Pool Status"
+        unique_id: http_connection_pool_status
+        state: >
+          {% set tuya_entities = [] %}
+          {% set online_tuya = [] %}
+          {% for entity in states.sensor %}
+            {% if 'tuya' in entity.entity_id %}
+              {% set tuya_entities = tuya_entities + [entity] %}
+              {% if entity.state != 'unavailable' %}
+                {% set online_tuya = online_tuya + [entity] %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% set total_devices = tuya_entities | length %}
+          {% if total_devices > 0 %}
+            {% set health_pct = (online_tuya | length / total_devices * 100) | round(1) %}
+            {% if health_pct >= 90 %}
+              Healthy
+            {% elif health_pct >= 70 %}
+              Degraded
+            {% else %}
+              Critical
+            {% endif %}
+          {% else %}
+            No Devices
+          {% endif %}
+        icon: >
+          {% set status = this.state %}
+          {% if status == 'Healthy' %}
+            mdi:check-network
+          {% elif status == 'Degraded' %}
+            mdi:alert-network
+          {% elif status == 'Critical' %}
+            mdi:close-network
+          {% else %}
+            mdi:help-network
+          {% endif %}
+        attributes:
+          total_tuya_devices: >
+            {% set tuya_entities = [] %}
+            {% for entity in states.sensor %}
+              {% if 'tuya' in entity.entity_id %}
+                {% set tuya_entities = tuya_entities + [entity] %}
+              {% endif %}
+            {% endfor %}
+            {{ tuya_entities | length }}
+          online_tuya_devices: >
+            {% set online_tuya = [] %}
+            {% for entity in states.sensor %}
+              {% if 'tuya' in entity.entity_id and entity.state != 'unavailable' %}
+                {% set online_tuya = online_tuya + [entity] %}
+              {% endif %}
+            {% endfor %}
+            {{ online_tuya | length }}
+          health_percentage: >
+            {% set tuya_entities = [] %}
+            {% set online_tuya = [] %}
+            {% for entity in states.sensor %}
+              {% if 'tuya' in entity.entity_id %}
+                {% set tuya_entities = tuya_entities + [entity] %}
+                {% if entity.state != 'unavailable' %}
+                  {% set online_tuya = online_tuya + [entity] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% set total_devices = tuya_entities | length %}
+            {% if total_devices > 0 %}
+              {{ (online_tuya | length / total_devices * 100) | round(1) }}
+            {% else %}
+              100
+            {% endif %}

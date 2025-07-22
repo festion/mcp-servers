@@ -1,0 +1,313 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//GitHub Actions Runner//Maintenance Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:GitHub Actions Runner Maintenance
+X-WR-CALDESC:Automated maintenance schedule for GitHub Actions runner deployment
+X-WR-TIMEZONE:UTC
+
+BEGIN:VEVENT
+UID:daily-maintenance-001@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250717T023000Z
+DTEND:20250717T030000Z
+RRULE:FREQ=DAILY
+SUMMARY:Daily Maintenance - GitHub Runner
+DESCRIPTION:Automated daily maintenance tasks:\n- Health checks\n- Log cleanup\n- Disk space monitoring\n- Basic security checks\n- Backup verification
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,AUTOMATED
+PRIORITY:3
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:weekly-maintenance-001@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250720T030000Z
+DTEND:20250720T060000Z
+RRULE:FREQ=WEEKLY;BYDAY=SU
+SUMMARY:Weekly Maintenance - GitHub Runner
+DESCRIPTION:Comprehensive weekly maintenance:\n- Full health assessment\n- Security updates check\n- Performance analysis\n- Log archival\n- Backup integrity check\n- Update assessment
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,AUTOMATED
+PRIORITY:4
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:monthly-maintenance-001@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250801T010000Z
+DTEND:20250801T070000Z
+RRULE:FREQ=MONTHLY;BYMONTHDAY=1
+SUMMARY:Monthly Maintenance - GitHub Runner
+DESCRIPTION:Complete monthly maintenance cycle:\n- Full system maintenance\n- Security audit\n- Capacity analysis\n- Configuration audit\n- System updates\n- Performance optimization
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,PLANNED
+PRIORITY:5
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:quarterly-maintenance-q3-2025@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20251005T010000Z
+DTEND:20251005T070000Z
+SUMMARY:Q4 2025 Quarterly Maintenance - GitHub Runner
+DESCRIPTION:Strategic quarterly maintenance:\n- Comprehensive security audit\n- Capacity planning review\n- Configuration management review\n- Disaster recovery testing\n- Major updates planning
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,STRATEGIC
+PRIORITY:5
+STATUS:TENTATIVE
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Q4 Quarterly Maintenance Reminder
+SUMMARY:GitHub Runner Quarterly Maintenance in 7 days
+TRIGGER:-P7D
+ATTENDEE:admin@homelab.local
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:quarterly-maintenance-q1-2026@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20260105T010000Z
+DTEND:20260105T070000Z
+SUMMARY:Q1 2026 Quarterly Maintenance - GitHub Runner
+DESCRIPTION:Strategic quarterly maintenance:\n- Comprehensive security audit\n- Capacity planning review\n- Configuration management review\n- Disaster recovery testing\n- Major updates planning
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,STRATEGIC
+PRIORITY:5
+STATUS:TENTATIVE
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Q1 Quarterly Maintenance Reminder
+SUMMARY:GitHub Runner Quarterly Maintenance in 7 days
+TRIGGER:-P7D
+ATTENDEE:admin@homelab.local
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:quarterly-maintenance-q2-2026@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20260405T010000Z
+DTEND:20260405T070000Z
+SUMMARY:Q2 2026 Quarterly Maintenance - GitHub Runner
+DESCRIPTION:Strategic quarterly maintenance:\n- Comprehensive security audit\n- Capacity planning review\n- Configuration management review\n- Disaster recovery testing\n- Major updates planning
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,STRATEGIC
+PRIORITY:5
+STATUS:TENTATIVE
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Q2 Quarterly Maintenance Reminder
+SUMMARY:GitHub Runner Quarterly Maintenance in 7 days
+TRIGGER:-P7D
+ATTENDEE:admin@homelab.local
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:quarterly-maintenance-q3-2026@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20260705T010000Z
+DTEND:20260705T070000Z
+SUMMARY:Q3 2026 Quarterly Maintenance - GitHub Runner
+DESCRIPTION:Strategic quarterly maintenance:\n- Comprehensive security audit\n- Capacity planning review\n- Configuration management review\n- Disaster recovery testing\n- Major updates planning
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,STRATEGIC
+PRIORITY:5
+STATUS:TENTATIVE
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Q3 Quarterly Maintenance Reminder
+SUMMARY:GitHub Runner Quarterly Maintenance in 7 days
+TRIGGER:-P7D
+ATTENDEE:admin@homelab.local
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:annual-maintenance-2026@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20260101T180000Z
+DTEND:20260102T100000Z
+SUMMARY:Annual Maintenance 2026 - GitHub Runner
+DESCRIPTION:Annual strategic maintenance and review:\n- System lifecycle assessment\n- Security posture review\n- Compliance audit\n- Technology roadmap review\n- Major version upgrades
+LOCATION:Production Environment
+CATEGORIES:MAINTENANCE,STRATEGIC,ANNUAL
+PRIORITY:5
+STATUS:TENTATIVE
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Annual Maintenance Reminder
+SUMMARY:GitHub Runner Annual Maintenance in 30 days
+TRIGGER:-P30D
+ATTENDEE:admin@homelab.local
+ATTENDEE:management@homelab.local
+END:VALARM
+BEGIN:VALARM
+ACTION:EMAIL
+DESCRIPTION:Annual Maintenance Final Reminder
+SUMMARY:GitHub Runner Annual Maintenance in 7 days
+TRIGGER:-P7D
+ATTENDEE:admin@homelab.local
+ATTENDEE:management@homelab.local
+ATTENDEE:ops@homelab.local
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:health-check-morning@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250717T060000Z
+DTEND:20250717T061500Z
+RRULE:FREQ=DAILY
+SUMMARY:Morning Health Check - GitHub Runner
+DESCRIPTION:Automated morning health check and status verification
+LOCATION:Monitoring System
+CATEGORIES:MONITORING,AUTOMATED
+PRIORITY:2
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:health-check-afternoon@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250717T120000Z
+DTEND:20250717T121500Z
+RRULE:FREQ=DAILY
+SUMMARY:Midday Health Check - GitHub Runner
+DESCRIPTION:Automated midday health check and performance monitoring
+LOCATION:Monitoring System
+CATEGORIES:MONITORING,AUTOMATED
+PRIORITY:2
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:health-check-evening@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250717T180000Z
+DTEND:20250717T181500Z
+RRULE:FREQ=DAILY
+SUMMARY:Evening Health Check - GitHub Runner
+DESCRIPTION:Automated evening health check and end-of-day status
+LOCATION:Monitoring System
+CATEGORIES:MONITORING,AUTOMATED
+PRIORITY:2
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:security-update-check@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250722T100000Z
+DTEND:20250722T103000Z
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Security Update Check - GitHub Runner
+DESCRIPTION:Weekly security update assessment and planning
+LOCATION:Security Operations
+CATEGORIES:SECURITY,MAINTENANCE
+PRIORITY:4
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:backup-verification@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250723T140000Z
+DTEND:20250723T150000Z
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Backup Verification - GitHub Runner
+DESCRIPTION:Weekly backup integrity verification and restoration testing
+LOCATION:Backup Operations
+CATEGORIES:BACKUP,MAINTENANCE
+PRIORITY:4
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:performance-review@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250725T090000Z
+DTEND:20250725T103000Z
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Performance Review - GitHub Runner
+DESCRIPTION:Weekly performance metrics review and optimization planning
+LOCATION:Operations Center
+CATEGORIES:PERFORMANCE,REVIEW
+PRIORITY:3
+STATUS:CONFIRMED
+END:VEVENT
+
+BEGIN:VEVENT
+UID:maintenance-planning@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250730T140000Z
+DTEND:20250730T160000Z
+RRULE:FREQ=MONTHLY;BYDAY=-1WE
+SUMMARY:Monthly Maintenance Planning - GitHub Runner
+DESCRIPTION:Monthly maintenance planning and scheduling session
+LOCATION:Operations Center
+CATEGORIES:PLANNING,MAINTENANCE
+PRIORITY:3
+STATUS:CONFIRMED
+ATTENDEE:CN=Operations Team:MAILTO:ops@homelab.local
+ATTENDEE:CN=Security Team:MAILTO:security@homelab.local
+ORGANIZER:CN=System Administrator:MAILTO:admin@homelab.local
+END:VEVENT
+
+BEGIN:VEVENT
+UID:capacity-review@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250815T100000Z
+DTEND:20250815T120000Z
+RRULE:FREQ=MONTHLY;BYMONTHDAY=15
+SUMMARY:Monthly Capacity Review - GitHub Runner
+DESCRIPTION:Monthly capacity utilization review and planning
+LOCATION:Operations Center
+CATEGORIES:CAPACITY,PLANNING
+PRIORITY:3
+STATUS:CONFIRMED
+ATTENDEE:CN=Operations Team:MAILTO:ops@homelab.local
+ATTENDEE:CN=Management:MAILTO:management@homelab.local
+ORGANIZER:CN=System Administrator:MAILTO:admin@homelab.local
+END:VEVENT
+
+BEGIN:VEVENT
+UID:security-review@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250820T130000Z
+DTEND:20250820T150000Z
+RRULE:FREQ=MONTHLY;BYDAY=3WE
+SUMMARY:Monthly Security Review - GitHub Runner
+DESCRIPTION:Monthly security posture review and compliance check
+LOCATION:Security Operations
+CATEGORIES:SECURITY,REVIEW
+PRIORITY:4
+STATUS:CONFIRMED
+ATTENDEE:CN=Security Team:MAILTO:security@homelab.local
+ATTENDEE:CN=Operations Team:MAILTO:ops@homelab.local
+ORGANIZER:CN=Security Administrator:MAILTO:security-admin@homelab.local
+END:VEVENT
+
+BEGIN:VEVENT
+UID:documentation-review@github-runner.local
+DTSTAMP:20250716T000000Z
+DTSTART:20250930T100000Z
+DTEND:20250930T120000Z
+RRULE:FREQ=MONTHLY;BYDAY=-1TU
+SUMMARY:Documentation Review - GitHub Runner
+DESCRIPTION:Monthly documentation review and update session
+LOCATION:Operations Center
+CATEGORIES:DOCUMENTATION,REVIEW
+PRIORITY:2
+STATUS:CONFIRMED
+ATTENDEE:CN=Operations Team:MAILTO:ops@homelab.local
+ORGANIZER:CN=Documentation Manager:MAILTO:docs@homelab.local
+END:VEVENT
+
+END:VCALENDAR

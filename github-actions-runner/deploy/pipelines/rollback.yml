@@ -1,0 +1,314 @@
+name: Rollback GitHub Actions Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      version:
+        description: 'Version to rollback to (leave empty for previous version)'
+        required: false
+        default: ''
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        default: 'Manual rollback requested'
+
+jobs:
+  validate-rollback:
+    runs-on: ubuntu-latest
+    name: Validate Rollback Request
+    outputs:
+      rollback-version: ${{ steps.version.outputs.version }}
+      can-rollback: ${{ steps.validation.outputs.can-rollback }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine rollback version
+        id: version
+        run: |
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            cd github-actions-runner/deploy
+            PREV_VERSION=$(grep -B1 "${{ github.event.inputs.environment }}" logs/deployments.log | grep "version" | tail -2 | head -1 | sed 's/.*"version": "\([^"]*\)".*/\1/')
+            echo "version=$PREV_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate rollback prerequisites
+        id: validation
+        run: |
+          cd github-actions-runner/deploy
+          
+          # Check if backup exists
+          if [[ -d "$(cat environments/${{ github.event.inputs.environment }}.env | grep BACKUP_DIR | cut -d'=' -f2)/version-${{ steps.version.outputs.version }}" ]]; then
+            echo "can-rollback=true" >> $GITHUB_OUTPUT
+          else
+            echo "can-rollback=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail if rollback not possible
+        if: steps.validation.outputs.can-rollback != 'true'
+        run: |
+          echo "Rollback not possible: backup not found for version ${{ steps.version.outputs.version }}"
+          exit 1
+
+  create-rollback-issue:
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    name: Create Rollback Issue
+    steps:
+      - name: Create rollback tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Rollback: ${{ github.event.inputs.environment }} to v${{ needs.validate-rollback.outputs.rollback-version }}`,
+              body: `## Rollback Request
+              
+              **Environment**: ${{ github.event.inputs.environment }}
+              **Target Version**: ${{ needs.validate-rollback.outputs.rollback-version }}
+              **Reason**: ${{ github.event.inputs.reason }}
+              **Requested By**: @${{ github.actor }}
+              **Timestamp**: ${new Date().toISOString()}
+              
+              ## Rollback Process
+              
+              - [ ] Pre-rollback validation
+              - [ ] Service backup
+              - [ ] Configuration rollback
+              - [ ] Application rollback
+              - [ ] Post-rollback verification
+              - [ ] Monitoring validation
+              
+              ## Rollback Details
+              
+              This issue tracks the rollback process for the GitHub Actions Runner deployment.
+              `,
+              labels: ['rollback', 'deployment', '${{ github.event.inputs.environment }}']
+            });
+            
+            console.log(`Created rollback issue: ${issue.data.html_url}`);
+            return issue.data.number;
+
+  execute-rollback:
+    runs-on: ubuntu-latest
+    needs: [validate-rollback, create-rollback-issue]
+    name: Execute Rollback
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup deployment environment
+        run: |
+          echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          echo "ROLLBACK_VERSION=${{ needs.validate-rollback.outputs.rollback-version }}" >> $GITHUB_ENV
+
+      - name: Create rollback checkpoint
+        run: |
+          cd github-actions-runner/deploy
+          ./scripts/rollback.sh ${{ github.event.inputs.environment }} ${{ needs.validate-rollback.outputs.rollback-version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Verify rollback success
+        run: |
+          cd github-actions-runner/deploy
+          ./scripts/post-deploy.sh ${{ github.event.inputs.environment }}
+
+      - name: Run health checks
+        run: |
+          cd github-actions-runner/deploy
+          ./validation/health-check.sh ${{ github.event.inputs.environment }}
+
+      - name: Run functional tests
+        run: |
+          cd github-actions-runner/deploy
+          ./validation/functional-tests.sh ${{ github.event.inputs.environment }}
+
+  verify-rollback:
+    runs-on: ubuntu-latest
+    needs: execute-rollback
+    name: Verify Rollback
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run comprehensive verification
+        run: |
+          cd github-actions-runner/deploy
+          
+          # Verify service health
+          ./validation/health-check.sh ${{ github.event.inputs.environment }}
+          
+          # Verify GitHub runner registration
+          ./validation/github-runner-check.sh ${{ github.event.inputs.environment }}
+          
+          # Verify monitoring systems
+          ./validation/monitoring-check.sh ${{ github.event.inputs.environment }}
+          
+          # Generate rollback report
+          ./scripts/generate-rollback-report.sh ${{ github.event.inputs.environment }}
+
+      - name: Upload rollback report
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-report-${{ github.event.inputs.environment }}
+          path: github-actions-runner/deploy/reports/rollback-*.json
+          retention-days: 30
+
+  notify-rollback:
+    runs-on: ubuntu-latest
+    needs: [execute-rollback, verify-rollback]
+    name: Notify Rollback
+    if: always()
+    steps:
+      - name: Determine rollback status
+        id: status
+        run: |
+          if [[ "${{ needs.execute-rollback.result }}" == "success" && "${{ needs.verify-rollback.result }}" == "success" ]]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ steps.status.outputs.status }}
+          channel: '#deployments'
+          message: |
+            ${{ steps.status.outputs.emoji }} Rollback ${{ steps.status.outputs.status }} for GitHub Actions Runner
+            
+            **Environment**: ${{ github.event.inputs.environment }}
+            **Target Version**: ${{ needs.validate-rollback.outputs.rollback-version }}
+            **Reason**: ${{ github.event.inputs.reason }}
+            **Initiated By**: ${{ github.actor }}
+            **Timestamp**: $(date -u)
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Send email notification
+        if: github.event.inputs.environment == 'prod'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Production Rollback: GitHub Actions Runner"
+          body: |
+            A production rollback has been executed for the GitHub Actions Runner.
+            
+            Details:
+            - Environment: ${{ github.event.inputs.environment }}
+            - Target Version: ${{ needs.validate-rollback.outputs.rollback-version }}
+            - Reason: ${{ github.event.inputs.reason }}
+            - Status: ${{ steps.status.outputs.status }}
+            - Initiated By: ${{ github.actor }}
+            - Timestamp: $(date -u)
+            
+            Please review the rollback logs and verify system functionality.
+          to: ${{ secrets.ONCALL_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+  update-rollback-issue:
+    runs-on: ubuntu-latest
+    needs: [create-rollback-issue, execute-rollback, verify-rollback]
+    name: Update Rollback Issue
+    if: always()
+    steps:
+      - name: Update rollback issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rollbackStatus = "${{ needs.execute-rollback.result }}" === "success" && "${{ needs.verify-rollback.result }}" === "success" ? "✅ Successful" : "❌ Failed";
+            
+            const comment = `## Rollback Complete
+            
+            **Status**: ${rollbackStatus}
+            **Environment**: ${{ github.event.inputs.environment }}
+            **Target Version**: ${{ needs.validate-rollback.outputs.rollback-version }}
+            **Executed At**: ${new Date().toISOString()}
+            
+            ### Results
+            - **Rollback Execution**: ${{ needs.execute-rollback.result }}
+            - **Rollback Verification**: ${{ needs.verify-rollback.result }}
+            
+            ### Actions Taken
+            - Service backup created
+            - Configuration rolled back
+            - Application rolled back to version ${{ needs.validate-rollback.outputs.rollback-version }}
+            - Post-rollback verification completed
+            - Health checks executed
+            
+            Rollback process completed. Please review the deployment logs for details.`;
+            
+            // Find the rollback issue (it should be the most recent with rollback label)
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'rollback',
+              state: 'open',
+              sort: 'created',
+              direction: 'desc',
+              per_page: 1
+            });
+            
+            if (issues.data.length > 0) {
+              const issueNumber = issues.data[0].number;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment
+              });
+              
+              // Close the issue if rollback was successful
+              if (rollbackStatus.includes("✅")) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: 'closed'
+                });
+              }
+            }
+
+  create-rollback-summary:
+    runs-on: ubuntu-latest
+    needs: [validate-rollback, execute-rollback, verify-rollback]
+    name: Create Rollback Summary
+    if: always()
+    steps:
+      - name: Create rollback summary
+        run: |
+          echo "## Rollback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Version**: ${{ needs.validate-rollback.outputs.rollback-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Reason**: ${{ github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Initiated By**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Rollback Status**: ${{ needs.execute-rollback.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Verification Status**: ${{ needs.verify-rollback.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Actions Completed" >> $GITHUB_STEP_SUMMARY
+          echo "- [x] Rollback validation" >> $GITHUB_STEP_SUMMARY
+          echo "- [x] Rollback execution" >> $GITHUB_STEP_SUMMARY
+          echo "- [x] Post-rollback verification" >> $GITHUB_STEP_SUMMARY
+          echo "- [x] Health checks" >> $GITHUB_STEP_SUMMARY
+          echo "- [x] Notifications sent" >> $GITHUB_STEP_SUMMARY

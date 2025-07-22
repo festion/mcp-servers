@@ -1,0 +1,596 @@
+# =============================================================================
+# SMART APPLIANCE AUTOMATION SYSTEM - ENHANCED MULTI-THRESHOLD DETECTION
+# Date: June 22, 2025 - FIXED FALSE DURATION ANNOUNCEMENTS
+# =============================================================================
+
+# =============================================================================
+# APPLIANCE REMINDER STOP BUTTON HANDLERS (PRESERVED)
+# =============================================================================
+
+- alias: "Stop Dishwasher Reminders"
+  description: "Handle stop dishwasher reminders button press"
+  trigger:
+    - platform: event
+      event_type: call_service
+      event_data:
+        domain: input_button
+        service: press
+        service_data:
+          entity_id: input_button.stop_dishwasher_reminders
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dishwasher_reminders_stopped
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Dishwasher reminders have been stopped."
+        data:
+          type: announce
+
+- alias: "Stop Washing Machine Reminders"
+  description: "Handle stop washing machine reminders button press"
+  trigger:
+    - platform: event
+      event_type: call_service
+      event_data:
+        domain: input_button
+        service: press
+        service_data:
+          entity_id: input_button.stop_washing_machine_reminders
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.washing_machine_reminders_stopped
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Washing machine reminders have been stopped."
+        data:
+          type: announce
+
+- alias: "Stop Dryer Reminders"
+  description: "Handle stop dryer reminders button press"
+  trigger:
+    - platform: event
+      event_type: call_service
+      event_data:
+        domain: input_button
+        service: press
+        service_data:
+          entity_id: input_button.stop_dryer_reminders
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dryer_reminders_stopped
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "Dryer reminders have been stopped."
+        data:
+          type: announce
+
+# =============================================================================
+# SMART DISHWASHER AUTOMATIONS - LOG NOISE FIXED
+# =============================================================================
+
+- alias: "Smart Dishwasher Cycle Start Time Tracking"
+  description: "Track dishwasher cycle start time for accurate duration calculation"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "starting"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+  action:
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.dishwasher_cycle_start
+      data:
+        datetime: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+- alias: "Smart Dishwasher Cycle Detection"
+  description: "Multi-phase dishwasher cycle detection with configurable thresholds - Fixed excessive triggering"
+  mode: parallel
+  trigger:
+    # Only trigger on meaningful phase changes, not every sensor update
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "starting"
+      id: cycle_start
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "washing"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "rinsing"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "drying"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.dishwasher_cycle_phase
+      to: "idle"
+      for: "00:05:00"
+      id: cycle_complete
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.dishwasher_electric_consumption_w
+          state: 
+            - "unknown"
+            - "unavailable"
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+  action:
+    - choose:
+        # Cycle Start Detection
+        - conditions:
+            - condition: trigger
+              id: cycle_start
+            - condition: state
+              entity_id: input_boolean.dishwasher_cycle_announced
+              state: 'off'
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: input_boolean.appliance_quiet_hours_enabled
+                  state: 'off'
+                - condition: time
+                  after: "07:30:00"
+                  before: "22:30:00"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.dishwasher_cycle_announced
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.dishwasher_reminders_stopped
+            - service: notify.alexa_media_everywhere
+              continue_on_error: true
+              data:
+                message: "The dishwasher cycle has started. Current power: {{ states('sensor.dishwasher_electric_consumption_w') | round(0) }} watts."
+                data:
+                  type: announce
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.appliance_last_announcement
+              data:
+                value: "Smart dishwasher cycle started - {{ now().strftime('%H:%M') }}"
+
+        # Cycle Completion Detection
+        - conditions:
+            - condition: trigger
+              id: cycle_complete
+            - condition: state
+              entity_id: input_boolean.dishwasher_cycle_announced
+              state: 'on'
+            - condition: time
+              after: "07:00:00"
+              before: "22:30:00"
+          sequence:
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.dishwasher_cycle_announced
+            - service: notify.alexa_media_everywhere
+              continue_on_error: true
+              data:
+                message: >
+                  The dishwasher cycle is complete after {{ state_attr('sensor.dishwasher_cycle_phase', 'cycle_duration_minutes') | int(0) }} minutes and ready to be unloaded.
+                data:
+                  type: announce
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.appliance_last_announcement
+              data:
+                value: "Smart dishwasher complete - {{ now().strftime('%H:%M') }}"
+
+        # Phase Change Logging (reduced to only significant phase changes)
+        - conditions:
+            - condition: trigger
+              id: phase_change
+          sequence:
+            - service: logbook.log
+              data:
+                name: "Smart Dishwasher Monitoring"
+                message: >
+                  Phase changed to {{ trigger.to_state.state }}.
+                  Power: {{ states('sensor.dishwasher_electric_consumption_w') }}W.
+
+- alias: "Smart Dishwasher Door Reminders"
+  description: "Intelligent reminders based on cycle phase completion"
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dishwasher_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+  action:
+    - delay:
+        minutes: 30
+    - repeat:
+        while:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: input_boolean.dishwasher_reminders_stopped
+                state: 'off'
+              - condition: template
+                value_template: "{{ states('binary_sensor.dishwasher_door_window_door_is_open') not in ['unknown', 'unavailable'] }}"
+              - condition: state
+                entity_id: binary_sensor.dishwasher_door_window_door_is_open
+                state: 'off'
+              - condition: time
+                after: "07:30:00"
+                before: "22:30:00"
+              - condition: state
+                entity_id: sensor.dishwasher_cycle_phase
+                state: 'idle'
+        sequence:
+          - service: notify.alexa_media_everywhere
+            continue_on_error: true
+            data:
+              message: "Reminder: The dishwasher has been idle and ready to be unloaded."
+              data:
+                type: announce
+          - delay:
+              minutes: 30
+
+- alias: "Dishwasher - Door Opened - Stop Reminders"
+  description: "Stop reminders when dishwasher door is opened"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dishwasher_door_window_door_is_open
+      to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ states('binary_sensor.dishwasher_door_window_door_is_open') not in ['unknown', 'unavailable'] }}"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dishwasher_reminders_stopped
+
+# =============================================================================
+# SMART WASHING MACHINE AUTOMATIONS - FIXED FALSE DURATION ANNOUNCEMENTS
+# =============================================================================
+
+- alias: "Smart Washing Machine Cycle Start Time Tracking"
+  description: "Track washing machine cycle start time for accurate duration calculation - FIXES FALSE 2-MINUTE ANNOUNCEMENTS"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "filling"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.washing_machine_electric_consumption_w
+          state: 
+            - "unknown"
+            - "unavailable"
+  action:
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.washing_machine_cycle_start
+      data:
+        datetime: "{{ utcnow().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+- alias: "Smart Washing Machine Cycle Detection"
+  description: "Multi-phase washing machine cycle detection with configurable thresholds - FIXED FALSE DURATION ANNOUNCEMENTS"
+  mode: parallel
+  trigger:
+    # Only trigger on meaningful phase changes, not every sensor update
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "filling"
+      id: cycle_start
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "washing"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "rinsing"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "spinning"
+      id: phase_change
+    - platform: state
+      entity_id: sensor.washing_machine_cycle_phase
+      to: "idle"
+      for: "00:03:00"
+      id: cycle_complete
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.washing_machine_electric_consumption_w
+          state: 
+            - "unknown"
+            - "unavailable"
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+  action:
+    - choose:
+        # Cycle Start Detection
+        - conditions:
+            - condition: trigger
+              id: cycle_start
+            - condition: state
+              entity_id: input_boolean.washing_machine_cycle_announced
+              state: 'off'
+            - condition: time
+              after: "07:30:00"
+              before: "22:30:00"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.washing_machine_cycle_announced
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.washing_machine_reminders_stopped
+            - service: notify.alexa_media_everywhere
+              continue_on_error: true
+              data:
+                message: "Washing machine cycle has started with smart detection. Current power: {{ states('sensor.washing_machine_electric_consumption_w') | round(0) }} watts."
+                data:
+                  type: announce
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.appliance_last_announcement
+              data:
+                value: "Smart washing machine cycle started - {{ now().strftime('%H:%M') }}"
+
+        # Cycle Completion Detection - FIXED TO USE PROPER CYCLE DURATION
+        - conditions:
+            - condition: trigger
+              id: cycle_complete
+            - condition: state
+              entity_id: input_boolean.washing_machine_cycle_announced
+              state: 'on'
+            - condition: time
+              after: "07:00:00"
+              before: "22:30:00"
+          sequence:
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.washing_machine_cycle_announced
+            - service: notify.alexa_media_everywhere
+              continue_on_error: true
+              data:
+                message: >
+                  The washing machine cycle is complete after {{ state_attr('sensor.washing_machine_cycle_phase', 'cycle_duration_minutes') | int(0) }} minutes. Please move clothes to the dryer.
+                data:
+                  type: announce
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.appliance_last_announcement
+              data:
+                value: "Smart washing machine complete - {{ now().strftime('%H:%M') }}"
+
+        # Phase Change Logging (reduced to only significant phase changes)
+        - conditions:
+            - condition: trigger
+              id: phase_change
+          sequence:
+            - service: logbook.log
+              data:
+                name: "Smart Washing Machine Monitoring"
+                message: >
+                  Phase changed to {{ trigger.to_state.state }}.
+                  Power: {{ states('sensor.washing_machine_electric_consumption_w') }}W.
+
+- alias: "Smart Washing Machine Transfer Reminders"
+  description: "Intelligent transfer reminders with dryer coordination"
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.washing_machine_cycle_announced
+      from: "on"
+      to: "off"
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'stop'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      state: 'on'
+  action:
+    - delay:
+        minutes: 15
+    - repeat:
+        while:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: input_boolean.washing_machine_reminders_stopped
+                state: 'off'
+              - condition: time
+                after: "07:30:00"
+                before: "22:30:00"
+              - condition: state
+                entity_id: sensor.washing_machine_cycle_phase
+                state: 'idle'
+              - condition: template
+                value_template: >
+                  {{ states('sensor.dryer_machine_state') not in ['run', 'unknown', 'unavailable'] or 
+                     states('sensor.dryer_machine_state') == 'stop' }}
+        sequence:
+          - service: notify.alexa_media_everywhere
+            continue_on_error: true
+            data:
+              message: "Reminder: Your laundry is still waiting in the washing machine and ready to transfer."
+              data:
+                type: announce
+          - delay:
+              minutes: 30
+
+- alias: "Washing Machine - Dryer Started - Stop Reminders"
+  description: "Stop washing machine reminders when dryer starts"
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'run'
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.washing_machine_reminders_stopped
+
+# =============================================================================
+# DRYER AUTOMATIONS (PRESERVED - LEGACY SYSTEM)
+# =============================================================================
+
+- alias: "Dryer - Cycle Start Detection"
+  description: "Detects when dryer starts using SmartThings integration (respects quiet hours)"
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'run'
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      to: 'drying'
+  condition:
+    - condition: template
+      value_template: "{{ states('sensor.dryer_machine_state') not in ['unknown', 'unavailable'] }}"
+    - condition: state
+      entity_id: sensor.dryer_machine_state
+      state: 'run'
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dryer_cycle_announced
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dryer_reminders_stopped
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: >
+          Dryer cycle has started.
+          {% set completion_time = states('sensor.dryer_completion_time') %}
+          {% if completion_time not in ['unknown', 'unavailable'] and completion_time != None %}
+            Expected completion time is {{ as_timestamp(completion_time) | timestamp_custom('%I:%M %p', true) }}.
+          {% else %}
+            I'll let you know when it's finished.
+          {% endif %}
+        data:
+          type: announce
+
+- alias: "Dryer - Cycle Completion Detection"
+  description: "Detect dryer cycle completion"
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.dryer_job_state
+      to: 'finished'
+    - platform: state
+      entity_id: sensor.dryer_machine_state
+      to: 'stop'
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: input_boolean.dryer_cycle_announced
+      state: 'on'
+    - condition: template
+      value_template: "{{ states('sensor.dryer_job_state') not in ['unknown', 'unavailable'] }}"
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dryer_cycle_announced
+
+- alias: "Dryer - Cycle Completion Announcement"
+  description: "Announce when dryer cycle is complete"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dryer_cycle_announced
+      from: "on"
+      to: "off"
+  condition:
+    - condition: time
+      after: "07:30:00"
+      before: "22:30:00"
+  action:
+    - service: notify.alexa_media_everywhere
+      continue_on_error: true
+      data:
+        message: "The dryer cycle is complete. Please remove clothes promptly to prevent wrinkles."
+        data:
+          type: announce
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.appliance_last_announcement
+      data:
+        value: "Dryer complete - {{ now().strftime('%H:%M') }}"
+
+- alias: "Dryer - Empty Reminders"
+  description: "Remind to empty dryer until reminders stopped"
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.dryer_cycle_announced
+      from: "on"
+      to: "off"
+  action:
+    - delay:
+        minutes: 15
+    - repeat:
+        while:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: input_boolean.dryer_reminders_stopped
+                state: 'off'
+              - condition: time
+                after: "07:30:00"
+                before: "22:30:00"
+        sequence:
+          - service: notify.alexa_media_everywhere
+            continue_on_error: true
+            data:
+              message: "Reminder: The dryer is ready to be emptied."
+              data:
+                type: announce
+          - delay:
+              minutes: 30
+
+# =============================================================================
+# SMART THRESHOLD MONITORING AND VALIDATION
+# =============================================================================
+
+- alias: "Smart Threshold Validation Alert"
+  description: "Alert when threshold configuration becomes invalid"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.smart_thresholds_configured
+      to: 'off'
+      for: "00:01:00"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "⚠️ Smart Appliance Threshold Error"
+        message: >
+          Smart appliance threshold configuration is invalid. 
+          Please check threshold values to ensure: Idle < Active < Peak for both appliances.
+          Current config: {{ state_attr('binary_sensor.smart_thresholds_configured', 'threshold_summary') }}
+        notification_id: "smart_threshold_error"

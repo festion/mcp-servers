@@ -1,0 +1,147 @@
+type: vertical-stack
+title: "Smart Appliance Threshold Control"
+cards:
+  # System Status Overview
+  - type: horizontal-stack
+    cards:
+      - type: entity
+        entity: sensor.appliance_system_status
+        name: "System Status"
+        icon: mdi:home-lightning-bolt
+      - type: entity
+        entity: binary_sensor.smart_thresholds_configured
+        name: "Config Valid"
+        icon: mdi:check-circle
+
+  # Dishwasher Threshold Controls
+  - type: entities
+    title: "🍽️ Dishwasher Smart Thresholds"
+    show_header_toggle: false
+    entities:
+      - type: section
+        label: "Power Thresholds"
+      - entity: input_number.dishwasher_idle_threshold
+        name: "Idle Threshold"
+        icon: mdi:dishwasher-off
+      - entity: input_number.dishwasher_active_threshold
+        name: "Active Threshold"
+        icon: mdi:dishwasher-alert
+      - entity: input_number.dishwasher_peak_threshold
+        name: "Peak Threshold"
+        icon: mdi:heat-wave
+      - type: section
+        label: "Current Status"
+      - entity: sensor.dishwasher_cycle_phase
+        name: "Current Phase"
+        secondary_info: last-changed
+      - entity: sensor.dishwasher_electric_consumption_w
+        name: "Current Power"
+        icon: mdi:flash
+      - entity: binary_sensor.dishwasher_cycle_active
+        name: "Cycle Active"
+        icon: mdi:dishwasher
+
+  # Washing Machine Threshold Controls  
+  - type: entities
+    title: "👕 Washing Machine Smart Thresholds"
+    show_header_toggle: false
+    entities:
+      - type: section
+        label: "Power Thresholds"
+      - entity: input_number.washing_machine_idle_threshold
+        name: "Idle Threshold"
+        icon: mdi:washing-machine-off
+      - entity: input_number.washing_machine_active_threshold
+        name: "Active Threshold"
+        icon: mdi:washing-machine-alert
+      - entity: input_number.washing_machine_peak_threshold
+        name: "Peak Threshold"
+        icon: mdi:wave
+      - type: section
+        label: "Current Status"
+      - entity: sensor.washing_machine_cycle_phase
+        name: "Current Phase"
+        secondary_info: last-changed
+      - entity: sensor.washing_machine_electric_consumption_w
+        name: "Current Power"
+        icon: mdi:flash
+      - entity: binary_sensor.washing_machine_cycle_active
+        name: "Cycle Active"
+        icon: mdi:washing-machine
+
+  # Power Usage Visualization
+  - type: history-graph
+    title: "Power Usage vs Smart Thresholds"
+    entities:
+      - entity: sensor.dishwasher_electric_consumption_w
+        name: "Dishwasher Power"
+      - entity: input_number.dishwasher_active_threshold
+        name: "DW Active"
+      - entity: input_number.dishwasher_peak_threshold
+        name: "DW Peak"
+      - entity: sensor.washing_machine_electric_consumption_w
+        name: "Washer Power"
+      - entity: input_number.washing_machine_active_threshold
+        name: "WM Active"
+      - entity: input_number.washing_machine_peak_threshold
+        name: "WM Peak"
+    hours_to_show: 6
+    refresh_interval: 30
+
+  # Phase Detection Analysis
+  - type: horizontal-stack
+    cards:
+      - type: gauge
+        entity: sensor.dishwasher_electric_consumption_w
+        name: "Dishwasher Power"
+        min: 0
+        max: 300
+        severity:
+          green: 0
+          yellow: 50
+          red: 150
+        needle: true
+      - type: gauge
+        entity: sensor.washing_machine_electric_consumption_w
+        name: "Washer Power"
+        min: 0
+        max: 600
+        severity:
+          green: 0
+          yellow: 100
+          red: 400
+        needle: true
+
+  # Legacy Compatibility Status
+  - type: entities
+    title: "🔗 Legacy System Compatibility"
+    show_header_toggle: false
+    entities:
+      - entity: input_number.appliance_power_threshold_dishwasher
+        name: "Legacy DW Threshold"
+        icon: mdi:flash-alert
+      - entity: input_number.appliance_power_threshold_washer
+        name: "Legacy WM Threshold"
+        icon: mdi:flash-alert
+      - entity: input_boolean.dishwasher_cycle_announced
+        name: "DW Cycle Announced"
+      - entity: input_boolean.washing_machine_cycle_announced
+        name: "WM Cycle Announced"
+
+  # Quick Actions
+  - type: entities
+    title: "⚡ Quick Actions"
+    show_header_toggle: false
+    entities:
+      - entity: input_button.stop_dishwasher_reminders
+        name: "Stop DW Reminders"
+        icon: mdi:dishwasher-off
+      - entity: input_button.stop_washing_machine_reminders
+        name: "Stop WM Reminders"
+        icon: mdi:washing-machine-off
+      - entity: input_boolean.appliance_quiet_hours_enabled
+        name: "Quiet Hours"
+        icon: mdi:sleep
+      - entity: input_boolean.appliance_energy_reports
+        name: "Daily Reports"
+        icon: mdi:chart-line

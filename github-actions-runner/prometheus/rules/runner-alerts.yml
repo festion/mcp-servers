@@ -1,0 +1,120 @@
+groups:
+  - name: github-runner-alerts
+    rules:
+      # Runner Service Health
+      - alert: RunnerDown
+        expr: up{job="github-runner"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "GitHub Actions Runner is down"
+          description: "GitHub Actions Runner has been down for more than 1 minute"
+
+      # System Resource Alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 80% for more than 5 minutes"
+
+      - alert: HighDiskUsage
+        expr: 100 - ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is above 85% for more than 2 minutes"
+
+      - alert: CriticalDiskUsage
+        expr: 100 - ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) > 95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical disk usage detected"
+          description: "Disk usage is above 95% for more than 1 minute"
+
+      # Container Health Alerts
+      - alert: ContainerDown
+        expr: up{job=~"node-exporter|fluent-bit|nginx"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container service is down"
+          description: "Container service {{ $labels.job }} has been down for more than 2 minutes"
+
+      # Network Connectivity
+      - alert: HighNetworkErrors
+        expr: rate(node_network_receive_errs_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network errors detected"
+          description: "Network error rate is above 1% for more than 2 minutes"
+
+      # Docker Health
+      - alert: DockerDaemonDown
+        expr: absent(up{job="docker"})
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Docker daemon is not responding"
+          description: "Docker daemon metrics are not available"
+
+      # Log Processing
+      - alert: LogProcessingLag
+        expr: increase(fluentbit_input_records_total[5m]) - increase(fluentbit_output_records_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Log processing lag detected"
+          description: "Log processing is lagging behind input rate"
+
+  - name: runner-performance
+    rules:
+      # Runner Job Metrics (if available)
+      - alert: LongRunningJob
+        expr: github_runner_job_duration_seconds > 3600
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Long running job detected"
+          description: "Job {{ $labels.job_name }} has been running for more than 1 hour"
+
+      - alert: HighJobFailureRate
+        expr: rate(github_runner_jobs_failed_total[10m]) / rate(github_runner_jobs_total[10m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High job failure rate"
+          description: "Job failure rate is above 10% in the last 10 minutes"
+
+      # Queue Metrics
+      - alert: JobQueueBacklog
+        expr: github_runner_queued_jobs > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Job queue backlog detected"
+          description: "More than 10 jobs are queued for more than 5 minutes"

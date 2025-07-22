@@ -1,0 +1,337 @@
+# IMPROVED Z-Wave Switch LED Control Automations
+# Enhanced with proper error handling and device compatibility checks
+# Fixes the NotFoundError issues in the original implementation
+
+# Day Mode LED Control - Enhanced with Error Handling
+- id: zwave_led_day_mode_on_fixed
+  alias: "Z-Wave LEDs - Day Mode On (Fixed)"
+  description: "Restores Z-Wave switch LEDs to normal operation with proper error handling (7 AM)"
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  action:
+    # Log the automation start
+    - service: system_log.write
+      data:
+        message: "Z-Wave LED Day Mode: Starting LED restoration process"
+        level: info
+        logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+    
+    # Light switches - Individual handling with error catching
+    - repeat:
+        for_each:
+          - light.hobby_light
+          - light.gavin_light
+          - light.pantry_light
+          - light.master_light
+          - light.nook_light
+          - light.guest_light
+          - light.porch_light
+          - light.hall_light
+          - light.dining_light
+          - light.linda_light
+        sequence:
+          - if:
+              # Check if device is available and has alive node status
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: "{{ not is_state(repeat.item, 'unavailable') }}"
+                  - condition: template
+                    value_template: "{{ is_state('sensor.' + repeat.item.split('.')[1] + '_node_status', 'alive') }}"
+            then:
+              # Attempt to set parameter with error handling
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ repeat.item }}"
+                data:
+                  parameter: 7
+                  value: 1  # LED on when load is off (normal operation)
+                continue_on_error: true
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Day Mode: Successfully restored LED for {{ repeat.item }}"
+                  level: info
+                  logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+            else:
+              # Log skipped devices
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Day Mode: Skipping {{ repeat.item }} - device unavailable or node dead"
+                  level: warning
+                  logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+    
+    # Fan switches - Individual handling with error catching  
+    - repeat:
+        for_each:
+          - fan.hobby_fan
+          - fan.master_fan
+          - fan.linda_fan
+          - fan.guest_fan
+          - fan.gavin_fan
+        sequence:
+          - if:
+              # Check if device is available and has alive node status
+              - condition: and
+                conditions:
+                  - condition: template
+                    value_template: "{{ not is_state(repeat.item, 'unavailable') }}"
+                  - condition: template
+                    value_template: "{{ is_state('sensor.' + repeat.item.split('.')[1] + '_node_status', 'alive') }}"
+            then:
+              # Attempt to set parameter with error handling
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ repeat.item }}"
+                data:
+                  parameter: 3
+                  value: 1  # LED on when load is off (normal operation)
+                continue_on_error: true
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Day Mode: Successfully restored LED for {{ repeat.item }}"
+                  level: info
+                  logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+            else:
+              # Log skipped devices
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Day Mode: Skipping {{ repeat.item }} - device unavailable or node dead"
+                  level: warning
+                  logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+    
+    # Final summary log
+    - service: system_log.write
+      data:
+        message: "Z-Wave LED Day Mode: LED restoration process completed"
+        level: info
+        logger: homeassistant.components.automation.z_wave_leds_day_mode_on_fixed
+
+# Night Mode LED Control - Enhanced with Error Handling
+- id: zwave_led_night_mode_on_fixed
+  alias: "Z-Wave LEDs - Night Mode On (Fixed)"
+  description: "Controls Z-Wave switch LEDs at night with proper error handling (10 PM)"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+  action:
+    # Log the automation start
+    - service: system_log.write
+      data:
+        message: "Z-Wave LED Night Mode: Starting LED control process"
+        level: info
+        logger: homeassistant.components.automation.z_wave_leds_night_mode_on_fixed
+    
+    # Light switches - Individual handling with boolean checks
+    - repeat:
+        for_each:
+          - entity_id: light.hobby_light
+            boolean: input_boolean.zwave_led_darken_hobby_light
+          - entity_id: light.gavin_light
+            boolean: input_boolean.zwave_led_darken_gavin_light
+          - entity_id: light.pantry_light
+            boolean: input_boolean.zwave_led_darken_pantry_light
+          - entity_id: light.master_light
+            boolean: input_boolean.zwave_led_darken_master_light
+          - entity_id: light.nook_light
+            boolean: input_boolean.zwave_led_darken_nook_light
+          - entity_id: light.guest_light
+            boolean: input_boolean.zwave_led_darken_guest_light
+          - entity_id: light.porch_light
+            boolean: input_boolean.zwave_led_darken_porch_light
+          - entity_id: light.hall_light
+            boolean: input_boolean.zwave_led_darken_hall_light
+          - entity_id: light.dining_light
+            boolean: input_boolean.zwave_led_darken_dining_light
+          - entity_id: light.linda_light
+            boolean: input_boolean.zwave_led_darken_linda_light
+        sequence:
+          - if:
+              # Check if darkening is enabled AND device is available
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: "{{ repeat.item.boolean }}"
+                    state: "on"
+                  - condition: template
+                    value_template: "{{ not is_state(repeat.item.entity_id, 'unavailable') }}"
+                  - condition: template
+                    value_template: "{{ is_state('sensor.' + repeat.item.entity_id.split('.')[1] + '_node_status', 'alive') }}"
+            then:
+              # Set LED off
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ repeat.item.entity_id }}"
+                data:
+                  parameter: 7
+                  value: 0  # LED off when load is off
+                continue_on_error: true
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Night Mode: Turned off LED for {{ repeat.item.entity_id }}"
+                  level: info
+                  logger: homeassistant.components.automation.z_wave_leds_night_mode_on_fixed
+    
+    # Fan switches - Individual handling with boolean checks
+    - repeat:
+        for_each:
+          - entity_id: fan.hobby_fan
+            boolean: input_boolean.zwave_led_darken_hobby_fan
+          - entity_id: fan.master_fan
+            boolean: input_boolean.zwave_led_darken_master_fan
+          - entity_id: fan.linda_fan
+            boolean: input_boolean.zwave_led_darken_linda_fan
+          - entity_id: fan.guest_fan
+            boolean: input_boolean.zwave_led_darken_guest_fan
+          - entity_id: fan.gavin_fan
+            boolean: input_boolean.zwave_led_darken_gavin_fan
+        sequence:
+          - if:
+              # Check if darkening is enabled AND device is available
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: "{{ repeat.item.boolean }}"
+                    state: "on"
+                  - condition: template
+                    value_template: "{{ not is_state(repeat.item.entity_id, 'unavailable') }}"
+                  - condition: template
+                    value_template: "{{ is_state('sensor.' + repeat.item.entity_id.split('.')[1] + '_node_status', 'alive') }}"
+            then:
+              # Set LED off
+              - service: zwave_js.set_config_parameter
+                target:
+                  entity_id: "{{ repeat.item.entity_id }}"
+                data:
+                  parameter: 3
+                  value: 0  # LED off when load is off
+                continue_on_error: true
+              - service: system_log.write
+                data:
+                  message: "Z-Wave LED Night Mode: Turned off LED for {{ repeat.item.entity_id }}"
+                  level: info
+                  logger: homeassistant.components.automation.z_wave_leds_night_mode_on_fixed
+    
+    # Final summary log
+    - service: system_log.write
+      data:
+        message: "Z-Wave LED Night Mode: LED control process completed"
+        level: info
+        logger: homeassistant.components.automation.z_wave_leds_night_mode_on_fixed
+
+# Z-Wave Network Health Check Automation
+- id: zwave_network_health_monitor
+  alias: "Z-Wave Network Health Monitor"
+  description: "Monitors Z-Wave network health and reports dead nodes"
+  trigger:
+    - platform: time_pattern
+      hours: "/6"  # Every 6 hours
+  action:
+    - service: system_log.write
+      data:
+        message: "Z-Wave Health Monitor: Starting network health check"
+        level: info
+        logger: homeassistant.components.automation.zwave_network_health_monitor
+    
+    # Check for dead nodes
+    - variables:
+        dead_nodes: >
+          {% set ns = namespace(nodes=[]) %}
+          {% for entity_id in states.sensor 
+             if entity_id.entity_id.endswith('_node_status') and is_state(entity_id.entity_id, 'dead') %}
+            {% set ns.nodes = ns.nodes + [entity_id.entity_id.replace('_node_status', '').replace('sensor.', '')] %}
+          {% endfor %}
+          {{ ns.nodes }}
+    
+    # Send notification if dead nodes found
+    - if:
+        - condition: template
+          value_template: "{{ dead_nodes | length > 0 }}"
+      then:
+        - service: notify.mobile_app_pixel_9_pro_xl
+          data:
+            title: "⚠️ Z-Wave Network Alert"
+            message: "Dead Z-Wave nodes detected: {{ dead_nodes | join(', ') }}"
+            data:
+              priority: high
+        - service: system_log.write
+          data:
+            message: "Z-Wave Health Monitor: Dead nodes found - {{ dead_nodes | join(', ') }}"
+            level: warning
+            logger: homeassistant.components.automation.zwave_network_health_monitor
+      else:
+        - service: system_log.write
+          data:
+            message: "Z-Wave Health Monitor: All nodes healthy"
+            level: info
+            logger: homeassistant.components.automation.zwave_network_health_monitor
+
+# Manual LED Control - Toggle immediately when input boolean changes
+- id: zwave_led_manual_control_fixed
+  alias: "Z-Wave LEDs - Manual Control (Fixed)"
+  description: "Immediately applies LED changes when manual toggles are changed during night hours"
+  trigger:
+    - platform: state
+      entity_id:
+        - input_boolean.zwave_led_darken_hobby_light
+        - input_boolean.zwave_led_darken_gavin_light
+        - input_boolean.zwave_led_darken_pantry_light
+        - input_boolean.zwave_led_darken_master_light
+        - input_boolean.zwave_led_darken_nook_light
+        - input_boolean.zwave_led_darken_guest_light
+        - input_boolean.zwave_led_darken_porch_light
+        - input_boolean.zwave_led_darken_hall_light
+        - input_boolean.zwave_led_darken_dining_light
+        - input_boolean.zwave_led_darken_linda_light
+        - input_boolean.zwave_led_darken_hobby_fan
+        - input_boolean.zwave_led_darken_master_fan
+        - input_boolean.zwave_led_darken_linda_fan
+        - input_boolean.zwave_led_darken_guest_fan
+        - input_boolean.zwave_led_darken_gavin_fan
+  condition:
+    # Only apply changes during night hours (10 PM to 7 AM)
+    - condition: time
+      after: "22:00:00"
+      before: "07:00:00"
+  action:
+    - variables:
+        device_entity: >
+          {% if 'light' in trigger.entity_id %}
+            {{ trigger.entity_id.replace('input_boolean.zwave_led_darken_', 'light.') }}
+          {% else %}
+            {{ trigger.entity_id.replace('input_boolean.zwave_led_darken_', 'fan.') }}
+          {% endif %}
+        parameter_num: >
+          {% if 'light' in trigger.entity_id %}7{% else %}3{% endif %}
+        parameter_value: >
+          {{ 0 if is_state(trigger.entity_id, 'on') else 1 }}
+    
+    # Check device health before applying changes
+    - if:
+        - condition: and
+          conditions:
+            - condition: template
+              value_template: "{{ not is_state(device_entity, 'unavailable') }}"
+            - condition: template
+              value_template: "{{ is_state('sensor.' + device_entity.split('.')[1] + '_node_status', 'alive') }}"
+      then:
+        - service: zwave_js.set_config_parameter
+          target:
+            entity_id: "{{ device_entity }}"
+          data:
+            parameter: "{{ parameter_num }}"
+            value: "{{ parameter_value }}"
+          continue_on_error: true
+        - service: system_log.write
+          data:
+            message: "Z-Wave LED Manual: Applied setting for {{ device_entity }} (parameter {{ parameter_num }} = {{ parameter_value }})"
+            level: info
+            logger: homeassistant.components.automation.zwave_led_manual_control_fixed
+      else:
+        - service: system_log.write
+          data:
+            message: "Z-Wave LED Manual: Skipping {{ device_entity }} - device unavailable or node dead"
+            level: warning
+            logger: homeassistant.components.automation.zwave_led_manual_control_fixed
+  mode: parallel
+  max: 20

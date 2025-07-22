@@ -1,0 +1,488 @@
+{
+  "numStartups": 86,
+  "autoUpdaterStatus": "enabled",
+  "customApiKeyResponses": {
+    "approved": [
+      "9u3tpKYTrQg-0DPLZwAA"
+    ],
+    "rejected": []
+  },
+  "tipsHistory": {
+    "new-user-warmup": 8,
+    "memory-command": 3,
+    "theme-command": 86,
+    "prompt-queue": 16,
+    "enter-to-steer-in-relatime": 47,
+    "todo-list": 48,
+    "git-worktrees": 83
+  },
+  "memoryUsageCount": 2,
+  "promptQueueUseCount": 7,
+  "firstStartTime": "2025-05-16T12:45:36.194Z",
+  "userID": "b955d46de3e497772bf8332871263c369c674664e80dfdbd85926b1c1181ec5e",
+  "oauthAccount": {
+    "accountUuid": "a7e2abeb-cb09-4be6-8738-78b9cf3a5351",
+    "emailAddress": "jeremy.ames@gmail.com",
+    "organizationUuid": "bb6d9c3b-49a3-4537-bf1c-7a09e905dd3c",
+    "organizationRole": "admin",
+    "workspaceRole": "workspace_developer",
+    "organizationName": "Jeremy's Individual Org"
+  },
+  "statsigModel": {
+    "bedrock": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    "vertex": "claude-3-7-sonnet@20250219",
+    "firstParty": "claude-3-7-sonnet-20250219"
+  },
+  "primaryApiKey": "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",
+  "isQualifiedForDataSharing": false,
+  "hasCompletedOnboarding": true,
+  "lastOnboardingVersion": "0.2.115",
+  "mcps": {
+    "hass-mcp": {
+      "dockerCommand": "docker run -i --rm -e HA_URL -e HA_TOKEN voska/hass-mcp",
+      "environment": {
+        "HA_URL": "https://homeassistant.internal.lakehouse.wtf",
+        "HA_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE"
+      }
+    }
+  },
+  "projects": {
+    "/config": {
+      "allowedTools": [],
+      "history": [
+        {
+          "display": "# Add hass-mcp using Docker (recommended)\nclaude mcp add hass-mcp -e HA_URL=http://192.168.1.155:8123 -e HA_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE -- docker run -i --rm -e HA_URL -e HA_TOKEN voska/hass-mcp\n\n# Alternative: Add hass-mcp using npm (if you have Node.js)\n# First install the package globally\nnpm install -g hass-mcp\n\n# Then add to Claude Code\nclaude mcp add hass-mcp -e HA_URL=http://192.168.1.155:8123 -e HA_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE -- npx -y hass-mcp\n",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "# Add hass-mcp using Docker (recommended)\nclaude mcp add hass-mcp -e HA_URL=http://homeassistant.local:8123 -e HA_TOKEN=YOUR_LONG_LIVED_TOKEN -- docker run -i --rm -e HA_URL -e HA_TOKEN voska/hass-mcp\n\n# Alternative: Add hass-mcp using npm (if you have Node.js)\n# First install the package globally\nnpm install -g hass-mcp\n\n# Then add to Claude Code\nclaude mcp add hass-mcp -e HA_URL=http://homeassistant.local:8123 -e HA_TOKEN=YOUR_LONG_LIVED_TOKEN -- npx -y hass-mcp\n\n# Replace YOUR_LONG_LIVED_TOKEN with your actual Home Assistant long-lived access token\n# Update HA_URL to match your Home Assistant instance:\n# - For local HA: http://homeassistant.local:8123 or http://192.168.1.xxx:8123\n# - For Docker on same machine: http://host.docker.internal:8123 (Mac/Windows)\n# - For Nabu Casa: https://xxxxx.ui.nabu.casa"
+            }
+          }
+        },
+        {
+          "display": "read CLAUDE.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "I want to implement both mcp servers now",
+          "pastedContents": {}
+        },
+        {
+          "display": "troubleshoot why you cannot access hass-mcp and context7",
+          "pastedContents": {}
+        },
+        {
+          "display": "use hass-mcp and context7",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.core_config\nSource: core_config.py:476\nFirst occurred: 10:30:12 AM (1 occurrence)\nLast logged: 10:30:12 AM\n\nPackage http_optimization contains invalid customize",
+          "pastedContents": {}
+        },
+        {
+          "display": "python Camera-Finder.py",
+          "pastedContents": {}
+        },
+        {
+          "display": "use hass-mcp and context7 to troubleshoot the 2 remaining errors in home assistant logs",
+          "pastedContents": {}
+        },
+        {
+          "display": "all approved",
+          "pastedContents": {}
+        },
+        {
+          "display": "yes",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md.  use hass-mcp to troubleshoot home assistant error log",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md.  In the led dashbaord, entitity not available sensor.time",
+          "pastedContents": {}
+        },
+        {
+          "display": "use the same method used for the curatron dashboard and hydroponics dashboard",
+          "pastedContents": {}
+        },
+        {
+          "display": "how can I access the dashboard?",
+          "pastedContents": {}
+        },
+        {
+          "display": "use context7 and hass-mcp ",
+          "pastedContents": {}
+        },
+        {
+          "display": "[Pasted text #1 +4 lines]",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "Configuration warnings\nSetup of package 'zwave_led_night_mode' failed: Integration 'customize' not found.\nInvalid config for 'template' from integration 'sensor' at packages/zwave_led_night_mode.yaml, line 68: 'icon' is an invalid option for 'sensor.template', check: sensors->zwave_led_off_count->icon\nInvalid config for 'template' from integration 'sensor' at packages/zwave_led_night_mode.yaml, line 85: 'icon' is an invalid option for 'sensor.template', check: sensors->zwave_led_bedroom_count->icon\nInvalid config for 'template' from integration 'binary_sensor' at packages/zwave_led_night_mode.yaml, line 15: invalid template (TemplateAssertionError: No filter named 'time'.) for dictionary value 'sensors->night_mode_active->value_template', got \"{% set current_time = now().time() %} {% set night_start = '22:00:00' | as_datetime | time %} {% set night_end = '07:00:00' | as_datetime | time %} {{ current_time >= night_start or current_time < night_end }}\\n\""
+            }
+          }
+        },
+        {
+          "display": "continue",
+          "pastedContents": {}
+        },
+        {
+          "display": "darken fan makes no sense.  slow down or speed up a fan.  turn up or turn down",
+          "pastedContents": {}
+        },
+        {
+          "display": "For now, document. enhance the dashboard, add missing control logic.  Add s module to turn turn off the led indicators at night",
+          "pastedContents": {}
+        },
+        {
+          "display": "I was working on an automation to turn off led indicator lights on my light switches.  I want to resume",
+          "pastedContents": {}
+        },
+        {
+          "display": "This error originated from a custom integration.\n\nLogger: custom_components.adaptive_lighting.switch\nSource: custom_components/adaptive_lighting/switch.py:888\nintegration: Adaptive Lighting (documentation, issues)\nFirst occurred: 11:11:52 AM (1 occurrence)\nLast logged: 11:11:52 AM\n\nKitchen LED Strips: Config mismatch: `detect_non_ha_changes` or `adapt_only_on_bare_turn_on` set to `true` requires `take_over_control` to be enabled. Adjusting config and continuing setup with `take_over_control: true`.",
+          "pastedContents": {}
+        },
+        {
+          "display": "https://homeassistant.internal.lakehouse.wtf/config/dashboard_card.yaml.backup.20250525_112054 is blank",
+          "pastedContents": {}
+        },
+        {
+          "display": "proceed",
+          "pastedContents": {}
+        },
+        {
+          "display": "validate commands with context7.  search using hass-mcp",
+          "pastedContents": {}
+        },
+        {
+          "display": "begin cleaning up missing entitities after verifying they are in fact missing.  I need a report of all removals, with instructions to undo",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md and troubleshoot error log",
+          "pastedContents": {}
+        },
+        {
+          "display": "I just created the pantry_light device by renaming the 1000 watt dimmer.  check again",
+          "pastedContents": {}
+        },
+        {
+          "display": "check again for pantry_light",
+          "pastedContents": {}
+        },
+        {
+          "display": "check again, I just added pantry_light",
+          "pastedContents": {}
+        },
+        {
+          "display": "continue",
+          "pastedContents": {}
+        },
+        {
+          "display": "continue troubleshooting errors in the logs",
+          "pastedContents": {}
+        },
+        {
+          "display": "continue",
+          "pastedContents": {}
+        },
+        {
+          "display": "the system should exhaust all liquid in the reservoir before stopping.  the volume check condition should not control watering, only altering",
+          "pastedContents": {}
+        },
+        {
+          "display": "check if current_volume >= 10 is looking at greater than 10 Liters or 10%?  the intention is 10% but execution may be 10 Liters.  the system should continue to fertigate until all solution is expended.  Keeping the plants healthy is priority.",
+          "pastedContents": {}
+        },
+        {
+          "display": "use hass-mcp to validate sensors",
+          "pastedContents": {}
+        },
+        {
+          "display": "continue",
+          "pastedContents": {}
+        },
+        {
+          "display": "did you validate that the conditions should return false?  The hydroponics is the most critical function of the home assistant system and MUST be reliable.",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md and troubleshoot errors in the logs",
+          "pastedContents": {}
+        },
+        {
+          "display": "the dishwasher automation is not sending audio alerts",
+          "pastedContents": {}
+        },
+        {
+          "display": "the automation should not fail because of a non-reporting sensor.  Missing a temperature sensor reading should not stop fertigation",
+          "pastedContents": {}
+        },
+        {
+          "display": "why is my hydroponic fertigation automation failing to fertigate on schedule?",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.core_config\nSource: core_config.py:476\nFirst occurred: 9:40:07 AM (2 occurrences)\nLast logged: 9:48:28 AM\n\nPackage http_optimization contains invalid customize",
+          "pastedContents": {}
+        },
+        {
+          "display": "I just got a bunch of temnplate errors, diagnose using hass-mcp and context7.  When finished ensure hass-mcp is documented in CLAUDE.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "implement all changes, LEDStrips should start on every morning at 7 AM.  Be sure to document and use context7 ",
+          "pastedContents": {}
+        },
+        {
+          "display": "top_right, top_left, and bar_strip are no longer in home assistant, remove them from consideration.  The LEDStrips are configured via Broadlink RM4 universal remote.",
+          "pastedContents": {}
+        },
+        {
+          "display": "read claude.md.  I want to add my LEDStrips into my adaptive lighting schema.  They should always run adaptive and synchronize with existing configurations.  The LEDStrip lights are in the kitchen, but because there is no physical separation bewtween rooms, LEDStrips, kitchen lights and livingroom lights need to be able to be individually controlled.  But, when more than 1 is active, they need to use the same settings.",
+          "pastedContents": {}
+        },
+        {
+          "display": "validate all code using context7 after reading the documentation here: https://www.home-assistant.io/integrations/broadlink",
+          "pastedContents": {}
+        },
+        {
+          "display": "the button still is not working, check the logs for errors",
+          "pastedContents": {}
+        },
+        {
+          "display": "I can't power on my led strips using the dashboard",
+          "pastedContents": {}
+        },
+        {
+          "display": "not the strips, the amico led lights in the living room and kitchen",
+          "pastedContents": {}
+        },
+        {
+          "display": "Troubleshoot why my led light groups don't always sync when controlled as a group.",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md, python is not installed",
+          "pastedContents": {}
+        },
+        {
+          "display": "yes implement all fixes and document",
+          "pastedContents": {}
+        },
+        {
+          "display": "read claude.md and diagnose why the last fertigation time in the hydroponics dashboard and the traces last execution time don't agree.  How can I ensure the fertigation happens each time it is supposed to?",
+          "pastedContents": {}
+        },
+        {
+          "display": "read CLAUDE.md  adjust the fertigation automation to run the last fertigation of the day for 5 extra seconds",
+          "pastedContents": {}
+        },
+        {
+          "display": "I have a combination of Leviton DZ1KD and ZW4SF zwave switches.  They have LEDs, can these LEDs be turned off?  If so, I would like an automation to configure some of the switches to be dark at night. The LED is helpful at night to locate switches in dark, so not all switches need to be darkened, I want to manually select switches it applies to.",
+          "pastedContents": {}
+        },
+        {
+          "display": "reverse osmosis changed to Open\n9:58:25 AM - 3 hours ago",
+          "pastedContents": {}
+        },
+        {
+          "display": "why didn't my automation, Auto-close Reverse Osmosis Valve after 1 hour work this morning?",
+          "pastedContents": {}
+        },
+        {
+          "display": "sensor.pixel_9_pro_xl_wi_fi_connection\nsensor.gavins_iphone_2_ssid\nsensor.iphone_ssid\n= Lakehouse are the sensors for Jeremy, Gavin and Kristy's precense, repsectively",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.components.automation\nSource: helpers/condition.py:1106\nintegration: Automation (documentation, issues)\nFirst occurred: 11:56:16 AM (2 occurrences)\nLast logged: 12:24:24 PM\n\nError evaluating condition in 'Welcome Home - Lakehouse WiFi Detection': In 'condition': In 'or' (item 1 of 2): In 'and' (item 2 of 2): In 'state': In 'state' condition: unknown entity sensor.iphone_wifi_ssid In 'or' (item 2 of 2): In 'and' (item 1 of 2): In 'state': In 'state' condition: unknown entity sensor.pixel_9_xl_pro_connection_type In 'and' (item 2 of 2): In 'state': In 'state' condition: unknown entity sensor.pixel_9_xl_pro_wifi_ssid",
+          "pastedContents": {}
+        },
+        {
+          "display": "document all changes and standards in CLAUDE.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "input naming should idenitfy the device and function/setting",
+          "pastedContents": {}
+        },
+        {
+          "display": "implement all recommendations",
+          "pastedContents": {}
+        },
+        {
+          "display": "Audit my labels in home assistant, and suggest improvements.  ",
+          "pastedContents": {}
+        },
+        {
+          "display": "[Pasted text #1 +51 lines]",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "Logger: homeassistant.core\nSource: core.py:2822\nFirst occurred: 11:36:29 AM (7 occurrences)\nLast logged: 11:36:29 AM\n\nError executing service: <ServiceCall light.turn_on (c:01JVZ01MNG:al:INXW:ntrv:04): entity_id=['light.amico_smart_recessed_light_10'], params=brightness=255, color_temp=192, color_temp_kelvin=5205>\nError executing service: <ServiceCall light.turn_on (c:01JVZ01MM7:al:JNUX:ntrv:04): entity_id=['light.amico_smart_recessed_light_9'], params=brightness=3, color_temp=500, color_temp_kelvin=2000>\nError executing service: <ServiceCall light.turn_on (c:01JVZ01MNG:al:INXW:ntrv:04): entity_id=['light.amico_smart_recessed_light_6'], params=brightness=255, color_temp=192, color_temp_kelvin=5205>\nError executing service: <ServiceCall light.turn_on (c:01JVZ01MNG:al:INXW:ntrv:04): entity_id=['light.amico_smart_recessed_light_9'], params=brightness=255, color_temp=192, color_temp_kelvin=5205>\nError executing service: <ServiceCall light.turn_on (c:01JVZ01MNG:al:INXW:ntrv:04): entity_id=['light.amico_smart_recessed_light_11'], params=brightness=255, color_temp=192, color_temp_kelvin=5205>\nTraceback (most recent call last):\n  File \"/usr/src/homeassistant/homeassistant/core.py\", line 2822, in _run_service_call_catch_exceptions\n    await coro_or_task\n  File \"/usr/src/homeassistant/homeassistant/core.py\", line 2845, in _execute_service\n    return await target(service_call)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/config/custom_components/adaptive_lighting/hass_utils.py\", line 62, in service_func_proxy\n    await existing_service.job.target(call)\n  File \"/usr/src/homeassistant/homeassistant/helpers/service.py\", line 1007, in entity_service_call\n    single_response = await _handle_entity_call(\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^\n        hass, entity, func, data, call.context\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/usr/src/homeassistant/homeassistant/helpers/service.py\", line 1079, in _handle_entity_call\n    result = await task\n             ^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/light/__init__.py\", line 651, in async_handle_light_on_service\n    await light.async_turn_on(**filter_turn_on_params(light, params))\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1689, in async_turn_on\n    await self.hass.async_add_executor_job(ft.partial(self.turn_on, **kwargs))\n  File \"/usr/local/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n  File \"/usr/src/homeassistant/homeassistant/components/tuya/light.py\", line 670, in turn_on\n    self._send_command(commands)\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/tuya/entity.py\", line 298, in _send_command\n    self.device_manager.send_commands(self.device.id, commands)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/tuya_sharing/manager.py\", line 93, in send_commands\n    return self.device_repository.send_commands(device_id, commands)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/tuya_sharing/device.py\", line 180, in send_commands\n    self.api.post(f\"/v1.1/m/thing/{device_id}/commands\", None, {\"commands\": commands})\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/tuya_sharing/customerapi.py\", line 192, in post\n    return self.__request(\"POST\", path, params, body)\n           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/tuya_sharing/customerapi.py\", line 121, in __request\n    raise Exception(f\"network error:({ret['code']}) {ret['msg']}\")\nException: network error:(-9999999) sign invalid"
+            }
+          }
+        },
+        {
+          "display": "LED strips dashboard is not working, nothing jhappens when I push a button",
+          "pastedContents": {}
+        },
+        {
+          "display": "extend to also function for pixel 9 xl pro",
+          "pastedContents": {}
+        },
+        {
+          "display": "the wifi network is 'Lakehouse'",
+          "pastedContents": {}
+        },
+        {
+          "display": "I use a combnination of sensors for location, wifi, companion app, Bermuda BLE.  This automation should only trigger when a phone connects to the lakehouse wifi",
+          "pastedContents": {}
+        },
+        {
+          "display": "I would like an automation like this: WiFi Presence Detection\nalias: \"Welcome Home - iPhone Detection\"\ndescription: \"Triggers welcome scene when iPhone connects to home WiFi\"\ntrigger:\n  - platform: state\n    entity_id: sensor.iphone_connection_type\n    to: \"Wi-Fi\"\ncondition:\n  - condition: zone\n    entity_id: device_tracker.iphone\n    zone: zone.home\naction:\n  - service: scene.turn_on\n    target:\n      entity_id: scene.welcome_home\n  - service: notify.mobile_app_iphone\n    data:\n      message: \"Welcome home! The house is ready for you.\"",
+          "pastedContents": {}
+        },
+        {
+          "display": "the reverse osmosis system was turned on today, and the automation to turn it off after one hour never fired.  Why?",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.core_config\nSource: core_config.py:476\nFirst occurred: 11:23:20 AM (1 occurrence)\nLast logged: 11:23:20 AM\n\nPackage http_optimization contains invalid customize",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.helpers.service\nSource: helpers/service.py:304\nFirst occurred: 11:19:08 AM (1 occurrence)\nLast logged: 11:19:08 AM\n\nReferenced entities remote.broadlink_remote_e87072ba7282 are missing or not currently available",
+          "pastedContents": {}
+        },
+        {
+          "display": "the commands are rf not ir",
+          "pastedContents": {}
+        },
+        {
+          "display": "I have collected all of the code for my LEDstrips via Broadlink RM4.  they are in /config/.storage/broadlink_remote_e87072ba7282_codes  create helpers for each button and a dashboard",
+          "pastedContents": {}
+        },
+        {
+          "display": "Setup of package 'http_optimization' failed: integration 'script' cannot be merged, dict expected in main config\n",
+          "pastedContents": {}
+        },
+        {
+          "display": "the suggestions are created as persistent notifications in home assistant",
+          "pastedContents": {}
+        },
+        {
+          "display": "read the suggestions ai-automation-suggestions recommends",
+          "pastedContents": {}
+        },
+        {
+          "display": "read claude.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "update CLAUDE.md with all relevant information describing the environment and preferred tools",
+          "pastedContents": {}
+        },
+        {
+          "display": "I see you frequently trying to run python or python3 commands and failing.  Do I need to install python in this instance?",
+          "pastedContents": {}
+        },
+        {
+          "display": "does CLAUDE.md need updates with any findings from this session?",
+          "pastedContents": {}
+        },
+        {
+          "display": "use context7 to fix Setup of package 'http_optimization' failed: integration 'script' cannot be merged, dict expected in main config\n",
+          "pastedContents": {}
+        },
+        {
+          "display": "be sure you use context7: Integration error: packages - Integration 'packages' not found.\n",
+          "pastedContents": {}
+        },
+        {
+          "display": "manual trigger the service to make suggestions",
+          "pastedContents": {}
+        },
+        {
+          "display": "read persistent notifications for suggestions from the ai-automation-suggester mcp",
+          "pastedContents": {}
+        },
+        {
+          "display": "I don't see the option to adjust the scan interval or frequency",
+          "pastedContents": {}
+        },
+        {
+          "display": "Does this configuration belong outside configuration.yaml?  ",
+          "pastedContents": {}
+        },
+        {
+          "display": "suggest the best fix for the tuya issue",
+          "pastedContents": {}
+        },
+        {
+          "display": "validate that the device 192.168.1.37 (curatron_plug) is reachable now.  What URL is tuya integration trying to access, I may be filtering it in DNS",
+          "pastedContents": {}
+        },
+        {
+          "display": "audit the error log and remediate",
+          "pastedContents": {}
+        },
+        {
+          "display": "yes",
+          "pastedContents": {}
+        },
+        {
+          "display": "start by analyzing current automations for stability, error handling and resource conservation",
+          "pastedContents": {}
+        },
+        {
+          "display": "read claude.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "/config ",
+          "pastedContents": {}
+        },
+        {
+          "display": "what can you tell me about the device at 192.168.1.37?",
+          "pastedContents": {}
+        },
+        {
+          "display": "Logger: homeassistant.components.tplink.entity\nSource: components/tplink/entity.py:275\nintegration: TP-Link Smart Home (documentation, issues)\nFirst occurred: 7:35:13 AM (4 occurrences)\nLast logged: 7:35:13 AM\n\nBad logger message: 'SmartErrorCode' object is not subscriptable",
+          "pastedContents": {}
+        },
+        {
+          "display": "use context7 to adjust the active hours from 9:30am to 9:30 PM",
+          "pastedContents": {}
+        },
+        {
+          "display": "adjust my hydroponic fertigation schedule to run from 9:30 AM until 9:30 PM",
+          "pastedContents": {}
+        },
+        {
+          "display": "[Pasted text #1 +69 lines]",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "Logger: homeassistant\nSource: /usr/src/homeassistant/homeassistant/runner.py:112\nFirst occurred: 10:48:40 AM (2 occurrences)\nLast logged: 10:48:40 AM\n\nError doing job: Task exception was never retrieved (None)\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/resolver.py\", line 106, in resolve\n    resp = await self._resolver.getaddrinfo(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<5 lines>...\n    )\n    ^\naiodns.error.DNSError: (12, 'Timeout while contacting DNS servers')\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 1357, in _create_direct_connection\n    hosts = await self._resolve_host(host, port, traces=traces)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 995, in _resolve_host\n    return await asyncio.shield(resolved_host_task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 1357, in _create_direct_connection\n    hosts = await self._resolve_host(host, port, traces=traces)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 970, in _resolve_host\n    await future\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 1026, in _resolve_host_with_throttle\n    addrs = await self._resolver.resolve(host, port, family=self._family)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp_asyncmdnsresolver/_impl.py\", line 140, in resolve\n    return await super().resolve(host, port, family)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/resolver.py\", line 115, in resolve\n    raise OSError(None, msg) from exc\nOSError: [Errno None] Timeout while contacting DNS servers\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.13/site-packages/pytboss/wss.py\", line 86, in _subscribe\n    self._sock = await self._ws_connect()\n                 ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/pytboss/wss.py\", line 73, in _ws_connect\n    return await self._session.ws_connect(self._url)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/client.py\", line 1004, in _ws_connect\n    resp = await self.request(\n           ^^^^^^^^^^^^^^^^^^^\n    ...<11 lines>...\n    )\n    ^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/client.py\", line 703, in _request\n    conn = await self._connector.connect(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        req, traces=traces, timeout=real_timeout\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 548, in connect\n    proto = await self._create_connection(req, traces, timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 1056, in _create_connection\n    _, proto = await self._create_direct_connection(req, traces, timeout)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiohttp/connector.py\", line 1363, in _create_direct_connection\n    raise ClientConnectorDNSError(req.connection_key, exc) from exc\naiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host socket.dansonscorp.com:443 ssl:default [Timeout while contacting DNS servers]"
+            }
+          }
+        }
+      ],
+      "hasTrustDialogAccepted": true,
+      "hasCompletedProjectOnboarding": true
+    }
+  },
+  "cachedChangelog": "# Changelog\n\n## 1.0.1\n\n- Added `DISABLE_INTERLEAVED_THINKING` to give users the option to opt out of interleaved thinking.\n- Improved model references to show provider-specific names (Sonnet 3.7 for Bedrock, Sonnet 4 for Console)\n- Updated documentation links and OAuth process descriptions\n\n## 1.0.0\n\n- Claude Code is now generally available\n- Introducing Sonnet 4 and Opus 4 models\n\n## 0.2.125\n\n- Breaking change: Bedrock ARN passed to `ANTHROPIC_MODEL` or `ANTHROPIC_SMALL_FAST_MODEL` should no longer contain an escaped slash (specify `/` instead of `%2F`)\n- Removed `DEBUG=true` in favor of `ANTHROPIC_LOG=debug`, to log all requests\n\n## 0.2.117\n\n- Breaking change: --print JSON output now returns nested message objects, for forwards-compatibility as we introduce new metadata fields\n- Introduced settings.cleanupPeriodDays\n- Introduced CLAUDE_CODE_API_KEY_HELPER_TTL_MS env var\n- Introduced --debug mode\n\n## 0.2.108\n\n- You can now send messages to Claude while it works to steer Claude in real-time\n- Introduced BASH_DEFAULT_TIMEOUT_MS and BASH_MAX_TIMEOUT_MS env vars\n- Fixed a bug where thinking was not working in -p mode\n- Fixed a regression in /cost reporting\n- Deprecated MCP wizard interface in favor of other MCP commands\n- Lots of other bugfixes and improvements\n\n## 0.2.107\n\n- CLAUDE.md files can now import other files. Add @path/to/file.md to ./CLAUDE.md to load additional files on launch\n\n## 0.2.106\n\n- MCP SSE server configs can now specify custom headers\n- Fixed a bug where MCP permission prompt didn't always show correctly\n\n## 0.2.105\n\n- Claude can now search the web\n- Moved system & account status to /status\n- Added word movement keybindings for Vim\n- Improved latency for startup, todo tool, and file edits\n\n## 0.2.102\n\n- Improved thinking triggering reliability\n- Improved @mention reliability for images and folders\n- You can now paste multiple large chunks into one prompt\n\n## 0.2.100\n\n- Fixed a crash caused by a stack overflow error\n- Made db storage optional; missing db support disables --continue and --resume\n\n## 0.2.98\n\n- Fixed an issue where auto-compact was running twice\n\n## 0.2.96\n\n- Claude Code can now also be used with a Claude Max subscription (https://claude.ai/upgrade)\n\n## 0.2.93\n\n- Resume conversations from where you left off from with \"claude --continue\" and \"claude --resume\"\n- Claude now has access to a Todo list that helps it stay on track and be more organized\n\n## 0.2.82\n\n- Added support for --disallowedTools\n- Renamed tools for consistency: LSTool -> LS, View -> Read, etc.\n\n## 0.2.75\n\n- Hit Enter to queue up additional messages while Claude is working\n- Drag in or copy/paste image files directly into the prompt\n- @-mention files to directly add them to context\n- Run one-off MCP servers with `claude --mcp-config <path-to-file>`\n- Improved performance for filename auto-complete\n\n## 0.2.74\n\n- Added support for refreshing dynamically generated API keys (via apiKeyHelper), with a 5 minute TTL\n- Task tool can now perform writes and run bash commands\n\n## 0.2.72\n\n- Updated spinner to indicate tokens loaded and tool usage\n\n## 0.2.70\n\n- Network commands like curl are now available for Claude to use\n- Claude can now run multiple web queries in parallel\n- Pressing ESC once immediately interrupts Claude in Auto-accept mode\n\n## 0.2.69\n\n- Fixed UI glitches with improved Select component behavior\n- Enhanced terminal output display with better text truncation logic\n\n## 0.2.67\n\n- Shared project permission rules can be saved in .claude/settings.json\n\n## 0.2.66\n\n- Print mode (-p) now supports streaming output via --output-format=stream-json\n- Fixed issue where pasting could trigger memory or bash mode unexpectedly\n\n## 0.2.63\n\n- Fixed an issue where MCP tools were loaded twice, which caused tool call errors\n\n## 0.2.61\n\n- Navigate menus with vim-style keys (j/k) or bash/emacs shortcuts (Ctrl+n/p) for faster interaction\n- Enhanced image detection for more reliable clipboard paste functionality\n- Fixed an issue where ESC key could crash the conversation history selector\n\n## 0.2.59\n\n- Copy+paste images directly into your prompt\n- Improved progress indicators for bash and fetch tools\n- Bugfixes for non-interactive mode (-p)\n\n## 0.2.54\n\n- Quickly add to Memory by starting your message with '#'\n- Press ctrl+r to see full output for long tool results\n- Added support for MCP SSE transport\n\n## 0.2.53\n\n- New web fetch tool lets Claude view URLs that you paste in\n- Fixed a bug with JPEG detection\n\n## 0.2.50\n\n- New MCP \"project\" scope now allows you to add MCP servers to .mcp.json files and commit them to your repository\n\n## 0.2.49\n\n- Previous MCP server scopes have been renamed: previous \"project\" scope is now \"local\" and \"global\" scope is now \"user\"\n\n## 0.2.47\n\n- Press Tab to auto-complete file and folder names\n- Press Shift + Tab to toggle auto-accept for file edits\n- Automatic conversation compaction for infinite conversation length (toggle with /config)\n\n## 0.2.44\n\n- Ask Claude to make a plan with thinking mode: just say 'think' or 'think harder' or even 'ultrathink'\n\n## 0.2.41\n\n- MCP server startup timeout can now be configured via MCP_TIMEOUT environment variable\n- MCP server startup no longer blocks the app from starting up\n\n## 0.2.37\n\n- New /release-notes command lets you view release notes at any time\n- `claude config add/remove` commands now accept multiple values separated by commas or spaces\n\n## 0.2.36\n\n- Import MCP servers from Claude Desktop with `claude mcp add-from-claude-desktop`\n- Add MCP servers as JSON strings with `claude mcp add-json <n> <json>`\n\n## 0.2.34\n\n- Vim bindings for text input - enable with /vim or /config\n\n## 0.2.32\n\n- Interactive MCP setup wizard: Run \"claude mcp add\" to add MCP servers with a step-by-step interface\n- Fix for some PersistentShell issues\n\n## 0.2.31\n\n- Custom slash commands: Markdown files in .claude/commands/ directories now appear as custom slash commands to insert prompts into your conversation\n- MCP debug mode: Run with --mcp-debug flag to get more information about MCP server errors\n\n## 0.2.30\n\n- Added ANSI color theme for better terminal compatibility\n- Fixed issue where slash command arguments weren't being sent properly\n- (Mac-only) API keys are now stored in macOS Keychain\n\n## 0.2.26\n\n- New /approved-tools command for managing tool permissions\n- Word-level diff display for improved code readability\n- Fuzzy matching for slash commands\n\n## 0.2.21\n\n- Fuzzy matching for /commands\n",
+  "changelogLastFetched": 1748273117956,
+  "maxSubscriptionNoticeCount": 0,
+  "hasAvailableMaxSubscription": false,
+  "lastReleaseNotesSeen": "1.0.2",
+  "claudeMaxTier": "not_max"
+}

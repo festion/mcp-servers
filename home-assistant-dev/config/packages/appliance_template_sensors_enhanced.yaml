@@ -1,0 +1,304 @@
+# =============================================================================
+# ENHANCED APPLIANCE TEMPLATE SENSORS
+# Advanced sensors for better appliance monitoring and cycle detection
+# =============================================================================
+
+template:
+  - sensor:
+      # Dishwasher cycle duration tracker
+      - name: "Dishwasher Cycle Duration"
+        unique_id: dishwasher_cycle_duration
+        state: >
+          {% set start_time = states('input_datetime.dishwasher_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] and states('input_boolean.dishwasher_cycle_announced') == 'on' %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "min"
+        icon: mdi:timer
+        attributes:
+          start_time: "{{ states('input_datetime.dishwasher_cycle_start') }}"
+          formatted_duration: >
+            {% set minutes = this.state | int %}
+            {% if minutes > 60 %}
+              {{ (minutes // 60) }}h {{ (minutes % 60) }}m
+            {% else %}
+              {{ minutes }}m
+            {% endif %}
+      
+      # Washing machine cycle duration tracker
+      - name: "Washing Machine Cycle Duration"
+        unique_id: washing_machine_cycle_duration
+        state: >
+          {% set start_time = states('input_datetime.washing_machine_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] and states('input_boolean.washing_machine_cycle_announced') == 'on' %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "min"
+        icon: mdi:timer
+        attributes:
+          start_time: "{{ states('input_datetime.washing_machine_cycle_start') }}"
+          formatted_duration: >
+            {% set minutes = this.state | int %}
+            {% if minutes > 60 %}
+              {{ (minutes // 60) }}h {{ (minutes % 60) }}m
+            {% else %}
+              {{ minutes }}m
+            {% endif %}
+      
+      # Dryer cycle duration tracker
+      - name: "Dryer Cycle Duration"
+        unique_id: dryer_cycle_duration
+        state: >
+          {% set start_time = states('input_datetime.dryer_cycle_start') %}
+          {% if start_time not in ['unknown', 'unavailable'] and states('input_boolean.dryer_cycle_announced') == 'on' %}
+            {% set elapsed_minutes = ((now().timestamp() - as_timestamp(start_time)) / 60) | round(0) %}
+            {{ elapsed_minutes }}
+          {% else %}
+            0
+          {% endif %}
+        unit_of_measurement: "min"
+        icon: mdi:timer
+        attributes:
+          start_time: "{{ states('input_datetime.dryer_cycle_start') }}"
+          formatted_duration: >
+            {% set minutes = this.state | int %}
+            {% if minutes > 60 %}
+              {{ (minutes // 60) }}h {{ (minutes % 60) }}m
+            {% else %}
+              {{ minutes }}m
+            {% endif %}
+      
+      # Dishwasher power state analyzer
+      - name: "Dishwasher Power State"
+        unique_id: dishwasher_power_state
+        state: >
+          {% set power = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+          {% set start_threshold = states('input_number.dishwasher_start_threshold') | float(50) %}
+          {% set running_threshold = states('input_number.dishwasher_running_threshold') | float(30) %}
+          {% set stop_threshold = states('input_number.dishwasher_stop_threshold') | float(10) %}
+          
+          {% if power >= start_threshold %}
+            starting
+          {% elif power >= running_threshold %}
+            running
+          {% elif power >= stop_threshold %}
+            finishing
+          {% else %}
+            idle
+          {% endif %}
+        icon: >
+          {% set state = this.state %}
+          {% if state == 'starting' %}
+            mdi:play-circle
+          {% elif state == 'running' %}
+            mdi:dishwasher
+          {% elif state == 'finishing' %}
+            mdi:stop-circle
+          {% else %}
+            mdi:dishwasher-off
+          {% endif %}
+        attributes:
+          power_consumption: "{{ states('sensor.dishwasher_electric_consumption_w') | float(0) | round(1) }}"
+          thresholds:
+            start: "{{ states('input_number.dishwasher_start_threshold') | float(50) }}"
+            running: "{{ states('input_number.dishwasher_running_threshold') | float(30) }}"
+            stop: "{{ states('input_number.dishwasher_stop_threshold') | float(10) }}"
+      
+      # Washing machine power state analyzer
+      - name: "Washing Machine Power State"
+        unique_id: washing_machine_power_state
+        state: >
+          {% set power = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+          {% set start_threshold = states('input_number.washing_machine_start_threshold') | float(100) %}
+          {% set running_threshold = states('input_number.washing_machine_running_threshold') | float(50) %}
+          {% set stop_threshold = states('input_number.washing_machine_stop_threshold') | float(15) %}
+          
+          {% if power >= start_threshold %}
+            starting
+          {% elif power >= running_threshold %}
+            running
+          {% elif power >= stop_threshold %}
+            finishing
+          {% else %}
+            idle
+          {% endif %}
+        icon: >
+          {% set state = this.state %}
+          {% if state == 'starting' %}
+            mdi:play-circle
+          {% elif state == 'running' %}
+            mdi:washing-machine
+          {% elif state == 'finishing' %}
+            mdi:stop-circle
+          {% else %}
+            mdi:washing-machine-off
+          {% endif %}
+        attributes:
+          power_consumption: "{{ states('sensor.washing_machine_electric_consumption_w') | float(0) | round(1) }}"
+          thresholds:
+            start: "{{ states('input_number.washing_machine_start_threshold') | float(100) }}"
+            running: "{{ states('input_number.washing_machine_running_threshold') | float(50) }}"
+            stop: "{{ states('input_number.washing_machine_stop_threshold') | float(15) }}"
+      
+      # Appliance system status overview
+      - name: "Appliance System Status"
+        unique_id: appliance_system_status
+        state: >
+          {% set dishwasher_running = states('input_boolean.dishwasher_cycle_announced') == 'on' %}
+          {% set washing_machine_running = states('input_boolean.washing_machine_cycle_announced') == 'on' %}
+          {% set dryer_running = states('input_boolean.dryer_cycle_announced') == 'on' %}
+          {% set running_count = [dishwasher_running, washing_machine_running, dryer_running] | select('true') | list | length %}
+          
+          {% if running_count == 0 %}
+            All Idle
+          {% elif running_count == 1 %}
+            1 Running
+          {% else %}
+            {{ running_count }} Running
+          {% endif %}
+        icon: >
+          {% set running_count = this.attributes.running_appliances | length %}
+          {% if running_count == 0 %}
+            mdi:home-automation
+          {% elif running_count == 1 %}
+            mdi:cog
+          {% else %}
+            mdi:cogs
+          {% endif %}
+        attributes:
+          running_appliances: >
+            {% set appliances = [] %}
+            {% if states('input_boolean.dishwasher_cycle_announced') == 'on' %}
+              {% set appliances = appliances + ['Dishwasher'] %}
+            {% endif %}
+            {% if states('input_boolean.washing_machine_cycle_announced') == 'on' %}
+              {% set appliances = appliances + ['Washing Machine'] %}
+            {% endif %}
+            {% if states('input_boolean.dryer_cycle_announced') == 'on' %}
+              {% set appliances = appliances + ['Dryer'] %}
+            {% endif %}
+            {{ appliances }}
+          total_power_consumption: >
+            {% set dishwasher_power = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+            {% set washing_machine_power = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+            {{ (dishwasher_power + washing_machine_power) | round(1) }}
+          last_announcement: "{{ states('input_text.appliance_last_announcement') }}"
+      
+      # Power consumption trend analyzer
+      - name: "Dishwasher Power Trend"
+        unique_id: dishwasher_power_trend
+        state: >
+          {% set current = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+          {% set previous = this.attributes.get('previous_power', current) %}
+          {% set change = current - previous %}
+          
+          {% if change > 10 %}
+            increasing
+          {% elif change < -10 %}
+            decreasing
+          {% else %}
+            stable
+          {% endif %}
+        attributes:
+          current_power: "{{ states('sensor.dishwasher_electric_consumption_w') | float(0) | round(1) }}"
+          previous_power: "{{ states('sensor.dishwasher_electric_consumption_w') | float(0) | round(1) }}"
+          change: >
+            {% set current = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+            {% set previous = this.attributes.get('previous_power', current) %}
+            {{ (current - previous) | round(1) }}
+      
+      # Washing machine power trend analyzer
+      - name: "Washing Machine Power Trend"
+        unique_id: washing_machine_power_trend
+        state: >
+          {% set current = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+          {% set previous = this.attributes.get('previous_power', current) %}
+          {% set change = current - previous %}
+          
+          {% if change > 15 %}
+            increasing
+          {% elif change < -15 %}
+            decreasing
+          {% else %}
+            stable
+          {% endif %}
+        attributes:
+          current_power: "{{ states('sensor.washing_machine_electric_consumption_w') | float(0) | round(1) }}"
+          previous_power: "{{ states('sensor.washing_machine_electric_consumption_w') | float(0) | round(1) }}"
+          change: >
+            {% set current = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+            {% set previous = this.attributes.get('previous_power', current) %}
+            {{ (current - previous) | round(1) }}
+
+  - binary_sensor:
+      # Smart cycle detection based on multiple factors
+      - name: "Dishwasher Smart Cycle Detection"
+        unique_id: dishwasher_smart_cycle_detection
+        state: >
+          {% set power_state = states('sensor.dishwasher_power_state') %}
+          {% set current_announced = states('input_boolean.dishwasher_cycle_announced') == 'on' %}
+          {% set power = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+          {% set trend = states('sensor.dishwasher_power_trend') %}
+          
+          {% if not current_announced and power_state in ['starting', 'running'] and power > 40 %}
+            {{ true }}
+          {% elif current_announced and power_state in ['idle', 'finishing'] and power < 15 %}
+            {{ false }}
+          {% else %}
+            {{ current_announced }}
+          {% endif %}
+        attributes:
+          power_state: "{{ states('sensor.dishwasher_power_state') }}"
+          power_consumption: "{{ states('sensor.dishwasher_electric_consumption_w') | float(0) | round(1) }}"
+          power_trend: "{{ states('sensor.dishwasher_power_trend') }}"
+          confidence: >
+            {% set power = states('sensor.dishwasher_electric_consumption_w') | float(0) %}
+            {% set power_state = states('sensor.dishwasher_power_state') %}
+            {% if power_state == 'starting' and power > 60 %}
+              high
+            {% elif power_state == 'running' and power > 30 %}
+              medium
+            {% elif power_state in ['finishing', 'idle'] and power < 10 %}
+              high
+            {% else %}
+              low
+            {% endif %}
+      
+      # Smart washing machine cycle detection
+      - name: "Washing Machine Smart Cycle Detection"
+        unique_id: washing_machine_smart_cycle_detection
+        state: >
+          {% set power_state = states('sensor.washing_machine_power_state') %}
+          {% set current_announced = states('input_boolean.washing_machine_cycle_announced') == 'on' %}
+          {% set power = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+          {% set trend = states('sensor.washing_machine_power_trend') %}
+          
+          {% if not current_announced and power_state in ['starting', 'running'] and power > 80 %}
+            {{ true }}
+          {% elif current_announced and power_state in ['idle', 'finishing'] and power < 20 %}
+            {{ false }}
+          {% else %}
+            {{ current_announced }}
+          {% endif %}
+        attributes:
+          power_state: "{{ states('sensor.washing_machine_power_state') }}"
+          power_consumption: "{{ states('sensor.washing_machine_electric_consumption_w') | float(0) | round(1) }}"
+          power_trend: "{{ states('sensor.washing_machine_power_trend') }}"
+          confidence: >
+            {% set power = states('sensor.washing_machine_electric_consumption_w') | float(0) %}
+            {% set power_state = states('sensor.washing_machine_power_state') %}
+            {% if power_state == 'starting' and power > 120 %}
+              high
+            {% elif power_state == 'running' and power > 50 %}
+              medium
+            {% elif power_state in ['finishing', 'idle'] and power < 15 %}
+              high
+            {% else %}
+              low
+            {% endif %}

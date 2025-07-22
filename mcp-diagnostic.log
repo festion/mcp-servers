@@ -1,0 +1,18 @@
+2025-06-30 11:28:10 - Node.js version: v20.19.3
+2025-06-30 11:28:10 - Python3 version: Python 3.11.2
+2025-06-30 11:28:10 - Docker version: Docker version 28.3.0, build 38b7060
+2025-06-30 11:28:10 - Filesystem implementation exists at /home/dev/workspace/node_modules/@modelcontextprotocol/server-filesystem
+2025-06-30 11:28:10 - Network-FS implementation exists at /home/dev/workspace/mcp-servers/mcp-servers/network-mcp-server
+2025-06-30 11:28:10 - Code-Linter implementation exists at /home/dev/workspace/mcp-servers/mcp-servers/code-linter-mcp-server
+2025-06-30 11:28:10 - Proxmox implementation exists at /home/dev/workspace/mcp-servers/mcp-servers/proxmox-mcp-server
+2025-06-30 11:28:11 - WikiJS implementation exists at /home/dev/workspace/mcp-servers/mcp-servers/wikijs-mcp-server
+2025-06-30 11:28:11 - Home-Assistant implementation exists at /home/dev/workspace/home-assistant-mcp-server
+2025-06-30 11:28:11 - Serena implementation exists at /home/dev/workspace/serena
+2025-06-30 11:28:11 - Testing Filesystem wrapper: node /home/dev/workspace/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js /home/dev/workspace
+2025-06-30 11:28:11 - ERROR: Filesystem script not found at node /home/dev/workspace/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js /home/dev/workspace
+2025-06-30 11:28:11 - Testing Network-FS wrapper: /home/dev/workspace/network-mcp-wrapper.sh
+2025-06-30 11:28:13 - ERROR: Network-FS wrapper failed with exit code 0
+2025-06-30 11:28:13 - Testing Code-Linter wrapper: /home/dev/workspace/code-linter-wrapper.sh
+2025-06-30 11:28:15 - ERROR: Code-Linter wrapper failed with exit code 0
+2025-06-30 11:28:15 - Testing Proxmox wrapper: /home/dev/workspace/proxmox-mcp-wrapper.sh
+2025-06-30 11:28:17 - SUCCESS: Proxmox wrapper started successfully

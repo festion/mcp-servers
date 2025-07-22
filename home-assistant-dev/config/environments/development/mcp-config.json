@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "node",
+      "args": [
+        "/home/dev/workspace/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+        "/home/dev/workspace/home-assistant-config"
+      ],
+      "description": "Local filesystem access for development"
+    },
+    "home-assistant-dev": {
+      "command": "bash",
+      "args": ["/home/dev/workspace/home-assistant-config/environments/development/hass-mcp-wrapper-dev.sh"],
+      "description": "Home Assistant MCP for development environment (LXC 128)"
+    },
+    "github": {
+      "command": "bash", 
+      "args": ["/home/dev/workspace/github-wrapper.sh"],
+      "description": "GitHub repository management"
+    },
+    "code-linter": {
+      "command": "bash",
+      "args": ["/home/dev/workspace/code-linter-wrapper.sh"], 
+      "description": "Code quality and linting tools"
+    },
+    "serena": {
+      "command": "bash",
+      "args": ["/home/dev/workspace/serena-mcp-wrapper.sh"],
+      "description": "Serena AI assistant integration"
+    }
+  },
+  "environment": "development",
+  "description": "MCP configuration for Home Assistant development environment"
+}

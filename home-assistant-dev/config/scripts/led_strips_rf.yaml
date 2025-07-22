@@ -1,0 +1,186 @@
+# LED Strip RF Remote Control Scripts
+# These scripts send RF commands via Broadlink RM4 remote
+
+led_strips_rf_power_on:
+  alias: "LED Strips RF - Power On"
+  description: "Turn on LED strips via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "on"
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.led_strips_power_status
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_brightness_level
+      data:
+        value: 50
+  icon: mdi:lightbulb-on
+
+led_strips_rf_power_off:
+  alias: "LED Strips RF - Power Off"
+  description: "Turn off LED strips via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "off"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.led_strips_power_status
+  icon: mdi:lightbulb-off
+
+led_strips_rf_brightness_up:
+  alias: "LED Strips RF - Brightness Up"
+  description: "Increase brightness of LED strips via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "+bright"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_brightness_level
+      data:
+        value: >
+          {% set current = states('input_number.led_strips_brightness_level') %}
+          {% if current not in ['unknown', 'unavailable'] %}
+            {% set current_val = current | int %}
+            {% set new_value = current_val + 10 %}
+            {{ 100 if new_value > 100 else new_value }}
+          {% else %}
+            60
+          {% endif %}
+  icon: mdi:brightness-6
+
+led_strips_rf_brightness_down:
+  alias: "LED Strips RF - Brightness Down"
+  description: "Decrease brightness of LED strips via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "-bright"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_brightness_level
+      data:
+        value: >
+          {% set current = states('input_number.led_strips_brightness_level') %}
+          {% if current not in ['unknown', 'unavailable'] %}
+            {% set current_val = current | int %}
+            {% set new_value = current_val - 10 %}
+            {{ 0 if new_value < 0 else new_value }}
+          {% else %}
+            40
+          {% endif %}
+  icon: mdi:brightness-4
+
+led_strips_rf_warmer:
+  alias: "LED Strips RF - Warmer"
+  description: "Make LED strips warmer via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "+warm"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_color_temp
+      data:
+        value: >
+          {% set current = states('input_number.led_strips_color_temp') %}
+          {% if current not in ['unknown', 'unavailable'] %}
+            {% set current_val = current | int %}
+            {{ 3 if current_val >= 3 else current_val + 1 }}
+          {% else %}
+            2
+          {% endif %}
+  icon: mdi:thermometer-plus
+
+led_strips_rf_cooler:
+  alias: "LED Strips RF - Cooler" 
+  description: "Make LED strips cooler via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "-cool"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_color_temp
+      data:
+        value: >
+          {% set current = states('input_number.led_strips_color_temp') %}
+          {% if current not in ['unknown', 'unavailable'] %}
+            {% set current_val = current | int %}
+            {{ 1 if current_val <= 1 else current_val - 1 }}
+          {% else %}
+            2
+          {% endif %}
+  icon: mdi:thermometer-minus
+
+led_strips_rf_warm_white:
+  alias: "LED Strips RF - Warm White"
+  description: "Set LED strips to warm white via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "warm"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_color_temp
+      data:
+        value: 3
+  icon: mdi:lightbulb-variant
+
+led_strips_rf_neutral_white:
+  alias: "LED Strips RF - Neutral White"
+  description: "Set LED strips to neutral white via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "neutral"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_color_temp
+      data:
+        value: 2
+  icon: mdi:lightbulb-variant-outline
+
+led_strips_rf_cool_white:
+  alias: "LED Strips RF - Cool White"
+  description: "Set LED strips to cool white via RF remote"
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4_pro
+      data:
+        device: "LEDStrips"
+        command: "cool"
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.led_strips_color_temp
+      data:
+        value: 1
+  icon: mdi:lightbulb

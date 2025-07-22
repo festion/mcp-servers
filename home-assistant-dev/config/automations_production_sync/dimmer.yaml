@@ -1,0 +1,122 @@
+# /config/automations/dimmer.yaml
+# Hue Dimmer Switch Automations for Kitchen and Family Room
+
+- id: '1747670255801'
+  alias: KitchenDimmer
+  description: ''
+  use_blueprint:
+    path: patpac9/Hue_Dimmer_Switch_Easy_Custom_Buttons.yaml
+    input:
+      controller: Mobile_Dimmer
+      on_released:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.kitchen_lights
+      on_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.livingroom_lights
+      up_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.kitchen_lights
+      up_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.livingroom_lights
+      down_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.kitchen_lights
+      down_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.livingroom_lights
+      off_released:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.kitchen_lights
+      off_hold_released:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.livingroom_lights
+
+- id: '1747693281652'
+  alias: FamilyDimmer
+  description: ''
+  use_blueprint:
+    path: patpac9/Hue_Dimmer_Switch_Easy_Custom_Buttons.yaml
+    input:
+      controller: Family_Dimmer
+      on_released:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.livingroom_lights
+      on_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.kitchen_lights
+      up_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.livingroom_lights
+      up_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.kitchen_lights
+      down_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.livingroom_lights
+      down_hold_released:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.kitchen_lights
+      off_released:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.livingroom_lights
+      off_hold_released:
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.kitchen_lights

@@ -1,0 +1,252 @@
+# Network Security Configuration for GitHub Actions Runner
+# Defines network isolation, firewall rules, and security policies
+
+networks:
+  # Custom bridge network for runner isolation
+  github-runner-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+    options:
+      com.docker.network.bridge.name: "github-runner-br"
+      com.docker.network.bridge.enable_icc: "false"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: "1500"
+    labels:
+      - "security.isolation=high"
+      - "network.type=runner"
+
+  # Monitoring network (separate from runner network)
+  monitoring-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
+          gateway: 172.21.0.1
+    options:
+      com.docker.network.bridge.name: "monitoring-br"
+      com.docker.network.bridge.enable_icc: "true"
+    labels:
+      - "security.isolation=medium"
+      - "network.type=monitoring"
+
+firewall:
+  # iptables rules for container isolation
+  rules:
+    # Default policies
+    - chain: INPUT
+      policy: DROP
+    - chain: FORWARD
+      policy: DROP
+    - chain: OUTPUT
+      policy: ACCEPT
+
+    # Allow loopback traffic
+    - chain: INPUT
+      rule: "-i lo -j ACCEPT"
+    - chain: OUTPUT
+      rule: "-o lo -j ACCEPT"
+
+    # Allow established and related connections
+    - chain: INPUT
+      rule: "-m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
+
+    # Allow GitHub API access (HTTPS)
+    - chain: OUTPUT
+      rule: "-p tcp --dport 443 -d api.github.com -j ACCEPT"
+    - chain: OUTPUT
+      rule: "-p tcp --dport 443 -d github.com -j ACCEPT"
+    - chain: OUTPUT
+      rule: "-p tcp --dport 443 -d codeload.github.com -j ACCEPT"
+
+    # Allow Git operations (SSH and HTTPS)
+    - chain: OUTPUT
+      rule: "-p tcp --dport 22 -d github.com -j ACCEPT"
+    - chain: OUTPUT
+      rule: "-p tcp --dport 9418 -d github.com -j ACCEPT"
+
+    # Allow DNS resolution
+    - chain: OUTPUT
+      rule: "-p udp --dport 53 -j ACCEPT"
+    - chain: OUTPUT
+      rule: "-p tcp --dport 53 -j ACCEPT"
+
+    # Allow NTP for time synchronization
+    - chain: OUTPUT
+      rule: "-p udp --dport 123 -j ACCEPT"
+
+    # Block access to metadata services
+    - chain: OUTPUT
+      rule: "-d 169.254.169.254 -j DROP"
+    - chain: OUTPUT
+      rule: "-d 169.254.0.0/16 -j DROP"
+
+    # Block access to private networks (except allowed)
+    - chain: OUTPUT
+      rule: "-d 10.0.0.0/8 -j DROP"
+    - chain: OUTPUT
+      rule: "-d 172.16.0.0/12 ! -d 172.20.0.0/24 ! -d 172.21.0.0/24 -j DROP"
+    - chain: OUTPUT
+      rule: "-d 192.168.0.0/16 -j DROP"
+
+    # Log suspicious activity
+    - chain: INPUT
+      rule: "-j LOG --log-prefix 'RUNNER-INPUT-DROP: ' --log-level 4"
+    - chain: OUTPUT
+      rule: "-j LOG --log-prefix 'RUNNER-OUTPUT-DROP: ' --log-level 4"
+
+ssl_tls:
+  # SSL/TLS configuration
+  min_version: "TLSv1.2"
+  max_version: "TLSv1.3"
+  
+  cipher_suites:
+    - "TLS_AES_256_GCM_SHA384"
+    - "TLS_CHACHA20_POLY1305_SHA256"
+    - "TLS_AES_128_GCM_SHA256"
+    - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+    - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+    - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+  
+  # Certificate validation
+  certificate_validation:
+    verify_hostname: true
+    verify_certificate_chain: true
+    check_revocation: true
+    pin_certificates: false  # Set to true for production with specific certificates
+
+  # HSTS configuration
+  hsts:
+    enabled: true
+    max_age: 31536000  # 1 year
+    include_subdomains: true
+    preload: true
+
+dns:
+  # DNS security configuration
+  servers:
+    primary: "1.1.1.1"      # Cloudflare DNS
+    secondary: "8.8.8.8"    # Google DNS
+    fallback: "9.9.9.9"     # Quad9 DNS
+  
+  # DNS over HTTPS/TLS
+  dns_over_tls: true
+  dns_over_https: false  # Disabled to reduce complexity
+  
+  # DNS filtering
+  block_malware_domains: true
+  block_ads: false  # Disabled for runner compatibility
+  
+  # DNS security
+  dnssec_validation: true
+  dns_rebinding_protection: true
+
+monitoring:
+  # Network monitoring configuration
+  network_monitoring:
+    enabled: true
+    log_level: "info"
+    
+    # Connection monitoring
+    track_connections: true
+    connection_limit: 100
+    connection_rate_limit: "10/minute"
+    
+    # Bandwidth monitoring
+    bandwidth_monitoring: true
+    bandwidth_limit: "100MB/hour"
+    
+    # Anomaly detection
+    anomaly_detection: true
+    baseline_period: "24h"
+    threshold_multiplier: 3.0
+
+  # Intrusion detection
+  intrusion_detection:
+    enabled: true
+    mode: "detection"  # detection or prevention
+    
+    # Network scan detection
+    port_scan_detection: true
+    port_scan_threshold: 10
+    
+    # DDoS protection
+    ddos_protection: true
+    rate_limit: "100/minute"
+    
+    # Suspicious traffic detection
+    suspicious_traffic_patterns:
+      - large_data_exfiltration
+      - unusual_connection_patterns
+      - malware_communication
+      - lateral_movement_attempts
+
+security_groups:
+  # Container security groups
+  runner:
+    ingress: []  # No inbound connections allowed
+    egress:
+      - protocol: "tcp"
+        port: 443
+        destination: "api.github.com"
+        description: "GitHub API access"
+      - protocol: "tcp"
+        port: 443
+        destination: "github.com"
+        description: "GitHub HTTPS access"
+      - protocol: "tcp"
+        port: 22
+        destination: "github.com"
+        description: "GitHub SSH access"
+      - protocol: "tcp"
+        port: 9418
+        destination: "github.com"
+        description: "GitHub Git protocol"
+      - protocol: "udp"
+        port: 53
+        destination: "1.1.1.1,8.8.8.8,9.9.9.9"
+        description: "DNS resolution"
+      - protocol: "udp"
+        port: 123
+        destination: "pool.ntp.org"
+        description: "NTP time synchronization"
+
+  monitoring:
+    ingress:
+      - protocol: "tcp"
+        port: 9090
+        source: "172.21.0.0/24"
+        description: "Prometheus metrics"
+      - protocol: "tcp"
+        port: 3000
+        source: "172.21.0.0/24"
+        description: "Grafana dashboard"
+    egress:
+      - protocol: "tcp"
+        port: 443
+        destination: "0.0.0.0/0"
+        description: "External monitoring services"
+
+network_policies:
+  # Network segmentation policies
+  default_deny: true
+  
+  # Inter-container communication
+  container_to_container: "deny"
+  
+  # External communication
+  external_communication:
+    github_services: "allow"
+    package_repositories: "allow"
+    monitoring_services: "allow"
+    everything_else: "deny"
+  
+  # Time-based restrictions
+  time_restrictions:
+    enabled: false  # Disabled for 24/7 runner operation
+    allowed_hours: "00:00-23:59"
+    timezone: "UTC"

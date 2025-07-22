@@ -1,0 +1,49 @@
+# RO Valve Timer - Record when valve opens
+- id: ro_valve_opened_recorder
+  alias: "RO Valve - Record Open Time"
+  description: "Records timestamp when RO valve opens for persistent timer tracking"
+  trigger:
+    - platform: state
+      entity_id: valve.dual_water_timer_valve_1
+      to: "open"
+  action:
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.ro_valve_opened_timestamp
+      data:
+        datetime: "{{ now() }}"
+
+# RO Valve Timer - Check every 5 minutes if valve should be closed
+- id: reverse_osmosis_valve_timer
+  alias: "Auto-close Reverse Osmosis Valve after 1 hour"
+  description: "Closes the reverse osmosis valve if it has been open for more than 1 hour, persistent across HA restarts (fixed timestamp comparison)"
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"  # Check every 5 minutes
+  condition:
+    - condition: state
+      entity_id: valve.dual_water_timer_valve_1
+      state: "open"
+    - condition: template
+      value_template: >
+        {% set opened_time = states('input_datetime.ro_valve_opened_timestamp') %}
+        {% if opened_time not in ['unknown', 'unavailable', ''] %}
+          {{ (now().timestamp() - as_datetime(opened_time).timestamp()) > 3600 }}
+        {% else %}
+          false
+        {% endif %}
+  action:
+    - service: valve.close_valve
+      target:
+        entity_id: valve.dual_water_timer_valve_1
+    - service: notify.alexa_media_everywhere
+      data:
+        title: "Reverse Osmosis Safety"
+        message: "Reverse osmosis valve was open for 1 hour and has been automatically closed"
+    # Clear the timestamp after closing
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.ro_valve_opened_timestamp
+      data:
+        datetime: "1970-01-01 00:00:00"
+  mode: single

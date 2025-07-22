@@ -1,0 +1,11 @@
+# This file contains obsolete RF learning scripts that were causing unavailable entities
+# Moved from outdoor_ceiling_fan_scripts_correct.yaml on June 12, 2025
+# Content preserved for reference but no longer loaded by Home Assistant
+
+# =============================================================================
+# OUTDOOR CEILING FAN IR CODE LEARNING SCRIPTS (FAN ONLY - NO LIGHTS)
+# Based on actual remote layout - fan controls only
+# =============================================================================
+
+# THESE SCRIPTS ARE NOW ARCHIVED - RF LEARNING IS COMPLETE
+# They were causing 20+ unavailable entities and have been removed from active configuration

@@ -1,0 +1,536 @@
+# Network Configuration for GitHub Actions Runner
+# This file defines network settings, routing, and connectivity options
+
+# =============================================================================
+# NETWORK TOPOLOGY
+# =============================================================================
+
+network_topology:
+  # Network architecture
+  architecture: "bridge"
+  
+  # Network segments
+  segments:
+    # Internal container network
+    internal:
+      name: "runner_network"
+      driver: "bridge"
+      subnet: "172.20.0.0/16"
+      ip_range: "172.20.1.0/24"
+      gateway: "172.20.0.1"
+      internal: false
+      attachable: true
+      
+    # Host network for private access
+    host_access:
+      name: "host_network"
+      driver: "bridge"
+      subnet: "192.168.100.0/24"
+      gateway: "192.168.100.1"
+      internal: false
+      enable_icc: true
+      enable_ip_masquerade: true
+      
+  # Network policies
+  policies:
+    # Default policy
+    default_policy: "allow"
+    
+    # Ingress rules
+    ingress:
+      - description: "Allow internal network"
+        from_cidr: "172.20.0.0/16"
+        action: "allow"
+        
+      - description: "Allow host network"
+        from_cidr: "192.168.100.0/24"
+        action: "allow"
+        
+      - description: "Allow localhost"
+        from_cidr: "127.0.0.0/8"
+        action: "allow"
+        
+    # Egress rules
+    egress:
+      - description: "Allow GitHub API"
+        to_fqdn: "api.github.com"
+        ports: [443]
+        action: "allow"
+        
+      - description: "Allow GitHub downloads"
+        to_fqdn: "*.githubusercontent.com"
+        ports: [443]
+        action: "allow"
+        
+      - description: "Allow private network"
+        to_cidr: "192.168.1.0/24"
+        action: "allow"
+        
+      - description: "Allow Docker Hub"
+        to_fqdn: "registry-1.docker.io"
+        ports: [443]
+        action: "allow"
+        
+# =============================================================================
+# CONNECTIVITY SETTINGS
+# =============================================================================
+
+connectivity:
+  # Internet connectivity
+  internet:
+    enabled: true
+    ipv4: true
+    ipv6: false
+    
+    # Outbound connectivity requirements
+    required_endpoints:
+      - "api.github.com:443"
+      - "github.com:443"
+      - "*.githubusercontent.com:443"
+      - "registry-1.docker.io:443"
+      - "auth.docker.io:443"
+      - "production.cloudflare.docker.com:443"
+      
+  # Private network connectivity
+  private_network:
+    enabled: true
+    
+    # Home Assistant connectivity
+    home_assistant:
+      enabled: true
+      host: "192.168.1.155"
+      port: 8123
+      protocol: "http"
+      health_check_endpoint: "/api/"
+      timeout: 30
+      retry_attempts: 3
+      retry_delay: 5
+      
+    # SSH connectivity
+    ssh:
+      enabled: true
+      default_port: 22
+      key_file: "/run/secrets/ssh_key"
+      known_hosts_file: "/etc/ssh/ssh_known_hosts"
+      
+    # Additional services
+    additional_services:
+      - name: "router"
+        host: "192.168.1.1"
+        port: 80
+        protocol: "http"
+        
+      - name: "nas"
+        host: "192.168.1.100"
+        port: 5000
+        protocol: "https"
+        
+# =============================================================================
+# PROXY CONFIGURATION
+# =============================================================================
+
+proxy:
+  # Proxy settings
+  enabled: false
+  
+  # HTTP proxy
+  http:
+    enabled: false
+    host: ""
+    port: 3128
+    username: ""
+    password_file: "/run/secrets/proxy_password"
+    
+  # HTTPS proxy
+  https:
+    enabled: false
+    host: ""
+    port: 3128
+    username: ""
+    password_file: "/run/secrets/proxy_password"
+    
+  # SOCKS proxy
+  socks:
+    enabled: false
+    host: ""
+    port: 1080
+    version: 5
+    username: ""
+    password_file: "/run/secrets/socks_password"
+    
+  # No proxy list
+  no_proxy:
+    - "localhost"
+    - "127.0.0.1"
+    - "172.20.0.0/16"
+    - "192.168.0.0/16"
+    - "10.0.0.0/8"
+    - ".local"
+    
+  # Proxy authentication
+  authentication:
+    enabled: false
+    method: "basic"  # basic, ntlm, digest
+    
+# =============================================================================
+# DNS CONFIGURATION
+# =============================================================================
+
+dns:
+  # DNS servers
+  servers:
+    primary: "8.8.8.8"
+    secondary: "8.8.4.4"
+    
+    # Alternative DNS servers
+    alternatives:
+      - "1.1.1.1"
+      - "1.0.0.1"
+      - "9.9.9.9"
+      
+  # DNS search domains
+  search_domains:
+    - "local"
+    - "homelab.local"
+    
+  # DNS resolution settings
+  resolution:
+    timeout: 5  # seconds
+    attempts: 3
+    rotate: true
+    
+  # DNS caching
+  caching:
+    enabled: true
+    ttl: 300  # seconds
+    max_entries: 1000
+    
+  # Custom DNS entries
+  custom_entries:
+    - hostname: "ha.local"
+      ip: "192.168.1.155"
+      
+    - hostname: "router.local"
+      ip: "192.168.1.1"
+      
+    - hostname: "nas.local"
+      ip: "192.168.1.100"
+      
+# =============================================================================
+# SSL/TLS CONFIGURATION
+# =============================================================================
+
+tls:
+  # TLS settings
+  enabled: true
+  
+  # TLS versions
+  versions:
+    min_version: "1.2"
+    max_version: "1.3"
+    
+  # Cipher suites
+  cipher_suites:
+    - "TLS_AES_256_GCM_SHA384"
+    - "TLS_CHACHA20_POLY1305_SHA256"
+    - "TLS_AES_128_GCM_SHA256"
+    - "ECDHE-RSA-AES256-GCM-SHA384"
+    - "ECDHE-RSA-AES128-GCM-SHA256"
+    
+  # Certificate management
+  certificates:
+    # CA certificates
+    ca_bundle:
+      path: "/etc/ssl/certs/ca-certificates.crt"
+      auto_update: true
+      
+    # Client certificates
+    client_cert:
+      enabled: false
+      cert_file: "/run/secrets/client_cert"
+      key_file: "/run/secrets/client_key"
+      
+    # Server certificates
+    server_cert:
+      enabled: false
+      cert_file: "/run/secrets/server_cert"
+      key_file: "/run/secrets/server_key"
+      
+  # SSL verification
+  verification:
+    verify_peer: true
+    verify_hostname: true
+    
+    # Skip verification for specific hosts
+    skip_verification:
+      - "192.168.1.155"  # Home Assistant
+      - "*.local"
+      
+# =============================================================================
+# FIREWALL CONFIGURATION
+# =============================================================================
+
+firewall:
+  # Firewall settings
+  enabled: true
+  
+  # Default policies
+  default_policies:
+    input: "DROP"
+    output: "ACCEPT"
+    forward: "DROP"
+    
+  # Firewall rules
+  rules:
+    # Inbound rules
+    inbound:
+      - description: "Allow loopback"
+        source: "127.0.0.0/8"
+        destination: "127.0.0.0/8"
+        action: "ACCEPT"
+        
+      - description: "Allow established connections"
+        state: "ESTABLISHED,RELATED"
+        action: "ACCEPT"
+        
+      - description: "Allow internal network"
+        source: "172.20.0.0/16"
+        action: "ACCEPT"
+        
+      - description: "Allow host network"
+        source: "192.168.100.0/24"
+        action: "ACCEPT"
+        
+      - description: "Allow SSH"
+        port: 22
+        protocol: "tcp"
+        source: "192.168.1.0/24"
+        action: "ACCEPT"
+        
+      - description: "Allow health checks"
+        port: 8080
+        protocol: "tcp"
+        source: "172.20.0.0/16"
+        action: "ACCEPT"
+        
+      - description: "Allow metrics"
+        port: 9090
+        protocol: "tcp"
+        source: "172.20.0.0/16"
+        action: "ACCEPT"
+        
+    # Outbound rules
+    outbound:
+      - description: "Allow GitHub API"
+        destination: "api.github.com"
+        port: 443
+        protocol: "tcp"
+        action: "ACCEPT"
+        
+      - description: "Allow GitHub"
+        destination: "github.com"
+        port: 443
+        protocol: "tcp"
+        action: "ACCEPT"
+        
+      - description: "Allow Docker Hub"
+        destination: "registry-1.docker.io"
+        port: 443
+        protocol: "tcp"
+        action: "ACCEPT"
+        
+      - description: "Allow private network"
+        destination: "192.168.1.0/24"
+        action: "ACCEPT"
+        
+      - description: "Allow DNS"
+        destination: "8.8.8.8"
+        port: 53
+        protocol: "udp"
+        action: "ACCEPT"
+        
+      - description: "Allow NTP"
+        destination: "pool.ntp.org"
+        port: 123
+        protocol: "udp"
+        action: "ACCEPT"
+        
+# =============================================================================
+# ROUTING CONFIGURATION
+# =============================================================================
+
+routing:
+  # Routing table
+  routes:
+    # Default route
+    default:
+      gateway: "172.20.0.1"
+      interface: "eth0"
+      metric: 0
+      
+    # Private network routes
+    private:
+      - destination: "192.168.1.0/24"
+        gateway: "192.168.100.1"
+        interface: "eth1"
+        metric: 10
+        
+      - destination: "10.0.0.0/8"
+        gateway: "192.168.100.1"
+        interface: "eth1"
+        metric: 20
+        
+  # Static routes
+  static_routes:
+    enabled: true
+    
+    # Custom routes
+    custom:
+      - destination: "192.168.1.155/32"
+        gateway: "192.168.100.1"
+        interface: "eth1"
+        description: "Home Assistant route"
+        
+  # Route policies
+  policies:
+    # Source-based routing
+    source_based:
+      enabled: false
+      
+    # Destination-based routing
+    destination_based:
+      enabled: true
+      
+# =============================================================================
+# NETWORK MONITORING
+# =============================================================================
+
+monitoring:
+  # Network monitoring
+  enabled: true
+  
+  # Connectivity monitoring
+  connectivity:
+    enabled: true
+    
+    # Ping monitoring
+    ping:
+      enabled: true
+      targets:
+        - "8.8.8.8"
+        - "api.github.com"
+        - "192.168.1.155"
+      interval: 60  # seconds
+      timeout: 5  # seconds
+      
+    # Port monitoring
+    port:
+      enabled: true
+      targets:
+        - host: "api.github.com"
+          port: 443
+        - host: "192.168.1.155"
+          port: 8123
+      interval: 60  # seconds
+      timeout: 10  # seconds
+      
+  # Bandwidth monitoring
+  bandwidth:
+    enabled: true
+    interfaces:
+      - "eth0"
+      - "eth1"
+    interval: 30  # seconds
+    
+  # DNS monitoring
+  dns:
+    enabled: true
+    queries:
+      - "api.github.com"
+      - "github.com"
+      - "192.168.1.155"
+    interval: 300  # seconds
+    
+# =============================================================================
+# NETWORK SECURITY
+# =============================================================================
+
+security:
+  # Network security
+  enabled: true
+  
+  # Intrusion detection
+  intrusion_detection:
+    enabled: false
+    
+  # DDoS protection
+  ddos_protection:
+    enabled: true
+    rate_limit: 1000  # requests per minute
+    
+  # Network segmentation
+  segmentation:
+    enabled: true
+    
+    # Micro-segmentation
+    micro_segmentation:
+      enabled: false
+      
+  # VPN settings
+  vpn:
+    enabled: false
+    
+    # WireGuard configuration
+    wireguard:
+      enabled: false
+      config_file: "/etc/wireguard/wg0.conf"
+      
+    # OpenVPN configuration
+    openvpn:
+      enabled: false
+      config_file: "/etc/openvpn/client.conf"
+      
+# =============================================================================
+# TROUBLESHOOTING
+# =============================================================================
+
+troubleshooting:
+  # Network troubleshooting
+  tools:
+    enabled: true
+    
+    # Available tools
+    available:
+      - "ping"
+      - "traceroute"
+      - "nslookup"
+      - "dig"
+      - "netstat"
+      - "ss"
+      - "tcpdump"
+      - "curl"
+      - "wget"
+      
+  # Diagnostics
+  diagnostics:
+    enabled: true
+    
+    # Network tests
+    network_tests:
+      - test: "connectivity"
+        target: "8.8.8.8"
+        
+      - test: "dns_resolution"
+        target: "api.github.com"
+        
+      - test: "port_connectivity"
+        target: "api.github.com:443"
+        
+      - test: "private_network"
+        target: "192.168.1.155:8123"
+        
+  # Logging
+  logging:
+    enabled: true
+    level: "INFO"
+    file: "/var/log/runner/network.log"

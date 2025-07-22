@@ -1,0 +1,161 @@
+# Test workflow for GitHub Actions self-hosted runner
+# Save this as .github/workflows/test-runner.yml in your repository
+
+name: Test Self-Hosted Runner
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths: [ '.github/workflows/test-runner.yml' ]
+
+jobs:
+  test-runner:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Test basic system info
+        run: |
+          echo "=== System Information ==="
+          whoami
+          hostname
+          pwd
+          uname -a
+          echo
+          
+      - name: Test Docker availability
+        run: |
+          echo "=== Docker Information ==="
+          docker --version
+          docker info | head -20
+          echo
+          
+      - name: Test network connectivity
+        run: |
+          echo "=== Network Connectivity ==="
+          ping -c 3 github.com || echo "GitHub ping failed"
+          ping -c 3 192.168.1.155 || echo "Home Assistant ping failed"
+          echo
+          
+      - name: Test SSH connectivity to Home Assistant
+        run: |
+          echo "=== SSH Connectivity Test ==="
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 homeassistant@192.168.1.155 "
+            echo 'SSH connection successful!'
+            echo 'Home Assistant host info:'
+            hostname
+            whoami
+            pwd
+            df -h | head -5
+          "
+          
+      - name: Test workspace access
+        run: |
+          echo "=== Workspace Test ==="
+          ls -la $RUNNER_WORKSPACE
+          echo "Creating test file..."
+          echo "Test content" > $RUNNER_WORKSPACE/test-file.txt
+          cat $RUNNER_WORKSPACE/test-file.txt
+          rm $RUNNER_WORKSPACE/test-file.txt
+          echo "Test file cleaned up"
+          
+      - name: Test container networking
+        run: |
+          echo "=== Container Networking ==="
+          ip addr show | grep -E "inet|docker"
+          echo
+          docker network ls
+          echo
+          
+      - name: Test runner environment
+        run: |
+          echo "=== Runner Environment ==="
+          echo "Runner name: $RUNNER_NAME"
+          echo "Runner workspace: $RUNNER_WORKSPACE"
+          echo "GitHub repository: $GITHUB_REPOSITORY"
+          echo "GitHub actor: $GITHUB_ACTOR"
+          echo "GitHub run ID: $GITHUB_RUN_ID"
+          
+      - name: Test Home Assistant deployment simulation
+        run: |
+          echo "=== Home Assistant Deployment Simulation ==="
+          ssh -o StrictHostKeyChecking=no homeassistant@192.168.1.155 "
+            echo 'Simulating Home Assistant deployment...'
+            echo 'Current directory:'
+            pwd
+            echo 'Available space:'
+            df -h /config 2>/dev/null || df -h /home/homeassistant
+            echo 'Home Assistant status check:'
+            systemctl is-active home-assistant 2>/dev/null || echo 'Home Assistant service status unknown'
+            echo 'Deployment simulation complete!'
+          "
+          
+      - name: Test cleanup
+        if: always()
+        run: |
+          echo "=== Cleanup ==="
+          echo "Cleaning up test files..."
+          rm -f $RUNNER_WORKSPACE/test-file.txt
+          echo "Test completed!"
+          
+  test-parallel:
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
+    
+    strategy:
+      matrix:
+        test: [connectivity, performance, security]
+        
+    steps:
+      - name: Parallel test - ${{ matrix.test }}
+        run: |
+          echo "Running parallel test: ${{ matrix.test }}"
+          case "${{ matrix.test }}" in
+            connectivity)
+              echo "Testing network connectivity..."
+              ping -c 2 8.8.8.8
+              curl -s -o /dev/null -w "%{http_code}" https://github.com
+              ;;
+            performance)
+              echo "Testing performance..."
+              echo "CPU info:"
+              nproc
+              echo "Memory info:"
+              free -h
+              echo "Disk performance:"
+              dd if=/dev/zero of=/tmp/test bs=1M count=100 2>&1 | grep -E "copied|bytes"
+              rm -f /tmp/test
+              ;;
+            security)
+              echo "Testing security..."
+              echo "Current user:"
+              whoami
+              echo "User groups:"
+              groups
+              echo "File permissions test:"
+              touch /tmp/security-test
+              chmod 600 /tmp/security-test
+              ls -la /tmp/security-test
+              rm -f /tmp/security-test
+              ;;
+          esac
+          
+  test-failure-handling:
+    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch'
+    continue-on-error: true
+    
+    steps:
+      - name: Test intentional failure
+        run: |
+          echo "Testing failure handling..."
+          echo "This job will fail intentionally to test error handling"
+          false
+          
+      - name: This step should not run
+        run: |
+          echo "This should not execute due to previous failure"

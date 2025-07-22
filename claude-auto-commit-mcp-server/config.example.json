@@ -1,0 +1,34 @@
+{
+  "review_config": {
+    "enabled": true,
+    "depth": "standard",
+    "auto_approve_safe_changes": false,
+    "timeout_ms": 30000,
+    "fail_on_warnings": false,
+    "require_task_verification": true,
+    "require_documentation_check": true,
+    "require_test_validation": true
+  },
+  "message_defaults": {
+    "language": "en",
+    "conventional_commits": true,
+    "include_emoji": false,
+    "max_length": 72
+  },
+  "stage_defaults": {
+    "auto_detect": true,
+    "exclude_patterns": [
+      "*.log",
+      "node_modules/",
+      ".env*",
+      "*.tmp",
+      "dist/",
+      "build/"
+    ]
+  },
+  "claude_api": {
+    "model": "claude-3-sonnet-20240229",
+    "temperature": 0.3,
+    "max_tokens": 1000
+  }
+}

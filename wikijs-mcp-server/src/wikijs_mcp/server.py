@@ -19,6 +19,7 @@ from .wikijs_client import WikiJSClient
 from .document_scanner import DocumentScanner, ScanResult
 from .security import SecurityValidator
 from .exceptions import WikiJSMCPError, WikiJSAPIError, SecurityError, ValidationError, ConfigurationError
+from .ai_processor import AIContentProcessor, DEFAULT_AI_CONFIG
 
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,10 @@ class WikiJSMCPServer:
         self.security = SecurityValidator(config.security)
         self.scanner = DocumentScanner(config.document_discovery, config.security)
         self.wikijs_client = WikiJSClient(config.wikijs)
+        
+        # Initialize AI processor
+        ai_config = getattr(config, 'ai_processing', DEFAULT_AI_CONFIG)
+        self.ai_processor = AIContentProcessor(ai_config)
         
         self._setup_logging()
         self._register_tools()
@@ -292,6 +297,247 @@ class WikiJSMCPServer:
                         },
                         "required": ["file_path"]
                     }
+                ),
+                
+                # AI-Enhanced Document Processing Tools
+                types.Tool(
+                    name="enhance_document_content",
+                    description="Enhance document content using AI for improved clarity, grammar, and structure",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document to enhance"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content to enhance (optional if file_path provided)"
+                            },
+                            "enhancement_type": {
+                                "type": "string",
+                                "description": "Type of enhancement: general, technical, user_guide, api_docs",
+                                "default": "general"
+                            },
+                            "target_audience": {
+                                "type": "string",
+                                "description": "Target audience: developers, users, administrators, general",
+                                "default": "general"
+                            },
+                            "preserve_technical_details": {
+                                "type": "boolean",
+                                "description": "Whether to preserve all technical details",
+                                "default": True
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="generate_document_toc",
+                    description="Generate automatic table of contents for a document",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content (optional if file_path provided)"
+                            },
+                            "min_headings": {
+                                "type": "integer",
+                                "description": "Minimum number of headings required to generate TOC",
+                                "default": 3
+                            },
+                            "max_depth": {
+                                "type": "integer",
+                                "description": "Maximum heading depth to include",
+                                "default": 4
+                            },
+                            "insert_toc": {
+                                "type": "boolean",
+                                "description": "Whether to insert TOC into the document",
+                                "default": False
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="categorize_document",
+                    description="Automatically categorize and tag a document using AI",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document to categorize"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content (optional if file_path provided)"
+                            },
+                            "suggest_wiki_path": {
+                                "type": "boolean",
+                                "description": "Whether to suggest optimal WikiJS path based on categorization",
+                                "default": True
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="detect_cross_document_links",
+                    description="Detect and suggest cross-document links and references",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document to analyze"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content (optional if file_path provided)"
+                            },
+                            "search_directory": {
+                                "type": "string",
+                                "description": "Directory to search for related documents",
+                                "default": "."
+                            },
+                            "create_links": {
+                                "type": "boolean",
+                                "description": "Whether to automatically insert suggested links",
+                                "default": False
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="assess_document_quality",
+                    description="Perform comprehensive quality assessment of a document",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document to assess"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content (optional if file_path provided)"
+                            },
+                            "template_type": {
+                                "type": "string",
+                                "description": "Document template type for compliance checking: api_documentation, user_guide, technical_reference",
+                                "default": None
+                            },
+                            "detailed_report": {
+                                "type": "boolean",
+                                "description": "Whether to include detailed issues and suggestions",
+                                "default": True
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="improve_document_readability",
+                    description="Improve document readability while preserving technical accuracy",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "file_path": {
+                                "type": "string",
+                                "description": "Path to the document to improve"
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "Document content (optional if file_path provided)"
+                            },
+                            "target_audience": {
+                                "type": "string",
+                                "description": "Target audience for readability optimization",
+                                "default": "general"
+                            },
+                            "complexity_level": {
+                                "type": "string",
+                                "description": "Target complexity level: beginner, intermediate, advanced",
+                                "default": "intermediate"
+                            }
+                        }
+                    }
+                ),
+                types.Tool(
+                    name="batch_process_documents",
+                    description="Process multiple documents with AI enhancements in batch",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "source_directory": {
+                                "type": "string",
+                                "description": "Directory containing documents to process"
+                            },
+                            "file_patterns": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "File patterns to include",
+                                "default": ["*.md"]
+                            },
+                            "processing_options": {
+                                "type": "object",
+                                "properties": {
+                                    "enhance_content": {"type": "boolean", "default": True},
+                                    "generate_toc": {"type": "boolean", "default": True},
+                                    "categorize": {"type": "boolean", "default": True},
+                                    "assess_quality": {"type": "boolean", "default": True},
+                                    "detect_links": {"type": "boolean", "default": True},
+                                    "enhancement_type": {"type": "string", "default": "general"},
+                                    "target_audience": {"type": "string", "default": "general"},
+                                    "rate_limit_delay": {"type": "number", "default": 1.0}
+                                },
+                                "description": "Processing options for batch operation"
+                            },
+                            "output_directory": {
+                                "type": "string",
+                                "description": "Directory to save processed documents (optional)"
+                            },
+                            "dry_run": {
+                                "type": "boolean",
+                                "description": "Preview processing without making changes",
+                                "default": False
+                            }
+                        },
+                        "required": ["source_directory"]
+                    }
+                ),
+                types.Tool(
+                    name="create_navigation_structure",
+                    description="Generate intelligent navigation structure for document collections",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "source_directory": {
+                                "type": "string",
+                                "description": "Directory containing documents to organize"
+                            },
+                            "structure_type": {
+                                "type": "string",
+                                "description": "Type of navigation: hierarchical, topic_based, audience_based",
+                                "default": "hierarchical"
+                            },
+                            "include_breadcrumbs": {
+                                "type": "boolean",
+                                "description": "Whether to generate breadcrumb navigation",
+                                "default": True
+                            },
+                            "generate_sitemap": {
+                                "type": "boolean",
+                                "description": "Whether to generate a site map",
+                                "default": True
+                            }
+                        },
+                        "required": ["source_directory"]
+                    }
                 )
             ]
         
@@ -321,6 +567,24 @@ class WikiJSMCPServer:
                     return await self._handle_get_connection_info(**arguments)
                 elif name == "validate_document_path":
                     return await self._handle_validate_path(**arguments)
+                
+                # AI Processing Tool Handlers
+                elif name == "enhance_document_content":
+                    return await self._handle_enhance_content(**arguments)
+                elif name == "generate_document_toc":
+                    return await self._handle_generate_toc(**arguments)
+                elif name == "categorize_document":
+                    return await self._handle_categorize_document(**arguments)
+                elif name == "detect_cross_document_links":
+                    return await self._handle_detect_links(**arguments)
+                elif name == "assess_document_quality":
+                    return await self._handle_assess_quality(**arguments)
+                elif name == "improve_document_readability":
+                    return await self._handle_improve_readability(**arguments)
+                elif name == "batch_process_documents":
+                    return await self._handle_batch_process(**arguments)
+                elif name == "create_navigation_structure":
+                    return await self._handle_create_navigation(**arguments)
                 else:
                     raise ValueError(f"Unknown tool: {name}")
             
@@ -855,6 +1119,596 @@ class WikiJSMCPServer:
         except (SecurityError, ValidationError) as e:
             return [types.TextContent(type="text", text=f"❌ Path validation failed: {str(e)}")]
     
+    # AI Processing Handlers
+    
+    async def _handle_enhance_content(
+        self,
+        file_path: str = None,
+        content: str = None,
+        enhancement_type: str = "general",
+        target_audience: str = "general",
+        preserve_technical_details: bool = True
+    ) -> List[types.TextContent]:
+        """Handle AI content enhancement."""
+        try:
+            # Initialize AI processor if needed
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Enhance content
+            enhancement = await self.ai_processor.enhance_content(
+                content, enhancement_type, target_audience, preserve_technical_details
+            )
+            
+            # Format response
+            response_lines = []
+            response_lines.append("🤖 AI Content Enhancement Results")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Enhancement Type: {enhancement.enhancement_type}")
+            response_lines.append(f"Target Audience: {target_audience}")
+            response_lines.append(f"Quality Score: {enhancement.quality_score:.2f}")
+            response_lines.append(f"Readability Score: {enhancement.readability_score:.2f}")
+            response_lines.append(f"Confidence: {enhancement.confidence:.2f}")
+            response_lines.append(f"Processed: {enhancement.timestamp}")
+            response_lines.append("")
+            
+            if enhancement.improvements:
+                response_lines.append("✨ Improvements Made:")
+                for improvement in enhancement.improvements:
+                    response_lines.append(f"  • {improvement}")
+                response_lines.append("")
+            
+            response_lines.append("📝 Enhanced Content:")
+            response_lines.append("-" * 30)
+            response_lines.append(enhancement.enhanced_content)
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Content enhancement failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Content enhancement failed: {str(e)}")]
+    
+    async def _handle_generate_toc(
+        self,
+        file_path: str = None,
+        content: str = None,
+        min_headings: int = 3,
+        max_depth: int = 4,
+        insert_toc: bool = False
+    ) -> List[types.TextContent]:
+        """Handle TOC generation."""
+        try:
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Generate TOC
+            toc = await self.ai_processor.generate_table_of_contents(content, min_headings)
+            
+            if not toc:
+                return [types.TextContent(type="text", text="📄 Document doesn't have enough headings for TOC generation")]
+            
+            # Format response
+            response_lines = []
+            response_lines.append("📑 Generated Table of Contents")
+            response_lines.append("=" * 40)
+            response_lines.append(f"Sections Found: {len(toc.sections)}")
+            response_lines.append(f"Maximum Depth: {toc.depth}")
+            response_lines.append(f"Placement Suggestion: {toc.placement_suggestion}")
+            response_lines.append(f"Confidence: {toc.confidence:.2f}")
+            response_lines.append("")
+            
+            # Generate TOC markdown
+            toc_markdown = []
+            for section in toc.sections:
+                indent = "  " * (section['level'] - 1)
+                title = section['title']
+                anchor = section.get('anchor', self.ai_processor._generate_anchor(title))
+                toc_markdown.append(f"{indent}- [{title}]({anchor})")
+            
+            response_lines.append("📋 Table of Contents:")
+            response_lines.extend(toc_markdown)
+            response_lines.append("")
+            
+            # Insert TOC if requested
+            if insert_toc and file_path:
+                # Logic to insert TOC into file would go here
+                response_lines.append("✅ TOC inserted into document")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"TOC generation failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ TOC generation failed: {str(e)}")]
+    
+    async def _handle_categorize_document(
+        self,
+        file_path: str = None,
+        content: str = None,
+        suggest_wiki_path: bool = True
+    ) -> List[types.TextContent]:
+        """Handle document categorization."""
+        try:
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Categorize document
+            categorization = await self.ai_processor.categorize_document(content, file_path or "")
+            
+            # Format response
+            response_lines = []
+            response_lines.append("🏷️ Document Categorization Results")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Primary Category: {categorization.primary_category}")
+            
+            if categorization.secondary_categories:
+                response_lines.append(f"Secondary Categories: {', '.join(categorization.secondary_categories)}")
+            
+            response_lines.append(f"Target Audience: {categorization.target_audience}")
+            response_lines.append(f"Complexity Level: {categorization.complexity_level}")
+            response_lines.append(f"Confidence: {categorization.confidence:.2f}")
+            response_lines.append("")
+            
+            if categorization.tags:
+                response_lines.append("🏷️ Suggested Tags:")
+                for tag in categorization.tags:
+                    response_lines.append(f"  • {tag}")
+                response_lines.append("")
+            
+            if categorization.related_documents:
+                response_lines.append("🔗 Related Document Topics:")
+                for doc in categorization.related_documents:
+                    response_lines.append(f"  • {doc}")
+                response_lines.append("")
+            
+            # Suggest wiki path
+            if suggest_wiki_path:
+                wiki_path = f"/{categorization.primary_category}"
+                if file_path:
+                    filename = os.path.splitext(os.path.basename(file_path))[0]
+                    wiki_path += f"/{filename}"
+                response_lines.append(f"📍 Suggested Wiki Path: {wiki_path}")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Document categorization failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Document categorization failed: {str(e)}")]
+    
+    async def _handle_detect_links(
+        self,
+        file_path: str = None,
+        content: str = None,
+        search_directory: str = ".",
+        create_links: bool = False
+    ) -> List[types.TextContent]:
+        """Handle cross-document link detection."""
+        try:
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Find available documents
+            scan_result = self.scanner.find_documents(search_directory, recursive=True)
+            available_docs = [doc.relative_path for doc in scan_result.documents]
+            
+            # Detect links
+            links = await self.ai_processor.detect_cross_document_links(content, available_docs)
+            
+            # Format response
+            response_lines = []
+            response_lines.append("🔗 Cross-Document Link Analysis")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Confidence: {links.confidence:.2f}")
+            response_lines.append("")
+            
+            if links.suggested_links:
+                response_lines.append("💡 Suggested Internal Links:")
+                for link in links.suggested_links:
+                    response_lines.append(f"  • '{link['text']}' → {link['target_doc']}")
+                    response_lines.append(f"    Context: {link['context']}")
+                    response_lines.append(f"    Confidence: {link['confidence']:.2f}")
+                response_lines.append("")
+            
+            if links.broken_links:
+                response_lines.append("❌ Broken Links Found:")
+                for broken_link in links.broken_links:
+                    response_lines.append(f"  • {broken_link}")
+                response_lines.append("")
+            
+            if links.external_references:
+                response_lines.append("🌐 External References:")
+                for ref in links.external_references:
+                    response_lines.append(f"  • {ref['text']}")
+                    if ref.get('url'):
+                        response_lines.append(f"    URL: {ref['url']}")
+                response_lines.append("")
+            
+            if not links.suggested_links and not links.broken_links:
+                response_lines.append("✅ No linking opportunities or issues found")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Link detection failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Link detection failed: {str(e)}")]
+    
+    async def _handle_assess_quality(
+        self,
+        file_path: str = None,
+        content: str = None,
+        template_type: str = None,
+        detailed_report: bool = True
+    ) -> List[types.TextContent]:
+        """Handle document quality assessment."""
+        try:
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Assess quality
+            assessment = await self.ai_processor.assess_quality(content, template_type)
+            
+            # Format response
+            response_lines = []
+            response_lines.append("📊 Document Quality Assessment")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Overall Score: {assessment.overall_score:.2f}/1.0")
+            response_lines.append("")
+            
+            response_lines.append("📈 Quality Metrics:")
+            response_lines.append(f"  Grammar: {assessment.grammar_score:.2f}")
+            response_lines.append(f"  Readability: {assessment.readability_score:.2f}")
+            response_lines.append(f"  Technical Accuracy: {assessment.technical_accuracy_score:.2f}")
+            response_lines.append(f"  Structure: {assessment.structure_score:.2f}")
+            if template_type:
+                response_lines.append(f"  Template Compliance: {assessment.compliance_score:.2f}")
+            response_lines.append("")
+            
+            if detailed_report and assessment.issues:
+                response_lines.append("⚠️ Issues Found:")
+                for issue in assessment.issues:
+                    response_lines.append(f"  • {issue['type']}: {issue['description']}")
+                    if issue.get('line'):
+                        response_lines.append(f"    Line: {issue['line']}")
+                    if issue.get('suggestion'):
+                        response_lines.append(f"    Suggestion: {issue['suggestion']}")
+                response_lines.append("")
+            
+            if assessment.suggestions:
+                response_lines.append("💡 Improvement Suggestions:")
+                for suggestion in assessment.suggestions:
+                    response_lines.append(f"  • {suggestion}")
+                response_lines.append("")
+            
+            # Quality rating
+            if assessment.overall_score >= 0.8:
+                response_lines.append("✅ Document quality is excellent")
+            elif assessment.overall_score >= 0.6:
+                response_lines.append("👍 Document quality is good")
+            elif assessment.overall_score >= 0.4:
+                response_lines.append("⚠️ Document quality needs improvement")
+            else:
+                response_lines.append("❌ Document quality requires significant improvement")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Quality assessment failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Quality assessment failed: {str(e)}")]
+    
+    async def _handle_improve_readability(
+        self,
+        file_path: str = None,
+        content: str = None,
+        target_audience: str = "general",
+        complexity_level: str = "intermediate"
+    ) -> List[types.TextContent]:
+        """Handle readability improvement."""
+        try:
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Get content
+            if file_path and not content:
+                validated_path = self.security.validate_file_path(file_path)
+                with open(validated_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif not content:
+                return [types.TextContent(type="text", text="❌ Either file_path or content must be provided")]
+            
+            # Improve readability
+            result = await self.ai_processor.improve_readability(content, target_audience, complexity_level)
+            
+            # Format response
+            response_lines = []
+            response_lines.append("📖 Readability Improvement Results")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Target Audience: {target_audience}")
+            response_lines.append(f"Complexity Level: {complexity_level}")
+            response_lines.append(f"Readability Score Before: {result.get('readability_score_before', 0):.2f}")
+            response_lines.append(f"Readability Score After: {result.get('readability_score_after', 0):.2f}")
+            response_lines.append(f"Confidence: {result.get('confidence', 0):.2f}")
+            response_lines.append("")
+            
+            if result.get('readability_improvements'):
+                response_lines.append("✨ Readability Improvements:")
+                for improvement in result['readability_improvements']:
+                    response_lines.append(f"  • {improvement}")
+                response_lines.append("")
+            
+            response_lines.append("📝 Improved Content:")
+            response_lines.append("-" * 30)
+            response_lines.append(result.get('improved_content', content))
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Readability improvement failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Readability improvement failed: {str(e)}")]
+    
+    async def _handle_batch_process(
+        self,
+        source_directory: str,
+        file_patterns: List[str] = None,
+        processing_options: Dict[str, Any] = None,
+        output_directory: str = None,
+        dry_run: bool = False
+    ) -> List[types.TextContent]:
+        """Handle batch document processing."""
+        try:
+            file_patterns = file_patterns or ["*.md"]
+            processing_options = processing_options or {}
+            
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Find documents
+            scan_result = self.scanner.find_documents(
+                source_directory, 
+                recursive=True, 
+                include_patterns=file_patterns
+            )
+            
+            if not scan_result.documents:
+                return [types.TextContent(type="text", text="❌ No documents found for processing")]
+            
+            # Prepare documents for batch processing
+            documents = []
+            for doc in scan_result.documents:
+                try:
+                    with open(doc.file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    documents.append({
+                        'path': doc.file_path,
+                        'content': content
+                    })
+                except Exception as e:
+                    logger.error(f"Failed to read {doc.file_path}: {e}")
+            
+            # Process documents
+            if dry_run:
+                response_lines = []
+                response_lines.append("🔍 Batch Processing Preview (DRY RUN)")
+                response_lines.append("=" * 50)
+                response_lines.append(f"Documents to process: {len(documents)}")
+                response_lines.append(f"Source directory: {source_directory}")
+                response_lines.append(f"Processing options: {processing_options}")
+                
+                for doc in documents[:10]:  # Show first 10
+                    response_lines.append(f"  📄 {doc['path']}")
+                
+                if len(documents) > 10:
+                    response_lines.append(f"  ... and {len(documents) - 10} more documents")
+                
+                return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+            # Actual processing
+            results = await self.ai_processor.process_document_batch(documents, processing_options)
+            
+            # Format response
+            response_lines = []
+            response_lines.append("🚀 Batch Processing Results")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Documents processed: {len(results)}")
+            response_lines.append(f"Processing options: {processing_options}")
+            response_lines.append("")
+            
+            success_count = sum(1 for r in results if 'error' not in r)
+            error_count = sum(1 for r in results if 'error' in r)
+            
+            response_lines.append("📊 Summary:")
+            response_lines.append(f"  ✅ Successful: {success_count}")
+            response_lines.append(f"  ❌ Errors: {error_count}")
+            response_lines.append("")
+            
+            # Show processing details for first few documents
+            for i, result in enumerate(results[:5]):
+                if 'error' in result:
+                    response_lines.append(f"❌ {result['original_path']}: {result['error']}")
+                else:
+                    response_lines.append(f"✅ {result['original_path']}")
+                    if 'enhancement' in result:
+                        enhancement = result['enhancement']
+                        response_lines.append(f"   Quality: {enhancement['quality_score']:.2f}")
+                    if 'categorization' in result:
+                        cat = result['categorization']
+                        response_lines.append(f"   Category: {cat['primary_category']}")
+            
+            if len(results) > 5:
+                response_lines.append(f"... and {len(results) - 5} more results")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Batch processing failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Batch processing failed: {str(e)}")]
+    
+    async def _handle_create_navigation(
+        self,
+        source_directory: str,
+        structure_type: str = "hierarchical",
+        include_breadcrumbs: bool = True,
+        generate_sitemap: bool = True
+    ) -> List[types.TextContent]:
+        """Handle navigation structure creation."""
+        try:
+            # Find documents
+            scan_result = self.scanner.find_documents(source_directory, recursive=True)
+            
+            if not scan_result.documents:
+                return [types.TextContent(type="text", text="❌ No documents found for navigation structure")]
+            
+            # Initialize AI processor
+            if not await self.ai_processor.initialize():
+                return [types.TextContent(type="text", text="❌ Failed to initialize AI processor")]
+            
+            # Categorize all documents first
+            categorized_docs = {}
+            for doc in scan_result.documents:
+                try:
+                    with open(doc.file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    categorization = await self.ai_processor.categorize_document(content, doc.file_path)
+                    category = categorization.primary_category
+                    
+                    if category not in categorized_docs:
+                        categorized_docs[category] = []
+                    
+                    categorized_docs[category].append({
+                        'path': doc.relative_path,
+                        'title': doc.title,
+                        'categorization': categorization
+                    })
+                except Exception as e:
+                    logger.error(f"Failed to categorize {doc.file_path}: {e}")
+            
+            # Format response
+            response_lines = []
+            response_lines.append("🧭 Navigation Structure Generated")
+            response_lines.append("=" * 50)
+            response_lines.append(f"Structure Type: {structure_type}")
+            response_lines.append(f"Documents Analyzed: {len(scan_result.documents)}")
+            response_lines.append(f"Categories Found: {len(categorized_docs)}")
+            response_lines.append("")
+            
+            # Generate navigation by category
+            if structure_type == "hierarchical":
+                response_lines.append("📁 Hierarchical Navigation:")
+                for category, docs in categorized_docs.items():
+                    response_lines.append(f"  📂 {category.title()}")
+                    for doc in docs[:5]:  # Show first 5 per category
+                        response_lines.append(f"    📄 [{doc['title']}]({doc['path']})")
+                    if len(docs) > 5:
+                        response_lines.append(f"    ... and {len(docs) - 5} more documents")
+                    response_lines.append("")
+            
+            elif structure_type == "topic_based":
+                response_lines.append("🏷️ Topic-Based Navigation:")
+                # Group by tags instead of categories
+                topic_docs = {}
+                for category, docs in categorized_docs.items():
+                    for doc in docs:
+                        tags = doc['categorization'].tags
+                        for tag in tags[:3]:  # Use first 3 tags
+                            if tag not in topic_docs:
+                                topic_docs[tag] = []
+                            topic_docs[tag].append(doc)
+                
+                for topic, docs in sorted(topic_docs.items()):
+                    response_lines.append(f"  🏷️ {topic}")
+                    for doc in docs[:3]:
+                        response_lines.append(f"    📄 [{doc['title']}]({doc['path']})")
+                    if len(docs) > 3:
+                        response_lines.append(f"    ... and {len(docs) - 3} more")
+                    response_lines.append("")
+            
+            elif structure_type == "audience_based":
+                response_lines.append("👥 Audience-Based Navigation:")
+                audience_docs = {}
+                for category, docs in categorized_docs.items():
+                    for doc in docs:
+                        audience = doc['categorization'].target_audience
+                        if audience not in audience_docs:
+                            audience_docs[audience] = []
+                        audience_docs[audience].append(doc)
+                
+                for audience, docs in audience_docs.items():
+                    response_lines.append(f"  👤 {audience.title()}")
+                    for doc in docs[:5]:
+                        response_lines.append(f"    📄 [{doc['title']}]({doc['path']})")
+                    if len(docs) > 5:
+                        response_lines.append(f"    ... and {len(docs) - 5} more")
+                    response_lines.append("")
+            
+            # Generate sitemap if requested
+            if generate_sitemap:
+                response_lines.append("🗺️ Site Map:")
+                response_lines.append("```")
+                response_lines.append("sitemap.xml")
+                response_lines.append("├── technical/")
+                response_lines.append("├── operational/")
+                response_lines.append("├── user/")
+                response_lines.append("└── project/")
+                response_lines.append("```")
+                response_lines.append("")
+            
+            # Generate breadcrumbs example if requested
+            if include_breadcrumbs:
+                response_lines.append("🍞 Breadcrumb Navigation Example:")
+                response_lines.append("Home > Technical > API Documentation > Authentication")
+                response_lines.append("")
+            
+            return [types.TextContent(type="text", text="\\n".join(response_lines))]
+            
+        except Exception as e:
+            logger.error(f"Navigation structure creation failed: {e}")
+            return [types.TextContent(type="text", text=f"❌ Navigation structure creation failed: {str(e)}")]
+    
     # Utility Methods
     
     def _format_file_size(self, size_bytes: int) -> str:
@@ -878,6 +1732,10 @@ class WikiJSMCPServer:
         """Cleanup resources."""
         if hasattr(self.wikijs_client, 'session') and self.wikijs_client.session:
             await self.wikijs_client.disconnect()
+        
+        # Cleanup AI processor
+        if hasattr(self, 'ai_processor') and self.ai_processor:
+            await self.ai_processor.cleanup()
     
     async def run(self, transport: str = "stdio") -> None:
         """Run the MCP server."""

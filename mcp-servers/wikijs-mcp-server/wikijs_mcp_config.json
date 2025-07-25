@@ -1,6 +1,6 @@
 {
   "wikijs": {
-    "url": "http://192.168.1.105:3000",
+    "url": "http://192.168.1.90:3000",
     "api_key": "wiki_api_key_prod_2025",
     "default_locale": "en",
     "default_editor": "markdown",

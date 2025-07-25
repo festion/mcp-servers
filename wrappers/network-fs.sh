@@ -1,3 +1,3 @@
 #!/bin/bash
 cd /home/dev/workspace/mcp-servers/network-mcp-server
-uv run python run_server.py run --config config.json
+PYTHONPATH=./src python3 run_server.py run --config network_mcp_config.json

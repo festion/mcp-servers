@@ -30,7 +30,7 @@ fi
 # Check if Proxmox MCP server is available
 if [ -d "/home/dev/workspace/mcp-servers/proxmox-mcp-server" ]; then
     cd /home/dev/workspace/mcp-servers/proxmox-mcp-server
-    python3 run_server.py run config.json 2>/dev/null || uv run proxmox-mcp-server run config.json
+    PYTHONPATH=./src python3 -m proxmox_mcp.cli run proxmox_mcp_config.json
 else
     echo "Proxmox MCP server not found in mcp-servers directory."
     exit 1

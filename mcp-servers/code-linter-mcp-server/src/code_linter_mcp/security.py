@@ -45,9 +45,16 @@ class SecurityValidator:
         
         # Check for path traversal attempts
         normalized_path = os.path.normpath(file_path)
-        if ".." in normalized_path or normalized_path.startswith("/"):
+        if ".." in normalized_path:
             logger.warning(f"Path traversal detected in {file_path}")
             return False
+        
+        # Allow absolute paths within workspace or home directory
+        if normalized_path.startswith("/"):
+            allowed_prefixes = ["/home/dev/workspace", "/home/dev", "/tmp"]
+            if not any(normalized_path.startswith(prefix) for prefix in allowed_prefixes):
+                logger.warning(f"Absolute path {file_path} outside allowed directories")
+                return False
         
         return True
     

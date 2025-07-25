@@ -203,7 +203,7 @@ class LintingEngine:
                 capture_output=True,
                 text=True,
                 timeout=linter_config.timeout,
-                cwd=os.path.dirname(file_path) if os.path.exists(file_path) else None
+                cwd=os.path.dirname(file_path) if os.path.exists(file_path) and os.path.dirname(file_path) else None
             )
             
             return self._parse_linter_output(

@@ -73,16 +73,16 @@ class ProxmoxServerConfig(BaseModel):
     password_env_var: Optional[str] = Field(default=None, description="Environment variable for password")
     token_env_var: Optional[str] = Field(default=None, description="Environment variable for API token")
     
-    @validator('password_env_var', always=True)
+    @validator('token_env_var', always=True)
     def validate_auth_config(cls, v, values):
         """Validate that either password/password_env_var or token/token_env_var is provided."""
         password = values.get('password')
+        password_env_var = values.get('password_env_var')
         token = values.get('token')
-        token_env_var = values.get('token_env_var')
         
         # Check if we have any authentication method
-        has_password = password is not None or v is not None
-        has_token = token is not None or token_env_var is not None
+        has_password = password is not None or password_env_var is not None
+        has_token = token is not None or v is not None
         
         if not has_password and not has_token:
             raise ValueError("Either password/password_env_var or token/token_env_var must be provided")

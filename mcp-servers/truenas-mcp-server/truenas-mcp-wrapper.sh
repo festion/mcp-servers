@@ -6,7 +6,7 @@
 
 # Set script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SERVER_DIR="$SCRIPT_DIR/truenas-mcp-server"
+SERVER_DIR="$SCRIPT_DIR"
 LOG_FILE="$SCRIPT_DIR/../logs/truenas-mcp.log"
 PID_FILE="$SCRIPT_DIR/../truenas-mcp.pid"
 
@@ -192,14 +192,18 @@ show_status() {
 test_server() {
     log "Testing TrueNAS MCP server connectivity..."
     
-    cd "$SERVER_DIR" || {
-        log "ERROR: Cannot change to server directory: $SERVER_DIR"
+    # Get the actual server directory (resolve symlinks to the script location)
+    local REAL_SERVER_DIR
+    REAL_SERVER_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" 
+    
+    cd "$REAL_SERVER_DIR" || {
+        log "ERROR: Cannot change to server directory: $REAL_SERVER_DIR"
         return 1
     }
     
     # Load .env file if it exists
-    if [ -f "$SERVER_DIR/.env" ]; then
-        export $(grep -v "^#" "$SERVER_DIR/.env" | xargs)
+    if [ -f "$REAL_SERVER_DIR/.env" ]; then
+        export $(grep -v "^#" "$REAL_SERVER_DIR/.env" | xargs)
     fi
     
     # Set environment variables

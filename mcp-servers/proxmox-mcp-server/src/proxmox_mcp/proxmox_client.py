@@ -305,6 +305,20 @@ class ProxmoxClient:
         """Delete container snapshot."""
         return await self.get_api_data(f'nodes/{node}/lxc/{vmid}/snapshot/{snapname}', method='DELETE')
     
+    # Container Management Methods
+    
+    async def start_container(self, node: str, vmid: int) -> Dict[str, Any]:
+        """Start an LXC container."""
+        return await self.get_api_data(f'nodes/{node}/lxc/{vmid}/status/start', method='POST')
+    
+    async def stop_container(self, node: str, vmid: int) -> Dict[str, Any]:
+        """Stop an LXC container."""
+        return await self.get_api_data(f'nodes/{node}/lxc/{vmid}/status/stop', method='POST')
+    
+    async def restart_container(self, node: str, vmid: int) -> Dict[str, Any]:
+        """Restart an LXC container."""
+        return await self.get_api_data(f'nodes/{node}/lxc/{vmid}/status/reboot', method='POST')
+    
     # Backup Methods
     
     async def get_backups(self, node: str, storage: Optional[str] = None) -> List[Dict[str, Any]]:

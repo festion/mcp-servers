@@ -46,11 +46,25 @@ class WikiJSMCPServer:
     
     def _setup_logging(self) -> None:
         """Configure logging."""
+        import sys
+        
         log_level = logging.INFO
-        logging.basicConfig(
-            level=log_level,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
+        
+        # Configure logging to stderr only (MCP requirement)
+        # MCP servers must not pollute stdout with logs
+        logger = logging.getLogger()
+        logger.setLevel(log_level)
+        
+        # Remove any existing handlers
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+        
+        # Add stderr handler only
+        stderr_handler = logging.StreamHandler(sys.stderr)
+        stderr_handler.setLevel(log_level)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        stderr_handler.setFormatter(formatter)
+        logger.addHandler(stderr_handler)
     
     def _register_tools(self) -> None:
         """Register MCP tools."""

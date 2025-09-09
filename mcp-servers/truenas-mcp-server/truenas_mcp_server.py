@@ -877,6 +877,21 @@ async def cleanup():
 def main():
     """Main entry point for the TrueNAS MCP server"""
     try:
+        # Load .env file if it exists
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+        except ImportError:
+            # Fallback manual .env loading if python-dotenv is not available
+            env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+            if os.path.exists(env_file):
+                with open(env_file, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key, value = line.split('=', 1)
+                            os.environ[key.strip()] = value.strip()
+        
         # Run the server
         mcp.run()
     except KeyboardInterrupt:
@@ -887,7 +902,11 @@ def main():
     finally:
         # Cleanup
         import asyncio
-        asyncio.run(cleanup())
+        try:
+            asyncio.run(cleanup())
+        except (RuntimeError, Exception):
+            # Ignore cleanup errors on shutdown
+            pass
     return 0
 
 

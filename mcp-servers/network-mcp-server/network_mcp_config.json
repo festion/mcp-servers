@@ -2,11 +2,11 @@
   "shares": {
     "example_smb": {
       "type": "smb",
-      "host": "192.168.1.100",
+      "host": "192.168.1.155",
       "share_name": "shared_folder",
-      "username": "homelab",
-      "password": "homelab123",
-      "domain": "WORKGROUP",
+      "username": "homeassistant",
+      "password": "redflower805",
+      "domain": "homelab",
       "port": 445,
       "use_ntlm_v2": true,
       "timeout": 30

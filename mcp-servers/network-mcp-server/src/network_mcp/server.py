@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import mcp.server.stdio
 import mcp.types as types
-from mcp.server.lowlevel import NotificationOptions, Server
+from mcp.server.lowlevel import Server
 from mcp.server.models import InitializationOptions
 
 from .config import NetworkMCPConfig, SMBShareConfig
@@ -408,6 +408,7 @@ class NetworkMCPServer:
         try:
             if transport == "stdio":
                 async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+                    # Create proper initialization options using MCP types
                     initialization_options = InitializationOptions(
                         server_name="network-mcp-server",
                         server_version="0.1.0",

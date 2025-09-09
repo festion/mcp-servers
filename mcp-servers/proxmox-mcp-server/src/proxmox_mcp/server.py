@@ -7,6 +7,7 @@ Provides comprehensive Proxmox VE management through Model Context Protocol tool
 import asyncio
 import json
 import logging
+import sys
 from typing import Any, Dict, List, Optional, Sequence
 from datetime import datetime, timedelta
 
@@ -37,8 +38,14 @@ class ProxmoxMCPServer:
         self.app = Server("proxmox-mcp-server")
         self._clients: Dict[str, ProxmoxClient] = {}
         
-        # Setup logging
-        logging.basicConfig(level=getattr(logging, config.log_level))
+        # Setup logging to stderr to avoid interference with MCP protocol on stdout
+        logging.basicConfig(
+            level=getattr(logging, config.log_level),
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(sys.stderr)
+            ]
+        )
         logger.info(f"Initializing Proxmox MCP Server with {len(config.servers)} configured servers")
         
         self._setup_tools()
@@ -124,6 +131,50 @@ class ProxmoxMCPServer:
                                 "description": "Filter containers by status (optional)"
                             }
                         }
+                    }
+                ),
+                Tool(
+                    name="start_container",
+                    description="Start an LXC container",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "node": {
+                                "type": "string",
+                                "description": "Node name where the container is located"
+                            },
+                            "vmid": {
+                                "type": "integer",
+                                "description": "Container ID (VMID)"
+                            },
+                            "server": {
+                                "type": "string",
+                                "description": "Proxmox server name (optional)"
+                            }
+                        },
+                        "required": ["node", "vmid"]
+                    }
+                ),
+                Tool(
+                    name="stop_container",
+                    description="Stop an LXC container",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "node": {
+                                "type": "string",
+                                "description": "Node name where the container is located"
+                            },
+                            "vmid": {
+                                "type": "integer",
+                                "description": "Container ID (VMID)"
+                            },
+                            "server": {
+                                "type": "string",
+                                "description": "Proxmox server name (optional)"
+                            }
+                        },
+                        "required": ["node", "vmid"]
                     }
                 ),
                 Tool(
@@ -364,6 +415,10 @@ class ProxmoxMCPServer:
                     return await self._list_virtual_machines(arguments)
                 elif name == "list_containers":
                     return await self._list_containers(arguments)
+                elif name == "start_container":
+                    return await self._start_container(arguments)
+                elif name == "stop_container":
+                    return await self._stop_container(arguments)
                 elif name == "run_health_assessment":
                     return await self._run_health_assessment(arguments)
                 elif name == "get_storage_status":
@@ -517,6 +572,58 @@ class ProxmoxMCPServer:
             
         except Exception as e:
             raise ProxmoxOperationError(f"Failed to list containers: {e}")
+    
+    async def _start_container(self, args: Dict[str, Any]) -> Sequence[TextContent]:
+        """Start an LXC container."""
+        client = await self._get_client(args.get('server'))
+        
+        try:
+            node = args['node']
+            vmid = args['vmid']
+            
+            # Start the container
+            result = await client.start_container(node, vmid)
+            
+            response = {
+                "timestamp": datetime.now().isoformat(),
+                "action": "start_container",
+                "node": node,
+                "vmid": vmid,
+                "status": "success",
+                "message": f"Container {vmid} on node {node} has been started",
+                "task_id": result.get('data') if result else None
+            }
+            
+            return [TextContent(type="text", text=json.dumps(response, indent=2))]
+            
+        except Exception as e:
+            raise ProxmoxOperationError(f"Failed to start container {args.get('vmid')}: {e}")
+    
+    async def _stop_container(self, args: Dict[str, Any]) -> Sequence[TextContent]:
+        """Stop an LXC container."""
+        client = await self._get_client(args.get('server'))
+        
+        try:
+            node = args['node']
+            vmid = args['vmid']
+            
+            # Stop the container
+            result = await client.stop_container(node, vmid)
+            
+            response = {
+                "timestamp": datetime.now().isoformat(),
+                "action": "stop_container",
+                "node": node,
+                "vmid": vmid,
+                "status": "success",
+                "message": f"Container {vmid} on node {node} has been stopped",
+                "task_id": result.get('data') if result else None
+            }
+            
+            return [TextContent(type="text", text=json.dumps(response, indent=2))]
+            
+        except Exception as e:
+            raise ProxmoxOperationError(f"Failed to stop container {args.get('vmid')}: {e}")
     
     async def _run_health_assessment(self, args: Dict[str, Any]) -> Sequence[TextContent]:
         """Run comprehensive health assessment."""

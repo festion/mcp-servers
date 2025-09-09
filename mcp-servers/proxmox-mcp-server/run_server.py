@@ -13,9 +13,10 @@ current_dir = Path(__file__).parent
 src_dir = current_dir / "src"
 sys.path.insert(0, str(src_dir))
 
-from proxmox_mcp.cli import cli_main
-
 if __name__ == "__main__":
+    # Import inside main to avoid relative import issues
+    from proxmox_mcp.cli import cli_main
+    
     # Check if config file exists
     config_file = current_dir / "proxmox_mcp_config.json"
     

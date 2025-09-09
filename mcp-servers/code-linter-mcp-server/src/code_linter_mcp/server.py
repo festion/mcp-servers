@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 
 import mcp.server.stdio
 import mcp.types as types
-from mcp.server.lowlevel import NotificationOptions, Server
+from mcp.server.lowlevel import Server
 from mcp.server.models import InitializationOptions
 
 from .config import CodeLinterConfig
@@ -36,7 +36,7 @@ class CodeLinterMCPServer:
         """Setup MCP tools."""
         
         @self.server.list_tools()
-        async def handle_list_tools() -> types.ListToolsResult:
+        async def handle_list_tools() -> List[types.Tool]:
             """List available linting tools."""
             # NOTE: There is a known bug in MCP library version 1.10.1 that causes
             # "'tuple' object has no attribute 'name'" error when listing tools.
@@ -116,7 +116,7 @@ class CodeLinterMCPServer:
                 )
             ]
             
-            return types.ListToolsResult(tools=tools)
+            return tools
         
         @self.server.call_tool()
         async def handle_call_tool(request: types.CallToolRequest) -> types.CallToolResult:

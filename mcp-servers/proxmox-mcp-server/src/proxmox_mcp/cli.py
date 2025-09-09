@@ -11,9 +11,9 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from .config import ProxmoxMCPConfig, create_sample_config
-from .server import ProxmoxMCPServer
-from .exceptions import ProxmoxConfigurationError
+from proxmox_mcp.config import ProxmoxMCPConfig, create_sample_config
+from proxmox_mcp.server import ProxmoxMCPServer
+from proxmox_mcp.exceptions import ProxmoxConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def setup_logging(log_level: str = "INFO") -> None:
         level=getattr(logging, log_level.upper()),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.StreamHandler(sys.stdout)
+            logging.StreamHandler(sys.stderr)
         ]
     )
 

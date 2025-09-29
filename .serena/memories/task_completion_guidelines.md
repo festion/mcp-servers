@@ -1,117 +1,159 @@
-# Task Completion Guidelines (Updated)
+# AprilBrother BLE Gateway Suite - Task Completion Guidelines
 
 ## When a Task is Completed
 
-### 1. MCP Server Validation (REQUIRED)
-- **Code-linter MCP validation**: ALL code must pass code-linter MCP server validation before completion
-- **Serena coordination**: Use Serena to orchestrate all MCP server operations
-- **GitHub MCP operations**: Repository operations should be handled through GitHub MCP server
-- **Multi-server workflow**: Let Serena marshall different MCP servers as needed
+### Required Quality Checks
+1. **Code Formatting**: Run Black, Flake8, and isort on all modified Python files
+2. **Testing**: Execute pytest on relevant test files  
+3. **Configuration Validation**: Ensure YAML files are valid and follow HA conventions
+4. **Version Synchronization**: Update both component and add-on versions if needed
 
-### 2. Code Quality Checks
-- **Lint through MCP**: Run code-linter MCP server validation (mandatory)
-- **Type checking**: Ensure TypeScript compilation passes with `tsc -b`
-- **Style consistency**: Follow established patterns in the codebase
-- **Error handling**: Verify proper error handling is implemented
-- **MCP integration**: Ensure proper MCP server usage patterns
+### Pre-Commit Checklist
+```bash
+# 1. Format and lint code
+black custom_components/ enhanced_ble_discovery/
+flake8 custom_components/ enhanced_ble_discovery/ble_discovery.py
+isort custom_components/ enhanced_ble_discovery/
 
-### 3. Repository Operations
-- **GitHub MCP usage**: Use GitHub MCP server for all repository operations when possible
-- **Issue creation**: Create GitHub issues through MCP for any findings
-- **Pull request management**: Handle PRs via GitHub MCP server
-- **Branch operations**: Create/manage branches through GitHub MCP
-- **Commit validation**: Ensure commits meet quality standards
+# 2. Run tests
+pytest tests/
 
-### 4. Git Actions Configuration
-- **Workflow setup**: Ensure Git Actions are configured for the changes
-- **Automated testing**: Verify CI/CD workflows are triggered properly
-- **Quality gates**: Confirm automated quality checks are in place
-- **Deployment automation**: Ensure deployment workflows are configured
-- **Status checks**: Verify all required status checks pass
+# 3. Validate YAML files (if yamllint is available)
+yamllint *.yaml enhanced_ble_discovery/*.yaml
 
-### 5. Testing Procedures
-- **Manual testing**: Test the specific functionality that was modified
-- **API endpoints**: Test API endpoints with curl or browser if modified
-- **Dashboard functionality**: Verify UI changes work as expected
-- **Cross-browser compatibility**: Check that changes work in different browsers
-- **MCP integration**: Test MCP server integrations work correctly
+# 4. Check for obvious issues
+grep -r "TODO\|FIXME\|XXX" . --include="*.py"
+```
 
-### 6. Build Verification
-- **Development build**: Ensure `npm run dev` works without errors
-- **Production build**: Run `npm run build` to verify production build succeeds
-- **No console errors**: Check browser console for JavaScript errors
-- **Asset loading**: Verify all assets (CSS, images, fonts) load correctly
-- **MCP dependencies**: Verify all required MCP servers are available
+### Version Management
+- **Component Version**: Update `custom_components/ab_ble_gateway/manifest.json`
+- **Add-on Version**: Update `enhanced_ble_discovery/config.json`
+- **Documentation**: Update `CLAUDE.md` with changes and version notes
+- **Consistency**: Ensure versions increment logically (semantic versioning)
 
-### 7. Documentation Updates
-- **Update README.md**: If functionality changes affect usage
-- **Update CHANGELOG.md**: Add entry for significant changes
-- **Code comments**: Ensure complex logic is properly commented
-- **API documentation**: Update if endpoints are added or modified
-- **MCP documentation**: Document any new MCP server integrations
+### Testing Requirements
 
-### 8. Quality Assurance Workflow
-1. **Development**: Write code following conventions
-2. **MCP Validation**: Run code-linter MCP server checks
-3. **Serena Coordination**: Use Serena to orchestrate operations
-4. **GitHub MCP**: Handle repository operations through GitHub MCP
-5. **Git Actions**: Trigger and verify automated workflows
-6. **Final Review**: Ensure all quality gates pass
+#### Custom Component Testing
+- Unit tests must pass: `pytest tests/`
+- Integration testing in development HA instance
+- MQTT connectivity validation
+- Service call verification (reconnect, clean_failed_entries)
 
-### 9. File Organization
-- **Clean up temp files**: Remove any temporary or debug files
-- **Proper file placement**: Ensure files are in correct directories
-- **Consistent naming**: Follow established naming conventions
-- **Remove unused imports**: Clean up any unused imports or dependencies
-- **Git Actions files**: Ensure workflow files are properly placed
+#### Add-on Testing
+- Local execution test: `./enhanced_ble_discovery/run.sh`
+- Docker build verification: `docker build -t test ./enhanced_ble_discovery`
+- API connectivity test with Home Assistant
+- Dashboard functionality verification
 
-### 10. Version Control Through GitHub MCP
-- **GitHub MCP operations**: Use GitHub MCP for all repository operations
-- **Commit message**: Write clear, descriptive commit messages
-- **Atomic commits**: Make focused commits that address single concerns
-- **Branch naming**: Use descriptive branch names for feature development
-- **Pull request**: Create PR through GitHub MCP with clear description
+### Documentation Updates
+- **CLAUDE.md**: Add implementation details and version history
+- **README.md**: Update if features or installation process changed
+- **Code Comments**: Document complex logic or workarounds
+- **Changelog**: Maintain version history for users
 
-### 11. Performance Checks
-- **Bundle size**: Check if changes significantly impact bundle size
-- **API response times**: Verify API endpoints respond quickly
-- **Memory usage**: Ensure no memory leaks in long-running processes
-- **Resource loading**: Optimize any new assets or dependencies
-- **MCP performance**: Verify MCP server operations are efficient
+### Deployment Validation
 
-### 12. Security Considerations
-- **Input validation**: Verify all user inputs are properly validated
-- **API security**: Ensure proper authentication and authorization
-- **CORS configuration**: Verify CORS settings are appropriate
-- **File permissions**: Check that file permissions are secure
-- **MCP security**: Ensure MCP server integrations follow security best practices
+#### Development Environment
+- Test component installation via HACS
+- Verify add-on installation through HA add-on store
+- Confirm dashboard appears in sidebar
+- Test MQTT message processing
 
-### 13. Final Verification
-- **Full system test**: Run complete development environment with `./dev-run.sh`
-- **Data integrity**: Verify data flow from audit scripts through API to dashboard
-- **Error scenarios**: Test error conditions and edge cases
-- **User experience**: Verify changes improve or maintain good UX
-- **MCP integration**: Confirm all MCP server operations work end-to-end
+#### Production Readiness
+- Multi-architecture Docker build support
+- Error handling for edge cases
+- Graceful degradation when dependencies unavailable
+- Logging appropriate for production debugging
 
-## Ready for Deployment Checklist
-- [ ] **Code-linter MCP validation passed (MANDATORY)**
-- [ ] Serena orchestration implemented correctly
-- [ ] GitHub MCP server used for repository operations
-- [ ] Git Actions configured and working
-- [ ] Code linted and type-checked
-- [ ] Manual testing completed
-- [ ] Documentation updated
-- [ ] Build verification passed
-- [ ] Files properly organized
-- [ ] Performance acceptable
-- [ ] Security verified
-- [ ] Version control clean
-- [ ] Full system test passed
-- [ ] All MCP server integrations working
+## Common Task Types and Specific Guidelines
 
-## Critical Requirements (Non-Negotiable)
-1. **ALL code must pass code-linter MCP server validation**
-2. **Use Serena to marshall all MCP server operations**
-3. **Favor GitHub MCP server for repository operations**
-4. **Configure Git Actions for automation**
-5. **No direct git commands when GitHub MCP is available**
+### Bug Fixes
+1. **Reproduce the Issue**: Confirm bug exists and understand root cause
+2. **Minimal Fix**: Implement smallest change that resolves the issue
+3. **Regression Testing**: Ensure fix doesn't break existing functionality
+4. **Documentation**: Update CLAUDE.md with fix details and version info
+
+### Feature Additions
+1. **Design Review**: Ensure feature fits architecture and user needs
+2. **Implementation**: Follow existing code patterns and conventions
+3. **Testing**: Add unit tests for new functionality
+4. **Integration**: Verify feature works with existing components
+5. **Documentation**: Update user-facing documentation
+
+### Performance Improvements
+1. **Benchmarking**: Measure before and after performance
+2. **Resource Usage**: Monitor memory and CPU impact
+3. **Adaptive Behavior**: Consider different usage scenarios
+4. **Backwards Compatibility**: Ensure existing configurations work
+
+### Dashboard/UI Changes
+1. **Multiple Complexity Levels**: Test basic, minimal, and combined dashboards
+2. **Entity Availability**: Handle missing or unavailable entities gracefully
+3. **Template Validation**: Ensure Jinja2 templates are syntactically correct
+4. **Mobile Responsiveness**: Test on different screen sizes
+
+## Troubleshooting Common Issues
+
+### Home Assistant Restart Problems
+- Check for infinite loops in automation triggers
+- Validate service call parameters
+- Ensure proper error handling in MQTT message processing
+- Test with minimal configuration first
+
+### Template Syntax Errors
+- Place complex JavaScript code on single lines
+- Use proper Jinja2 escaping for special characters
+- Test templates in HA Developer Tools
+- Validate entity existence before accessing attributes
+
+### MQTT Integration Issues
+- Verify MQTT broker connectivity
+- Check topic naming and payload format
+- Test with MQTT explorer or command-line tools
+- Implement fallback mechanisms for missing data
+
+### Docker/Add-on Problems
+- Check container logs for startup errors
+- Verify file permissions and volume mappings
+- Test with minimal configuration
+- Ensure all required dependencies are installed
+
+## Quality Standards
+
+### Code Quality Metrics
+- **Flake8 Score**: No errors or warnings
+- **Test Coverage**: Aim for >80% coverage on new code
+- **Documentation**: All public functions have docstrings
+- **Error Handling**: All external calls have proper exception handling
+
+### User Experience Standards
+- **Installation**: Should work with standard HACS/add-on installation
+- **Configuration**: UI-based setup with validation
+- **Feedback**: Clear notifications for user actions
+- **Recovery**: Graceful handling of temporary failures
+
+### Maintainability Requirements
+- **Code Structure**: Logical organization and separation of concerns
+- **Naming**: Clear, descriptive names for variables and functions
+- **Dependencies**: Minimal external dependencies
+- **Backwards Compatibility**: Maintain API stability where possible
+
+## Release Process
+
+### Pre-Release
+1. Update version numbers in both manifest.json and config.json
+2. Update CLAUDE.md with comprehensive change documentation
+3. Test complete installation process from scratch
+4. Verify all dashboard variants work correctly
+
+### Release
+1. Create git tag with version number
+2. Push to GitHub to trigger any automated builds
+3. Test installation from published repository
+4. Monitor for user-reported issues
+
+### Post-Release
+1. Monitor logs for common error patterns
+2. Address critical issues quickly with patch releases
+3. Collect user feedback for future improvements
+4. Plan next development cycle

@@ -1,85 +1,189 @@
-# Code Style and Conventions (Updated)
+# AprilBrother BLE Gateway Suite - Code Style and Conventions
 
-## General Principles
-- **Prefer fixing existing code over complete rewrites** - only use full rebuilds as a last resort
-- **Use Serena to marshall all MCP servers and tools** - Serena should orchestrate all tool usage
-- **Favor GitHub MCP server for repository operations** - Use GitHub MCP instead of direct git commands
-- **All code must be validated with code-linter MCP server** - No code commits without linting validation
-- **Configure Git Actions for automation** - Set up CI/CD workflows for quality and deployment
-- **Focus on incremental improvements** - small, focused changes rather than large refactors
+## Python Code Style
 
-## MCP Server Usage Requirements
-- **Serena orchestration**: Use Serena as the primary coordinator for all MCP server operations
-- **GitHub MCP priority**: Repository operations should go through GitHub MCP server when possible
-- **Code-linter enforcement**: Every code change must pass code-linter MCP server validation
-- **Git Actions integration**: Configure automated workflows for testing, linting, and deployment
+### Formatting and Linting
+- **Black**: Code formatter with 88-character line length
+- **Flake8**: Linting with specific ignore rules:
+  - E501: line too long (handled by Black)
+  - W503: line break before binary operator
+  - E203: whitespace before ':'
+  - D202: no blank lines after function docstring
+  - W504: line break after binary operator
+- **isort**: Import sorting with specific configuration
 
-## JavaScript/TypeScript Style
-- **Function naming**: camelCase for functions and variables
-- **Constants**: UPPER_SNAKE_CASE for constants (e.g., `STATUS_COLORS`, `API_BASE_URL`)
-- **File naming**: kebab-case for file names, PascalCase for React components
-- **Error handling**: Use try-catch blocks and proper error responses
-- **API responses**: Consistent JSON structure with status and error fields
-- **Linting**: Must pass code-linter MCP server validation before commit
+### Import Organization (isort config)
+```python
+# Standard library imports
+import json
+import logging
+import datetime
 
-## React/Frontend Conventions
-- **Component structure**: Functional components with hooks
-- **Props typing**: Use TypeScript interfaces for component props
-- **State management**: useState for local state, no complex state management library used
-- **File organization**: Components in `/components/`, pages in `/pages/`
-- **CSS classes**: TailwindCSS utility classes, avoid custom CSS where possible
-- **Code quality**: All React code must pass code-linter MCP validation
+# Third-party imports  
+import requests
 
-## Backend/API Conventions
-- **Route structure**: RESTful endpoints with clear HTTP verbs
-- **Path handling**: Use `path.join()` for cross-platform compatibility
-- **Environment detection**: `isDev` flag for development vs production behavior
-- **CORS**: Enabled for development, disabled for production
-- **Error responses**: Consistent structure with `{ error: "message" }` format
-- **Validation**: All backend code must pass code-linter MCP server checks
+# Home Assistant imports
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
-## Shell Script Conventions
-- **Shebang**: `#!/bin/bash` with `set -euo pipefail` for safety
-- **Variables**: UPPER_CASE for configuration, lowercase for local variables
-- **Comments**: Header comments with version, maintainer, license
-- **Error handling**: Use `|| { echo "error"; exit 1; }` pattern
-- **Output**: Emoji prefixes for user-friendly messages (📂, ✅, ❌, 🌐)
-- **Dev mode**: Support `--dev` flag or `.dev_mode` file detection
-- **Linting**: Shell scripts must be validated through code-linter MCP
+# Local imports
+from .const import DOMAIN
+```
 
-## Repository Management
-- **Use GitHub MCP**: Prefer GitHub MCP server for all repository operations
-- **Issue creation**: Use GitHub MCP to create issues for audit findings
-- **Pull requests**: Manage PRs through GitHub MCP server
-- **Branch management**: Create and manage branches via GitHub MCP
-- **Release management**: Handle releases through GitHub MCP server
+### Naming Conventions
+- **Variables/Functions**: `snake_case`
+  - `setup_logging()`, `device_mac`, `gateway_devices`
+- **Classes**: `PascalCase`
+  - `BLEGatewayScanner`, `ConfigFlow`
+- **Constants**: `UPPER_SNAKE_CASE`
+  - `DOMAIN`, `DEFAULT_SCAN_INTERVAL`, `SERVICE_RECONNECT`
+- **Private methods**: Leading underscore
+  - `_async_on_advertisement()`, `_process_mqtt_message()`
 
-## Quality Assurance Workflow
-1. **Code development**: Write code following established conventions
-2. **MCP validation**: Run code-linter MCP server validation
-3. **Repository operations**: Use GitHub MCP for git operations
-4. **Git Actions**: Trigger automated workflows for testing
-5. **Serena coordination**: Let Serena orchestrate the entire workflow
+### Type Hints
+- **Required**: Function parameters and return values
+- **Format**: Standard Python typing module
+```python
+def process_ble_gateway_data(gateway_devices: list) -> list[dict]:
+    """Process raw BLE gateway data into structured format."""
+    pass
+```
 
-## File Structure Conventions
-- **Config files**: Top-level configuration files (package.json, vite.config.ts)
-- **Documentation**: Markdown files in root and `/docs/` directory
-- **Scripts**: Shell and Python scripts in `/scripts/` directory
-- **API**: Backend code in `/api/` directory
-- **Frontend**: React application in `/dashboard/` directory
-- **Output**: Generated files in `/output/` and `/audit-history/`
-- **Git Actions**: Workflow files in `.github/workflows/`
+### Error Handling
+- **Specific Exceptions**: Use specific exception types rather than bare `except:`
+- **Logging**: Always log errors with context
+- **Continue on Error**: Use `continue_on_error: true` in service calls where appropriate
+```python
+try:
+    response = requests.get(url, headers=headers)
+    if response.status_code >= 300:
+        logging.error(f"API error: {response.status_code} - {response.text}")
+        return False
+except requests.exceptions.RequestException as e:
+    logging.error(f"Request failed: {e}")
+    return False
+```
 
-## Naming Patterns
-- **API endpoints**: `/audit`, `/audit/history`, `/audit/clone`, etc.
-- **Script files**: descriptive names with underscores (e.g., `sync_github_repos.sh`)
-- **Component files**: PascalCase with `.tsx` extension (e.g., `SidebarLayout.tsx`)
-- **Utility files**: lowercase with purpose (e.g., `statusMeta.ts`)
-- **Git Actions**: descriptive names (e.g., `lint-and-test.yml`, `deploy.yml`)
+### String Formatting
+- **f-strings**: Preferred for string interpolation
+- **Multi-line**: Use triple quotes for long strings
+```python
+message = f"Found {len(devices)} devices with RSSI > {threshold}"
+notification = f"""
+    Discovery complete:
+    - Total devices: {total}
+    - New devices: {new_count}
+"""
+```
+
+### Docstrings
+- **Google style**: Brief description followed by Args/Returns
+```python
+def discover_ble_devices(force_scan: bool = False) -> list[dict]:
+    """
+    Discover BLE devices using the BLE gateway.
+    
+    Args:
+        force_scan: Whether to trigger a fresh scan before discovery
+        
+    Returns:
+        List of discovered device dictionaries
+    """
+```
+
+## YAML Style
+
+### Home Assistant Configuration
+- **2-space indentation**: Standard HA convention
+- **Descriptive names**: Clear entity IDs and friendly names
+- **Comments**: Document complex logic and purposes
+```yaml
+# BLE Device Discovery Input Helpers
+input_text:
+  discovered_ble_devices:
+    name: "Discovered BLE Devices"
+    max: 1024
+    initial: "{}"
+    icon: mdi:bluetooth-search
+```
+
+### Service Definitions
+- **Clear descriptions**: Explain purpose and usage
+- **Proper schemas**: Define parameter types and validation
+```yaml
+services:
+  reconnect:
+    name: "Reconnect MQTT"
+    description: "Reconnect to MQTT broker and refresh device list"
+    fields:
+      dry_run:
+        description: "Preview changes without executing"
+        example: false
+        default: false
+        selector:
+          boolean:
+```
+
+## File Organization
+
+### Directory Structure
+- **Logical grouping**: Related files in appropriate directories
+- **Clear naming**: Descriptive file and directory names
+- **Separation of concerns**: Component vs add-on code separation
+
+### File Naming
+- **Python modules**: `snake_case.py`
+- **YAML configs**: `descriptive_name.yaml`
+- **Documentation**: `UPPER_CASE.md` for main docs, `snake_case.md` for specific docs
+
+### Imports
+- **Absolute imports**: Prefer absolute over relative imports
+- **Minimal imports**: Only import what's needed
+- **Grouped logically**: Standard library, third-party, local imports
 
 ## Documentation Standards
-- **README files**: Comprehensive setup and usage instructions
-- **Inline comments**: Explain complex logic and business rules
-- **API documentation**: Clear parameter and response descriptions
-- **Change tracking**: Use CHANGELOG.md for version history
-- **MCP documentation**: Document MCP server dependencies and usage
+
+### README Structure
+- **Clear purpose**: What the project does
+- **Installation steps**: Step-by-step setup instructions
+- **Feature list**: Key capabilities and benefits
+- **Support information**: How to get help
+
+### Code Comments
+- **Why, not what**: Explain reasoning, not obvious actions
+- **Complex logic**: Document non-obvious algorithms
+- **TODOs**: Mark future improvements clearly
+```python
+# Use adaptive interval based on activity level to reduce battery usage
+# while maintaining responsiveness for active periods
+adaptive_interval = determine_adaptive_scan_interval(base_interval, devices, activity)
+```
+
+### Version Control
+- **Semantic versioning**: MAJOR.MINOR.PATCH format
+- **Synchronized versions**: Component and add-on versions should align
+- **Change documentation**: Update CLAUDE.md with version-specific changes
+
+## Testing Conventions
+
+### Test Structure
+- **Test file naming**: `test_*.py`
+- **Test method naming**: `test_specific_functionality`
+- **Arrange-Act-Assert**: Clear test structure
+```python
+def test_process_ble_gateway_data():
+    # Arrange
+    mock_data = [["device1", "AA:BB:CC:DD:EE:FF", -65, "adv_data"]]
+    
+    # Act
+    result = process_ble_gateway_data(mock_data)
+    
+    # Assert
+    assert len(result) == 1
+    assert result[0]["mac_address"] == "AA:BB:CC:DD:EE:FF"
+```
+
+### Mocking
+- **External dependencies**: Mock API calls, file system operations
+- **Isolation**: Each test should be independent
+- **Realistic data**: Use realistic test data that matches production formats

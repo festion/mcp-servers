@@ -1,216 +1,244 @@
-# Suggested Commands for Development (Updated)
+# AprilBrother BLE Gateway Suite - Suggested Commands
 
-## MCP Server Operations (Primary Workflow)
+## Development Commands
+
+### Code Quality and Formatting
 ```bash
-# Use Serena to orchestrate all MCP server operations
-# Serena should marshall other MCP servers as needed
+# Format Python code with Black
+black custom_components/
+black enhanced_ble_discovery/
 
-# Code validation (MANDATORY before commits)
-# Use code-linter MCP server for all code validation
-# Example: Validate JavaScript/TypeScript files
-# Example: Validate Python scripts
-# Example: Validate shell scripts
+# Check code style with Flake8  
+flake8 custom_components/
+flake8 enhanced_ble_discovery/ble_discovery.py
 
-# Repository operations via GitHub MCP server
-# Create issues for audit findings
-# Create pull requests for fixes
-# Manage branches through GitHub MCP
-# Handle releases via GitHub MCP
+# Sort imports with isort
+isort custom_components/
+isort enhanced_ble_discovery/
 
-# Let Serena coordinate multi-server workflows
-# Combine code-linter + GitHub MCP operations
-# Orchestrate complex automation tasks
+# Run all formatting and linting together
+black custom_components/ enhanced_ble_discovery/ && \
+flake8 custom_components/ enhanced_ble_discovery/ble_discovery.py && \
+isort custom_components/ enhanced_ble_discovery/
 ```
 
-## Development Environment
+### Testing
 ```bash
-# Start full development environment (API + Dashboard)
-./dev-run.sh
+# Run unit tests with coverage
+pytest tests/
 
-# Start API server manually (development mode)
-cd /mnt/c/GIT/homelab-gitops-auditor
-NODE_ENV=development node api/server.js
+# Run specific test file
+pytest tests/test_ble_discovery.py
 
-# Start dashboard development server
-cd /mnt/c/GIT/homelab-gitops-auditor/dashboard
-npm run dev
+# Run tests with verbose output
+pytest tests/ -v
 
-# Install dashboard dependencies
-cd dashboard && npm install
-
-# Install API dependencies
-cd api && npm install express
+# Run tests with coverage report
+pytest tests/ --cov=custom_components
 ```
 
-## Git Actions Configuration
-```bash
-# Configure Git Actions workflows (should be done via GitHub MCP)
-# .github/workflows/lint-and-test.yml
-# .github/workflows/deploy.yml
-# .github/workflows/security-scan.yml
+### Development Testing
 
-# Test Git Actions locally (if needed)
-# act -l  # List available actions
-# act     # Run actions locally
+#### Custom Component Testing
+```bash
+# Install component in development Home Assistant
+cp -r custom_components/ab_ble_gateway /path/to/homeassistant/custom_components/
+
+# Check Home Assistant configuration
+ha core check
+
+# Restart Home Assistant
+ha core restart
+
+# View Home Assistant logs
+ha core logs
 ```
 
-## Code Quality Enforcement (Via MCP)
+#### Add-on Development
 ```bash
-# MANDATORY: All code must pass code-linter MCP validation
-# Use code-linter MCP server for:
-# - JavaScript/TypeScript linting
-# - Python code validation
-# - Shell script linting
-# - JSON/YAML validation
+# Build Docker image locally
+docker build -t ble-discovery-addon ./enhanced_ble_discovery
 
-# Run ESLint for dashboard (prefer MCP when available)
-cd dashboard && npm run lint
+# Run add-on locally for testing
+./enhanced_ble_discovery/run.sh
 
-# Watch TailwindCSS compilation
-cd dashboard && npm run tw:watch
+# Run add-on with custom parameters
+cd enhanced_ble_discovery && \
+python3 ble_discovery.py --log-level DEBUG --scan-interval 30
 
-# TypeScript compilation check
-cd dashboard && tsc -b
+# View add-on logs
+docker logs ble-discovery-addon
 ```
 
-## Building and Deployment
+### File Operations
 ```bash
-# Build dashboard for production
-cd dashboard && npm run build
+# Find Python files
+find . -name "*.py" -type f
 
-# Deploy to production (coordinate via Serena/GitHub MCP)
-bash scripts/deploy.sh
+# Find YAML files
+find . -name "*.yaml" -type f
 
-# Manual deployment with specific options
-bash manual-deploy.sh --port=8080 --no-nginx
+# Search for specific patterns in code
+grep -r "bluetooth" custom_components/
+grep -r "mqtt" enhanced_ble_discovery/
 
-# Install dashboard only
-bash scripts/install-dashboard.sh
+# Check file permissions
+ls -la enhanced_ble_discovery/run.sh
+
+# Make script executable
+chmod +x enhanced_ble_discovery/run.sh
 ```
 
-## Auditing and Testing
+### Git Operations
 ```bash
-# Run manual GitHub sync audit
-bash scripts/sync_github_repos.sh
-
-# Run audit in development mode
-bash scripts/sync_github_repos.sh --dev
-
-# Test DNS sync (dry run)
-bash scripts/gitops_dns_sync.sh
-
-# Run individual DNS sync components
-bash scripts/fetch_npm_config.sh
-python3 scripts/generate_adguard_rewrites_from_sqlite.py
-python3 scripts/generate_adguard_rewrites_from_sqlite.py --commit
-```
-
-## Repository Management (Via GitHub MCP)
-```bash
-# Prefer GitHub MCP server operations over direct git commands
-# Use GitHub MCP for:
-# - Creating issues from audit findings
-# - Managing pull requests
-# - Creating and managing branches
-# - Handling repository lifecycle
-# - Managing releases and tags
-
-# Fallback git commands (when MCP not available)
+# Check repository status
 git status
+
+# View recent commits
+git log --oneline -10
+
+# Create feature branch
+git checkout -b feature/new-functionality
+
+# Stage and commit changes
 git add .
-git commit -m "message"
-git push
+git commit -m "feat: add new BLE device categorization"
+
+# Push changes
+git push origin feature/new-functionality
 ```
 
-## System Commands (Linux/WSL)
+### Project Analysis
 ```bash
-# List files and directories
-ls -la
+# Analyze project structure
+python3 scripts/analyze_structure.py
 
-# Search for files
-find . -name "*.json" -type f
+# Check for TODO items
+grep -r "TODO" . --include="*.py" --include="*.yaml"
 
-# Search in file contents
-grep -r "pattern" --include="*.js" .
+# Find large files
+find . -type f -size +100k -exec ls -lh {} \;
 
-# Process management
-ps aux | grep node
-kill -9 <PID>
-
-# File operations
-mkdir -p directory/path
-cp source destination
-mv source destination
-rm -rf directory
-
-# Permissions
-chmod +x script.sh
-chown user:group file
+# Count lines of code
+find . -name "*.py" -exec wc -l {} + | tail -1
 ```
 
-## Service Management (Production)
+### Debugging and Diagnostics
 ```bash
-# Check API service status
-systemctl status gitops-audit-api
+# Check MQTT connectivity (if mosquitto-clients installed)
+mosquitto_sub -h localhost -t "xbg" -v
 
-# Restart API service
-systemctl restart gitops-audit-api
+# Test Home Assistant API connectivity
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+     http://localhost:8123/api/states
 
-# Check logs
-journalctl -u gitops-audit-api -f
+# Check Docker container status
+docker ps | grep ble
 
-# Check Nginx status
-systemctl status nginx
+# View container logs
+docker logs -f ble-discovery-addon
+
+# Check system Bluetooth status
+bluetoothctl show
+hciconfig
 ```
 
-## Debugging and Monitoring
+### Release Commands
 ```bash
-# Check API endpoint
-curl http://localhost:3070/audit
+# Update version in manifest.json
+jq '.version = "0.3.35"' custom_components/ab_ble_gateway/manifest.json > tmp.json && \
+mv tmp.json custom_components/ab_ble_gateway/manifest.json
 
-# Check dashboard serving
-curl http://localhost:5173
+# Update version in add-on config.json
+jq '.version = "1.7.7"' enhanced_ble_discovery/config.json > tmp.json && \
+mv tmp.json enhanced_ble_discovery/config.json
 
-# Monitor log files
-tail -f /opt/gitops/logs/gitops_dns_sync.log
+# Create git tag
+git tag -a v0.3.35 -m "Release version 0.3.35"
+git push origin v0.3.35
 
-# Check port usage
-netstat -tlnp | grep 3070
-
-# Test cron environment
-env -i bash -c '/opt/gitops/scripts/gitops_dns_sync.sh'
+# Build production Docker image
+docker build -t ghcr.io/festion/ble-discovery:1.7.7 ./enhanced_ble_discovery
 ```
 
-## MCP Server Integration Workflow
+### Maintenance Commands
 ```bash
-# 1. Planning (via Serena)
-# Use Serena to coordinate planning across MCP servers
+# Clean up Python cache
+find . -type d -name "__pycache__" -exec rm -rf {} +
+find . -name "*.pyc" -delete
 
-# 2. Code Development
-# Write code following established conventions
+# Clean up temporary files
+rm -f *.tmp *.log
+find . -name ".DS_Store" -delete
 
-# 3. Validation (MANDATORY)
-# Use code-linter MCP server to validate ALL code
+# Update dependencies
+pip install --upgrade homeassistant
+pip install --upgrade msgpack
 
-# 4. Repository Operations
-# Use GitHub MCP server for all git operations
-
-# 5. Automation
-# Ensure Git Actions are configured and triggered
-
-# 6. Coordination
-# Let Serena orchestrate the entire workflow
+# Check for security vulnerabilities
+pip audit
 ```
 
-## Required MCP Server Dependencies
-- **Serena**: Primary orchestrator for all operations
-- **GitHub MCP**: Repository operations, issues, PRs, releases  
-- **Code-linter MCP**: Code quality validation (MANDATORY)
-- **Additional MCP servers**: As needed and coordinated through Serena
+### Directory Navigation
+```bash
+# Project root
+cd /home/dev/workspace/hass-ab-ble-gateway-suite
 
-## Critical Reminders
-- **NEVER commit code without code-linter MCP validation**
-- **Use Serena to marshall all MCP server operations**
-- **Favor GitHub MCP over direct git commands**
-- **Configure Git Actions for all critical workflows**
-- **All repository operations should go through GitHub MCP when possible**
+# Custom component
+cd custom_components/ab_ble_gateway
+
+# Add-on code
+cd enhanced_ble_discovery
+
+# Documentation
+cd docs
+
+# Test files
+cd tests
+```
+
+## Utility Commands for Linux Development Environment
+
+### System Information
+```bash
+# Check system info
+uname -a
+lsb_release -a
+
+# Check available disk space
+df -h
+
+# Check memory usage
+free -h
+
+# Check running processes
+ps aux | grep python
+```
+
+### Network Debugging
+```bash
+# Check network connectivity
+ping 192.168.1.82  # Example gateway IP
+
+# Check open ports
+netstat -tlnp
+ss -tlnp
+
+# Check MQTT broker
+telnet localhost 1883
+```
+
+### Home Assistant Integration
+```bash
+# Check Home Assistant service status
+systemctl status home-assistant@homeassistant
+
+# View Home Assistant configuration directory
+ls -la /config/
+
+# Check custom components
+ls -la /config/custom_components/
+
+# View add-on logs
+journalctl -u hassio-supervisor -f
+```

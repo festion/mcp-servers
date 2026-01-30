@@ -159,3 +159,36 @@ personal-*
 local-*
 dev-*
 test-*
+
+# Workspace cloned repos (not part of mcp-servers)
+seed2smoke/
+birdnet-gone/
+birdnet-gone.git/
+birdnet-display/
+model-catalog/
+homelab-gitops/
+proxmox-agent/
+gw4-config-tool/
+3ddash/
+1-line-deploy/
+backups/
+Omada_firmware/
+home-assistant-config-backup-*/
+
+# One-off utility scripts
+deploy-ssh-keys*.sh
+monitor-*.sh
+check-*.sh
+verify-*.sh
+fix-*.sh
+diagnose_*.sh
+proxmox-*.sh
+configure-*.js
+uptime-kuma-monitor.sh
+
+# Misc workspace files
+package.json
+package-lock.json
+input_select.yaml
+templates.yaml
+omada_config_restore.cfg

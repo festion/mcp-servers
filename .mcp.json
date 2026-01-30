@@ -6,13 +6,18 @@
         "-y",
         "@modelcontextprotocol/server-filesystem",
         "/home/dev/workspace"
-      ]
+      ],
+      "lazyLoad": true
     },
     "network-fs": {
       "command": "/home/dev/workspace/mcp-servers/network-mcp-server/.venv/bin/python3",
       "args": [
-        "/home/dev/workspace/mcp-servers/network-mcp-server/run_server.py"
-      ]
+        "/home/dev/workspace/mcp-servers/network-mcp-server/run_server.py",
+        "run",
+        "--config",
+        "/home/dev/workspace/mcp-servers/network-mcp-server/network_mcp_config.json"
+      ],
+      "lazyLoad": true
     },
     "serena-enhanced": {
       "command": "uv",
@@ -23,13 +28,15 @@
         "serena-mcp-server",
         "--transport",
         "stdio"
-      ]
+      ],
+      "lazyLoad": true
     },
     "home-assistant": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/home-assistant.sh"
-      ]
+      ],
+      "lazyLoad": true
     },
     "github": {
       "command": "docker",
@@ -40,37 +47,43 @@
         "-e",
         "GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-your_github_token_here}",
         "ghcr.io/github/github-mcp-server"
-      ]
+      ],
+      "lazyLoad": true
     },
     "code-linter": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/code-linter.sh"
-      ]
+      ],
+      "lazyLoad": true
     },
     "directory-polling": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/directory-polling.sh"
-      ]
+      ],
+      "lazyLoad": true
     },
     "truenas": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/truenas.sh"
-      ]
+      ],
+      "lazyLoad": true
     },
     "wikijs-mcp": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/wikijs.sh"
-      ]
+      ],
+      "lazyLoad": true
     },
     "proxmox-mcp": {
       "command": "bash",
       "args": [
-        "/home/dev/workspace/wrappers/proxmox.sh"  
-      ]
+        "/home/dev/workspace/wrappers/proxmox.sh"
+      ],
+      "lazyLoad": true
     }
   }
 }

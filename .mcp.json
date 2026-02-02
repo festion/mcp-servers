@@ -9,17 +9,6 @@
       ],
       "lazyLoad": true
     },
-    "serena-enhanced": {
-      "command": "/home/dev/.local/bin/uv",
-      "args": [
-        "run",
-        "--directory",
-        "/home/dev/workspace/serena",
-        "serena-mcp-server",
-        "--transport",
-        "stdio"
-      ]
-    },
     "home-assistant": {
       "command": "bash",
       "args": [
@@ -31,24 +20,10 @@
       "command": "mcp-server-github",
       "lazyLoad": true
     },
-    "code-linter": {
-      "command": "bash",
-      "args": [
-        "/home/dev/workspace/wrappers/code-linter.sh"
-      ],
-      "lazyLoad": true
-    },
     "truenas": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/truenas.sh"
-      ],
-      "lazyLoad": true
-    },
-    "wikijs-mcp": {
-      "command": "bash",
-      "args": [
-        "/home/dev/workspace/wrappers/wikijs.sh"
       ],
       "lazyLoad": true
     },

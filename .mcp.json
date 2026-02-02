@@ -9,18 +9,8 @@
       ],
       "lazyLoad": true
     },
-    "network-fs": {
-      "command": "/home/dev/workspace/mcp-servers/network-mcp-server/.venv/bin/python3",
-      "args": [
-        "/home/dev/workspace/mcp-servers/network-mcp-server/run_server.py",
-        "run",
-        "--config",
-        "/home/dev/workspace/mcp-servers/network-mcp-server/network_mcp_config.json"
-      ],
-      "lazyLoad": true
-    },
     "serena-enhanced": {
-      "command": "uv",
+      "command": "/home/dev/.local/bin/uv",
       "args": [
         "run",
         "--directory",
@@ -28,8 +18,7 @@
         "serena-mcp-server",
         "--transport",
         "stdio"
-      ],
-      "lazyLoad": true
+      ]
     },
     "home-assistant": {
       "command": "bash",
@@ -39,28 +28,13 @@
       "lazyLoad": true
     },
     "github": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-your_github_token_here}",
-        "ghcr.io/github/github-mcp-server"
-      ],
+      "command": "mcp-server-github",
       "lazyLoad": true
     },
     "code-linter": {
       "command": "bash",
       "args": [
         "/home/dev/workspace/wrappers/code-linter.sh"
-      ],
-      "lazyLoad": true
-    },
-    "directory-polling": {
-      "command": "bash",
-      "args": [
-        "/home/dev/workspace/wrappers/directory-polling.sh"
       ],
       "lazyLoad": true
     },

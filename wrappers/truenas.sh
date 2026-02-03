@@ -261,6 +261,26 @@ Examples:
 EOF
 }
 
+# MCP mode: when run with no arguments and non-interactive stdin
+# This MUST be checked before the case statement to avoid log output
+if [ $# -eq 0 ] && [ ! -t 0 ]; then
+    cd "$SERVER_DIR" || exit 1
+
+    # Load .env file if it exists
+    if [ -f "$SERVER_DIR/.env" ]; then
+        export $(grep -v "^#" "$SERVER_DIR/.env" | xargs)
+    fi
+
+    # Set environment variables
+    export TRUENAS_URL="${TRUENAS_URL:-$DEFAULT_TRUENAS_URL}"
+    export TRUENAS_API_KEY="${TRUENAS_API_KEY:-$DEFAULT_API_KEY}"
+    export TRUENAS_VERIFY_SSL="${TRUENAS_VERIFY_SSL:-$DEFAULT_VERIFY_SSL}"
+    export TRUENAS_TIMEOUT="${TRUENAS_TIMEOUT:-$DEFAULT_TIMEOUT}"
+
+    # Run the server directly - no logging to avoid corrupting JSON-RPC
+    exec python3 truenas_mcp_server.py
+fi
+
 # Main command handler
 case "${1:-start}" in
     start)
@@ -321,10 +341,7 @@ if [ $# -eq 0 ]; then
         export TRUENAS_VERIFY_SSL="${TRUENAS_VERIFY_SSL:-$DEFAULT_VERIFY_SSL}"
         export TRUENAS_TIMEOUT="${TRUENAS_TIMEOUT:-$DEFAULT_TIMEOUT}"
         
-        # Add initialization delay to prevent race conditions
-        sleep 2
-        
-        # Run the server directly with timeout protection
-        exec timeout $TIMEOUT_DURATION python3 truenas_mcp_server.py
+        # Run the server directly
+        exec python3 truenas_mcp_server.py
     fi
 fi

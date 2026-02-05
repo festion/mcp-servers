@@ -1,1 +1,3 @@
-I have generated the `PROJECT_INDEX.md` file as you requested.
+
+
+Okay, I've created the `PROJECT_INDEX.md` file. What's next? 

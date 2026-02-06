@@ -1,53 +1,42 @@
 # workspace Project Index
 
-Generated: 2026-02-05
+Generated: 2026-02-06
 
 ## Purpose
-This project is a comprehensive, polyglot monorepo for managing a personal infrastructure environment ("homelab") using GitOps principles. It features a suite of custom tools for automation, including a powerful coding agent toolkit named "Serena" and a "Master Control Program" (MCP) for orchestrating development and operational tasks. The system is designed to be interacted with by both humans and AI agents to maintain and evolve the codebase and infrastructure.
+This repository is a sophisticated, GitOps-driven monorepo for managing a homelab environment. It integrates a Node.js backend, a React frontend, Home Assistant for automation, and a custom Python-based templating engine (MCP) to automate and manage the entire infrastructure.
 
 ## Directory Structure
-- `api/`: A Node.js/Express backend that provides a REST API for the dashboard and external tools. It's the main entry point for programmatic interaction with the system's GitOps audit and repository management features.
-- `dashboard/`: A React/Vite-based web application that serves as the frontend for monitoring and managing the GitOps environment.
-- `.mcp/`: The core of the "Master Control Program" (MCP), an automation and templating engine written in Python. It's used for batch processing, conflict resolution, and applying standardized configurations across repositories.
-- `serena/`: A sophisticated Python-based coding agent toolkit designed to integrate with Large Language Models (LLMs). It provides IDE-like capabilities for semantic code understanding and manipulation, enabling advanced, AI-driven software development.
-- `scripts/`: A collection of shell and Python scripts for various operational tasks, including deployment, maintenance, and running audits.
-- `docs/`: Contains project documentation, architectural decision records (ADRs), technical guides, and operational procedures.
-- `homelab-gitops/`, `proxmox-agent/`, `home-assistant-config/`: Specific projects managed within the monorepo, representing different parts of the homelab infrastructure.
-- `.prompts/`: A directory for storing prompts for interacting with LLMs, indicating a deep integration with AI as part of the development workflow.
+- `api/`: The Node.js/Express backend service that provides the core API.
+- `dashboard/`: The React/Vite-based frontend application for user interaction.
+- `home-assistant-config/`: Contains the configuration for the central Home Assistant instance.
+- `.mcp/`: A custom Python-based templating and automation engine called Model Context Protocol.
+- `docs/`: Contains high-level architecture, planning, and process documents.
+- `scripts/`: Various shell scripts for deployment, maintenance, and other operational tasks.
 
 ## Key Files
-- `api/server.js`: The main entry point for the backend API server.
-- `api/server-mcp.js`: An alternative entry point for the API server with enhanced MCP integration.
-- `dashboard/vite.config.ts`: The build and development configuration file for the frontend dashboard.
-- `.mcp/README.md`: Provides a detailed explanation of the MCP template application engine.
-- `serena/README.md`: Documentation for the Serena coding agent toolkit.
-- `upload-mcp-docs-to-wikijs.py`: A script demonstrating integration with Wiki.js for documentation management.
-- Various `deploy-*.sh` and `*.py` scripts in the root directory provide top-level entry points for common tasks.
+- `PROJECT_INDEX.md`: This file, providing a high-level overview of the repository.
+- `api/server.js`: The main entry point for the backend Node.js application.
+- `dashboard/vite.config.ts`: Configuration file for the Vite-based frontend, confirming the use of React.
+- `home-assistant-config/configuration.yaml`: The core configuration file for the Home Assistant instance.
+- `.mcp/template-applicator.py`: The core script for the MCP automation engine.
+- `.gitignore`: Defines ignored files, which is important for understanding the repository's structure as it is quite comprehensive.
+- `docs/3-TIER-DEPLOYMENT.md`: High-level deployment strategy document.
 
 ## Architecture Patterns
-- **Monorepo**: The project is structured as a monorepo, containing multiple related but distinct projects and services. This simplifies dependency management and cross-project changes.
-- **GitOps**: The state of the infrastructure is defined declaratively in Git. The tools in this repository are used to audit and enforce this state.
-- **Agent-based Automation**: The project heavily relies on automated agents (Serena and MCP) to perform complex tasks, from code generation and refactoring to infrastructure management. LLMs are a key component of this architecture.
-- **Polyglot**: The repository contains code in multiple languages, including Python, JavaScript/TypeScript, and shell script, choosing the best tool for each job.
-- **Microservices-like structure**: While not strictly a microservices architecture, the project is divided into distinct components (`api`, `dashboard`, `serena`, etc.) that can be developed and deployed independently.
+The project follows a GitOps-driven monorepo approach. It has a clear separation of concerns with a backend API, a frontend dashboard, and a declarative configuration for Home Assistant. Automation is a key pattern, implemented through the custom MCP engine.
 
 ## Entry Points
-- **Backend API**: `node api/server.js` or `node api/server-mcp.js`
-- **Frontend Dashboard**: Run `npm start` or `vite` in the `dashboard/` directory.
-- **Serena Agent**: Use the `serena` command-line tool.
-- **Scripts**: Various scripts in the root and `scripts/` directories can be executed directly for specific tasks (e.g., `./deploy-v1.1.0.sh`).
+- **Backend**: The API is started by running `node api/server.js`.
+- **Frontend**: The frontend is a standard Vite application, likely started with `npm run dev` from the `dashboard/` directory.
 
 ## Dependencies
-- **Node.js**: The runtime for the `api` and `dashboard` projects.
-- **Python**: The runtime for `serena`, `.mcp`, and various scripts.
-- **Git**: The version control system at the heart of the GitOps workflow.
-- **Docker**: Used for containerizing applications and services.
+The project has several key external dependencies and integrations:
+- **Proxmox**: For virtualization and container management.
+- **NetBox**: As a source of truth for IPAM and DCIM.
 - **Traefik**: Used as a reverse proxy and load balancer.
-- **LLMs**: Serena is designed to integrate with various Large Language Models for its agentic capabilities.
+- **Home Assistant**: The core of the home automation system.
 
 ## Common Tasks
-- **Build the project**: Run `npm install` in the `api/` and `dashboard/` directories for the JavaScript projects. For Python projects, use `pip install` with the appropriate `requirements.txt` or `pyproject.toml`.
-- **Run tests**: Tests can be run using framework-specific commands in each project directory (e.g., `npm test` in `api/` or `pytest` in `serena/`).
-- **Deploy the application**: Use the deployment scripts in the root directory (e.g., `./deploy-v1.1.0.sh`).
-- **Run a GitOps audit**: Interact with the API endpoints (e.g., `/audit/run-comprehensive`) or use the dashboard.
-- **Apply a template to a repository**: Use the scripts in the `.mcp/` directory.
+- **Build**: The frontend can be built using Vite's build command (`npm run build` in `dashboard/`). The backend does not require a build step.
+- **Test**: Testing setups exist for both the `api` and `dashboard` directories, likely using Jest. Tests can be run with `npm test`.
+- **Deploy**: Deployment is handled via scripts, with `update-production.sh` being a likely candidate for production deployments. The overall strategy is detailed in `docs/3-TIER-DEPLOYMENT.md`.

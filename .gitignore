@@ -17,6 +17,7 @@ output/*
 *.pfx
 credentials.json
 secrets.json
+.infisical.json
 
 # GitHub tokens and authentication
 .github-token

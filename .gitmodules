@@ -19,3 +19,6 @@
 [submodule "serena"]
 	path = serena
 	url = https://github.com/oraios/serena.git
+[submodule "pi-status-dashboard"]
+	path = pi-status-dashboard
+	url = git@github.com:festion/pi-status-dashboard.git

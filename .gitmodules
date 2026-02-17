@@ -4,3 +4,6 @@
 [submodule "homelab-gitops"]
 	path = homelab-gitops
 	url = git@github.com:festion/homelab-gitops.git
+[submodule "operations"]
+	path = operations
+	url = git@github.com:festion/operations.git

@@ -1,3 +1,6 @@
 [submodule "proxmox-agent"]
 	path = proxmox-agent
 	url = git@github.com:festion/proxmox-agent.git
+[submodule "homelab-gitops"]
+	path = homelab-gitops
+	url = git@github.com:festion/homelab-gitops.git

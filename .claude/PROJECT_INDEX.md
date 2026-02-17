@@ -1,58 +1,35 @@
-# Project Index
+# Project Index: Homelab GitOps
 
-## Core Purpose
+## 1. Core Purpose
 
-This repository contains a comprehensive GitOps-managed homelab infrastructure. It automates the deployment, configuration, and management of various services, including Home Assistant, Proxmox, NetBox, and custom applications. The system leverages a custom automation framework, the Model Context Protocol (MCP), for orchestration and integration between components.
+This repository contains the infrastructure and code for a comprehensive homelab environment managed via GitOps principles. The primary goal is to automate the deployment, configuration, and management of various services, including home automation, network infrastructure, and virtualization. It integrates a suite of open-source tools into a cohesive, centrally-managed system.
 
-## Architecture Overview
+## 2. Architecture
 
-The project is structured as a monorepo containing multiple interconnected services and configurations:
+The architecture is a multi-component system orchestrated through a central `homelab-gitops` repository. It utilizes an agent-based model for interacting with different parts of the infrastructure.
 
--   **`homelab-gitops`**: The core GitOps repository that orchestrates deployments and contains the central documentation.
--   **`api`**: A Node.js backend that serves as the central control plane, integrating with MCP servers and other services.
--   **`dashboard`**: A modern web dashboard (Vite/React) for monitoring and interacting with the homelab environment.
--   **`mcp-servers`**: A collection of specialized automation servers (e.g., for GitHub, Proxmox, Home Assistant) that execute tasks based on the Model Context Protocol.
--   **Agents (`proxmox-agent`, `netbox-agent`)**: Python-based agents responsible for collecting data from and managing specific services like Proxmox and NetBox.
--   **Configuration (`home-assistant-config`)**: Extensive and detailed configuration files for Home Assistant, including automations, custom components, and dashboards.
--   **`docs`**: Contains in-depth documentation covering architecture, deployment plans, standard operating procedures (SOPs), and incident reports.
+*   **Frontend:** A web-based dashboard built with Vite and a modern JavaScript framework provides a UI for monitoring and control.
+*   **Backend:** A Node.js API (`api/`) serves as the central hub, managing state, orchestrating agents, and exposing endpoints for the frontend.
+*   **Agents & Services (`mcp-servers`, `*-agent`):** Numerous specialized services and agents written in Python and shell script interact with specific platforms like Proxmox, NetBox, and Home Assistant.
+*   **Home Automation:** A heavily customized Home Assistant instance (`home-assistant-config/`) forms the core of the smart home functionality.
+*   **Infrastructure:** The entire system runs on Proxmox for virtualization, with Traefik managing ingress and networking. Services are containerized using Docker.
+*   **Documentation:** A WikiJS instance, synchronized via `wikijs-sync-agent`, serves as the knowledge base, with documentation managed as code within the `docs/` directory.
 
-## Key Components & Files
+## 3. Key Project Directories
 
--   **`homelab-gitops/`**: Main project directory for GitOps orchestration.
--   **`api/server.js`**: The primary entry point for the backend API server.
--   **`dashboard/vite.config.ts`**: Configuration for the frontend dashboard application.
--   **`mcp-servers/`**: Directory containing the various microservice-like automation servers.
--   **`home-assistant-config/configuration.yaml`**: The main configuration file for Home Assistant.
--   **`proxmox-agent/src/`**: Source code for the Proxmox monitoring and management agent.
--   **`netbox-agent/src/`**: Source code for the NetBox inventory and management agent.
--   **`docs/3-TIER-DEPLOYMENT.md`**: Key architectural document outlining the deployment strategy.
--   **`scripts/`**: Contains various deployment, utility, and orchestration shell scripts.
+*   `homelab-gitops/`: The primary repository for GitOps workflows, containing deployment scripts and high-level configuration.
+*   `api/`: The core backend Node.js application that orchestrates various agents and services.
+*   `dashboard/`: The source code for the frontend monitoring and control dashboard.
+*   `home-assistant-config/`: The complete configuration for the Home Assistant instance, including automations, custom components, and dashboards.
+*   `mcp-servers/`: A collection of custom "Model-Context-Protocol" servers that act as integration bridges to various services.
+*   `proxmox-agent/` & `netbox-agent/`: Agents responsible for monitoring and managing the Proxmox and NetBox platforms.
+*   `docs/`: Contains all high-level documentation, including architecture diagrams, deployment plans, and incident reports.
+*   `scripts/`: A collection of shell and Python scripts for automation, deployment, and maintenance tasks.
 
-## Core Dependencies
+## 4. Dependencies
 
--   **Backend & Tooling**: Node.js, Python
--   **Frontend**: React, Vite, Tailwind CSS
--   **Services**: Docker, Proxmox, Home Assistant, NetBox, Wiki.js, Traefik
--   **Automation**: Git, Shell Scripts, Python Scripts, Model Context Protocol (custom)
- scripts, `create-consolidated-config.py`, `upload-mcp-docs-to-wikijs.py`, and potentially other services like `netbox-agent`), Bash/Shell for various scripts.
-*   **Build/Development:** npm/yarn (for Node.js dependency management), Vite (for dashboard build), Jest (for testing), ESLint (for linting), Prettier (for code formatting), Tailwind CSS (for dashboard styling).
-*   **External Services:** Git (for version control), potentially Docker/Podman for containerization, Traefik for reverse proxy/load balancing, NetBox, Proxmox, WikiJS, BirdNET-Lite.
-
-## Common Tasks
-*   **Setup:**
-    *   `./install.sh`: Installs project dependencies.
-    *   `./setup-linting.sh`: Configures linting tools.
-*   **Development:**
-    *   `npm install` (in `api/` and `dashboard/`): Installs Node.js dependencies.
-    *   `npm test` or `jest` (in `api/` and `dashboard/`): Runs unit and integration tests.
-    *   `npm run dev` (in `dashboard/`): Starts the development server for the dashboard.
-*   **Deployment:**
-    *   `./deploy-v1.1.0.sh`: Deploys version 1.1.0 of the system.
-    *   `./update-production.sh`: Updates the production environment.
-    *   `./manual-deploy.sh`: Provides options for manual deployment.
-    *   `./1-line-deploy/`: Contains scripts for simplified deployments of specific components.
-*   **Validation:**
-    *   `./validate-v1.1.0.sh`: Validates the deployed 1.1.0 version.
-*   **Maintenance:**
-    *   `cleanup-mcp-structure.sh`: Script for cleaning up MCP related structures.
-    *   `create-consolidated-config.py`: Python script for managing configurations.
+*   **Languages:** JavaScript/TypeScript (Node.js), Python, Shell (Bash)
+*   **Frameworks:** Vite, Express.js
+*   **Platforms:** Proxmox, Docker, Home Assistant, Traefik, NetBox, WikiJS
+*   **Databases:** PostgreSQL (for Home Assistant), SQLite
+*   **Tooling:** Git, `npm`, `pre-commit`

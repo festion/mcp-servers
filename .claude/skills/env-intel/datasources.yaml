@@ -1,0 +1,72 @@
+# Environment Intelligence — Shared Data Source Configuration
+# Read by all env-intel skills at invocation time.
+# Update this file when infrastructure changes (new nodes, IPs, services).
+
+compute:
+  proxmox:
+    tool_prefix: mcp__proxmox-mcp
+    nodes:
+      - name: proxmox
+        ip: 192.168.1.137
+        cpu_cores: 4
+        role: "HA master"
+      - name: proxmox2
+        ip: 192.168.1.125
+        cpu_cores: 8
+      - name: proxmox3
+        ip: 192.168.1.126
+        cpu_cores: 8
+    ssh_user: root
+
+storage:
+  truenas:
+    tool_prefix: mcp__truenas
+    ip: 192.168.1.98
+  pbs:
+    ip: 192.168.1.171
+    port: 8007
+    ssh_user: root
+
+services:
+  home_assistant:
+    ip: 192.168.1.155
+    port: 8123
+    api_path: /api/
+    token_source: "Run: cd /home/dev/workspace && infisical secrets get HA_LONG_LIVED_TOKEN --env=prod --plain"
+  birdnet:
+    ip: 192.168.1.197
+    port: 8080
+    api_path: /api/v2/
+    ssh_user: jeremy
+  loki:
+    ip: 192.168.1.170
+    port: 3100
+
+monitoring:
+  proxmox_agent:
+    ct: 152
+    node: proxmox2
+    ip: 192.168.1.169
+    port: 8000
+    api_path: /api/
+    auth_source: "SSH to proxmox2, pct exec 152 -- cat /opt/proxmox-agent/.env for DASHBOARD_USER and DASHBOARD_PASSWORD"
+
+code:
+  github:
+    tool_prefix: mcp__github
+    owner: festion
+    repos:
+      - mcp-servers
+      - homelab-gitops
+      - home-assistant-config
+      - proxmox-agent
+      - birdnet-gone
+      - pi-status-dashboard
+      - operations
+
+thresholds:
+  storage_warning_pct: 80
+  storage_critical_pct: 90
+  load_warning_multiplier: 2.0
+  backup_max_age_hours: 36
+  unavailable_entities_warning: 5

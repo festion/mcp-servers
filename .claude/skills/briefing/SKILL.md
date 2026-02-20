@@ -48,12 +48,12 @@ Parse the task list for backup jobs in the last 36 hours. Check for failures (st
 
 Get credentials first:
 ```bash
-ssh root@192.168.1.125 "pct exec 152 -- cat /opt/proxmox-agent/.env" 2>/dev/null
+ssh root@192.168.1.137 "pct exec 152 -- cat /opt/proxmox-agent/.env" 2>/dev/null
 ```
 
 Extract DASHBOARD_USER and DASHBOARD_PASSWORD, then query:
 ```bash
-ssh root@192.168.1.125 "pct exec 152 -- curl -s -u USER:PASS http://localhost:8000/api/alerts?acknowledged=false" 2>/dev/null
+ssh root@192.168.1.137 "pct exec 152 -- curl -s -u USER:PASS http://localhost:8000/api/alerts?acknowledged=false" 2>/dev/null
 ```
 
 Flag: Any unacknowledged alerts, especially critical/high severity.
@@ -123,3 +123,4 @@ Present as a clean markdown briefing:
 4. **Omit noise:** If a system is fully healthy, just show a checkmark in the health table — no need for details
 5. **Prioritize:** Action items ordered: critical > high > medium > informational
 6. **Be concise:** This is a morning scan. Details go in `/investigate`.
+7. **Timezone:** All systems run CST/CDT (America/Chicago). Display times in local time. Format: "11:13 AM" not "17:13 UTC".

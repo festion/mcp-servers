@@ -103,3 +103,7 @@ Cross-reference with learnings/MEMORY.md — any known gotchas for this system?
 ### Recommendations
 Specific actions if any issues found. Reference remediation procedures from learnings.
 ```
+
+## Timezone Rule
+
+All systems run CST/CDT (America/Chicago). Display times in local time. Format: "11:13 AM" not "17:13 UTC".

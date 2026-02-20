@@ -57,7 +57,7 @@ Compare against the known container list in MEMORY.md — flag any new or missin
 Get dashboard API credentials (see briefing skill), then:
 
 ```bash
-ssh root@192.168.1.125 "pct exec 152 -- curl -s -u USER:PASS 'http://localhost:8000/api/alerts?limit=100'" 2>/dev/null
+ssh root@192.168.1.137 "pct exec 152 -- curl -s -u USER:PASS 'http://localhost:8000/api/alerts?limit=100'" 2>/dev/null
 ```
 
 Filter alerts within timeframe.

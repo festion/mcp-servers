@@ -1,81 +1,52 @@
-```markdown
-# Project Index
-
-## 1. Core Purpose
-
-This repository is a comprehensive GitOps-based management system for a personal homelab. It automates the deployment, configuration, monitoring, and documentation of a wide array of services, from core infrastructure to home automation and custom applications. The project heavily leverages automation and a custom protocol (MCP) to maintain a desired state defined in this repository.
-
-## 2. Architecture
-
-The architecture is a distributed system orchestrated via GitOps principles, with several key components:
-
-*   **Orchestration Core (`homelab-gitops`):** Acts as the central control plane. It contains deployment scripts, state management, and the core logic for the GitOps workflow.
-*   **Model Context Protocol (MCP):** A set of micro-servers (`mcp-servers/`) that act as agents or connectors to various systems (Proxmox, Home Assistant, GitHub, etc.). They execute tasks and report status back to the orchestration core.
-*   **API & Frontend:** A Node.js API (`api/`) provides a programmatic interface to the system, while a Vue/Vite-based `dashboard/` offers a user-friendly interface for control and monitoring.
-*   **Managed Services:** The repository manages numerous applications, including:
-    *   **Home Automation:** Extensive configuration for `home-assistant-config`.
-    *   **Infrastructure:** Agents for `netbox-agent` and `proxmox-agent` to manage network and virtualization.
-    *   **Applications:** Self-contained projects like `birdnet-gone` (sound analysis) and `3ddash` (3D dashboard).
-*   **Automated Documentation:** A `wikijs-sync-agent` automatically discovers, processes, and uploads documentation to a WikiJS instance, ensuring documentation stays current with the codebase.
-
-## 3. Key Files & Directories
-
-*   `homelab-gitops/`: The main directory for the GitOps orchestration, containing deployment plans and automation scripts.
-*   `mcp-servers/`: Contains the individual agent implementations for the Model Context Protocol.
-*   `api/server.js`: The primary entry point for the backend control API.
-*   `dashboard/src/`: Source code for the main user-facing dashboard.
-*   `home-assistant-config/`: Contains the complete configuration for the Home Assistant instance.
-*   `docs/`: High-level documentation, architecture diagrams, and operational procedures.
-*   `scripts/`: A collection of utility, deployment, and maintenance scripts used across the repository.
-*   `1-line-deploy/`: Scripts and documentation for simplified, one-command deployments of various services.
-
-## 4. Dependencies
-
-*   **Languages:** Python, JavaScript/TypeScript (Node.js), Shell (Bash)
-*   **Frameworks:** Vite, Jest, Express.js
-*   **Tools:** Docker, Git, Pre-commit hooks
-*   **Infrastructure:** Proxmox, Home Assistant, Netbox, Traefik, WikiJS
-```
- Scripts for deploying and updating the project.
-
-## Dependencies
-*   **Node.js / npm**: Utilized by the `api/` and `dashboard/` modules for backend services, frontend development, and dependency management.
-*   **Python**: Used for various scripting, automation tasks, and potentially components within the `.mcp/` system.
-*   **Go**: The `birdnet-gone/` application is developed using Go.
-*   **Bash**: Extensively used across the project for scripting, deployment, and operational tasks.
-
-## Common Tasks
-*   **Project Setup:**
-    *   `./install.sh`: Run to perform initial project setup and install core dependencies.
-    *   `./setup-linting.sh`: Configures code linting tools and rules.
-*   **Development:**
-    *   Navigate to `api/` or `dashboard/` and run `npm install` to install Node.js dependencies.
-    *   In `dashboard/`, `npm run dev` starts the local development server for the UI.
-    *   In `api/`, `node server.js` (or similar for `server-v2.js`, `server-mcp.js`) starts the API server.
-    *   In `birdnet-gone/`, `go run cmd/birdnet-gone/main.go` executes the BirdNET-Gone application.
-*   **Testing:**
-    *   Navigate to `api/` or `dashboard/` and run `npm test` or `jest` to execute unit/integration tests.
-*   **Deployment:**
-    *   `./deploy-v1.1.0.sh`: Deploys a specific version of the project.
-    *   `./quick-fix-deploy.sh`: For rapid deployment of emergency fixes.
-    *   Scripts within `1-line-deploy/ct/` (e.g., `./1-line-deploy/ct/homepage.sh`): For deploying individual components.
-    *   `./update-production.sh`: Script to update the production environment.
-*   **Code Quality:**
-    *   `npm run lint` (in `api/` or `dashboard/`): Runs configured linters for JavaScript/TypeScript code.
-    *   `ruff check .` (if configured): Checks Python code for style and errors.
-```
-```markdown
-# workspace Project Index
-
-Generated: 2026-02-20
+I have created the `PROJECT_INDEX.md` file.
+2-22
 
 ## Purpose
-This workspace is a comprehensive monorepo designed for home automation, CI/CD, API services, and AI development. It integrates various components for deploying services, managing configurations, handling data exports, and interacting with specialized applications like BirdNET-Lite. The project aims to provide a robust and automated platform for managing complex system deployments and operations.
+This workspace appears to be a comprehensive collection of projects related to home automation, system monitoring, and potentially AI-driven integrations. It encompasses various services, APIs, frontends, and specialized agents designed to manage and interact with different components within a home or lab environment. The overall goal seems to be to provide a unified platform for monitoring, control, and automation through a modular and interconnected architecture.
 
 ## Architecture
-The project is structured into several interconnected modules:
-*   **`api/`**: Contains core backend services, likely Node.js based, handling configuration loading, integrations (e.g., GitHub, MCP), data export, and exposing various API endpoints.
-*   **`dashboard/`**: A frontend application, likely built with Vite, React/Vue, and Tailwind CSS, serving as a user interface for monitoring and interacting with the backend services and deployed systems.
-*   **`birdnet-gone/`**: A standalone application (potentially Go backend and a separate frontend) focused on specific functionality, possibly audio analysis or similar tasks, with its own deployment and configuration.
-*   **`1-line-deploy/`**: A collection of simplified deployment scripts and documentation for rapidly deploying various agents (NetBox, Proxmox, WikiJS, Homepage Dashboard).
-*   **`.mcp/`**: A "Master Control Program" module for managing critical aspects like backups, resolving conflicts, handling dependencies, and
+The architecture is distributed, featuring multiple interconnected components. A central API (`api/server.js`) likely serves as the backbone, interacting with specialized agents (e.g., `netbox-agent`, `proxmox-agent`, `wikijs-integration`) and potentially a Multi-Component Platform (MCP) through `mcp-connector.js`. WebSocket servers (`agent-workspace/websocket`, `api/websocket-server.js`) facilitate real-time communication. Frontend applications and dashboards (`dashboard`, `3ddash`) provide user interfaces, while services like `birdnet-go` operate as independent Go-based applications. Configuration and deployment scripts tie these various modules together.
+
+## Key Files
+*   `./1-line-deploy/Architecture-Integration.md`: Documentation on architectural integration for 1-line deployments.
+*   `./1-line-deploy/CLAUDE.md`: Claude AI specific documentation or configuration for the 1-line deploy project.
+*   `./1-line-deploy/ct/homepage.sh`: Script for deploying the homepage/dashboard.
+*   `./1-line-deploy/ct/netbox-agent.sh`: Script for deploying the NetBox agent.
+*   `./1-line-deploy/ct/proxmox-agent.sh`: Script for deploying the Proxmox agent.
+*   `./1-line-deploy/ct/wikijs-integration.sh`: Script for deploying WikiJS integration.
+*   `./1-line-deploy/MCP_CONFIGURATION.md`: Configuration guide for the MCP in 1-line deploy.
+*   `./agent-workspace/websocket/websocket-architecture.js`: Defines the architecture of the WebSocket agent.
+*   `./api/config-loader.js`: Handles loading configuration for the API services.
+*   `./api/csv-export.js`: Module for exporting data to CSV format.
+*   `./api/email-notifications.js`: Manages email notification functionalities.
+*   `./api/github-mcp-manager.js`: Integrates GitHub actions with the MCP.
+*   `./api/jest.config.js`: Jest configuration for API unit tests.
+*   `./api/mcp-connector.js`: Connects the API to the Multi-Component Platform.
+*   `./api/MCP_INTEGRATION.md`: Documentation on MCP integration with the API.
+*   `./api/server.js`: Main entry point for the API server (likely Node.js/Express).
+*   `./api/websocket-server.js`: Implements WebSocket communication within the API.
+*   `./birdnet-go/main.go`: Main entry point for the Birdnet-Go application.
+*   `./birdnet-go/go.mod`: Go module definition for Birdnet-Go, listing dependencies.
+*   `./.mcp/backup-manager.py`: Python script for managing MCP backups.
+*   `./.mcp/pipeline-engine/`: Directory likely containing scripts or configurations for MCP data pipelines.
+*   `./.prompts/PROMPTS_OVERVIEW.md`: Overview of prompt engineering within the project.
+*   `./create-consolidated-config.py`: Python script for consolidating configurations.
+*   `./install.sh`: General installation script for the workspace.
+*   `./setup-linting.sh`: Script for setting up linting tools.
+*   `./deploy-v1.1.0.sh`: Script for deploying version 1.1.0.
+
+## Dependencies
+The project uses a mix of technologies:
+*   **Node.js/npm**: Indicated by `package.json`, `package-lock.json`, and `.js` files in the `api/` directory.
+*   **Go Modules**: Used by `birdnet-go/` as shown by `go.mod` and `go.sum`.
+*   **Python**: Suggested by `.py` files in the root and `.mcp/` directories.
+*   **Shell Scripting**: Extensive use of `.sh` scripts for various tasks.
+*   **Linting Tools**: Configuration files like `.eslintrc.js`, `.golangci.yaml`, `.prettierrc` suggest ESLint, GoLinter, and Prettier are used.
+
+## Common Tasks
+*   **Installation**: Run `./install.sh` to set up the workspace.
+*   **Deployment**: Use `./deploy-v1.1.0.sh` or specific scripts like `./1-line-deploy/ct/*.sh` for deploying services.
+*   **Validation**: Execute `./validate-v1.1.0.sh` to ensure deployments are correct.
+*   **Testing**: For Node.js APIs, run `npm test` or `npx jest` (referencing `api/jest.config.js`). For Go projects, `go test` in the `birdnet-go/` directory.
+*   **Linting/Formatting**: Run `./setup-linting.sh` and use tools like Prettier, ESLint, or GoLinter (e.g., `golangci-lint run` in `birdnet-go/`).
+*   **Development Server**: Potentially `npm start` or `node server.js` in relevant directories (e.g., `api/`).

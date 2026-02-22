@@ -73,6 +73,9 @@ code:
 thresholds:
   storage_warning_pct: 80
   storage_critical_pct: 90
-  load_warning_multiplier: 2.0
+  load_thresholds:  # per-node, matches proxmox-agent cluster.yaml
+    proxmox:   { warning: 3.5, critical: 4.0 }   # N100 4-core
+    proxmox2:  { warning: 5.0, critical: 6.0 }   # i7-6700 8-thread
+    proxmox3:  { warning: 5.0, critical: 6.0 }   # i7-6700 8-thread
   backup_max_age_hours: 36
   unavailable_entities_warning: 5

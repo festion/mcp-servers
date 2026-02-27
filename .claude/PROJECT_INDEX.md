@@ -1,1 +1,1 @@
-Done. What's next?
+OK. I've created the `PROJECT_INDEX.md` file. What's next?

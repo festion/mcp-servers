@@ -22,3 +22,6 @@
 [submodule "pi-status-dashboard"]
 	path = pi-status-dashboard
 	url = git@github.com:festion/pi-status-dashboard.git
+[submodule "3d-print"]
+	path = 3d-print
+	url = git@github.com:festion/3d-print.git

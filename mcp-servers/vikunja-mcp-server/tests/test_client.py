@@ -224,3 +224,124 @@ async def test_delete_task(client):
     result = await client.delete_task(42)
     assert result["message"] == "success"
     client.client.delete.assert_called_once_with("/tasks/42")
+
+
+# --- Label tests ---
+
+
+@pytest.mark.asyncio
+async def test_list_labels(client):
+    mock_response = _make_response(200, [
+        {"id": 1, "title": "bug", "hex_color": "#ff0000"},
+        {"id": 2, "title": "feature", "hex_color": "#00ff00"},
+    ])
+    client.client = AsyncMock()
+    client.client.get = AsyncMock(return_value=mock_response)
+
+    labels = await client.list_labels()
+    assert len(labels) == 2
+    assert labels[0]["title"] == "bug"
+    client.client.get.assert_called_once_with("/labels")
+
+
+@pytest.mark.asyncio
+async def test_create_label(client):
+    mock_response = _make_response(200, {
+        "id": 3, "title": "urgent", "hex_color": "#ff9900",
+    })
+    client.client = AsyncMock()
+    client.client.put = AsyncMock(return_value=mock_response)
+
+    label = await client.create_label("urgent", hex_color="#ff9900")
+    assert label["id"] == 3
+    assert label["title"] == "urgent"
+    client.client.put.assert_called_once_with(
+        "/labels", json={"title": "urgent", "hex_color": "#ff9900"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_label_existing(client):
+    """Should return existing label without calling create."""
+    list_response = _make_response(200, [
+        {"id": 1, "title": "Bug", "hex_color": "#ff0000"},
+        {"id": 2, "title": "Feature", "hex_color": "#00ff00"},
+    ])
+    client.client = AsyncMock()
+    client.client.get = AsyncMock(return_value=list_response)
+    client.client.put = AsyncMock()  # Should NOT be called
+
+    label = await client.get_or_create_label("bug")  # case-insensitive match
+    assert label["id"] == 1
+    assert label["title"] == "Bug"
+    client.client.get.assert_called_once_with("/labels")
+    client.client.put.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_label_new(client):
+    """Should create when not found in existing labels."""
+    list_response = _make_response(200, [
+        {"id": 1, "title": "Bug", "hex_color": "#ff0000"},
+    ])
+    create_response = _make_response(200, {
+        "id": 5, "title": "urgent", "hex_color": "",
+    })
+    client.client = AsyncMock()
+    client.client.get = AsyncMock(return_value=list_response)
+    client.client.put = AsyncMock(return_value=create_response)
+
+    label = await client.get_or_create_label("urgent")
+    assert label["id"] == 5
+    assert label["title"] == "urgent"
+    # list_labels was called (GET)
+    client.client.get.assert_called_once_with("/labels")
+    # create_label was called (PUT) since "urgent" wasn't found
+    client.client.put.assert_called_once_with("/labels", json={"title": "urgent"})
+
+
+@pytest.mark.asyncio
+async def test_attach_label_to_task(client):
+    mock_response = _make_response(200, {"label_id": 3, "task_id": 42})
+    client.client = AsyncMock()
+    client.client.put = AsyncMock(return_value=mock_response)
+
+    result = await client.attach_label(42, 3)
+    assert result["label_id"] == 3
+    client.client.put.assert_called_once_with(
+        "/tasks/42/labels", json={"label_id": 3},
+    )
+
+
+# --- Comment tests ---
+
+
+@pytest.mark.asyncio
+async def test_add_comment(client):
+    mock_response = _make_response(200, {
+        "id": 10, "comment": "This needs review", "task_id": 42,
+    })
+    client.client = AsyncMock()
+    client.client.put = AsyncMock(return_value=mock_response)
+
+    result = await client.add_comment(42, "This needs review")
+    assert result["id"] == 10
+    assert result["comment"] == "This needs review"
+    client.client.put.assert_called_once_with(
+        "/tasks/42/comments", json={"comment": "This needs review"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_list_comments(client):
+    mock_response = _make_response(200, [
+        {"id": 10, "comment": "First comment", "task_id": 42},
+        {"id": 11, "comment": "Second comment", "task_id": 42},
+    ])
+    client.client = AsyncMock()
+    client.client.get = AsyncMock(return_value=mock_response)
+
+    comments = await client.list_comments(42)
+    assert len(comments) == 2
+    assert comments[1]["comment"] == "Second comment"
+    client.client.get.assert_called_once_with("/tasks/42/comments")

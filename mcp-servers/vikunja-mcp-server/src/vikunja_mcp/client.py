@@ -53,3 +53,47 @@ class VikunjaClient:
         })
         resp.raise_for_status()
         return resp.json()
+
+    # --- Task operations ---
+
+    async def create_task(self, project_id: int, title: str, description: str = "", priority: int = 0) -> dict[str, Any]:
+        """Create a task in a project. Uses PUT."""
+        body: dict[str, Any] = {"title": title}
+        if description:
+            body["description"] = description
+        if priority:
+            body["priority"] = priority
+        resp = await self.client.put(f"/projects/{project_id}/tasks", json=body)
+        resp.raise_for_status()
+        return resp.json()
+
+    async def list_tasks(self, project_id: int, filter_mode: str = "open", page: int = 1) -> list[dict[str, Any]]:
+        """List tasks. filter_mode: open, done, all."""
+        params: dict[str, Any] = {"per_page": 50, "page": page}
+        if filter_mode == "open":
+            params["filter"] = "done = false"
+        elif filter_mode == "done":
+            params["filter"] = "done = true"
+        resp = await self.client.get(f"/projects/{project_id}/tasks", params=params)
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_task(self, task_id: int) -> dict[str, Any]:
+        """Get a single task."""
+        resp = await self.client.get(f"/tasks/{task_id}")
+        resp.raise_for_status()
+        return resp.json()
+
+    async def update_task(self, task_id: int, **changes) -> dict[str, Any]:
+        """Update via read-modify-write. GET first, merge changes, POST full object."""
+        existing = await self.get_task(task_id)
+        existing.update(changes)
+        resp = await self.client.post(f"/tasks/{task_id}", json=existing)
+        resp.raise_for_status()
+        return resp.json()
+
+    async def delete_task(self, task_id: int) -> dict[str, Any]:
+        """Delete a task."""
+        resp = await self.client.delete(f"/tasks/{task_id}")
+        resp.raise_for_status()
+        return resp.json()

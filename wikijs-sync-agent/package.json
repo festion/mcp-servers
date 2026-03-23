@@ -43,5 +43,8 @@
   "bugs": {
     "url": "https://github.com/your-org/wikijs-sync-agent/issues"
   },
-  "homepage": "https://github.com/your-org/wikijs-sync-agent#readme"
+  "homepage": "https://github.com/your-org/wikijs-sync-agent#readme",
+  "overrides": {
+    "flatted": "^3.4.2"
+  }
 }

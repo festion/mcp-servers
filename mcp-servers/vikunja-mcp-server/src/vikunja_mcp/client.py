@@ -97,3 +97,48 @@ class VikunjaClient:
         resp = await self.client.delete(f"/tasks/{task_id}")
         resp.raise_for_status()
         return resp.json()
+
+    # --- Label operations ---
+
+    async def list_labels(self) -> list[dict[str, Any]]:
+        """List all labels."""
+        resp = await self.client.get("/labels")
+        resp.raise_for_status()
+        return resp.json()
+
+    async def create_label(self, title: str, hex_color: str = "") -> dict[str, Any]:
+        """Create a new label. Uses PUT."""
+        body: dict[str, Any] = {"title": title}
+        if hex_color:
+            body["hex_color"] = hex_color
+        resp = await self.client.put("/labels", json=body)
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_or_create_label(self, title: str) -> dict[str, Any]:
+        """Get existing label by title, or create it."""
+        labels = await self.list_labels()
+        for label in labels:
+            if label["title"].lower() == title.lower():
+                return label
+        return await self.create_label(title)
+
+    async def attach_label(self, task_id: int, label_id: int) -> dict[str, Any]:
+        """Attach a label to a task."""
+        resp = await self.client.put(f"/tasks/{task_id}/labels", json={"label_id": label_id})
+        resp.raise_for_status()
+        return resp.json()
+
+    # --- Comment operations ---
+
+    async def add_comment(self, task_id: int, comment: str) -> dict[str, Any]:
+        """Add a comment to a task."""
+        resp = await self.client.put(f"/tasks/{task_id}/comments", json={"comment": comment})
+        resp.raise_for_status()
+        return resp.json()
+
+    async def list_comments(self, task_id: int) -> list[dict[str, Any]]:
+        """List comments on a task."""
+        resp = await self.client.get(f"/tasks/{task_id}/comments")
+        resp.raise_for_status()
+        return resp.json()

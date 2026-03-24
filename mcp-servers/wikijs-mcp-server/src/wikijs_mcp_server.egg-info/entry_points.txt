@@ -1,3 +1,0 @@
-[console_scripts]
-wikijs-mcp = wikijs_mcp.cli:cli_main
-wikijs-mcp-server = wikijs_mcp.server:main

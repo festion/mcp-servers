@@ -30,7 +30,9 @@ else
   echo "📁 Local Git root: ${LOCAL_GIT_ROOT}"
 fi
 
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+TIMESTAMP=$(date -u +"%Y-%m-%dT${TIMESTAMP_SEPARATOR:-%H:%M:%S}Z")
+# CI override: set TIMESTAMP_SEPARATOR to avoid colons in filenames (NTFS limitation)
+[ -n "${CI:-}" ] && TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
 JSON_PATH="${HISTORY_DIR}/${TIMESTAMP}.json"
 
 mkdir -p "$HISTORY_DIR"

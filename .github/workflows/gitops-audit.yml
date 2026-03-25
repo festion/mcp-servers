@@ -90,8 +90,9 @@ jobs:
           
           # Modify script to use simulation directory
           sed 's|LOCAL_GIT_ROOT="/mnt/c/GIT"|LOCAL_GIT_ROOT="/tmp/git-simulation"|g' scripts/comprehensive_audit.sh > /tmp/audit_test.sh
+          cp scripts/config-loader.sh /tmp/config-loader.sh
           chmod +x /tmp/audit_test.sh
-          
+
           # Run the audit script
           bash /tmp/audit_test.sh --dev
 

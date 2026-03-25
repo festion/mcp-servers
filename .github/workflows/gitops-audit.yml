@@ -81,21 +81,16 @@ jobs:
 
       - name: Run comprehensive audit (simulation)
         continue-on-error: true
+        env:
+          LOCAL_GIT_ROOT: /tmp/git-simulation
         run: |
-          # Create simulation of C:\GIT structure for testing
+          # Create simulation repos
           mkdir -p /tmp/git-simulation
-          
-          # Simulate some repositories
           git clone --depth 1 https://github.com/festion/homelab-gitops-auditor.git /tmp/git-simulation/homelab-gitops-auditor
           git clone --depth 1 https://github.com/festion/ESPHome.git /tmp/git-simulation/ESPHome || true
-          
-          # Modify script to use simulation directory
-          sed 's|LOCAL_GIT_ROOT="/mnt/c/GIT"|LOCAL_GIT_ROOT="/tmp/git-simulation"|g' scripts/comprehensive_audit.sh > /tmp/audit_test.sh
-          cp scripts/config-loader.sh /tmp/config-loader.sh
-          chmod +x /tmp/audit_test.sh
 
-          # Run the audit script
-          bash /tmp/audit_test.sh --dev
+          # Run the audit script directly — config-loader.sh respects LOCAL_GIT_ROOT env var
+          bash scripts/comprehensive_audit.sh --dev
 
       - name: Upload audit results
         uses: actions/upload-artifact@v4

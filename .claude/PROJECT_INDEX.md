@@ -2,50 +2,34 @@
 
 ## 1. Core Purpose
 
-This repository is a comprehensive monorepo for managing a sophisticated homelab environment using GitOps principles. It automates the deployment, configuration, and management of various services, including home automation (Home Assistant), virtualization (Proxmox), network infrastructure (Traefik, NetBox), and custom applications like BirdNet audio analysis. The project heavily integrates AI and automation through a custom framework referred to as MCP (Model Context Protocol) to streamline operations, documentation, and development workflows.
+This repository contains the infrastructure, configurations, and automation for a comprehensive homelab environment. It uses a GitOps approach to manage a variety of services, including home automation, virtualization, network management, and application hosting. A central theme is the use of a custom Model Context Protocol (MCP) for orchestration and inter-service communication.
 
 ## 2. Architecture
 
-The architecture is a multi-layered system managed through declarative configurations and automation scripts.
+The project is structured as a monorepo managed via GitOps principles. Key architectural components include:
 
--   **Orchestration & Automation**: The core is managed via GitOps, with deployment scripts (`deploy-*.sh`, `update-production.sh`) and CI/CD pipelines (GitHub Actions) automating the rollout of services. A custom API (`/api`) and various MCP servers (`/mcp-servers`) act as the central control plane.
--   **Infrastructure**: Proxmox is used for virtualization, with agents (`/proxmox-agent`, `/netbox-agent`) for monitoring and management. Traefik handles ingress and routing for containerized services.
--   **Home Automation**: A heavily customized Home Assistant instance (`/home-assistant-config`) serves as the central hub for smart home control, integrated with Zigbee2MQTT, ESPHome, and various custom components.
--   **Applications & Services**: The system runs a suite of services including:
-    -   **BirdNet-Go/Gone**: For real-time bird sound identification.
-    -   **WikiJS**: As a central documentation platform, with automated content synchronization.
-    -   **NetBox**: For network and infrastructure management.
-    -   **Dashboards**: Custom frontends (`/dashboard`, `/3ddash`) provide user interfaces for system monitoring and control.
--   **AI Integration**: The `serena` and `mcp-enhanced-servers` components leverage AI models for tasks like automated code commits, documentation generation, and system analysis.
+*   **Orchestration & API:** A central Node.js API (`/api`) acts as the backend, integrating with various services. It leverages a custom MCP (Model Context Protocol) via specialized servers (`/mcp-servers`) for state management and automation logic.
+*   **Home Automation:** A heavily customized Home Assistant instance (`/home-assistant-config`) serves as the core of the smart home, managing devices, automations, and dashboards.
+*   **Virtualization & Networking:** The system manages Proxmox for virtualization (`/proxmox-agent`), NetBox for IPAM/DCIM (`/netbox-agent`), and Traefik for reverse proxying and load balancing.
+*   **Application Services:** The stack includes a variety of self-hosted applications such as WikiJS for documentation, BirdNet for audio analysis, and custom dashboards (`/dashboard`).
+*   **Automation & Deployment:** Deployments and operational tasks are heavily automated using a combination of shell scripts (`/scripts`, `/wrappers`), Python scripts, and GitHub Actions for CI/CD. The `1-line-deploy` system provides a simplified installation path for core components.
+*   **3D Printing:** A dedicated section (`/3d-print`) stores models, g-code, and related assets for 3D printing projects.
 
 ## 3. Key Files
 
--   **`homelab-gitops/PROJECT_INDEX.md`**: Central documentation for the GitOps deployment and architecture.
--   **`home-assistant-config/configuration.yaml`**: The main configuration file for the Home Assistant instance, defining core integrations and entities.
--   **`api/server.js`**: The primary entry point for the backend API that orchestrates various services and MCP integrations.
--   **`homelab-gitops/docker-compose.production.yml`**: Defines the core services and their configurations for the production environment.
--   **`docs/3-TIER-DEPLOYMENT.md`**: Outlines the high-level deployment strategy and architecture.
--   **`update-production.sh`**: The main script for deploying updates to the production environment.
--   **`/mcp-servers/`**: Directory containing the various microservices that form the Model Context Protocol backend for automation.
--   **`/wrappers/`**: Contains shell scripts that act as simplified interfaces for controlling and interacting with the MCP servers.
+*   `homelab-gitops/`: The core directory embodying the GitOps workflow and housing production deployment configurations.
+*   `home-assistant-config/configuration.yaml`: The main configuration file for the Home Assistant instance.
+*   `api/server.js`: The primary entry point for the backend API that orchestrates various services.
+*   `mcp-servers/`: Contains the individual microservices that constitute the Model Context Protocol backend.
+*   `docs/`: Contains high-level documentation, incident reports, and architecture decision records.
+*   `1-line-deploy/`: Scripts and configurations for simplified, single-command deployment of key infrastructure services.
+*   `scripts/`: A collection of operational and deployment shell scripts for managing the ecosystem.
+*   `TRAEFIK_SETUP_COMPLETE.md`: A key document indicating the setup state of the Traefik reverse proxy.
 
 ## 4. Dependencies
 
--   **Primary Technologies**:
-    -   **Proxmox**: Virtualization platform.
-    -   **Docker**: Containerization for running services.
-    -   **Home Assistant**: Core home automation platform.
-    -   **Node.js**: Backend for the main API and various scripts.
-    -   **Python**: Used for automation, MCP servers, and utility scripts.
-    -   **Shell (Bash)**: Primary language for deployment and operational scripts.
--   **Key Services**:
-    -   **Traefik**: Reverse proxy and load balancer.
-    -   **NetBox**: IPAM & DCIM solution.
-    -   **WikiJS**: Knowledge base and documentation system.
-    -   **Zigbee2MQTT**: For interfacing with Zigbee devices.
-    -   **PostgreSQL**: Primary database for Home Assistant and other services.
--   **Development & Operations**:
-    -   **Git**: For version control and driving the GitOps workflow.
-    -   **GitHub Actions**: For CI/CD and automated tasks.
-    -   **ESLint / Prettier**: For code linting and formatting.
-    -   **Pre-commit Hooks**: To enforce code quality standards before commits.
+*   **Primary Languages:** JavaScript (Node.js), Python, Shell (Bash)
+*   **Core Services:** Home Assistant, Proxmox, NetBox, Traefik, Zigbee2MQTT, WikiJS
+*   **Frameworks:** Express.js (in API), Vue.js (in Dashboard)
+*   **Tools:** Docker, Git, GitHub Actions, Node.js/NPM, Python Poetry/uv
+*   **Hardware:** ESP32 devices, 3D printers, various smart home sensors and devices.

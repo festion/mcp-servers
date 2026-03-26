@@ -2,38 +2,30 @@
 
 ## 1. Core Purpose
 
-This repository contains a comprehensive homelab management and automation platform, orchestrated using GitOps principles. It integrates various services like Home Assistant, Proxmox, NetBox, and BirdNet for monitoring and managing a smart home and server infrastructure. The system heavily leverages AI-driven agents (Serena/Claude) and a custom Model Context Protocol (MCP) for automated tasks, documentation, and system maintenance.
+This project is a comprehensive homelab management and automation platform. It integrates infrastructure as code (GitOps), home automation, application hosting, and custom development tooling to create a unified and automated personal cloud environment. Key functions include managing virtualized infrastructure, deploying containerized applications, orchestrating smart home devices, and providing a development framework for custom integrations.
 
 ## 2. Architecture
 
-The architecture is a distributed system of services, agents, and automation scripts managed centrally through this Git repository.
+The system is built on a multi-tiered architecture:
 
--   **Orchestration & GitOps:** The `homelab-gitops` directory is the core, containing deployment scripts, configuration, and CI/CD pipeline definitions. It follows a GitOps model where the repository is the single source of truth for the system's state.
--   **API & Backend Services:** A Node.js-based API in the `/api` directory serves as the central communication hub, connecting various services and managing interactions with the MCP servers.
--   **Agent-Based Automation (MCP):** The `/mcp-servers` and `/wrappers` directories define a set of specialized agents that perform tasks like auto-commits, linting, system monitoring (Proxmox, TrueNAS), and integrations with services like Home Assistant.
--   **Infrastructure:** The system runs on Proxmox for virtualization, uses Docker for containerization, and Traefik for reverse proxying and load balancing.
--   **Applications & Services:** It manages a suite of applications including:
-    -   `home-assistant-config`: Smart home automation.
-    -   `netbox-agent` & `proxmox-agent`: Infrastructure and virtualization management.
-    -   `birdnet-go` / `birdnet-gone`: Wildlife sound monitoring.
-    -   `dashboard` / `frontend`: Custom user interfaces for system management.
--   **AI & Documentation:** Integrated AI agents (`.claude/`, `serena/`) are used for code generation, documentation (`PROJECT_INDEX.md`), and automating operational tasks.
+*   **Infrastructure Layer:** Proxmox VE serves as the hypervisor for virtual machines and LXC containers. Traefik manages ingress, reverse proxying, and service discovery. NetBox provides IPAM and infrastructure documentation.
+*   **Automation Layer:** Home Assistant is the central hub for home automation, integrating with Zigbee2MQTT for Zigbee device control. A collection of shell scripts and Python/JavaScript applications (`scripts/`, `mcp-servers/`) automate deployment, configuration, and maintenance tasks.
+*   **Application Layer:** A variety of self-hosted services are managed, including BirdNet-Go for audio analysis, WikiJS for documentation, and custom dashboards for monitoring and control.
+*   **DevOps & Management Layer:** The `homelab-gitops` directory is the core of the GitOps workflow, defining deployment pipelines and state. A custom "Model Context Protocol" (MCP) is used for standardized communication and management between different services, exposed via a central `api`. Serena appears to be a higher-level orchestration or AI agent framework.
 
 ## 3. Key Files
 
--   `homelab-gitops/PROJECT_INDEX.md`: Main entry point for understanding the GitOps deployment architecture and processes.
--   `api/server.js`: The primary Node.js server application that orchestrates backend services.
--   `mcp-servers/`: Directory containing the core logic for the various Model Context Protocol (MCP) agents that automate system tasks.
--   `home-assistant-config/configuration.yaml`: The main configuration file for the Home Assistant instance, defining integrations and devices.
--   `docker-compose.production.yml` (in `homelab-gitops`): Defines the production services and their configurations for Docker deployment.
--   `1-line-deploy/`: Contains streamlined scripts for deploying core services like the Homepage Dashboard, NetBox Agent, and Proxmox Agent.
--   `scripts/`: A collection of essential operational and deployment scripts for managing the entire stack.
--   `docs/`: Contains high-level documentation, deployment plans, incident reports, and standard operating procedures.
+*   `homelab-gitops/PROJECT_OVERVIEW.md`: Provides a high-level overview of the GitOps repository and its goals.
+*   `home-assistant-config/configuration.yaml`: The central configuration file for the Home Assistant core, defining all integrations and entities.
+*   `api/server.js`: The main entry point for the backend API that orchestrates various components of the homelab.
+*   `mcp-servers/README.md`: Documentation for the Model Context Protocol (MCP) servers, which are specialized microservices for various tasks.
+*   `1-line-deploy/README.md`: Contains scripts and instructions for simplified, automated deployment of core services.
+*   `docs/`: A directory containing extensive documentation, including deployment plans, architectural decisions, and standard operating procedures.
+*   `docker-compose.production.yml` (within `homelab-gitops`): Defines the primary application stack for the production environment.
 
 ## 4. Dependencies
 
--   **Platforms:** Proxmox (Virtualization), Docker (Containerization), Home Assistant (Home Automation), Traefik (Networking).
--   **Languages:** JavaScript/TypeScript (Node.js for API/backend), Python (automation, agents), Go (`birdnet-go`), Shell (deployment/ops).
--   **Frameworks/Libraries:** Node.js, React (for dashboards), Vue (likely in `dashboard`).
--   **Databases:** PostgreSQL (used by Home Assistant), SQLite (used by various components).
--   **Tools:** Git, GitHub Actions (CI/CD), Zigbee2MQTT, ESPHome.
+*   **Core Software:** Proxmox, Docker, Node.js, Python, Go, Home Assistant, Traefik, NetBox, Zigbee2MQTT.
+*   **Frameworks & Libraries:** Express.js (for the `api`), React/Vue.js (for frontend dashboards), various Python libraries (e.g., for automation scripts), and Go modules for applications like `birdnet-go`.
+*   **Infrastructure:** Requires a server capable of running Proxmox, Zigbee coordination hardware, and various IoT devices (lights, sensors, etc.).
+*   **External Services:** GitHub for version control and CI/CD (GitHub Actions).

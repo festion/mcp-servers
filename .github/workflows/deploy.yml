@@ -29,6 +29,9 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
+        cache-dependency-path: |
+          dashboard/package-lock.json
+          api/package-lock.json
     
     - name: Install dependencies (API)
       run: |

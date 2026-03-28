@@ -1,62 +1,78 @@
 # Project Index: workspace
 
-This workspace is a comprehensive monorepo managing a sophisticated homelab environment, integrating various automation, monitoring, deployment, 3D printing, and AI/agent development projects. It focuses on self-hosting, smart home capabilities (primarily Home Assistant), robust network management, and custom tooling for enhanced operational control and efficiency.
+## 1. Core Purpose
+This workspace serves as a comprehensive monorepo for a sophisticated homelab and DevOps environment. Its primary purpose is to manage, automate, and monitor various aspects of personal infrastructure, home automation, and development workflows. It encompasses tools and configurations for home assistant, network management, 3D printing, environmental monitoring, API services, CI/CD pipelines, and AI-driven operational tasks.
 
-## Architecture
+## 2. Architecture
+The architecture is characterized by a distributed, microservice-oriented approach, integrating a wide array of self-hosted services and custom agents. Key architectural components and patterns include:
 
-The codebase employs a polyglot architecture, leveraging:
-*   **Python**: For backend services (e.g., MCP servers, Serena AI agent, NetBox agent), Home Assistant automations and scripts, and various utility scripts.
-*   **JavaScript/TypeScript**: For web frontends (React/Vite dashboards), Node.js APIs, and GitHub Actions.
-*   **Go**: For high-performance applications like the Birdnet projects.
-*   **Shell Scripting (Bash/PowerShell)**: Extensively used for automation, deployment, system provisioning, CI/CD pipelines, and general system management, often following GitOps principles.
-*   **Containerization**: Docker and Podman are integral for deploying services, often orchestrated with `docker-compose`.
-*   **Networking & Proxying**: Traefik is used for reverse proxying and service mesh capabilities.
-*   **Monitoring & Logging**: Integrates Fluent Bit, Loki, and Grafana for comprehensive system observability.
+*   **Automation & Orchestration**: Extensive use of scripts and custom agents (e.g., in `.mcp`, `mcp-servers`, `serena`) for automating tasks across the homelab, particularly with Home Assistant.
+*   **API-Driven Services**: A central `api` directory provides core functionalities, likely interacting with various backend services and external platforms.
+*   **Monitoring & Observability**: Dedicated dashboards (`dashboard`, `pi-status-dashboard`) and logging configurations (`operations/fluent-bit-*.yaml`) ensure system health and performance are continuously monitored.
+*   **Network & Infrastructure Management**: Integrations with NetBox, Omada, and Proxmox for managing network devices, virtualized environments, and containerized deployments.
+*   **CI/CD & Deployment**: Tools and scripts for streamlined deployments (`1-line-deploy`, `homelab-gitops`, GitHub Actions Runner) emphasizing automated and repeatable infrastructure as code principles.
+*   **AI/Agent Development**: Directories like `.claude`, `.prompts`, `model-catalog`, and `serena` indicate a strong focus on developing and integrating AI agents for various operational and development support roles.
+*   **Polyglot Development**: The codebase utilizes multiple programming languages (Python, JavaScript/TypeScript, Go, Shell scripting) to leverage the strengths of each for specific components.
 
-## Key Sub-Projects
+## 3. Key Files
+*   `./monitor-ha-cluster.sh`
+*   `./deploy-ssh-keys-v2.sh`
+*   `./TRAEFIK_SETUP_COMPLETE.md`
+*   `./fix-spa-routing.sh`
+*   `./backups/Z2M_LIVINGROOM_DIMMER_ISSUE.md`
+*   `./backups/JEREMYS_LAMP_TROUBLESHOOTING.md`
+*   `./backups/RESTORE_INSTRUCTIONS.md`
+*   `./backups/traefik-ha-20251109/IMPLEMENTATION_LOG.md`
+*   `./backups/SLZB06_STABILITY_ANALYSIS.md`
+*   `./backups/DEVICE_PAIRING_INSTRUCTIONS.md`
+*   `./backups/PAIRING_STATUS.md`
+*   `./backups/floorplan_20251101/floorplan_dashboard.yaml`
+*   `./backups/ZIGBEE_COORDINATOR_RESET_INCIDENT.md`
+*   `./deploy-ssh-keys-simple.sh`
+*   `./.claude/agents/gemini-analyzer.md`
+*   `./.claude/settings.json`
+*   `./.claude/commands/proj.md`
+*   `./.claude/commands/project.md`
+*   `./.claude/skills/env-intel/datasources.yaml`
+*   `./.claude/skills/trends/SKILL.md`
+*   `./.claude/skills/changelog/SKILL.md`
+*   `./.claude/skills/refresh-infra/SKILL.md`
+*   `./.claude/skills/briefing/SKILL.md`
+*   `./.claude/skills/investigate/SKILL.md`
+*   `./.claude/settings.local.json`
+*   `./.claude/PROJECT_INDEX.md`
+*   `./validate-v1.1.0.sh`
+*   `./deploy-ssh-keys-all.sh`
+*   `./1-line-deploy/.claude/PROJECT_INDEX.md`
+*   `./1-line-deploy/README.md`
+*   `./1-line-deploy/Proxmox-Agent-Deployment.md`
+*   `./1-line-deploy/Homepage-Dashboard-Deployment.md`
+*   `./1-line-deploy/CLAUDE.md`
+*   `./1-line-deploy/Home.md`
+*   `./1-line-deploy/ct/wikijs-integration.sh`
+*   `./1-line-deploy/ct/netbox-agent.sh`
+*   `./1-line-deploy/ct/proxmox-agent.sh`
+*   `./1-line-deploy/ct/homepage.sh`
+*   `./1-line-deploy/MCP_CONFIGURATION.md`
+*   `./1-line-deploy/NetBox-Agent-Deployment.md`
+*   `./1-line-deploy/WikiJS-Integration-Deployment.md`
+*   `./1-line-deploy/Architecture-Integration.md`
+*   `./1-line-deploy/Troubleshooting.md`
+*   `./node_modules/engine.io-client/README.md`
+*   `./node_modules/engine.io-client/package.json`
+*   `./node_modules/engine.io-client/build/esm-debug/package.json`
+*   `./node_modules/engine.io-client/build/cjs/package.json`
+*   `./node_modules/engine.io-client/build/esm/package.json`
+*   `./node_modules/ws/README.md`
+*   `./node_modules/ws/package.json`
 
-*   **1-line-deploy**: Streamlined scripts and documentation for rapid deployment of core services like NetBox Agent, Proxmox Agent, WikiJS Integration, and Homepage Dashboard.
-*   **3ddash**: Configuration and guides for a 3D dashboard, likely visualizing Home Assistant data or homelab status.
-*   **3d-print**: Repository for 3D printing projects, including `.stl` models, `.gcode` print files, calibration data, and rendering outputs.
-*   **agent-workspace**: Development and deployment of specialized agents, particularly those utilizing WebSocket communication.
-*   **ai-development**: Central directory for AI-related tools, experiments, and agent development.
-*   **api**: Node.js API services handling various integrations, including MCP (Multi-Container Platform) management, Serena orchestration, and WebSocket communication.
-*   **backups**: Repository for backup archives (e.g., Zigbee2MQTT, Traefik, Omada) and critical troubleshooting documentation.
-*   **birdnet-go**: A Go-based application for bird sound detection and analysis.
-*   **birdnet-gone**: An evolution or specific deployment variant of the Birdnet system, also written in Go.
-*   **dashboard**: A React/Vite frontend application serving as a central monitoring and control interface, often accompanied by a Python proxy.
-*   **docs**: Extensive documentation covering deployment strategies, architectural designs, troubleshooting guides, security practices, and operational procedures for the entire homelab.
-*   **github-actions-runner**: Setup and configuration for self-hosted GitHub Actions runners, including monitoring and security hardening.
-*   **gw4-config-tool**: A web-based (HTML/CSS/JS) configuration utility, likely for a specific gateway or device.
-*   **hass-ab-ble-gateway-suite**: Integrations and custom components to enhance Home Assistant's Bluetooth Low Energy (BLE) device management.
-*   **home-assistant-config**: The primary Home Assistant configuration, encompassing automations, scripts, device integrations, dashboards, and extensive maintenance and diagnostic tools.
-*   **homelab-gitops**: The core GitOps repository, managing infrastructure as code for the homelab, including CI/CD pipelines, deployment manifests, and Infisical secret management integration.
-*   **mcp-enhanced-servers**: Advanced MCP server components, such as directory polling systems and documentation tools for Serena.
-*   **mcp-servers**: A collection of specialized Multi-Container Platform (MCP) servers (e.g., for GitHub, Home Assistant, Proxmox, TrueNAS, Vikunja, code linting).
-*   **model-catalog**: A project for cataloging and managing AI models or prompts, with a frontend and CLI.
-*   **netbox-agent**: An agent designed to integrate with NetBox for IP Address Management (IPAM) and Data Center Infrastructure Management (DCIM), including API services and dashboard components.
-*   **operations**: Contains operational scripts, Fluent Bit configurations for centralized logging, Loki for log aggregation, and Omada network device management tools.
-*   **pi-status-dashboard**: Scripts and Grafana configurations for monitoring Raspberry Pi devices.
-*   **proxmox-agent**: An agent for monitoring and managing Proxmox VE hosts, including load monitoring scripts and dashboards.
-*   **scripts**: A large collection of general-purpose utility scripts for deployment, configuration, Git operations, and system provisioning.
-*   **seed2smoke**: A project with distinct backend and frontend components, accompanied by documentation.
-*   **serena**: An AI agent framework, primarily Python-based, designed for automation, documentation generation, and system synchronization.
-*   **unified-adaptive-lighting**: Custom components extending Home Assistant's adaptive lighting functionalities.
-*   **wrappers**: Shell script wrappers simplifying interaction with various MCP servers and other homelab services.
+## 4. Dependencies
+The project leverages a diverse set of dependencies across multiple ecosystems:
 
-## Dependencies
-
-*   **Programming Languages**: Python (3.x), Node.js (with npm/yarn), Go, Bash.
-*   **Package Managers**: `pip` (Python), `npm` (JavaScript), `go mod` (Go).
-*   **Databases**: PostgreSQL (often for Home Assistant), SQLite.
-*   **Container Runtimes**: Docker, Podman.
-*   **Orchestration**: `docker-compose`.
-*   **Version Control**: Git.
-*   **CI/CD**: GitHub Actions.
-*   **Web Servers/Proxies**: Nginx, Traefik.
-*   **Configuration Management**: YAML, JSON, `.env` files, Infisical for secrets.
-*   **Frontend Frameworks**: React, Vite.
-*   **Home Automation**: Home Assistant, ESPHome, Zigbee2MQTT.
-*   **Logging**: Fluent Bit, Loki.
-*   **Monitoring**: Grafana, Uptime Kuma, Prometheus.
-*   **Tools**: `ripgrep`, `prettier`, `eslint`, `ruff`, `pre-commit`.
+*   **Node.js/JavaScript**: Evidenced by `node_modules` directories and `package.json` files in `api`, `dashboard`, `homelab-gitops`, and the root. Specific packages include `engine.io-client` and `ws`, indicating WebSocket communication.
+*   **Python**: Numerous `requirements.txt` files (e.g., `fitbit-dashboard`, `hass-ab-ble-gateway-suite`, `netbox-agent`, `proxmox-agent`, `serena`, `model-catalog`) and `pyproject.toml` (e.g., `home-assistant-config`, `model-catalog`, `serena`) suggest heavy reliance on Python for scripting, backend services, and Home Assistant integrations.
+*   **Go**: The `birdnet-go` and `birdnet-gone` directories contain `go.mod` and `go.sum` files, indicating Go is used for these applications.
+*   **Shell Scripting**: Extensive use of `.sh` and `.ps1` files for automation, deployment, and system management across the entire workspace.
+*   **Containerization**: `Dockerfile` and `docker-compose.yml` files (e.g., in `birdnet-go`, `birdnet-gone`, `homelab-gitops`, `netbox-agent`, `serena`) indicate a strong use of Docker for isolating and deploying services.
+*   **Home Assistant Integrations**: Custom components and configurations specific to Home Assistant are present in `home-assistant-config` and `hass-ab-ble-gateway-suite`.
+I have finished generating the `PROJECT_INDEX.md` file.

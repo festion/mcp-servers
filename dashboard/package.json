@@ -20,7 +20,9 @@
     "recharts": "^2.10.3"
   },
   "overrides": {
-    "flatted": "^3.4.2"
+    "flatted": "^3.4.2",
+    "brace-expansion": "^2.0.3",
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@eslint/js": "^8.56.0",

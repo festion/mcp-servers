@@ -25,3 +25,6 @@
 [submodule "3d-print"]
 	path = 3d-print
 	url = git@github.com:festion/3d-print.git
+[submodule "fitbit-dashboard"]
+	path = fitbit-dashboard
+	url = git@github.com:festion/fitbit-dashboard.git

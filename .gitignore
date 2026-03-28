@@ -24,6 +24,9 @@ secrets.json
 .git-credentials
 github-token.txt
 
+# MCP configuration (contains secrets)
+.mcp.json
+
 # User-specific configuration files
 config/settings.local.conf
 config/*.local.*

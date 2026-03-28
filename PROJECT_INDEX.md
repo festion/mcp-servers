@@ -1,42 +1,41 @@
-# workspace Project Index
+# Project Index
 
-Generated: 2026-02-06
+This document provides a high-level overview of the monorepo for a comprehensive homelab and automation infrastructure.
 
-## Purpose
-This repository is a sophisticated, GitOps-driven monorepo for managing a homelab environment. It integrates a Node.js backend, a React frontend, Home Assistant for automation, and a custom Python-based templating engine (MCP) to automate and manage the entire infrastructure.
+## 1. Core Purpose
 
-## Directory Structure
-- `api/`: The Node.js/Express backend service that provides the core API.
-- `dashboard/`: The React/Vite-based frontend application for user interaction.
-- `home-assistant-config/`: Contains the configuration for the central Home Assistant instance.
-- `.mcp/`: A custom Python-based templating and automation engine called Model Context Protocol.
-- `docs/`: Contains high-level architecture, planning, and process documents.
-- `scripts/`: Various shell scripts for deployment, maintenance, and other operational tasks.
+This repository orchestrates a suite of services for home automation, network monitoring, and infrastructure management. It uses a GitOps methodology to automate deployment, configuration, and maintenance of services like Home Assistant, BirdNet-Go (a bird sound classification service), Proxmox virtualization, NetBox IPAM, and more. A custom orchestration layer, referred to as MCP (Model Context Protocol), is used to manage and integrate these components.
 
-## Key Files
-- `PROJECT_INDEX.md`: This file, providing a high-level overview of the repository.
-- `api/server.js`: The main entry point for the backend Node.js application.
-- `dashboard/vite.config.ts`: Configuration file for the Vite-based frontend, confirming the use of React.
-- `home-assistant-config/configuration.yaml`: The core configuration file for the Home Assistant instance.
-- `.mcp/template-applicator.py`: The core script for the MCP automation engine.
-- `.gitignore`: Defines ignored files, which is important for understanding the repository's structure as it is quite comprehensive.
-- `docs/3-TIER-DEPLOYMENT.md`: High-level deployment strategy document.
+## 2. Architecture
 
-## Architecture Patterns
-The project follows a GitOps-driven monorepo approach. It has a clear separation of concerns with a backend API, a frontend dashboard, and a declarative configuration for Home Assistant. Automation is a key pattern, implemented through the custom MCP engine.
+The architecture is a container-based, service-oriented system managed via GitOps principles.
 
-## Entry Points
-- **Backend**: The API is started by running `node api/server.js`.
-- **Frontend**: The frontend is a standard Vite application, likely started with `npm run dev` from the `dashboard/` directory.
+-   **Orchestration**: A custom-built system involving `mcp-servers` and `serena` for automation and inter-service communication. AI agents (`.claude/`, `.serena/`) are integrated for development and operational tasks.
+-   **Containerization**: Most services are deployed as Docker containers, with configurations defined in `docker-compose` files and deployment scripts.
+-   **Core Services**:
+    -   **`home-assistant-config`**: Manages a highly customized Home Assistant instance for smart home control.
+    -   **`birdnet-go` / `birdnet-gone`**: Go-based applications for real-time bird sound identification.
+    -   **`api`**: A central Node.js API to integrate and manage various backend services.
+    -   **`dashboard` / `frontend`**: Web interfaces for user interaction with the system.
+    -   **`netbox-agent` / `proxmox-agent`**: Agents for monitoring and managing the underlying infrastructure on NetBox and Proxmox.
+-   **Automation**: Extensive use of shell scripts (`.sh`), Python, and Node.js for deployment, backups, and maintenance tasks.
 
-## Dependencies
-The project has several key external dependencies and integrations:
-- **Proxmox**: For virtualization and container management.
-- **NetBox**: As a source of truth for IPAM and DCIM.
-- **Traefik**: Used as a reverse proxy and load balancer.
-- **Home Assistant**: The core of the home automation system.
+## 3. Key Files
 
-## Common Tasks
-- **Build**: The frontend can be built using Vite's build command (`npm run build` in `dashboard/`). The backend does not require a build step.
-- **Test**: Testing setups exist for both the `api` and `dashboard` directories, likely using Jest. Tests can be run with `npm test`.
-- **Deploy**: Deployment is handled via scripts, with `update-production.sh` being a likely candidate for production deployments. The overall strategy is detailed in `docs/3-TIER-DEPLOYMENT.md`.
+-   `homelab-gitops/README.md`: Central documentation for the GitOps deployment process.
+-   `homelab-gitops/docker-compose.production.yml`: Defines the core production services stack.
+-   `home-assistant-config/configuration.yaml`: Primary configuration file for the Home Assistant instance.
+-   `mcp-servers/`: Contains the core logic for the custom MCP automation servers.
+-   `api/server.js`: The main entry point for the backend API services.
+-   `docs/`: Contains high-level documentation, deployment plans, and incident reports.
+-   `scripts/`: A collection of operational and deployment scripts.
+
+## 4. Dependencies
+
+The project is polyglot and relies on several key technologies:
+
+-   **Primary Languages**: Go, Node.js (JavaScript/TypeScript), Python, and Shell (Bash).
+-   **Frameworks/Runtimes**: Docker, Node.js, Python (various libraries), Go standard library.
+-   **Key Applications**: Home Assistant, Proxmox VE, NetBox, Wiki.js, Traefik.
+-   **Databases**: PostgreSQL (for Home Assistant), SQLite.
+-   **Configuration**: YAML, JSON.

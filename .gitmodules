@@ -28,3 +28,6 @@
 [submodule "fitbit-dashboard"]
 	path = fitbit-dashboard
 	url = git@github.com:festion/fitbit-dashboard.git
+[submodule "tender"]
+	path = tender
+	url = git@github.com:festion/tender.git

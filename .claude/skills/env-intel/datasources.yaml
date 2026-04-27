@@ -40,7 +40,7 @@ services:
     api_path: /api/
     token_source: "Run: cd /home/dev/workspace && infisical secrets get HA_LONG_LIVED_TOKEN --env=prod --plain"
   birdnet:
-    ip: 192.168.1.197
+    ip: 192.168.10.246           # Pi 5 (IoT VLAN). Pi 4 at 192.168.1.197 was decommissioned 2026-04-24.
     port: 8080
     api_path: /api/v2/
     ssh_user: jeremy

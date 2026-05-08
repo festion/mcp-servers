@@ -51,7 +51,7 @@ ssh root@192.168.1.137 "pct push 132 /tmp/add-vikunja-memos-monitors.js /tmp/add
 ssh root@192.168.1.137 "pct exec 132 -- cp /tmp/add-vikunja-memos-monitors.js /opt/uptime-kuma/"
 
 # Execute script
-ssh root@192.168.1.137 "pct exec 132 -- bash -c 'cd /opt/uptime-kuma && node add-vikunja-memos-monitors.js root ***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***'"
+ssh root@192.168.1.137 "pct exec 132 -- bash -c 'cd /opt/uptime-kuma && node add-vikunja-memos-monitors.js root <see Infisical: homelab-gitops/prod/UPTIME_KUMA_ADMIN_PASSWORD>'"
 ```
 
 ### Execution Results
@@ -106,7 +106,7 @@ const socket = io('http://192.168.1.132:3001');
 ```javascript
 socket.emit('login', {
     username: 'root',
-    password: '***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***',
+    password: '<see Infisical: homelab-gitops/prod/UPTIME_KUMA_ADMIN_PASSWORD>',
     token: ''
 }, (res) => {
     if (res.ok) {
@@ -139,7 +139,7 @@ socket.emit('add', monitorConfig, (res) => {
 ### Web Interface
 - **URL:** https://uptime.internal.lakehouse.wtf
 - **Username:** root
-- **Password:** ***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***
+- **Password:** <see Infisical: homelab-gitops/prod/UPTIME_KUMA_ADMIN_PASSWORD>
 
 ### Viewing Monitors
 1. Navigate to https://uptime.internal.lakehouse.wtf

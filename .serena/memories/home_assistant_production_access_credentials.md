@@ -6,11 +6,11 @@
 - **Config Directory**: `/config/` (maps to local `/home/dev/workspace/home-assistant-config/`)
 
 ## Long-Lived Access Token
-**Current Token**: `***SCRUBBED-T21B-HA-JWT-B***`
+**Current Token**: `${HA_LONG_LIVED_TOKEN}`
 
 **Usage**: 
 ```bash
-HA_TOKEN="***SCRUBBED-T21B-HA-JWT-B***"
+HA_TOKEN="${HA_LONG_LIVED_TOKEN}"
 curl -H "Authorization: Bearer $HA_TOKEN" "http://192.168.1.155:8123/api/states/sensor.unavailable_entities"
 ```
 

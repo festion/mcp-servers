@@ -68,19 +68,19 @@
 ```bash
 # Add a DNS rewrite
 curl -X POST "http://192.168.1.224/control/rewrite/add" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" \
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" \
   -H "Content-Type: application/json" \
   -d '{"domain":"example.internal.lakehouse.wtf","answer":"192.168.1.110"}'
 
 # Delete a DNS rewrite
 curl -X POST "http://192.168.1.224/control/rewrite/delete" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" \
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" \
   -H "Content-Type: application/json" \
   -d '{"domain":"example.internal.lakehouse.wtf","answer":"192.168.1.110"}'
 
 # List all rewrites
 curl -s "http://192.168.1.224/control/rewrite/list" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" | jq
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" | jq
 ```
 
 #### Option C: Direct YAML Edit (Use with Caution)
@@ -192,7 +192,7 @@ All internal services route through Traefik at 192.168.1.110.
 ```bash
 # Using API (recommended)
 curl -X POST "http://192.168.1.224/control/rewrite/add" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" \
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" \
   -H "Content-Type: application/json" \
   -d '{"domain":"newservice.internal.lakehouse.wtf","answer":"192.168.1.110"}'
 
@@ -205,7 +205,7 @@ dig @192.168.1.224 newservice.internal.lakehouse.wtf +short
 
 ```bash
 curl -X POST "http://192.168.1.224/control/rewrite/add" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" \
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" \
   -H "Content-Type: application/json" \
   -d '{"domain":"my-esp-device.local","answer":"192.168.1.XXX"}'
 ```
@@ -412,7 +412,7 @@ systemctl status AdGuardHome
 
 # Add rewrite via API
 curl -X POST "http://192.168.1.224/control/rewrite/add" \
-  -u "root:***SCRUBBED-T21B-SHARED-ADMIN-OR-WIFI-PSK***" -H "Content-Type: application/json" \
+  -u "root:$(infisical-get ADGUARD_ROOT_PASSWORD)" -H "Content-Type: application/json" \
   -d '{"domain":"NAME.internal.lakehouse.wtf","answer":"192.168.1.110"}'
 
 # Test DNS

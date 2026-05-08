@@ -6,11 +6,11 @@
 - **Config Directory**: `/config/` (maps to local `/home/dev/workspace/home-assistant-config/`)
 
 ## Long-Lived Access Token
-**Current Token**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE`
+**Current Token**: `${HA_LONG_LIVED_TOKEN}`
 
 **Usage**: 
 ```bash
-HA_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE"
+HA_TOKEN="${HA_LONG_LIVED_TOKEN}"
 curl -H "Authorization: Bearer $HA_TOKEN" "http://192.168.1.155:8123/api/states/sensor.unavailable_entities"
 ```
 

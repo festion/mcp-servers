@@ -73,7 +73,7 @@ Successfully removed 18 phantom entities from entity registry:
 ```
 
 ### Authentication Token Management
-- **Production Token**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI5YTAyYzMxZTNkYjM0YmQxYTQ2YzNlMmJhZDExMjI3NCIsImlhdCI6MTc0NzUwODk4OSwiZXhwIjoyMDYyODY4OTg5fQ.BwOQMlSgBOi7kb2IwgSIK4KCRDe2mI-sJL496NUwHkE`
+- **Production Token**: `<see Infisical: homelab-gitops/prod/HA_LONG_LIVED_TOKEN — old Token B revoked 2026-05>`
 - **Note**: Token changes after system reboots, requires retrieval from user
 
 ## Final System State

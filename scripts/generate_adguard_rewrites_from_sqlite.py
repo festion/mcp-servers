@@ -3,6 +3,8 @@ import base64
 import json
 import os
 import sqlite3
+import subprocess
+import sys
 from datetime import datetime
 
 import requests
@@ -11,7 +13,17 @@ import requests
 ADGUARD_HOST = "192.168.1.253"
 ADGUARD_PORT = "80"
 ADGUARD_USER = "root"
-ADGUARD_PASS = "redflower805"
+ADGUARD_PASS = os.environ.get("ADGUARD_PASSWORD") or subprocess.run(
+    ["infisical-get", "ADGUARD_ROOT_PASSWORD"],
+    capture_output=True, text=True, check=False,
+).stdout.strip()
+if not ADGUARD_PASS:
+    sys.stderr.write(
+        "ERROR: ADGUARD_PASSWORD not set and infisical-get failed to retrieve "
+        "ADGUARD_ROOT_PASSWORD. Refresh session: "
+        "infisical login --domain=\"https://infisical.internal.lakehouse.wtf\" -i\n"
+    )
+    sys.exit(1)
 INTERNAL_TARGET_IP = "192.168.1.95"
 SNAPSHOT_DIR = "/opt/gitops/npm_proxy_snapshot"
 DRY_RUN_LOG = "/opt/gitops/.last_adguard_dry_run.json"

@@ -20,7 +20,7 @@ async def test_token():
     token = "PVEAPIToken=root@pam!mcp-server=969028e3-4df2-4cbf-866f-a66af4d2bb4e"
     
     config = ProxmoxServerConfig(
-        host="192.168.1.137",
+        host="proxmox.mgmt.lakehouse.wtf",
         port=8006,
         username="root",
         token=token,

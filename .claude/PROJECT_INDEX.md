@@ -1,39 +1,38 @@
 # Project Index: workspace
 
 ## 1. Core Purpose
-
-This repository contains a comprehensive suite of tools, configurations, and applications for managing a sophisticated homelab environment. It automates infrastructure provisioning, service deployment, monitoring, and home automation tasks. The system leverages a GitOps methodology and a custom agent-based framework (MCP) to maintain and operate various services, from network infrastructure to IoT devices.
+This workspace serves as a comprehensive homelab automation and AI-driven management system. It integrates various projects for infrastructure as code, automated deployments, monitoring, and specialized applications. Key areas include Home Assistant configurations, network management, 3D printing workflows, BirdNET analysis, and an AI agent ecosystem for continuous operations and documentation. The `homelab-gitops` project appears to be a central orchestrator, emphasizing a GitOps approach for managing the entire environment.
 
 ## 2. Architecture
-
-The architecture is a distributed system composed of several key layers:
-
-*   **Infrastructure & Virtualization:** Proxmox is used as the hypervisor, managed via Infrastructure as Code (IaC) with tools like Ansible and Terraform found in `homelab-iac`.
-*   **Orchestration & Deployment:** A GitOps workflow, centered in the `homelab-gitops` directory, automates the deployment of services. Custom shell scripts (`deploy-*.sh`, `1-line-deploy`) provide streamlined installation procedures.
-*   **Home Automation Hub:** Home Assistant (`home-assistant-config`) serves as the central controller for smart home devices, scenes, and automations, integrating with Zigbee2MQTT, ESPHome, and various custom components.
-*   **Agent-Based Automation (MCP):** A custom "Model Context Protocol" (`mcp-servers`, `wrappers`) is used to create specialized agents that perform tasks like system monitoring (`proxmox-agent`), network inventory (`netbox-agent`), and interacting with other services.
-*   **API & Backend Services:** A central Node.js API (`api/`) facilitates communication between the frontend dashboards and various backend agents and services.
-*   **Monitoring & Logging:** A centralized logging stack using Fluent-bit, Loki, and Grafana (`operations/`) collects and visualizes logs and metrics from across the entire homelab.
-*   **Frontend:** Multiple web-based dashboards (`dashboard/`, `3ddash/`) provide user interfaces for controlling services and viewing data.
+The codebase exhibits a monorepo structure, hosting numerous distinct, interconnected projects. It features a microservice/agent-based architecture where individual components handle specific functionalities (e.g., `netbox-agent`, `proxmox-agent`, `mcp-servers`, `serena`). Infrastructure and application deployments are driven by a Configuration as Code (GitOps) methodology, utilizing tools like Ansible and Terraform. Many projects include web frontends or dashboards for user interaction, alongside a robust logging and monitoring setup based on Fluent Bit. A significant portion of the architecture is dedicated to home automation via Home Assistant, extended with custom components and management scripts.
 
 ## 3. Key Files
-
-*   `homelab-gitops/README.md`: Describes the core GitOps workflow for managing the entire homelab.
-*   `home-assistant-config/configuration.yaml`: The main configuration file for the central home automation system.
-*   `mcp-servers/README.md`: Provides an overview of the custom agent-based automation framework (MCP).
-*   `1-line-deploy/README.md`: Documentation for the simplified, one-line deployment scripts for core services.
-*   `api/server.js`: The primary entry point for the backend API that connects various system components.
-*   `operations/README.md`: Outlines the monitoring and logging infrastructure based on Fluent-bit and Loki.
-*   `proxmox-agent/README.md`: Documentation for the agent responsible for monitoring the Proxmox virtualization environment.
-*   `netbox-agent/README.md`: Documentation for the agent that syncs infrastructure state with NetBox.
-*   `docs/`: Contains high-level documentation, deployment plans, and incident reports.
+*   **`.claude/PROJECT_INDEX.md`**: Overview of AI agent configurations and projects.
+*   **`homelab-gitops/README.md`**: Primary documentation and entry point for the GitOps project.
+*   **`home-assistant-config/configuration.yaml`**: Core configuration file for the Home Assistant instance.
+*   **`api/server.js`, `api/server-v2.js`, `api/websocket-server.js`**: Main entry points for various API services.
+*   **`birdnet-go/main.go`, `birdnet-gone/main.go`**: Core Go application files for BirdNET-related projects.
+*   **`mcp-servers/README.md`**: Documentation for the Model Context Protocol (MCP) server ecosystem.
+*   **`netbox-agent/README.md`**: Documentation for the NetBox integration agent.
+*   **`proxmox-agent/README.md`**: Documentation for the Proxmox management agent.
+*   **`serena/README.md`**: Documentation for the Serena AI agent/orchestrator.
+*   **`docs/DEPLOYMENT-PLANS-SUMMARY.md`**: High-level summary of deployment strategies.
+*   **`scripts/deploy.sh`**: A general-purpose deployment script.
+*   **`.pre-commit-config.yaml`**: Configuration for pre-commit hooks ensuring code quality.
+*   **`package.json`**: Node.js project configuration and dependencies (at root and in subdirectories like `api`, `dashboard`, `gw4-config-tool`, `homelab-gitops`, `mcp-servers`).
+*   **`go.mod`**: Go module dependency definitions (found in `birdnet-go`, `birdnet-gone`, `tender` family projects).
+*   **`requirements.txt`**: Python package dependencies (e.g., in `fitbit-dashboard`, `netbox-agent`, `proxmox-agent`, `hass-ab-ble-gateway-suite`).
+*   **`TRAEFIK_SETUP_COMPLETE.md`**: Documentation detailing Traefik proxy setup.
+*   **`backups/RESTORE_INSTRUCTIONS.md`**: Instructions for restoring various system components from backups.
 
 ## 4. Dependencies
-
-*   **Primary Platforms:** Proxmox, Home Assistant, NetBox, Traefik, Docker, WikiJS.
-*   **Languages:** Python, Go, JavaScript/TypeScript, Shell.
-*   **IaC & Automation:** Ansible, Terraform, Git.
-*   **Backend:** Node.js.
-*   **Monitoring:** Fluent-bit, Loki, Grafana.
-*   **IoT/Home Automation:** Zigbee2MQTT, ESPHome, MQTT.
-*   **3D Printing:** G-code and STL files for various custom parts are stored in `3d-print/`.
+*   **Languages**: Python, JavaScript/TypeScript, Go, Bash, PowerShell.
+*   **Runtimes/Platforms**: Node.js, Python 3, Go.
+*   **Web Frameworks/Libraries**: React (inferred for some frontends, e.g., `dashboard`), Express.js (for Node.js APIs), possibly Flask/FastAPI (for Python APIs/dashboards).
+*   **Containerization**: Docker, Podman.
+*   **Infrastructure as Code**: Ansible, Terraform.
+*   **Home Automation**: Home Assistant, MQTT, Zigbee2MQTT.
+*   **Monitoring/Logging**: Fluent Bit, Grafana, Loki.
+*   **Version Control**: Git (central to GitOps strategy).
+*   **Build Tools**: npm/yarn, go mod, pip, Gulp (older projects).
+*   **Documentation**: Markdown.

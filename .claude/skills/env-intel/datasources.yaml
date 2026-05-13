@@ -12,10 +12,10 @@ compute:
   proxmox:
     tool_prefix: mcp__proxmox-mcp
     nodes:
-      - name: proxmox
-        ip: 192.168.1.137
-        cpu_cores: 4
-        role: "HA master"
+      - name: proxmox1
+        ip: 192.168.1.124
+        cpu_cores: 8
+        role: "absorbed decom'd .137 in Phase 8 (2026-05-10); hosts ct:120 PBS and ct:152 proxmox-agent"
       - name: proxmox2
         ip: 192.168.1.125
         cpu_cores: 8
@@ -51,11 +51,11 @@ services:
 monitoring:
   proxmox_agent:
     ct: 152
-    node: proxmox
-    ip: 192.168.1.169
+    node: proxmox1
+    ip: 192.168.1.161
     port: 8000
     api_path: /api/
-    auth_source: "SSH to proxmox (192.168.1.137), pct exec 152 -- cat /opt/proxmox-agent/.env for DASHBOARD_USER and DASHBOARD_PASSWORD"
+    auth_source: "SSH to proxmox1 (192.168.1.124), pct exec 152 -- cat /opt/proxmox-agent/.env for DASHBOARD_USER and DASHBOARD_PASSWORD"
 
 code:
   github:

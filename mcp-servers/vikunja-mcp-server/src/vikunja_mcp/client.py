@@ -56,13 +56,44 @@ class VikunjaClient:
 
     # --- Task operations ---
 
-    async def create_task(self, project_id: int, title: str, description: str = "", priority: int = 0) -> dict[str, Any]:
-        """Create a task in a project. Uses PUT."""
+    async def create_task(
+        self,
+        project_id: int,
+        title: str,
+        description: str = "",
+        priority: int = 0,
+        due_date: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        percent_done: float | None = None,
+        hex_color: str | None = None,
+        repeat_after: int | None = None,
+        repeat_mode: int | None = None,
+    ) -> dict[str, Any]:
+        """Create a task in a project. Uses PUT.
+
+        Date fields take RFC3339 strings (e.g. '2026-05-20T17:00:00Z').
+        Pass '0001-01-01T00:00:00Z' to leave a date unset on the server.
+        """
         body: dict[str, Any] = {"title": title}
         if description:
             body["description"] = description
         if priority:
             body["priority"] = priority
+        if due_date is not None:
+            body["due_date"] = due_date
+        if start_date is not None:
+            body["start_date"] = start_date
+        if end_date is not None:
+            body["end_date"] = end_date
+        if percent_done is not None:
+            body["percent_done"] = percent_done
+        if hex_color is not None:
+            body["hex_color"] = hex_color
+        if repeat_after is not None:
+            body["repeat_after"] = repeat_after
+        if repeat_mode is not None:
+            body["repeat_mode"] = repeat_mode
         resp = await self.client.put(f"/projects/{project_id}/tasks", json=body)
         resp.raise_for_status()
         return resp.json()

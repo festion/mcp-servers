@@ -93,6 +93,13 @@ async def vikunja_create_task(
     description: str = "",
     priority: int = 0,
     labels: list[str] | None = None,
+    due_date: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    percent_done: float | None = None,
+    hex_color: str | None = None,
+    repeat_after: int | None = None,
+    repeat_mode: int | None = None,
 ) -> dict[str, Any]:
     """Create a task in the active project.
 
@@ -101,6 +108,13 @@ async def vikunja_create_task(
         description: Task description (markdown supported).
         priority: 0=unset, 1=low, 2=medium, 3=high, 4=urgent, 5=do-now.
         labels: Optional list of label names (auto-created if they don't exist).
+        due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Use '0001-01-01T00:00:00Z' to leave unset.
+        start_date: RFC3339 datetime.
+        end_date: RFC3339 datetime.
+        percent_done: Completion fraction 0.0-1.0.
+        hex_color: Hex color without '#' (e.g. 'ff9900').
+        repeat_after: Repeat interval in seconds.
+        repeat_mode: 0=after due/end, 1=monthly, 2=from-current-date.
     """
     project_id = require_project()
     client = get_client()
@@ -110,6 +124,13 @@ async def vikunja_create_task(
         title=title,
         description=description,
         priority=priority,
+        due_date=due_date,
+        start_date=start_date,
+        end_date=end_date,
+        percent_done=percent_done,
+        hex_color=hex_color,
+        repeat_after=repeat_after,
+        repeat_mode=repeat_mode,
     )
 
     if labels:
@@ -122,6 +143,7 @@ async def vikunja_create_task(
         "title": task["title"],
         "priority": task.get("priority", 0),
         "labels": labels or [],
+        "due_date": task.get("due_date", ""),
         "project": _active_project_name,
     }
 
@@ -152,6 +174,7 @@ async def vikunja_list_tasks(
             "title": t["title"],
             "priority": t.get("priority", 0),
             "done": t.get("done", False),
+            "due_date": t.get("due_date", ""),
             "labels": task_labels,
         })
 
@@ -180,6 +203,13 @@ async def vikunja_get_task(id: int) -> dict[str, Any]:
         "description": task.get("description", ""),
         "priority": task.get("priority", 0),
         "done": task.get("done", False),
+        "due_date": task.get("due_date", ""),
+        "start_date": task.get("start_date", ""),
+        "end_date": task.get("end_date", ""),
+        "percent_done": task.get("percent_done", 0),
+        "hex_color": task.get("hex_color", ""),
+        "repeat_after": task.get("repeat_after", 0),
+        "repeat_mode": task.get("repeat_mode", 0),
         "labels": [lb["title"] for lb in (task.get("labels") or [])],
         "comments": [
             {"id": c["id"], "text": c["comment"], "created": c.get("created", "")}
@@ -197,6 +227,13 @@ async def vikunja_update_task(
     description: str | None = None,
     priority: int | None = None,
     done: bool | None = None,
+    due_date: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    percent_done: float | None = None,
+    hex_color: str | None = None,
+    repeat_after: int | None = None,
+    repeat_mode: int | None = None,
 ) -> dict[str, Any]:
     """Update a task. Only provided fields are changed.
 
@@ -208,6 +245,13 @@ async def vikunja_update_task(
         description: New description (None = keep existing).
         priority: New priority 0-5 (None = keep existing).
         done: Mark as done/undone (None = keep existing).
+        due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Pass '0001-01-01T00:00:00Z' to clear.
+        start_date: RFC3339 datetime.
+        end_date: RFC3339 datetime.
+        percent_done: Completion fraction 0.0-1.0.
+        hex_color: Hex color without '#' (e.g. 'ff9900'). Pass '' to clear.
+        repeat_after: Repeat interval in seconds (0 = no repeat).
+        repeat_mode: 0=after due/end, 1=monthly, 2=from-current-date.
     """
     client = get_client()
     changes: dict[str, Any] = {}
@@ -219,6 +263,20 @@ async def vikunja_update_task(
         changes["priority"] = priority
     if done is not None:
         changes["done"] = done
+    if due_date is not None:
+        changes["due_date"] = due_date
+    if start_date is not None:
+        changes["start_date"] = start_date
+    if end_date is not None:
+        changes["end_date"] = end_date
+    if percent_done is not None:
+        changes["percent_done"] = percent_done
+    if hex_color is not None:
+        changes["hex_color"] = hex_color
+    if repeat_after is not None:
+        changes["repeat_after"] = repeat_after
+    if repeat_mode is not None:
+        changes["repeat_mode"] = repeat_mode
 
     task = await client.update_task(id, **changes)
 
@@ -227,6 +285,13 @@ async def vikunja_update_task(
         "title": task["title"],
         "priority": task.get("priority", 0),
         "done": task.get("done", False),
+        "due_date": task.get("due_date", ""),
+        "start_date": task.get("start_date", ""),
+        "end_date": task.get("end_date", ""),
+        "percent_done": task.get("percent_done", 0),
+        "hex_color": task.get("hex_color", ""),
+        "repeat_after": task.get("repeat_after", 0),
+        "repeat_mode": task.get("repeat_mode", 0),
         "updated": task.get("updated", ""),
     }
 

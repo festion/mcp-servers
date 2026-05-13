@@ -108,6 +108,81 @@ async def test_create_task(client):
 
 
 @pytest.mark.asyncio
+async def test_create_task_with_dates_and_recurrence(client):
+    """Optional date / recurrence / color fields only appear in the body when supplied."""
+    mock_response = _make_response(200, {"id": 43, "title": "Pay rent"})
+    client.client = AsyncMock()
+    client.client.put = AsyncMock(return_value=mock_response)
+
+    await client.create_task(
+        5,
+        "Pay rent",
+        due_date="2026-06-01T17:00:00Z",
+        start_date="2026-05-25T00:00:00Z",
+        end_date="2026-06-01T17:00:00Z",
+        percent_done=0.0,
+        hex_color="ff9900",
+        repeat_after=2592000,
+        repeat_mode=1,
+    )
+
+    client.client.put.assert_called_once_with(
+        "/projects/5/tasks",
+        json={
+            "title": "Pay rent",
+            "due_date": "2026-06-01T17:00:00Z",
+            "start_date": "2026-05-25T00:00:00Z",
+            "end_date": "2026-06-01T17:00:00Z",
+            "percent_done": 0.0,
+            "hex_color": "ff9900",
+            "repeat_after": 2592000,
+            "repeat_mode": 1,
+        },
+    )
+
+
+@pytest.mark.asyncio
+async def test_create_task_omits_unset_fields(client):
+    """None values for optional fields are skipped (server keeps its defaults)."""
+    mock_response = _make_response(200, {"id": 44, "title": "Quick task"})
+    client.client = AsyncMock()
+    client.client.put = AsyncMock(return_value=mock_response)
+
+    await client.create_task(5, "Quick task")
+
+    client.client.put.assert_called_once_with(
+        "/projects/5/tasks",
+        json={"title": "Quick task"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_update_task_sets_due_date(client):
+    """update_task should pass due_date through the read-modify-write merge."""
+    existing_task = {
+        "id": 42, "title": "Fix the thing", "description": "It's broken",
+        "priority": 3, "done": False, "project_id": 5,
+        "labels": [], "due_date": "0001-01-01T00:00:00Z",
+    }
+    get_response = _make_response(200, existing_task)
+    updated_task = {**existing_task, "due_date": "2026-06-01T17:00:00Z"}
+    post_response = _make_response(200, updated_task)
+
+    client.client = AsyncMock()
+    client.client.get = AsyncMock(return_value=get_response)
+    client.client.post = AsyncMock(return_value=post_response)
+
+    result = await client.update_task(42, due_date="2026-06-01T17:00:00Z")
+
+    posted_body = client.client.post.call_args[1]["json"]
+    assert posted_body["due_date"] == "2026-06-01T17:00:00Z"
+    # Other existing fields are preserved (read-modify-write invariant)
+    assert posted_body["title"] == "Fix the thing"
+    assert posted_body["description"] == "It's broken"
+    assert result["due_date"] == "2026-06-01T17:00:00Z"
+
+
+@pytest.mark.asyncio
 async def test_list_tasks_open(client):
     mock_response = _make_response(200, [
         {"id": 1, "title": "Open task", "done": False},

@@ -2,56 +2,39 @@
 
 ## 1. Core Purpose
 
-This workspace serves as a comprehensive homelab automation, monitoring, and development environment. It integrates various systems for IoT device management (Home Assistant, Zigbee2MQTT), CI/CD pipelines (GitOps, GitHub Actions), network infrastructure (Traefik, NetBox, Proxmox), and custom applications (e.g., Birdnet, Tender, Fitbit dashboard, Serena for AI/automation). The overarching goal appears to be the orchestration and automation of a complex homelab setup, supported by extensive documentation, scripts, and monitoring tools.
+This repository is a comprehensive monorepo for managing a personal homelab environment. It employs GitOps and Infrastructure-as-Code (IaC) principles to automate the deployment, configuration, and monitoring of a wide range of services. Key areas include home automation, network infrastructure, application hosting, and system monitoring. The system heavily utilizes custom scripting, agent-based automation (MCP), and integrations between various open-source platforms.
 
 ## 2. Architecture
 
-The codebase exhibits a distributed, microservices-oriented architecture. Key characteristics include:
+The architecture is a multi-layered system built on a Proxmox virtualization environment.
 
-*   **Agent-Based Automation**: Dedicated agents (e.g., `netbox-agent`, `proxmox-agent`, various `mcp-servers`) perform specific tasks and interact with respective systems.
-*   **API-Driven Communication**: A central `api` directory with Node.js servers (e.g., `server.js`, `server-v2.js`, `websocket-server.js`) likely handles inter-service communication and external integrations.
-*   **GitOps for Deployment & Configuration**: The `homelab-gitops` directory indicates a strong emphasis on Git as the single source of truth for infrastructure and application deployment, supported by various `deploy` and `validate` scripts.
-*   **Containerization**: Extensive use of Docker/Podman is implied by `docker-compose.yml` files and `Dockerfile`s across multiple projects.
-*   **Frontend Applications**: Several directories contain distinct frontend applications (e.g., `dashboard`, `birdnet-go/frontend`, `fitbit-dashboard`, `model-catalog/frontend`), suggesting a user interface layer for various services.
-*   **Polyglot Development**: The presence of Python, Go, JavaScript/TypeScript, and Shell scripts indicates a polyglot development approach, leveraging the best tools for specific tasks.
+-   **IaC & Configuration Management:** Ansible is used for configuration management (`homelab-iac`), and Terraform for infrastructure provisioning. The entire configuration is managed via Git (`homelab-gitops`), enabling version control and automated deployments.
+-   **Service Orchestration:** Docker is used for containerizing applications. Traefik acts as the reverse proxy and load balancer, routing traffic to the various services.
+-   **Home Automation:** Home Assistant (`home-assistant-config`) serves as the central hub for smart home devices, automations, and dashboards. It integrates with various custom components and scripts.
+-   **Network Services:** AdGuard Home provides network-wide ad-blocking and DNS services. NetBox is used for IPAM and network documentation, with a custom agent (`netbox-agent`) to keep it updated.
+-   **Monitoring & Observability:** A robust monitoring stack is in place, using Fluent-bit for log aggregation, Loki for log storage, and Grafana for visualization (`operations`, `pi-status-dashboard`).
+-   **Custom Tooling & APIs:** A central API (`api`) and numerous wrapper scripts (`wrappers`, `scripts`) provide orchestration and integration between services. A custom agent framework, "MCP" (Model Context Protocol), is used throughout for complex, automated tasks.
+-   **Specialized Applications:** The repository hosts several specific applications, including `birdnet-go` (a bird sound identification service), `3d-print` files for physical manufacturing, and `tender` (a photo sharing application).
 
 ## 3. Key Files
 
-A selection of key files highlighting different aspects of the project:
-
-*   **Deployment & Operations**:
-    *   `./deploy-v1.1.0.sh`: A core script for deploying version 1.1.0.
-    *   `./homelab-gitops/DEPLOYMENT_ARCHITECTURE.md`: Documents the overall deployment strategy.
-    *   `./scripts/deploy-production.sh`: Script for production deployments.
-    *   `./TRAEFIK_SETUP_COMPLETE.md`: Documentation related to Traefik proxy setup.
-*   **Configuration & Documentation**:
-    *   `./config/settings.conf`: Global configuration settings.
-    *   `./docs/CONFIGURATION.md`: General configuration documentation.
-    *   `./home-assistant-config/configuration.yaml`: Main configuration for Home Assistant.
-    *   `./.claude/PROJECT_INDEX.md`: Internal project index for an AI assistant.
-*   **API & Backend Services**:
-    *   `./api/server-v2.js`: A core API server component.
-    *   `./birdnet-go/main.go`: Main entry point for the Birdnet-Go application.
-    *   `./mcp-servers/truenas-mcp-server`: Likely a TrueNAS integration service.
-*   **Frontend/Dashboard**:
-    *   `./dashboard/index.html`: Entry point for a web dashboard.
-    *   `./fitbit-dashboard/app.py`: Main application file for the Fitbit dashboard.
-*   **Monitoring & Health**:
-    *   `./monitor-ha-cluster.sh`: Script for monitoring the Home Assistant cluster.
-    *   `./operations/loki.yml`: Configuration for Loki logging system.
-*   **Specialized Projects**:
-    *   `./3d-print/BirdnetGoneInternals.stl`: A 3D model file, indicating physical project components.
-    *   `./hass-ab-ble-gateway-suite/README.md`: Documentation for a Home Assistant BLE gateway.
-    *   `./serena/README.md`: Readme for the 'Serena' project (likely an AI or automation tool).
+-   `homelab-gitops/`: Core project for GitOps-based homelab management, containing application configurations and deployment scripts.
+-   `homelab-iac/`: The Infrastructure-as-Code root, containing Ansible playbooks and Terraform configurations for provisioning the entire infrastructure.
+-   `home-assistant-config/`: Contains the complete configuration for the Home Assistant instance, including automations, dashboards, and custom components.
+-   `mcp-servers/`: Directory for the Model Context Protocol (MCP) servers, which are specialized agents for automating tasks across the homelab (e.g., interacting with TrueNAS, Proxmox, etc.).
+-   `operations/`: Contains configurations and scripts for the observability stack, primarily Fluent-bit parsers and pipelines for log collection.
+-   `ansible/playbooks/site.yml`: The main Ansible playbook that orchestrates the configuration of the entire homelab.
+-   `ansible/roles/traefik/files/dynamic/routers.yml`: Dynamic routing configuration for the Traefik reverse proxy, defining how services are exposed.
+-   `netbox-agent/`: A custom-built agent to automatically discover and populate network device information into NetBox.
+-   `proxmox-agent/`: A custom agent for monitoring and managing the Proxmox virtualization environment.
+-   `birdnet-go/`: A Go-based application for real-time bird sound identification.
+-   `wrappers/`: A collection of shell scripts that simplify interaction with various MCP agents and services.
 
 ## 4. Dependencies
 
-The project relies on a diverse set of technologies and programming language ecosystems:
-
-*   **Node.js/npm**: Indicated by `package.json`, `package-lock.json`, and `node_modules` directories in `api`, `dashboard`, `gw4-config-tool`, and `homelab-gitops`. Used for API services, web dashboards, and various scripts.
-*   **Python/pip**: Evident from `requirements.txt` (e.g., `fitbit-dashboard`, `netbox-agent`, `proxmox-agent`, `hass-ab-ble-gateway-suite`), `pyproject.toml` (`serena`, `model-catalog`, `home-assistant-config`), and `.py` files throughout the codebase. Used for automation, agents, data processing, and dashboards.
-*   **Go**: Indicated by `go.mod` and `.go` files in `birdnet-go`, `birdnet-gone`, `tender`, and related `cmd` and `internal` directories. Used for performant backend services and command-line tools.
-*   **Shell Scripting**: Numerous `.sh` files are used for deployment, system operations, automation, and various utility tasks across the project.
-*   **Container Runtimes**: Docker and Podman are used for packaging and running applications, as indicated by `Dockerfile` and `docker-compose.yml` files.
-*   **Home Assistant**: Configuration files (`.yaml`), custom components, and related scripts indicate a heavy reliance on the Home Assistant ecosystem for smart home automation.
-*   **Networking/Infrastructure Tools**: Traefik (proxy), NetBox (IPAM/DCIM), Proxmox (virtualization), Git (version control/GitOps), and various monitoring tools like Uptime Kuma and Grafana/Loki.
+-   **Primary Platforms:** Proxmox VE, Home Assistant, Docker, Kubernetes (implied via GitOps tooling).
+-   **Networking:** Traefik, AdGuard Home, Kea DHCP.
+-   **Infrastructure & Automation:** Ansible, Terraform, Git.
+-   **Monitoring:** Grafana, Loki, Fluent-bit.
+-   **Databases & Services:** PostgreSQL, MQTT (Mosquitto), Zigbee2MQTT, Vaultwarden, Wiki.js, NetBox.
+-   **Languages & Runtimes:** Python, Go, Node.js, Bash/Shell.

@@ -7,6 +7,7 @@ import logging
 from typing import Any
 from mcp.server.fastmcp import FastMCP
 from vikunja_mcp.client import VikunjaClient
+from vikunja_mcp.sanitize import strip_param_leak
 
 logging.basicConfig(
     level=logging.INFO,
@@ -118,6 +119,8 @@ async def vikunja_create_task(
     """
     project_id = require_project()
     client = get_client()
+
+    description = strip_param_leak(description, "description") or ""
 
     task = await client.create_task(
         project_id=project_id,
@@ -258,7 +261,7 @@ async def vikunja_update_task(
     if title:
         changes["title"] = title
     if description is not None:
-        changes["description"] = description
+        changes["description"] = strip_param_leak(description, "description")
     if priority is not None:
         changes["priority"] = priority
     if done is not None:
@@ -317,6 +320,7 @@ async def vikunja_add_comment(task_id: int, comment: str) -> dict[str, Any]:
         comment: Comment text. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text instead of a line break.
     """
     client = get_client()
+    comment = strip_param_leak(comment, "comment") or ""
     result = await client.add_comment(task_id, comment)
     return {
         "comment_id": result["id"],

@@ -105,7 +105,7 @@ async def vikunja_create_task(
 
     Args:
         title: Task title (required).
-        description: Task description (markdown supported).
+        description: Task description. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text. NOTE: avoid raw <parameter name="...">...</parameter> substrings in this field; the create-task XML marshaller silently drops the typed `priority` arg when present (see vikunja-mcp #1342). HTML-escape those specific tags only.
         priority: 0=unset, 1=low, 2=medium, 3=high, 4=urgent, 5=do-now.
         labels: Optional list of label names (auto-created if they don't exist).
         due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Use '0001-01-01T00:00:00Z' to leave unset.
@@ -242,7 +242,7 @@ async def vikunja_update_task(
     Args:
         id: Task ID.
         title: New title (empty string = keep existing).
-        description: New description (None = keep existing).
+        description: New description (None = keep existing). Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text.
         priority: New priority 0-5 (None = keep existing).
         done: Mark as done/undone (None = keep existing).
         due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Pass '0001-01-01T00:00:00Z' to clear.
@@ -314,7 +314,7 @@ async def vikunja_add_comment(task_id: int, comment: str) -> dict[str, Any]:
 
     Args:
         task_id: Task ID.
-        comment: Comment text.
+        comment: Comment text. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text instead of a line break.
     """
     client = get_client()
     result = await client.add_comment(task_id, comment)

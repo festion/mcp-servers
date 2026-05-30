@@ -106,7 +106,7 @@ async def vikunja_create_task(
 
     Args:
         title: Task title (required).
-        description: Task description. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text. NOTE: avoid raw <parameter name="...">...</parameter> substrings in this field; the create-task XML marshaller silently drops the typed `priority` arg when present (see vikunja-mcp #1342). HTML-escape those specific tags only.
+        description: Task description. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text. NOTE: avoid raw <parameter name="...">...</parameter> substrings in this field; the CALLER's tool-call serializer (client-side, not this server) can silently drop the typed `priority`/`labels` args when present (see vikunja-mcp #1342/#1526). HTML-escape those specific tags only. The returned `priority`/`labels` are read back from Vikunja (ground truth, not the requested values); a `warnings` list is included if what was stored differs from what was requested.
         priority: 0=unset, 1=low, 2=medium, 3=high, 4=urgent, 5=do-now.
         labels: Optional list of label names (auto-created if they don't exist).
         due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Use '0001-01-01T00:00:00Z' to leave unset.
@@ -141,14 +141,41 @@ async def vikunja_create_task(
             label = await client.get_or_create_label(label_name)
             await client.attach_label(task["id"], label["id"])
 
-    return {
+    # Return GROUND TRUTH, not what was requested. The headline "silent drop"
+    # (#1526) happens upstream in the caller's tool-call serialization — when
+    # priority/labels never reach this server they can't be recovered here —
+    # but we can (a) report what Vikunja actually stored by reading the task
+    # back, and (b) warn when it differs from what we received. That covers
+    # label-attach failures and any genuine server-side drop, so the return
+    # value never claims success it can't substantiate.
+    final = await client.get_task(task["id"])
+    stored_priority = final.get("priority", 0)
+    attached_labels = [lb["title"] for lb in (final.get("labels") or [])]
+
+    warnings: list[str] = []
+    if priority and stored_priority != priority:
+        warnings.append(
+            f"requested priority={priority} but Vikunja stored priority={stored_priority}"
+        )
+    if labels:
+        attached_lower = {lb.lower() for lb in attached_labels}
+        missing = [lb for lb in labels if lb.lower() not in attached_lower]
+        if missing:
+            warnings.append(f"requested labels not attached: {missing}")
+
+    result: dict[str, Any] = {
         "task_id": task["id"],
-        "title": task["title"],
-        "priority": task.get("priority", 0),
-        "labels": labels or [],
-        "due_date": task.get("due_date", ""),
+        "title": final.get("title", task["title"]),
+        "priority": stored_priority,
+        "labels": attached_labels,
+        "due_date": final.get("due_date", ""),
         "project": _active_project_name,
     }
+    if warnings:
+        for w in warnings:
+            logger.warning("create_task: %s", w)
+        result["warnings"] = warnings
+    return result
 
 
 @mcp.tool()

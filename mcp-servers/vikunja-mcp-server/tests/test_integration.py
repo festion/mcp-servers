@@ -5,6 +5,7 @@ Run with: PYTHONPATH=src pytest tests/test_integration.py -v -s
 """
 
 import os
+import httpx
 import pytest
 import pytest_asyncio
 from vikunja_mcp.client import VikunjaClient
@@ -30,6 +31,17 @@ pytestmark = pytest.mark.skipif(
 @pytest_asyncio.fixture
 async def client():
     c = VikunjaClient(VIKUNJA_URL, VIKUNJA_TOKEN)
+    # Skip (don't fail) when the configured instance is unreachable or the
+    # token is invalid — e.g. a stale .env token offline. CI with a valid
+    # token still runs the full lifecycle.
+    try:
+        (await c.client.get("/projects")).raise_for_status()
+    except httpx.HTTPStatusError as e:
+        await c.close()
+        pytest.skip(f"Vikunja auth failed ({e.response.status_code}); skipping live integration test")
+    except httpx.RequestError as e:
+        await c.close()
+        pytest.skip(f"Vikunja unreachable ({type(e).__name__}); skipping live integration test")
     yield c
     await c.close()
 

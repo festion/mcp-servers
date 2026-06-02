@@ -309,13 +309,11 @@ async def vikunja_delete_task(id: int) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def vikunja_add_comment(task_id: int, comment: str) -> dict[str, Any]:
-    """Add a comment to a task. Useful for multi-session progress notes.
-
-    Args:
-        task_id: Task ID.
-        comment: Comment text. Raw HTML ok (<br>,<b>,<code>), not markdown, don't pre-escape.
-    """
+async def vikunja_add_comment(
+    task_id: Annotated[int, Field(description="Task ID.")],
+    comment: Annotated[str, Field(description="Comment text. Raw HTML ok (<br>,<b>,<code>), not markdown, don't pre-escape.")],
+) -> dict[str, Any]:
+    """Add a comment to a task. Useful for multi-session progress notes."""
     client = get_client()
     comment = strip_param_leak(comment, "comment") or ""
     result = await client.add_comment(task_id, comment)

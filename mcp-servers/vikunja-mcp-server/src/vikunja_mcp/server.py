@@ -4,7 +4,8 @@
 import os
 import sys
 import logging
-from typing import Any
+from typing import Annotated, Any
+from pydantic import Field
 from mcp.server.fastmcp import FastMCP
 from vikunja_mcp.client import VikunjaClient
 from vikunja_mcp.sanitize import strip_param_leak
@@ -90,33 +91,19 @@ async def vikunja_create_project(name: str, description: str = "") -> dict[str, 
 
 @mcp.tool()
 async def vikunja_create_task(
-    title: str,
-    description: str = "",
-    priority: int = 0,
-    labels: list[str] | None = None,
-    due_date: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
-    percent_done: float | None = None,
-    hex_color: str | None = None,
-    repeat_after: int | None = None,
-    repeat_mode: int | None = None,
+    title: Annotated[str, Field(description="Task title.")],
+    description: Annotated[str, Field(description="Body. Raw HTML ok (<br>,<b>,<code>), not markdown, don't pre-escape. Avoid literal MCP parameter-tags here — caller may drop priority/labels (#1342/#1526).")] = "",
+    priority: Annotated[int, Field(description="0=unset,1=low,2=medium,3=high,4=urgent,5=do-now.")] = 0,
+    labels: Annotated[list[str] | None, Field(description="Label names; auto-created if missing.")] = None,
+    due_date: Annotated[str | None, Field(description="RFC3339, e.g. 2026-05-20T17:00:00Z; '0001-01-01T00:00:00Z'=unset.")] = None,
+    start_date: Annotated[str | None, Field(description="RFC3339 datetime.")] = None,
+    end_date: Annotated[str | None, Field(description="RFC3339 datetime.")] = None,
+    percent_done: Annotated[float | None, Field(description="0.0-1.0.")] = None,
+    hex_color: Annotated[str | None, Field(description="Hex without '#', e.g. ff9900.")] = None,
+    repeat_after: Annotated[int | None, Field(description="Repeat interval, seconds.")] = None,
+    repeat_mode: Annotated[int | None, Field(description="0=after due/end,1=monthly,2=from-current-date.")] = None,
 ) -> dict[str, Any]:
-    """Create a task in the active project.
-
-    Args:
-        title: Task title (required).
-        description: Task description. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text. NOTE: avoid raw <parameter name="...">...</parameter> substrings in this field; the CALLER's tool-call serializer (client-side, not this server) can silently drop the typed `priority`/`labels` args when present (see vikunja-mcp #1342/#1526). HTML-escape those specific tags only. The returned `priority`/`labels` are read back from Vikunja (ground truth, not the requested values); a `warnings` list is included if what was stored differs from what was requested.
-        priority: 0=unset, 1=low, 2=medium, 3=high, 4=urgent, 5=do-now.
-        labels: Optional list of label names (auto-created if they don't exist).
-        due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Use '0001-01-01T00:00:00Z' to leave unset.
-        start_date: RFC3339 datetime.
-        end_date: RFC3339 datetime.
-        percent_done: Completion fraction 0.0-1.0.
-        hex_color: Hex color without '#' (e.g. 'ff9900').
-        repeat_after: Repeat interval in seconds.
-        repeat_mode: 0=after due/end, 1=monthly, 2=from-current-date.
-    """
+    """Create a task in the active project. Returns ground-truth priority/labels (read back from Vikunja) plus a `warnings` list if stored differs from requested."""
     project_id = require_project()
     client = get_client()
 
@@ -252,37 +239,20 @@ async def vikunja_get_task(id: int) -> dict[str, Any]:
 
 @mcp.tool()
 async def vikunja_update_task(
-    id: int,
-    title: str = "",
-    description: str | None = None,
-    priority: int | None = None,
-    done: bool | None = None,
-    due_date: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
-    percent_done: float | None = None,
-    hex_color: str | None = None,
-    repeat_after: int | None = None,
-    repeat_mode: int | None = None,
+    id: Annotated[int, Field(description="Task ID.")],
+    title: Annotated[str, Field(description="New title ('' = keep existing).")] = "",
+    description: Annotated[str | None, Field(description="New body (None = keep). Raw HTML ok, not markdown, don't pre-escape.")] = None,
+    priority: Annotated[int | None, Field(description="0-5 (None = keep existing).")] = None,
+    done: Annotated[bool | None, Field(description="Mark done/undone (None = keep existing).")] = None,
+    due_date: Annotated[str | None, Field(description="RFC3339, e.g. 2026-05-20T17:00:00Z; '0001-01-01T00:00:00Z' clears.")] = None,
+    start_date: Annotated[str | None, Field(description="RFC3339 datetime.")] = None,
+    end_date: Annotated[str | None, Field(description="RFC3339 datetime.")] = None,
+    percent_done: Annotated[float | None, Field(description="0.0-1.0.")] = None,
+    hex_color: Annotated[str | None, Field(description="Hex without '#'; '' clears.")] = None,
+    repeat_after: Annotated[int | None, Field(description="Seconds (0 = no repeat).")] = None,
+    repeat_mode: Annotated[int | None, Field(description="0=after due/end,1=monthly,2=from-current-date.")] = None,
 ) -> dict[str, Any]:
-    """Update a task. Only provided fields are changed.
-
-    Uses read-modify-write to avoid Vikunja's full-replacement behavior.
-
-    Args:
-        id: Task ID.
-        title: New title (empty string = keep existing).
-        description: New description (None = keep existing). Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text.
-        priority: New priority 0-5 (None = keep existing).
-        done: Mark as done/undone (None = keep existing).
-        due_date: RFC3339 datetime (e.g. '2026-05-20T17:00:00Z'). Pass '0001-01-01T00:00:00Z' to clear.
-        start_date: RFC3339 datetime.
-        end_date: RFC3339 datetime.
-        percent_done: Completion fraction 0.0-1.0.
-        hex_color: Hex color without '#' (e.g. 'ff9900'). Pass '' to clear.
-        repeat_after: Repeat interval in seconds (0 = no repeat).
-        repeat_mode: 0=after due/end, 1=monthly, 2=from-current-date.
-    """
+    """Update a task; only provided fields change (read-modify-write avoids Vikunja's full-replacement)."""
     client = get_client()
     changes: dict[str, Any] = {}
     if title:
@@ -339,13 +309,11 @@ async def vikunja_delete_task(id: int) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def vikunja_add_comment(task_id: int, comment: str) -> dict[str, Any]:
-    """Add a comment to a task. Useful for multi-session progress notes.
-
-    Args:
-        task_id: Task ID.
-        comment: Comment text. Accepts raw HTML (e.g. <br>, <b>, <code>, <pre>); markdown is NOT interpreted. Do not pre-escape — escaped tags like &lt;br&gt; render as literal text instead of a line break.
-    """
+async def vikunja_add_comment(
+    task_id: Annotated[int, Field(description="Task ID.")],
+    comment: Annotated[str, Field(description="Comment text. Raw HTML ok (<br>,<b>,<code>), not markdown, don't pre-escape.")],
+) -> dict[str, Any]:
+    """Add a comment to a task. Useful for multi-session progress notes."""
     client = get_client()
     comment = strip_param_leak(comment, "comment") or ""
     result = await client.add_comment(task_id, comment)

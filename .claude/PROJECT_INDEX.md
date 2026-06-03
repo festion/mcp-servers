@@ -1,40 +1,75 @@
 # Project Index: workspace
 
 ## 1. Core Purpose
-
-This repository is a comprehensive monorepo for managing a personal homelab environment. It employs GitOps and Infrastructure-as-Code (IaC) principles to automate the deployment, configuration, and monitoring of a wide range of services. Key areas include home automation, network infrastructure, application hosting, and system monitoring. The system heavily utilizes custom scripting, agent-based automation (MCP), and integrations between various open-source platforms.
+This workspace serves as a comprehensive suite for managing and automating a homelab environment. It encompasses tools and configurations for infrastructure as code (GitOps), CI/CD pipelines, various monitoring and automation agents (e.g., for NetBox, Proxmox, Home Assistant), API services, smart home integrations, 3D printing management, and specialized applications like Birdnet. The primary goal is to provide robust, automated, and observable control over the homelab infrastructure and services.
 
 ## 2. Architecture
-
-The architecture is a multi-layered system built on a Proxmox virtualization environment.
-
--   **IaC & Configuration Management:** Ansible is used for configuration management (`homelab-iac`), and Terraform for infrastructure provisioning. The entire configuration is managed via Git (`homelab-gitops`), enabling version control and automated deployments.
--   **Service Orchestration:** Docker is used for containerizing applications. Traefik acts as the reverse proxy and load balancer, routing traffic to the various services.
--   **Home Automation:** Home Assistant (`home-assistant-config`) serves as the central hub for smart home devices, automations, and dashboards. It integrates with various custom components and scripts.
--   **Network Services:** AdGuard Home provides network-wide ad-blocking and DNS services. NetBox is used for IPAM and network documentation, with a custom agent (`netbox-agent`) to keep it updated.
--   **Monitoring & Observability:** A robust monitoring stack is in place, using Fluent-bit for log aggregation, Loki for log storage, and Grafana for visualization (`operations`, `pi-status-dashboard`).
--   **Custom Tooling & APIs:** A central API (`api`) and numerous wrapper scripts (`wrappers`, `scripts`) provide orchestration and integration between services. A custom agent framework, "MCP" (Model Context Protocol), is used throughout for complex, automated tasks.
--   **Specialized Applications:** The repository hosts several specific applications, including `birdnet-go` (a bird sound identification service), `3d-print` files for physical manufacturing, and `tender` (a photo sharing application).
+The codebase exhibits a modular, distributed architecture. Key architectural patterns include:
+*   **Agent-based Systems**: Multiple independent agents (e.g., `netbox-agent`, `proxmox-agent`, `mcp-servers` components) are designed to interact with specific systems, collect data, or perform automated tasks.
+*   **API Services**: Dedicated `api` components expose functionalities, likely serving as integration points for various services and frontends.
+*   **GitOps**: The `homelab-gitops` directory indicates a strong adherence to GitOps principles for managing infrastructure and application deployments, with configuration and deployment scripts version-controlled.
+*   **Dashboards**: Several `dashboard` projects suggest a focus on data visualization and monitoring for various aspects of the homelab.
+*   **Microservices/Modular Components**: The numerous top-level directories for distinct functionalities (e.g., `birdnet-go`, `serena`, `tender`) imply a breakdown into smaller, manageable services or applications.
+*   **Containerization**: The presence of `Dockerfile` and `docker-compose.yml` in several projects points to extensive use of containerization for deployment and isolation.
 
 ## 3. Key Files
-
--   `homelab-gitops/`: Core project for GitOps-based homelab management, containing application configurations and deployment scripts.
--   `homelab-iac/`: The Infrastructure-as-Code root, containing Ansible playbooks and Terraform configurations for provisioning the entire infrastructure.
--   `home-assistant-config/`: Contains the complete configuration for the Home Assistant instance, including automations, dashboards, and custom components.
--   `mcp-servers/`: Directory for the Model Context Protocol (MCP) servers, which are specialized agents for automating tasks across the homelab (e.g., interacting with TrueNAS, Proxmox, etc.).
--   `operations/`: Contains configurations and scripts for the observability stack, primarily Fluent-bit parsers and pipelines for log collection.
--   `ansible/playbooks/site.yml`: The main Ansible playbook that orchestrates the configuration of the entire homelab.
--   `ansible/roles/traefik/files/dynamic/routers.yml`: Dynamic routing configuration for the Traefik reverse proxy, defining how services are exposed.
--   `netbox-agent/`: A custom-built agent to automatically discover and populate network device information into NetBox.
--   `proxmox-agent/`: A custom agent for monitoring and managing the Proxmox virtualization environment.
--   `birdnet-go/`: A Go-based application for real-time bird sound identification.
--   `wrappers/`: A collection of shell scripts that simplify interaction with various MCP agents and services.
+*   `./deploy-ssh-keys-working.sh`
+*   `./verify-dns-migration.sh`
+*   `./dashboard/proxy-server.py`
+*   `./dashboard/tsconfig.app.json`
+*   `./dashboard/README.md`
+*   `./dashboard/node_modules/d3-color/README.md`
+*   `./dashboard/node_modules/d3-color/package.json`
+*   `./dashboard/node_modules/cookie/README.md`
+*   `./dashboard/node_modules/cookie/package.json`
+*   `./dashboard/node_modules/babel-preset-jest/README.md`
+*   `./dashboard/node_modules/babel-preset-jest/package.json`
+*   `./dashboard/node_modules/fast-glob/README.md`
+*   `./dashboard/node_modules/fast-glob/node_modules/glob-parent/README.md`
+*   `./dashboard/node_modules/fast-glob/node_modules/glob-parent/package.json`
+*   `./dashboard/node_modules/fast-glob/node_modules/glob-parent/CHANGELOG.md`
+*   `./dashboard/node_modules/fast-glob/package.json`
+*   `./dashboard/node_modules/d3-interpolate/README.md`
+*   `./dashboard/node_modules/d3-interpolate/package.json`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/README.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/LICENSE.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/package.json`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/CHANGELOG.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/dist/lib/README.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/dist/lib/LICENSE.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/dist/lib/package.json`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/dist/lib/CHANGELOG.md`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/dist/lib/tsconfig.json`
+*   `./dashboard/node_modules/@bcoe/v8-coverage/tsconfig.json`
+*   `./dashboard/node_modules/camelcase-css/README.md`
+*   `./dashboard/node_modules/camelcase-css/package.json`
+*   `./dashboard/node_modules/signal-exit/README.md`
+*   `./dashboard/node_modules/signal-exit/package.json`
+*   `./dashboard/node_modules/signal-exit/dist/cjs/package.json`
+*   `./dashboard/node_modules/signal-exit/dist/mjs/package.json`
+*   `./dashboard/node_modules/picomatch/README.md`
+*   `./dashboard/node_modules/picomatch/package.json`
+*   `./dashboard/node_modules/color-convert/README.md`
+*   `./dashboard/node_modules/color-convert/package.json`
+*   `./dashboard/node_modules/color-convert/CHANGELOG.md`
+*   `./dashboard/node_modules/d3-timer/README.md`
+*   `./dashboard/node_modules/d3-timer/package.json`
+*   `./dashboard/node_modules/@ungap/structured-clone/cjs/package.json`
+*   `./dashboard/node_modules/@ungap/structured-clone/README.md`
+*   `./dashboard/node_modules/@ungap/structured-clone/package.json`
+*   `./dashboard/node_modules/@ungap/structured-clone/.github/workflows/node.js.yml`
+*   `./dashboard/node_modules/type-fest/package.json`
+*   `./dashboard/node_modules/type-fest/readme.md`
+*   `./dashboard/node_modules/is-number/README.md`
+*   `./dashboard/node_modules/is-number/package.json`
+*   `./dashboard/node_modules/fb-watchman/README.md`
 
 ## 4. Dependencies
-
--   **Primary Platforms:** Proxmox VE, Home Assistant, Docker, Kubernetes (implied via GitOps tooling).
--   **Networking:** Traefik, AdGuard Home, Kea DHCP.
--   **Infrastructure & Automation:** Ansible, Terraform, Git.
--   **Monitoring:** Grafana, Loki, Fluent-bit.
--   **Databases & Services:** PostgreSQL, MQTT (Mosquitto), Zigbee2MQTT, Vaultwarden, Wiki.js, NetBox.
--   **Languages & Runtimes:** Python, Go, Node.js, Bash/Shell.
+The project utilizes a mix of technologies, primarily:
+*   **JavaScript/TypeScript (Node.js)**: Evident in `api`, `dashboard`, `gw4-config-tool`, `mcp-servers` and `homelab-gitops` through `package.json`, `package-lock.json`, and `.js`/`.ts` files. Frontend frameworks like React (in `dashboard`) are also present.
+*   **Go**: Used in projects like `birdnet-go`, `birdnet-gone`, `biometric-gateway`, `tender`, and `tender-photos`, indicated by `go.mod` files.
+*   **Python**: Found in `fitbit-dashboard`, `home-assistant-config`, `model-catalog`, `netbox-agent`, `proxmox-agent`, `serena`, `stormcrow`, and various `scripts`, indicated by `requirements.txt` and `.py` files.
+*   **Shell Scripting (Bash)**: Numerous `.sh` files across the repository for automation, deployment, and utility tasks.
+*   **YAML/JSON**: Used extensively for configuration (`.yaml`, `.json` files in `home-assistant-config`, `homelab-iac`, `operations`, etc.) and potentially for CI/CD pipelines.
+*   **Markdown**: Used for documentation (`.md` files throughout the repository).
+*   **Docker/Containerization**: `Dockerfile` and `docker-compose.yml` files are present in multiple service directories, indicating containerized deployments.

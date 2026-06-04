@@ -1,16 +1,17 @@
 # Project Index: workspace
 
 ## 1. Core Purpose
-This workspace serves as a comprehensive suite for managing and automating a homelab environment. It encompasses tools and configurations for infrastructure as code (GitOps), CI/CD pipelines, various monitoring and automation agents (e.g., for NetBox, Proxmox, Home Assistant), API services, smart home integrations, 3D printing management, and specialized applications like Birdnet. The primary goal is to provide robust, automated, and observable control over the homelab infrastructure and services.
+This workspace serves as a comprehensive suite for homelab automation, monitoring, and infrastructure management. It encompasses projects for 3D printing, bird sound detection, various dashboard applications, and a robust GitOps-driven deployment and operational framework for numerous services and agents.
 
 ## 2. Architecture
-The codebase exhibits a modular, distributed architecture. Key architectural patterns include:
-*   **Agent-based Systems**: Multiple independent agents (e.g., `netbox-agent`, `proxmox-agent`, `mcp-servers` components) are designed to interact with specific systems, collect data, or perform automated tasks.
-*   **API Services**: Dedicated `api` components expose functionalities, likely serving as integration points for various services and frontends.
-*   **GitOps**: The `homelab-gitops` directory indicates a strong adherence to GitOps principles for managing infrastructure and application deployments, with configuration and deployment scripts version-controlled.
-*   **Dashboards**: Several `dashboard` projects suggest a focus on data visualization and monitoring for various aspects of the homelab.
-*   **Microservices/Modular Components**: The numerous top-level directories for distinct functionalities (e.g., `birdnet-go`, `serena`, `tender`) imply a breakdown into smaller, manageable services or applications.
-*   **Containerization**: The presence of `Dockerfile` and `docker-compose.yml` in several projects points to extensive use of containerization for deployment and isolation.
+The architecture is distributed and service-oriented, heavily relying on agents, APIs, and microservices for various tasks. Key components include:
+*   **GitOps Orchestration:** The `homelab-gitops` repository acts as a central control plane, managing deployments and configurations.
+*   **API Layer:** `api` provides backend services, potentially interacting with various agents and external systems.
+*   **Frontend/Dashboard:** Multiple frontend applications (`dashboard`, `frontend`, `3ddash`, `fitbit-dashboard`, `pi-status-dashboard`) provide user interfaces for monitoring and control.
+*   **Agents/Services:** Numerous specialized agents and MCP servers (`netbox-agent`, `proxmox-agent`, `mcp-servers`, `birdnet-go`, `serena`, `tender`) handle specific tasks, data collection, and integrations.
+*   **Infrastructure as Code (IaC):** `homelab-iac` utilizes Ansible and Terraform for provisioning and managing infrastructure.
+*   **Operations & Monitoring:** `operations` contains configurations for logging (Fluent Bit, Loki) and monitoring various services, while `github-actions-runner` supports CI/CD workflows.
+*   **Home Assistant Integration:** Extensive configuration and custom components for Home Assistant are present (`home-assistant-config`, `hass-ab-ble-gateway-suite`, `unified-adaptive-lighting`).
 
 ## 3. Key Files
 *   `./deploy-ssh-keys-working.sh`
@@ -65,11 +66,27 @@ The codebase exhibits a modular, distributed architecture. Key architectural pat
 *   `./dashboard/node_modules/fb-watchman/README.md`
 
 ## 4. Dependencies
-The project utilizes a mix of technologies, primarily:
-*   **JavaScript/TypeScript (Node.js)**: Evident in `api`, `dashboard`, `gw4-config-tool`, `mcp-servers` and `homelab-gitops` through `package.json`, `package-lock.json`, and `.js`/`.ts` files. Frontend frameworks like React (in `dashboard`) are also present.
-*   **Go**: Used in projects like `birdnet-go`, `birdnet-gone`, `biometric-gateway`, `tender`, and `tender-photos`, indicated by `go.mod` files.
-*   **Python**: Found in `fitbit-dashboard`, `home-assistant-config`, `model-catalog`, `netbox-agent`, `proxmox-agent`, `serena`, `stormcrow`, and various `scripts`, indicated by `requirements.txt` and `.py` files.
-*   **Shell Scripting (Bash)**: Numerous `.sh` files across the repository for automation, deployment, and utility tasks.
-*   **YAML/JSON**: Used extensively for configuration (`.yaml`, `.json` files in `home-assistant-config`, `homelab-iac`, `operations`, etc.) and potentially for CI/CD pipelines.
-*   **Markdown**: Used for documentation (`.md` files throughout the repository).
-*   **Docker/Containerization**: `Dockerfile` and `docker-compose.yml` files are present in multiple service directories, indicating containerized deployments.
+*   **Node.js/npm:**
+    *   `api/package.json`
+    *   `dashboard/package.json`
+    *   `birdnet-go/package.json`
+    *   `gw4-config-tool/package.json`
+    *   `homelab-gitops/package.json`
+    *   `mcp-servers/package.json`
+*   **Go:**
+    *   `birdnet-go/go.mod`
+    *   `birdnet-gone/go.mod`
+    *   `tender/go.mod`
+    *   `tender-photos/go.mod`
+*   **Python:**
+    *   `fitbit-dashboard/requirements.txt`
+    *   `hass-ab-ble-gateway-suite/requirements.txt`
+    *   `home-assistant-config/requirements-dev.txt`
+    *   `netbox-agent/requirements.txt`
+    *   `proxmox-agent/requirements.txt`
+    *   `model-catalog/pyproject.toml`
+    *   `serena/pyproject.toml`
+    *   `stormcrow/pyproject.toml`
+*   **Ansible/Terraform:**
+    *   `homelab-iac/ansible`
+    *   `homelab-iac/terraform`

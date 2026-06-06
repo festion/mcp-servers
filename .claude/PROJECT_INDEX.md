@@ -1,38 +1,43 @@
-# Project Index: Workspace Monorepo
+# Project Index: workspace
 
 ## 1. Core Purpose
 
-This repository is a comprehensive monorepo for managing a personal homelab environment. It combines Infrastructure as Code (IaC), GitOps principles, home automation, custom application development, and system monitoring to create a unified and highly automated platform. The system manages everything from virtualization and networking to IoT devices, 3D printing, and AI-driven automation tasks.
+This monorepo serves as a comprehensive suite for homelab management, automation, and development. It encompasses projects for home automation (e.g., Home Assistant configurations, BLE gateways), monitoring and data collection (e.g., Birdnet for avian soundscapes, various dashboards, Netbox agent for infrastructure), 3D printing designs and utilities, and a robust internal development and operations platform. The platform includes a "Multi-Container Project" (MCP) system for orchestrating microservices, GitOps workflows for infrastructure as code, and various agents for specific tasks (e.g., WikiJS integration, Proxmox management). The overall goal appears to be the creation and maintenance of a highly automated, observable, and extensible smart home and homelab environment.
 
 ## 2. Architecture
 
-The architecture is a distributed system of interconnected services, managed centrally via a GitOps workflow.
+The codebase exhibits a modular, multi-language, and often containerized architecture. Key architectural patterns include:
 
--   **Infrastructure**: Proxmox is used for virtualization, with infrastructure provisioned and managed by Ansible and Terraform (`homelab-iac`).
--   **Orchestration (GitOps)**: The `homelab-gitops` project serves as the central control plane. It uses a custom script-based framework (see `mcp-servers/` and `wrappers/`) to automate configuration, deployment, and management across the homelab.
--   **Home Automation**: [Home Assistant](https://www.home-assistant.io/) is the core home automation engine, with an extensive and heavily customized configuration located in `home-assistant-config/`. This includes custom components (`hass-ab-ble-gateway-suite`), ESPHome device firmware, and complex automation routines.
--   **Applications**: A suite of custom applications provides specialized functionality:
-    -   `birdnet-gone`: A Go-based application for bird sound identification and processing.
-    -   `netbox-agent` & `proxmox-agent`: Data collection agents that feed system information into NetBox for inventory and documentation.
-    -   `api/` & `dashboard/`: A central API and web-based frontend for managing and monitoring the homelab.
-    -   `serena`: A personal AI assistant.
--   **Monitoring**: A robust monitoring and logging stack is defined in `operations/`, utilizing Fluent Bit for log shipping and Loki for aggregation, providing deep visibility into all services.
--   **AI Integration**: The system heavily leverages Large Language Models (LLMs), primarily via Claude, for code generation, automation, documentation, and project management, indicated by numerous `.claude` and `.serena` directories.
+*   **Microservices/Containerization:** Numerous directories like `api`, `birdnet-go`, `birdnet-gone`, `netbox-agent`, `proxmox-agent`, `mcp-servers`, `homelab-gitops`, and `serena` contain `Dockerfile` or `docker-compose.yml` files, indicating container-based deployments. The "MCP" system likely orchestrates these services.
+*   **Frontend/Backend Separation:** Projects like `api`, `dashboard`, `frontend`, `birdnet-go`, `birdnet-gone`, `fitbit-dashboard`, `model-catalog`, `seed2smoke`, `tender`, and `tender-photos` show clear distinctions between API backends (Go, Node.js, Python) and web frontends (React/Vite, HTML/JS).
+*   **Configuration as Code (GitOps/IaC):** `homelab-gitops`, `homelab-iac` (Ansible, Terraform), and `home-assistant-config` demonstrate a strong emphasis on managing infrastructure and application configurations through version control.
+*   **Scripting and Automation:** A significant number of shell scripts (`scripts/`, `install.sh`, `deploy-*.sh`, `fix-*.sh`, `monitor-*.sh`) are used for deployment, maintenance, and operational tasks.
+*   **Documentation-Driven Development:** Extensive use of Markdown files for documentation, architecture, deployment plans, and project overviews (`docs/`, `PROJECT_INDEX.md`, `README.md`, `CLAUDE.md` in many subdirectories) suggests a strong emphasis on documenting processes and systems.
 
 ## 3. Key Files
 
--   **`homelab-gitops/README.md`**: Central documentation for the GitOps deployment and management workflow.
--   **`home-assistant-config/configuration.yaml`**: The main entry point for the Home Assistant configuration, defining all integrations and entities.
--   **`mcp-servers/`**: Contains the core logic for the custom "Master Control Program" automation framework.
--   **`wrappers/*.sh`**: A collection of high-level shell scripts that act as entry points for common operational tasks (e.g., deployments, backups).
--   **`api/server.js`**: The main entry point for the central management API.
--   **`dashboard/`**: Contains the source code for the unified web frontend.
--   **`docs/`**: High-level architectural documents, deployment plans, and incident reports.
--   **`1-line-deploy/`**: Scripts and documentation for simplified, single-command deployments of various services.
+*   `./deploy-ssh-keys-working.sh`: A shell script likely used for deploying SSH keys to various systems, potentially for automation or secure access within the homelab environment.
+*   `./verify-dns-migration.sh`: A script for verifying the successful migration or configuration of DNS settings, crucial for network stability.
+*   `./dashboard/proxy-server.py`: A Python script acting as a proxy server for the dashboard, possibly to handle API requests, authentication, or overcome CORS issues.
+*   `./dashboard/tsconfig.app.json`: Configuration file for TypeScript compilation specific to the dashboard application, indicating it's a TypeScript-based frontend project.
+*   `./dashboard/README.md`: Provides essential information and instructions for the dashboard project, including setup, usage, and development guidelines.
+*   `./dashboard/node_modules/d3-color/README.md`, `./dashboard/node_modules/d3-color/package.json`: Documentation and package definition for `d3-color`, a JavaScript library for color manipulation, used in the dashboard.
+*   `./dashboard/node_modules/cookie/README.md`, `./dashboard/node_modules/cookie/package.json`: Documentation and package definition for the `cookie` JavaScript library, used for HTTP cookie parsing and serialization in the dashboard.
+*   `./dashboard/node_modules/babel-preset-jest/README.md`, `./dashboard/node_modules/babel-preset-jest/package.json`: Documentation and package definition for `babel-preset-jest`, indicating that the dashboard project uses Jest for testing and Babel for JavaScript transpilation.
+*   `./dashboard/node_modules/fast-glob/README.md`, `./dashboard/node_modules/fast-glob/package.json`: Documentation and package definition for `fast-glob`, a utility for finding files using glob patterns, likely used in the dashboard's build or development processes.
+*   `./dashboard/node_modules/ @bcoe/v8-coverage/README.md`, `./dashboard/node_modules/ @bcoe/v8-coverage/package.json`: Documentation and package definition for `@bcoe/v8-coverage`, suggesting that the dashboard project integrates with V8 code coverage tools, likely for testing and quality analysis.
 
 ## 4. Dependencies
 
--   **Core Systems**: Proxmox, Home Assistant, Docker, NetBox, Traefik, Loki, Grafana, Zigbee2MQTT.
--   **IaC/DevOps**: Ansible, Terraform, Git, GitHub Actions.
--   **Languages & Frameworks**: Go, Python, JavaScript/TypeScript (Node.js), Shell.
--   **AI Services**: Anthropic's Claude API.
+Inferred dependencies based on file types and common project structures:
+
+*   **Programming Languages:** Go, Python, JavaScript/TypeScript, Shell scripting (Bash).
+*   **Package Managers:** `npm`/`yarn` (JavaScript/TypeScript - evident from `package.json`, `package-lock.json`, `node_modules`), `go mod` (Go - evident from `go.mod`, `go.sum`), `pip`/`uv` (Python - evident from `requirements.txt`, `pyproject.toml`, `uv.lock`).
+*   **Frontend Frameworks/Libraries:** React (implied by Vite/TypeScript configuration in `dashboard`), D3.js (for data visualization, `d3-color`, `d3-interpolate`, `d3-timer` in `dashboard`), Tailwind CSS (for styling, `tailwind.config.js`).
+*   **Backend Frameworks/Libraries:** Node.js (Express.js or similar, in `api`), FastAPI/Flask/Django (Python, in various Python-based services), Go standard library and web frameworks.
+*   **Containerization:** Docker, Docker Compose, Podman.
+*   **Home Automation:** Home Assistant, Zigbee2MQTT, ESPHome, BLE-related libraries.
+*   **Infrastructure as Code:** Ansible, Terraform.
+*   **Testing:** Jest (JavaScript/TypeScript), Pytest (Python).
+*   **Linting/Formatting:** ESLint, Prettier.
+*   **Version Control:** Git.

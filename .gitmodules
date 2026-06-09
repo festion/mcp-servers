@@ -13,9 +13,6 @@
 [submodule "home-assistant-config"]
 	path = home-assistant-config
 	url = git@github.com:festion/home-assistant-config.git
-[submodule "netbox-agent"]
-	path = netbox-agent
-	url = git@github.com:festion/netbox-agent.git
 [submodule "serena"]
 	path = serena
 	url = https://github.com/oraios/serena.git

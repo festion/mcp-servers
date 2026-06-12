@@ -202,3 +202,4 @@ omada_config_restore.cfg
 # .serena/memories/ are tracked deliberately; only project.yml is per-machine
 .serena/project.yml
 .beads/
+mcp-servers/proxmox-mcp-server/proxmox_mcp_config.json

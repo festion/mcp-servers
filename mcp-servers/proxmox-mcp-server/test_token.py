@@ -16,9 +16,13 @@ from proxmox_mcp.config import ProxmoxServerConfig
 async def test_token():
     """Test API token authentication."""
     
-    # Set token directly without shell parsing issues
-    token = "PVEAPIToken=root@pam!mcp-server=969028e3-4df2-4cbf-866f-a66af4d2bb4e"
-    
+    # Token must be supplied via env var — never hardcode a credential here.
+    token = os.environ.get("PROXMOX_MCP_TOKEN", "")
+    if not token:
+        print("Set PROXMOX_MCP_TOKEN env var, e.g. "
+              "PVEAPIToken=root@pam!mcp-server=<secret>")
+        return False
+
     config = ProxmoxServerConfig(
         host="proxmox.mgmt.lakehouse.wtf",
         port=8006,

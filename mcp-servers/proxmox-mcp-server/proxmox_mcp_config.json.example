@@ -4,7 +4,7 @@
       "host": "proxmox.mgmt.lakehouse.wtf",
       "port": 8006,
       "username": "root",
-      "token": "PVEAPIToken=root@pam!mcp-server=969028e3-4df2-4cbf-866f-a66af4d2bb4e",
+      "token": "PVEAPIToken=root@pam!mcp-server=REPLACE_WITH_TOKEN_SECRET",
       "realm": "pam",
       "verify_ssl": false,
       "timeout": 30
